@@ -1,122 +1,176 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Star, ChevronRight, Minus, Plus, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Star, ArrowLeft, ShoppingBag, Heart, Shield, Truck, RefreshCcw } from 'lucide-react';
+
+// Import all images from the folder
+const imageModules = import.meta.glob('../assets/heroshots/*.{jpg,png,jpeg}', { eager: true });
+const allImages = Object.values(imageModules).map(m => m.default);
+
+const productsData = {
+    "orange": {
+        id: "orange",
+        name: "Sunset Sage Bandana",
+        price: "$28.00",
+        rating: 5,
+        mainImage: allImages.find(img => img.includes('IMG_6154')),
+        description: "A vibrant burst of autumn hues, the Sunset Sage Bandana features an intricate earthy pattern. Designed for the adventurous pet who loves to stand out in the golden hour.",
+        details: ["100% Organic Cotton", "Hand-stitched in small batches", "Breathable & Lightweight", "Machine Washable"]
+    },
+    "pink": {
+        id: "pink",
+        name: "Blossom Heart Bandana",
+        price: "$32.00",
+        rating: 5,
+        mainImage: allImages.find(img => img.includes('IMG_6169')) || allImages.find(img => img.includes('IMG_6176')),
+        description: "Soft, sweet, and perfectly charming. This pink checkered bandana is adorned with delicate white hearts, bringing a touch of romance to every walk.",
+        details: ["Premium Linen Blend", "Signature Heart Pattern", "Reinforced Stitching", "Adjustable Fit"]
+    },
+    "blue": {
+        id: "blue",
+        name: "Azure Adventure Collab",
+        price: "$35.00",
+        rating: 5,
+        mainImage: allImages.find(img => img.includes('IMG_6214')) || allImages.find(img => img.includes('IMG_6219')),
+        description: "Deep azure tones meet modern geometric patterns. This piece is built for durability and style, perfect for long weekends in the hills or city strolls.",
+        details: ["Utility Grade Fabric", "Reflective Accents", "Quick-Dry Tech", "Comfort-First Design"]
+    },
+    "nano-banana": {
+        id: "nano-banana",
+        name: "The Nano Banana Special",
+        price: "$30.00",
+        rating: 5,
+        mainImage: allImages.find(img => img.includes('nano_banana')),
+        description: "A quirky and minimalist take on the classic banana print. The Nano Banana features tiny, hand-drawn motifs on a soft sage canvas, offering a refined yet playful look.",
+        details: ["Custom Illustration Print", "Eco-Friendly Dyes", "Extra Soft Finish", "Limited Edition Cloth"]
+    }
+};
 
 const ProductDetail = () => {
     const { id } = useParams();
-    const [quantity, setQuantity] = useState(1);
-    const [selectedSize, setSelectedSize] = useState('M');
+    const product = productsData[id] || productsData["orange"];
+    const [selectedImage, setSelectedImage] = useState(product.mainImage);
 
-    // Specific product data for Tutu & Co
-    const product = {
-        name: "Organic Cotton Essential Tee",
-        price: "$32.00",
-        rating: 5,
-        reviews: 124,
-        description: "Our signature tee is made from 100% GOTS certified organic cotton. Designed for maximum comfort and freedom of movement, it's the perfect everyday layer for your stylish companion.",
-        image: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=2069&auto=format&fit=crop",
-        thumbnails: [
-            "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=2069&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=1964&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?q=80&w=2071&auto=format&fit=crop"
-        ]
-    };
+    useEffect(() => {
+        setSelectedImage(product.mainImage);
+        window.scrollTo(0, 0);
+    }, [product]);
 
     return (
-        <div className="pb-20">
-            <div className="max-w-7xl mx-auto px-6 pt-12">
+        <div className="bg-white min-h-screen pt-24 pb-32">
+            <div className="max-w-7xl mx-auto px-6">
                 {/* Breadcrumbs */}
-                <nav className="flex items-center space-x-2 text-xs uppercase tracking-widest text-[#95714F]/60 mb-8">
-                    <span>Shop</span>
-                    <ChevronRight size={12} />
-                    <span>Apparel</span>
-                    <ChevronRight size={12} />
-                    <span className="text-[#95714F]">{product.name}</span>
-                </nav>
+                <Link to="/" className="inline-flex items-center text-[#95714F] hover:opacity-70 transition-opacity mb-12 group">
+                    <ArrowLeft size={18} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+                    Back to Collection
+                </Link>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
                     {/* Image Gallery */}
                     <div className="space-y-6">
-                        <div className="aspect-[4/5] bg-[#EADED0] rounded-sm overflow-hidden">
-                            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="grid grid-cols-3 gap-4">
-                            {product.thumbnails.map((thumb, i) => (
-                                <div key={i} className="aspect-square bg-[#EADED0] rounded-sm overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
-                                    <img src={thumb} className="w-full h-full object-cover" />
-                                </div>
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="aspect-[4/5] bg-[#EADED0] rounded-sm overflow-hidden"
+                        >
+                            <img 
+                                src={selectedImage} 
+                                alt={product.name} 
+                                className="w-full h-full object-cover"
+                            />
+                        </motion.div>
+                        
+                        <div className="grid grid-cols-5 gap-4">
+                            {allImages.slice(0, 10).map((img, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => setSelectedImage(img)}
+                                    className={`aspect-square bg-[#EADED0] rounded-sm overflow-hidden border-2 transition-all ${selectedImage === img ? 'border-[#95714F]' : 'border-transparent'}`}
+                                >
+                                    <img src={img} alt="Gallery thumbnail" className="w-full h-full object-cover" />
+                                </button>
                             ))}
                         </div>
                     </div>
 
-                    {/* Product Details */}
-                    <div className="lg:sticky lg:top-32 h-fit space-y-8">
-                        <div>
-                            <h1 className="text-4xl font-serif text-black mb-4">{product.name}</h1>
-                            <div className="flex items-center space-x-4 mb-6">
-                                <div className="flex items-center">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star key={i} size={16} fill={i < product.rating ? "#95714F" : "none"} className="text-[#95714F]" />
-                                    ))}
-                                </div>
-                                <span className="text-sm text-[#95714F]/60">({product.reviews} customer reviews)</span>
+                    {/* Product Info */}
+                    <div className="flex flex-col">
+                        <span className="uppercase tracking-[0.3em] text-[10px] font-bold text-[#8C916C] mb-4">Tutu & Co Signature</span>
+                        <h1 className="text-4xl md:text-5xl font-serif text-black mb-6">{product.name}</h1>
+                        
+                        <div className="flex items-center mb-8">
+                            <div className="flex mr-4">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star key={i} size={16} fill="#95714F" className="text-[#95714F]" />
+                                ))}
                             </div>
-                            <p className="text-2xl font-medium text-black">{product.price}</p>
+                            <span className="text-[#95714F] text-sm">(24 Reviews)</span>
                         </div>
 
-                        <p className="text-[#95714F] leading-relaxed italic">
+                        <p className="text-3xl font-light text-black mb-8">{product.price}</p>
+                        
+                        <p className="text-[#95714F] leading-relaxed mb-10 text-lg">
                             {product.description}
                         </p>
 
-                        {/* Selectors */}
-                        <div className="space-y-6 pt-4">
-                            <div>
-                                <label className="block text-xs font-bold text-[#95714F] uppercase tracking-wider mb-3">Size</label>
-                                <div className="flex space-x-3">
-                                    {['S', 'M', 'L', 'XL'].map((size) => (
-                                        <button
-                                            key={size}
-                                            onClick={() => setSelectedSize(size)}
-                                            className={`w-12 h-12 flex items-center justify-center rounded-sm border transition-colors ${selectedSize === size ? 'bg-[#95714F] text-white border-[#95714F]' : 'border-[#C7AF94] text-[#95714F] bg-white'
-                                                }`}
-                                        >
-                                            {size}
-                                        </button>
-                                    ))}
+                        <div className="space-y-4 mb-12">
+                            {product.details.map((detail, i) => (
+                                <div key={i} className="flex items-center text-sm text-[#95714F]">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#8C916C] mr-3" />
+                                    {detail}
                                 </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold text-[#95714F] uppercase tracking-wider mb-3">Quantity</label>
-                                <div className="flex items-center space-x-4 w-32 border border-[#C7AF94] rounded-sm bg-white overflow-hidden">
-                                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-3 text-[#95714F] hover:bg-gray-50"><Minus size={14} /></button>
-                                    <span className="flex-grow text-center text-sm font-medium">{quantity}</span>
-                                    <button onClick={() => setQuantity(quantity + 1)} className="p-3 text-[#95714F] hover:bg-gray-50"><Plus size={14} /></button>
-                                </div>
-                            </div>
+                            ))}
                         </div>
 
-                        <button className="w-full bg-[#8C916C] text-white py-5 rounded-sm font-medium hover:bg-[#95714F] transition-colors uppercase tracking-[0.2em] text-sm shadow-sm">
-                            Add to Shopping Bag
-                        </button>
+                        <div className="flex flex-col sm:flex-row gap-4 mb-16">
+                            <button className="flex-1 bg-black text-white py-5 rounded-sm flex items-center justify-center font-medium tracking-widest uppercase text-sm hover:bg-[#1a1a1a] transition-colors shadow-lg">
+                                <ShoppingBag size={18} className="mr-2" />
+                                Add to Cart
+                            </button>
+                            <button className="px-8 py-5 border border-[#C7AF94] rounded-sm hover:bg-[#EADED0]/30 transition-colors">
+                                <Heart size={18} className="text-[#95714F]" />
+                            </button>
+                        </div>
 
-                        {/* Accordions (Simplified as simple blocks for Tutu & Co) */}
-                        <div className="pt-10 divide-y divide-[#C7AF94]/20">
-                            <div className="py-4 flex items-center space-x-4 text-sm text-[#95714F]">
-                                <ShieldCheck size={20} className="text-[#8C916C]" />
-                                <span>100% GOTS Certified Organic Materials</span>
+                        {/* Shipping Info */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 py-10 border-t border-[#EADED0]">
+                            <div className="flex flex-col items-center text-center">
+                                <Truck size={20} className="text-[#95714F] mb-3" />
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-black">Fast Shipping</span>
+                                <span className="text-[10px] text-[#95714F]">2-4 Business Days</span>
                             </div>
-                            <div className="py-4 flex items-center space-x-4 text-sm text-[#95714F]">
-                                <Truck size={20} className="text-[#8C916C]" />
-                                <span>Free Express Shipping on orders over $150</span>
+                            <div className="flex flex-col items-center text-center">
+                                <RefreshCcw size={20} className="text-[#95714F] mb-3" />
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-black">Easy Returns</span>
+                                <span className="text-[10px] text-[#95714F]">30 Day Window</span>
                             </div>
-                            <div className="py-4 flex items-center space-x-4 text-sm text-[#95714F]">
-                                <RefreshCw size={20} className="text-[#8C916C]" />
-                                <span>30-Day Effortless Returns & Exchanges</span>
+                            <div className="flex flex-col items-center text-center">
+                                <Shield size={20} className="text-[#95714F] mb-3" />
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-black">Secure Payment</span>
+                                <span className="text-[10px] text-[#95714F]">SSL Encrypted</span>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {/* Full Imagery Section */}
+                <section className="mt-32 pt-32 border-t border-[#EADED0]">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-serif text-black mb-4">Complete Showcase</h2>
+                        <p className="text-[#95714F]/60">Every angle of the craftsmanship.</p>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        {allImages.map((img, index) => (
+                            <motion.div 
+                                key={index}
+                                whileHover={{ y: -10 }}
+                                className="aspect-[3/4] bg-[#EADED0] rounded-sm overflow-hidden cursor-zoom-in"
+                            >
+                                <img src={img} alt={`Showcase ${index}`} className="w-full h-full object-cover" />
+                            </motion.div>
+                        ))}
+                    </div>
+                </section>
             </div>
         </div>
     );

@@ -18,9 +18,11 @@ Premium organic pet apparel and accessories.
 
 ## Recent Updates
 
-- **Heic Image Integration**: Successfully converted and integrated professional HeroShots into the homepage and product sections.
-- **Hero Gallery**: Added a stunning new gallery section to showcase the "Tutu & Co Experience".
-- **Visual Enhancements**: Improved banner contrast and text readability for the hero section.
+- **Product Detail Pages**: Implemented dedicated pages for each pet accessory with high-resolution imagery and detailed descriptions.
+- **Dynamic Gallery**: Added a shuffling, uneven masonry grid at the bottom of the home page to showcase the Tutu & Co lifestyle dynamically.
+- **AI-Enhanced Assets**: Generated a new "Nano Banana" product shot to expand the collection.
+- **Improved Navigation**: Seamless routing between collection overview and deep-dive product views.
+- **Visual Polish**: Premium transitions, hover effects, and responsive layout optimizations.
 
 ## Development
 
