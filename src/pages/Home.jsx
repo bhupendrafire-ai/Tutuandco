@@ -1,6 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star, ExternalLink } from 'lucide-react';
+
+// Import HeroShots images
+import hero1 from '../assets/heroshots/IMG_6135.jpg';
+import hero2 from '../assets/heroshots/IMG_6137.jpg';
+import hero3 from '../assets/heroshots/IMG_6144.jpg';
+
+import prod1 from '../assets/heroshots/IMG_6154.jpg';
+import prod2 from '../assets/heroshots/IMG_6169.jpg';
+import prod3 from '../assets/heroshots/IMG_6176.jpg';
+import prod4 from '../assets/heroshots/IMG_6186.jpg';
+
+import gall1 from '../assets/heroshots/IMG_6190.jpg';
+import gall2 from '../assets/heroshots/IMG_6197.jpg';
+import gall3 from '../assets/heroshots/IMG_6201.jpg';
+import gall4 from '../assets/heroshots/IMG_6203.jpg';
+import gall5 from '../assets/heroshots/IMG_6214.jpg';
+import gall6 from '../assets/heroshots/IMG_6219.jpg';
 
 const banners = [
     {
@@ -8,7 +25,7 @@ const banners = [
         title: "Organic & Premium Comfort",
         subtitle: "Eco-friendly apparel for your best friends.",
         cta: "Shop the Collection",
-        image: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?q=80&w=2071&auto=format&fit=crop", // Golden Retriever in sweater
+        image: hero1,
         color: "bg-[#8C916C]"
     },
     {
@@ -16,7 +33,7 @@ const banners = [
         title: "MVP: The Signature Harness",
         subtitle: "Durable, stylish, and pet-approved.",
         cta: "View MVP Items",
-        image: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=1964&auto=format&fit=crop", // Dog in stylish harness
+        image: hero2,
         color: "bg-[#95714F]"
     },
     {
@@ -24,17 +41,19 @@ const banners = [
         title: "New Arrivals: Sage Collection",
         subtitle: "Minimalist designs in our favorite hues.",
         cta: "Expose Style",
-        image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=2043&auto=format&fit=crop", // Cat in cozy setting
+        image: hero3,
         color: "bg-[#ACB087]"
     }
 ];
 
 const products = [
-    { id: 1, name: "Organic Cotton Tee", price: "$32.00", rating: 5, image: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=2069&auto=format&fit=crop" },
-    { id: 2, name: "Linen Pet Bandana", price: "$18.00", rating: 4, image: "https://images.unsplash.com/photo-1591768793355-74d7af236c17?q=80&w=2070&auto=format&fit=crop" },
-    { id: 3, name: "Luxury Pet Bed", price: "$120.00", rating: 5, image: "https://images.unsplash.com/photo-1541599540903-216a46ca1dfc?q=80&w=2070&auto=format&fit=crop" },
-    { id: 4, name: "Handcrafted Leash", price: "$45.00", rating: 5, image: "https://images.unsplash.com/photo-1601758124277-f00d6d03d16c?q=80&w=2070&auto=format&fit=crop" },
+    { id: 1, name: "Premium Utility Harness", price: "$48.00", rating: 5, image: prod1 },
+    { id: 2, name: "Classic Cotton Tee", price: "$32.00", rating: 4, image: prod2 },
+    { id: 3, name: "Adventure Lead", price: "$35.00", rating: 5, image: prod3 },
+    { id: 4, name: "Comfort Knit Sweater", price: "$52.00", rating: 5, image: prod4 },
 ];
+
+const gallery = [gall1, gall2, gall3, gall4, gall5, gall6];
 
 const Home = () => {
     const [currentBanner, setCurrentBanner] = useState(0);
@@ -64,13 +83,13 @@ const Home = () => {
                             alt={banners[currentBanner].title}
                             className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center text-center p-6">
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-center p-6">
                             <div className="max-w-2xl text-white">
                                 <motion.h1
                                     initial={{ y: 20, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
                                     transition={{ delay: 0.2 }}
-                                    className="text-5xl md:text-7xl font-serif mb-6"
+                                    className="text-5xl md:text-7xl font-serif mb-6 drop-shadow-lg"
                                 >
                                     {banners[currentBanner].title}
                                 </motion.h1>
@@ -78,7 +97,7 @@ const Home = () => {
                                     initial={{ y: 20, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
                                     transition={{ delay: 0.4 }}
-                                    className="text-lg md:text-xl mb-8 font-light"
+                                    className="text-lg md:text-xl mb-8 font-light drop-shadow-md"
                                 >
                                     {banners[currentBanner].subtitle}
                                 </motion.p>
@@ -86,7 +105,7 @@ const Home = () => {
                                     initial={{ y: 20, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
                                     transition={{ delay: 0.6 }}
-                                    className="bg-white text-black px-10 py-4 rounded-sm tracking-widest text-sm uppercase font-medium hover:bg-[#EADED0] transition-colors"
+                                    className="bg-white text-black px-10 py-4 rounded-sm tracking-widest text-sm uppercase font-medium hover:bg-[#EADED0] transition-colors shadow-xl"
                                 >
                                     {banners[currentBanner].cta}
                                 </motion.button>
@@ -158,6 +177,30 @@ const Home = () => {
                     <p className="text-[#95714F] leading-relaxed text-lg italic">
                         "At Tutu & Co, we believe our pet companions deserve the same quality of organic materials and thoughtful design as we do."
                     </p>
+                </div>
+            </section>
+
+            {/* Hero Gallery Section */}
+            <section className="max-w-7xl mx-auto px-6 mt-32">
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl font-serif text-black mb-4">The Tutu & Co Experience</h2>
+                    <p className="text-[#95714F]/60 max-w-xl mx-auto">A glimpse into the life of our pet-loving community. Follow us @TutuAndCo</p>
+                </div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {gallery.map((img, index) => (
+                        <motion.div 
+                            key={index}
+                            whileHover={{ opacity: 0.9, scale: 0.98 }}
+                            className="aspect-square bg-gray-100 overflow-hidden relative cursor-pointer"
+                        >
+                            <img 
+                                src={img} 
+                                alt={`Gallery ${index + 1}`} 
+                                className="w-full h-full object-cover transition-transform duration-500 hover:scale-110" 
+                            />
+                        </motion.div>
+                    ))}
                 </div>
             </section>
         </div>
