@@ -5,25 +5,24 @@
 /* Tutu & Co - Design System */
 
 :root {
-    /* Brand Colors - Mood Board */
-    --color-earth: #95714F;
-    --color-moss: #8C916C;
-    --color-sand: #C7AF94;
-    --color-almond: #EADED0;
-    --color-sage: #ACB087;
+    /* Brand Colors - Earthy Refresh */
+    --color-almond: #F4F1EA;
+    --color-terracotta: #CD664D;
+    --color-moss: #9FA993;
+    --color-ebony: #3E362E;
+    --color-sand: #DED6C4;
 
     /* Neutral Palette */
     --color-white: #FFFFFF;
-    --color-black: #1A1A1A;
-    --color-gray-soft: #F5F5F3;
+    --color-gray-soft: #FAF9F6;
 
     /* Functional Colors */
     --bg-primary: var(--color-almond);
     --bg-secondary: var(--color-sand);
-    --text-primary: var(--color-earth);
-    --text-secondary: var(--color-moss);
-    --accent-primary: var(--color-moss);
-    --accent-secondary: var(--color-sage);
+    --text-primary: var(--color-ebony);
+    --text-secondary: var(--color-terracotta);
+    --accent-primary: var(--color-terracotta);
+    --accent-secondary: var(--color-moss);
 
     /* Typography */
     --font-main: 'Inter', system-ui, -apple-system, sans-serif;

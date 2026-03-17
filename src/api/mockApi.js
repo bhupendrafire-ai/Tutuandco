@@ -10,8 +10,37 @@ const STORAGE_KEYS = {
     BLOGS: 'tutu_blogs',
     COUPONS: 'tutu_coupons',
     TESTIMONIALS: 'tutu_testimonials',
-    MOMENTS: 'tutu_moments'
+    MOMENTS: 'tutu_moments',
+    BANNERS: 'tutu_banners',
+    MEDIA: 'tutu_media'
 };
+
+const getInitialBanners = () => [
+    {
+        id: 1,
+        title: "Organic & Premium Comfort",
+        subtitle: "Eco-friendly apparel for your best friends.",
+        cta: "Shop the Collection",
+        image: 'IMG_6135',
+        color: "bg-[#8C916C]"
+    },
+    {
+        id: 2,
+        title: "MVP: The Signature Harness",
+        subtitle: "Durable, stylish, and pet-approved.",
+        cta: "View MVP Items",
+        image: 'IMG_6137',
+        color: "bg-[#95714F]"
+    },
+    {
+        id: 3,
+        title: "New Arrivals: Sage Collection",
+        subtitle: "Minimalist designs in our favorite hues.",
+        cta: "Expose Style",
+        image: 'IMG_6144',
+        color: "bg-[#ACB087]"
+    }
+];
 
 const delay = (ms = 500) => new Promise(res => setTimeout(res, ms));
 
@@ -117,6 +146,45 @@ const mockApi = {
             return products[index];
         }
         throw new Error('Product not found');
+    },
+    addProduct: async (product) => {
+        await delay();
+        const products = await mockApi.getProducts();
+        const newProduct = { ...product, id: product.id || `P-${Date.now()}` };
+        products.push(newProduct);
+        mockApi._set(STORAGE_KEYS.PRODUCTS, products);
+        return newProduct;
+    },
+    deleteProduct: async (id) => {
+        await delay();
+        const products = await mockApi.getProducts();
+        const filtered = products.filter(p => p.id !== id);
+        mockApi._set(STORAGE_KEYS.PRODUCTS, filtered);
+        return true;
+    },
+
+    // Banners
+    getBanners: async () => {
+        await delay();
+        return mockApi._get(STORAGE_KEYS.BANNERS, getInitialBanners());
+    },
+    updateBanners: async (banners) => {
+        await delay();
+        return mockApi._set(STORAGE_KEYS.BANNERS, banners);
+    },
+
+    // Media Library
+    getMedia: async () => {
+        await delay();
+        return mockApi._get(STORAGE_KEYS.MEDIA, []);
+    },
+    uploadMedia: async (base64, name) => {
+        await delay();
+        const media = await mockApi.getMedia();
+        const newMedia = { id: Date.now(), name, url: base64 };
+        media.push(newMedia);
+        mockApi._set(STORAGE_KEYS.MEDIA, media);
+        return newMedia;
     },
 
     // Orders & Trends

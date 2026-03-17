@@ -13,16 +13,30 @@ export const useShop = () => {
 // Image Mapper - Resolves imageName from API to actual asset
 const imageModules = import.meta.glob('../assets/heroshots/*.{jpg,png,jpeg}', { eager: true });
 // Helper to find image by part of name
-export const getProductImage = (namePart) => {
+export const getProductImage = (namePart, customMedia = []) => {
     if (!namePart) return '';
+    
+    // Check custom media first (uploaded via CMS)
+    const uploaded = customMedia.find(m => m.name === namePart || m.url === namePart);
+    if (uploaded) return uploaded.url;
+
+    // Build resolution pool
     const images = Object.values(imageModules)
         .map(m => m.default)
         .filter(img => typeof img === 'string');
-    return images.find(img => img.includes(namePart)) || images[0];
+
+    const found = images.find(img => img.includes(namePart));
+    if (found) return found;
+
+    // Last resort fallback: Provide a stable fallback based on the name hash to avoid duplicates
+    const index = Math.abs(namePart.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a; }, 0)) % images.length;
+    return images[index] || images[0];
 };
 
 export const ShopProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
+    const [banners, setBanners] = useState([]);
+    const [media, setMedia] = useState([]);
     const [cart, setCart] = useState([]);
     const [loading, setLoading] = useState(true);
     const [coupon, setCoupon] = useState(null);
@@ -47,18 +61,46 @@ export const ShopProvider = ({ children }) => {
 
     const loadData = async () => {
         try {
-            const data = await mockApi.getProducts();
-            if (Array.isArray(data)) {
-                setProducts(data);
-            } else {
-                setProducts([]);
-            }
+            const [p, b, m] = await Promise.all([
+                mockApi.getProducts(),
+                mockApi.getBanners(),
+                mockApi.getMedia()
+            ]);
+            setProducts(p || []);
+            setBanners(b || []);
+            setMedia(m || []);
         } catch (error) {
-            console.error("Failed to load products", error);
-            setProducts([]);
+            console.error("Failed to load shop data", error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const addProduct = async (product) => {
+        const newProduct = await mockApi.addProduct(product);
+        await loadData();
+        return newProduct;
+    };
+
+    const deleteProduct = async (id) => {
+        await mockApi.deleteProduct(id);
+        await loadData();
+    };
+
+    const updateProduct = async (id, updates) => {
+        await mockApi.updateProduct(id, updates);
+        await loadData();
+    };
+
+    const updateBanners = async (newBanners) => {
+        await mockApi.updateBanners(newBanners);
+        await loadData();
+    };
+
+    const uploadMedia = async (base64, name) => {
+        const newMedia = await mockApi.uploadMedia(base64, name);
+        await loadData();
+        return newMedia;
     };
 
     const addToCart = (product, quantity = 1) => {
@@ -125,8 +167,10 @@ export const ShopProvider = ({ children }) => {
 
     const value = {
         products,
-        cart,
+        banners,
+        media,
         loading,
+        cart,
         addToCart,
         removeFromCart,
         updateCartQuantity,
@@ -134,7 +178,12 @@ export const ShopProvider = ({ children }) => {
         applyCoupon,
         coupon,
         checkout,
-        refreshProducts: loadData
+        addProduct,
+        deleteProduct,
+        updateProduct,
+        updateBanners,
+        uploadMedia,
+        refreshData: loadData
     };
 
     return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;

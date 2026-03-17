@@ -5,57 +5,49 @@ import { Link } from 'react-router-dom';
 import { useShop, getProductImage } from '../context/ShopContext';
 
 const Home = () => {
-    const { products, loading } = useShop();
+    const { products, banners, media, loading } = useShop();
     const [currentBanner, setCurrentBanner] = useState(0);
     const [galleryImages, setGalleryImages] = useState([]);
 
-    // Stable banners using centralized image resolver
-    const banners = useMemo(() => [
-        {
-            id: 1,
-            title: "Organic & Premium Comfort",
-            subtitle: "Eco-friendly apparel for your best friends.",
-            cta: "Shop the Collection",
-            image: getProductImage('IMG_6135'),
-            color: "bg-[#8C916C]"
-        },
-        {
-            id: 2,
-            title: "MVP: The Signature Harness",
-            subtitle: "Durable, stylish, and pet-approved.",
-            cta: "View MVP Items",
-            image: getProductImage('IMG_6137'),
-            color: "bg-[#95714F]"
-        },
-        {
-            id: 3,
-            title: "New Arrivals: Sage Collection",
-            subtitle: "Minimalist designs in our favorite hues.",
-            cta: "Expose Style",
-            image: getProductImage('IMG_6144'),
-            color: "bg-[#ACB087]"
-        }
-    ], []);
-
-    // Shuffling Logic for Gallery - Uses standard image pool
+    // Shuffling Logic for Gallery - Strictly 10 unique images
     useEffect(() => {
         const shuffleGallery = () => {
-            const pool = ['IMG_6135', 'IMG_6137', 'IMG_6144', 'IMG_6154', 'IMG_0284', 'IMG_2484', 'IMG_8700'];
-            const shuffled = [...pool].sort(() => 0.5 - Math.random());
-            setGalleryImages(shuffled.slice(0, 7).map(img => getProductImage(img)));
+            if (!products.length) return;
+
+            const productPool = products.map(p => p.imageName);
+            const mediaPool = media.map(m => m.name);
+            const staticPool = ['IMG_6135', 'IMG_6137', 'IMG_6144', 'IMG_6154', 'IMG_6169', 'IMG_6176', 'IMG_6186', 'IMG_6190', 'IMG_6197', 'IMG_6214'];
+            
+            const combinedPool = Array.from(new Set([...productPool, ...mediaPool, ...staticPool])).filter(Boolean);
+            const shuffled = combinedPool.sort(() => 0.5 - Math.random());
+            const resolvedUrls = shuffled.map(name => getProductImage(name, media));
+            
+            // Deduplicate resolved URLs (handles same fallback for multiple names)
+            const uniqueUrls = Array.from(new Set(resolvedUrls));
+            let finalSelection = uniqueUrls.slice(0, 10);
+            
+            // Backfill if needed
+            if (finalSelection.length < 10) {
+                const backfill = staticPool
+                    .map(name => getProductImage(name, media))
+                    .filter(url => !finalSelection.includes(url));
+                finalSelection = [...finalSelection, ...backfill].slice(0, 10);
+            }
+
+            setGalleryImages(finalSelection);
         };
         
         shuffleGallery();
-        const interval = setInterval(shuffleGallery, 8000); 
+        const interval = setInterval(shuffleGallery, 15000); 
         return () => clearInterval(interval);
-    }, []);
+    }, [products, media]);
 
     useEffect(() => {
         const timer = setInterval(() => {
             if (banners.length) {
                 setCurrentBanner((prev) => (prev + 1) % banners.length);
             }
-        }, 6000);
+        }, 8000);
         return () => clearInterval(timer);
     }, [banners]);
 
@@ -76,7 +68,7 @@ const Home = () => {
                             className="absolute inset-0"
                         >
                             <img
-                                src={banners[currentBanner].image}
+                                src={getProductImage(banners[currentBanner].image, media)}
                                 alt={banners[currentBanner].title}
                                 className="w-full h-full object-cover scale-105"
                             />
@@ -188,7 +180,7 @@ const Home = () => {
                     <h2 className="text-5xl md:text-6xl font-serif text-black">The Tutu & Co Lifestyle</h2>
                 </div>
                 
-                <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[250px] gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-5 auto-rows-[250px] gap-6">
                     <AnimatePresence mode="popLayout">
                         {galleryImages.map((img, index) => (
                             <motion.div 
@@ -204,10 +196,11 @@ const Home = () => {
                                     opacity: { duration: 0.5 }
                                 }}
                                 className={`
-                                    relative bg-[#F8F4F0] overflow-hidden rounded-sm cursor-pointer group shadow-md
+                                    relative bg-[#F4F1EA] overflow-hidden rounded-sm cursor-pointer group shadow-md
                                     ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''}
-                                    ${index === 3 ? 'md:row-span-2' : ''}
+                                    ${index === 4 ? 'md:row-span-2' : ''}
                                     ${index === 5 ? 'md:col-span-2' : ''}
+                                    ${index === 9 ? 'md:col-span-2' : ''}
                                 `}
                             >
                                 <img 
