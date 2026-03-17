@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ArrowLeft, ShoppingBag, Heart, Shield, Truck, RefreshCcw } from 'lucide-react';
+import { useShop, getProductImage } from '../context/ShopContext';
+import mockApi from '../api/mockApi';
 
 // Import all images from the folder
 const imageModules = import.meta.glob('../assets/heroshots/*.{jpg,png,jpeg}', { eager: true });
-const allImages = Object.values(imageModules).map(m => m.default);
+const allImages = Object.values(imageModules).map(m => m.default).filter(img => typeof img === 'string');
 
 const productsData = {
     "orange": {

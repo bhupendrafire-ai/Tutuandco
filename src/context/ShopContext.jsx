@@ -12,17 +12,12 @@ export const useShop = () => {
 
 // Image Mapper - Resolves imageName from API to actual asset
 const imageModules = import.meta.glob('../assets/heroshots/*.{jpg,png,jpeg}', { eager: true });
-const allImages = Object.values(imageModules).reduce((acc, img) => {
-    const name = img.default.split('/').pop().split('.')[0].split('-')[0]; // Simple heuristic to get filename
-    // More robust way: find match in path
-    const path = img.default;
-    acc[path] = img.default;
-    return acc;
-}, {});
-
 // Helper to find image by part of name
 export const getProductImage = (namePart) => {
-    const images = Object.values(imageModules).map(m => m.default);
+    if (!namePart) return '';
+    const images = Object.values(imageModules)
+        .map(m => m.default)
+        .filter(img => typeof img === 'string');
     return images.find(img => img.includes(namePart)) || images[0];
 };
 
@@ -34,8 +29,16 @@ export const ShopProvider = ({ children }) => {
 
     useEffect(() => {
         loadData();
-        const savedCart = localStorage.getItem('tutu_cart');
-        if (savedCart) setCart(JSON.parse(savedCart));
+        try {
+            const savedCart = localStorage.getItem('tutu_cart');
+            if (savedCart) {
+                const parsed = JSON.parse(savedCart);
+                if (Array.isArray(parsed)) setCart(parsed);
+            }
+        } catch (e) {
+            console.error("Cart recovery failed", e);
+            setCart([]);
+        }
     }, []);
 
     useEffect(() => {
@@ -45,9 +48,14 @@ export const ShopProvider = ({ children }) => {
     const loadData = async () => {
         try {
             const data = await mockApi.getProducts();
-            setProducts(data);
+            if (Array.isArray(data)) {
+                setProducts(data);
+            } else {
+                setProducts([]);
+            }
         } catch (error) {
             console.error("Failed to load products", error);
+            setProducts([]);
         } finally {
             setLoading(false);
         }

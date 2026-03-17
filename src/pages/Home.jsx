@@ -2,53 +2,47 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-// Import all images from the folder
-const imageModules = import.meta.glob('../assets/heroshots/*.{jpg,png,jpeg}', { eager: true });
-const allImages = Object.values(imageModules).map(m => m.default);
-
-// Hero images
-const hero1 = allImages.find(img => img.includes('IMG_6135'));
-const hero2 = allImages.find(img => img.includes('IMG_6137'));
-const hero3 = allImages.find(img => img.includes('IMG_6144'));
-
-const banners = [
-    {
-        id: 1,
-        title: "Organic & Premium Comfort",
-        subtitle: "Eco-friendly apparel for your best friends.",
-        cta: "Shop the Collection",
-        image: hero1,
-        color: "bg-[#8C916C]"
-    },
-    {
-        id: 2,
-        title: "MVP: The Signature Harness",
-        subtitle: "Durable, stylish, and pet-approved.",
-        cta: "View MVP Items",
-        image: hero2,
-        color: "bg-[#95714F]"
-    },
-    {
-        id: 3,
-        title: "New Arrivals: Sage Collection",
-        subtitle: "Minimalist designs in our favorite hues.",
-        cta: "Expose Style",
-        image: hero3,
-        color: "bg-[#ACB087]"
-    }
-];
+import { useShop, getProductImage } from '../context/ShopContext';
 
 const Home = () => {
     const { products, loading } = useShop();
     const [currentBanner, setCurrentBanner] = useState(0);
     const [galleryImages, setGalleryImages] = useState([]);
 
-    // Shuffling Logic for Gallery
+    // Stable banners using centralized image resolver
+    const banners = useMemo(() => [
+        {
+            id: 1,
+            title: "Organic & Premium Comfort",
+            subtitle: "Eco-friendly apparel for your best friends.",
+            cta: "Shop the Collection",
+            image: getProductImage('IMG_6135'),
+            color: "bg-[#8C916C]"
+        },
+        {
+            id: 2,
+            title: "MVP: The Signature Harness",
+            subtitle: "Durable, stylish, and pet-approved.",
+            cta: "View MVP Items",
+            image: getProductImage('IMG_6137'),
+            color: "bg-[#95714F]"
+        },
+        {
+            id: 3,
+            title: "New Arrivals: Sage Collection",
+            subtitle: "Minimalist designs in our favorite hues.",
+            cta: "Expose Style",
+            image: getProductImage('IMG_6144'),
+            color: "bg-[#ACB087]"
+        }
+    ], []);
+
+    // Shuffling Logic for Gallery - Uses standard image pool
     useEffect(() => {
         const shuffleGallery = () => {
-            const shuffled = [...allImages].sort(() => 0.5 - Math.random());
-            setGalleryImages(shuffled.slice(0, 7));
+            const pool = ['IMG_6135', 'IMG_6137', 'IMG_6144', 'IMG_6154', 'IMG_0284', 'IMG_2484', 'IMG_8700'];
+            const shuffled = [...pool].sort(() => 0.5 - Math.random());
+            setGalleryImages(shuffled.slice(0, 7).map(img => getProductImage(img)));
         };
         
         shuffleGallery();
@@ -58,10 +52,12 @@ const Home = () => {
 
     useEffect(() => {
         const timer = setInterval(() => {
-            setCurrentBanner((prev) => (prev + 1) % banners.length);
+            if (banners.length) {
+                setCurrentBanner((prev) => (prev + 1) % banners.length);
+            }
         }, 6000);
         return () => clearInterval(timer);
-    }, []);
+    }, [banners]);
 
     if (loading) return <div className="min-h-screen flex items-center justify-center font-serif">Loading Tutu & Co...</div>;
 
@@ -70,54 +66,56 @@ const Home = () => {
             {/* Revolving Banner */}
             <section className="relative h-[85vh] overflow-hidden">
                 <AnimatePresence mode="wait">
-                    <motion.div
-                        key={currentBanner}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 1.2 }}
-                        className="absolute inset-0"
-                    >
-                        <img
-                            src={banners[currentBanner].image}
-                            alt={banners[currentBanner].title}
-                            className="w-full h-full object-cover scale-105"
-                        />
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-center p-6">
-                            <div className="max-w-3xl text-white">
-                                <motion.span 
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="uppercase tracking-[0.4em] text-[10px] font-bold mb-4 block"
-                                >
-                                    Tutu & Co Essentials
-                                </motion.span>
-                                <motion.h1
-                                    initial={{ y: 30, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    transition={{ delay: 0.2 }}
-                                    className="text-6xl md:text-8xl font-serif mb-8 drop-shadow-2xl leading-tight"
-                                >
-                                    {banners[currentBanner].title}
-                                </motion.h1>
-                                <motion.p
-                                    initial={{ y: 20, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    transition={{ delay: 0.4 }}
-                                    className="text-xl md:text-2xl mb-12 font-light drop-shadow-lg max-w-xl mx-auto opacity-90"
-                                >
-                                    {banners[currentBanner].subtitle}
-                                </motion.p>
-                                <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="bg-white text-black px-12 py-5 rounded-sm tracking-[0.2em] text-xs uppercase font-bold hover:bg-[#EADED0] transition-all shadow-2xl"
-                                >
-                                    {banners[currentBanner].cta}
-                                </motion.button>
+                    {banners[currentBanner] && (
+                        <motion.div
+                            key={currentBanner}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 1.2 }}
+                            className="absolute inset-0"
+                        >
+                            <img
+                                src={banners[currentBanner].image}
+                                alt={banners[currentBanner].title}
+                                className="w-full h-full object-cover scale-105"
+                            />
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-center p-6">
+                                <div className="max-w-3xl text-white">
+                                    <motion.span 
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="uppercase tracking-[0.4em] text-[10px] font-bold mb-4 block"
+                                    >
+                                        Tutu & Co Essentials
+                                    </motion.span>
+                                    <motion.h1
+                                        initial={{ y: 30, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        transition={{ delay: 0.2 }}
+                                        className="text-6xl md:text-8xl font-serif mb-8 drop-shadow-2xl leading-tight"
+                                    >
+                                        {banners[currentBanner].title}
+                                    </motion.h1>
+                                    <motion.p
+                                        initial={{ y: 20, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        transition={{ delay: 0.4 }}
+                                        className="text-xl md:text-2xl mb-12 font-light drop-shadow-lg max-w-xl mx-auto opacity-90"
+                                    >
+                                        {banners[currentBanner].subtitle}
+                                    </motion.p>
+                                    <motion.button
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        className="bg-white text-black px-12 py-5 rounded-sm tracking-[0.2em] text-xs uppercase font-bold hover:bg-[#EADED0] transition-all shadow-2xl"
+                                    >
+                                        {banners[currentBanner].cta}
+                                    </motion.button>
+                                </div>
                             </div>
-                        </div>
-                    </motion.div>
+                        </motion.div>
+                    )}
                 </AnimatePresence>
 
                 {/* Banner Navigation Dots */}
@@ -146,7 +144,7 @@ const Home = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
-                    {products.map((product) => (
+                    {products?.map((product) => (
                         <Link 
                             to={`/product/${product.id}`}
                             key={product.id}
