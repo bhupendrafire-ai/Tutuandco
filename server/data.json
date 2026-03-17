@@ -1,0 +1,57 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "The Blue Bandana",
+      "category": "Apparel",
+      "price": 12,
+      "rating": 5,
+      "imageName": "IMG_6135",
+      "description": "Premium organic cotton bandana in a deep sky blue."
+    },
+    {
+      "id": 2,
+      "name": "Terracotta Harness",
+      "category": "Safety",
+      "price": 45,
+      "rating": 5,
+      "imageName": "IMG_6137",
+      "description": "Durable and stylish harness for daily adventures."
+    },
+    {
+      "id": 3,
+      "name": "Sage Walking Set",
+      "category": "Safety",
+      "price": 89,
+      "rating": 5,
+      "imageName": "IMG_6144",
+      "description": "Complete set with leash and harness in our signature sage."
+    }
+  ],
+  "banners": [
+    {
+      "id": 1,
+      "title": "Organic & Premium Comfort",
+      "subtitle": "Eco-friendly apparel for your best friends.",
+      "cta": "Shop the Collection",
+      "image": "IMG_6135"
+    },
+    {
+      "id": 2,
+      "title": "MVP: The Signature Harness",
+      "subtitle": "Durable, stylish, and pet-approved.",
+      "cta": "View MVP Items",
+      "image": "IMG_6137"
+    },
+    {
+      "id": 3,
+      "title": "New Arrivals: Sage Collection",
+      "subtitle": "Minimalist designs in our favorite hues.",
+      "cta": "Expose Style",
+      "image": "IMG_6144"
+    }
+  ],
+  "media": [],
+  "orders": [],
+  "reviews": []
+}

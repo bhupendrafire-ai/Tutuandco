@@ -1,14 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import mockApi from '../api/mockApi';
-
-const ShopContext = createContext();
-
-export const useShop = () => {
-    const context = useContext(ShopContext);
-    if (!context) throw new Error('useShop must be used within a ShopProvider');
-    return context;
-};
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 // Image Mapper - Resolves imageName from API to actual asset
 const imageModules = import.meta.glob('../assets/heroshots/*.{jpg,png,jpeg}', { eager: true });
@@ -16,11 +8,14 @@ const imageModules = import.meta.glob('../assets/heroshots/*.{jpg,png,jpeg}', { 
 export const getProductImage = (namePart, customMedia = []) => {
     if (!namePart) return '';
     
+    // Check if it's already a full URL (Vercel Blob)
+    if (namePart.startsWith('http')) return namePart;
+
     // Check custom media first (uploaded via CMS)
     const uploaded = customMedia.find(m => m.name === namePart || m.url === namePart);
     if (uploaded) return uploaded.url;
 
-    // Build resolution pool
+    // Build resolution pool from local assets
     const images = Object.values(imageModules)
         .map(m => m.default)
         .filter(img => typeof img === 'string');
@@ -28,7 +23,7 @@ export const getProductImage = (namePart, customMedia = []) => {
     const found = images.find(img => img.includes(namePart));
     if (found) return found;
 
-    // Last resort fallback: Provide a stable fallback based on the name hash to avoid duplicates
+    // Last resort fallback: Stable fallback based on name hash
     const index = Math.abs(namePart.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a; }, 0)) % images.length;
     return images[index] || images[0];
 };
@@ -61,44 +56,67 @@ export const ShopProvider = ({ children }) => {
 
     const loadData = async () => {
         try {
-            const [p, b, m] = await Promise.all([
-                mockApi.getProducts(),
-                mockApi.getBanners(),
-                mockApi.getMedia()
+            const [productRes, bannerRes, mediaRes] = await Promise.all([
+                fetch(`${API_URL}/api/products`),
+                fetch(`${API_URL}/api/banners`),
+                fetch(`${API_URL}/api/media`)
             ]);
+            
+            const p = await productRes.json();
+            const b = await bannerRes.json();
+            const m = await mediaRes.json();
+
             setProducts(p || []);
             setBanners(b || []);
             setMedia(m || []);
         } catch (error) {
-            console.error("Failed to load shop data", error);
+            console.error("Failed to load shop data from server", error);
         } finally {
             setLoading(false);
         }
     };
 
     const addProduct = async (product) => {
-        const newProduct = await mockApi.addProduct(product);
+        const res = await fetch(`${API_URL}/api/products`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(product)
+        });
+        const newProduct = await res.json();
         await loadData();
         return newProduct;
     };
 
     const deleteProduct = async (id) => {
-        await mockApi.deleteProduct(id);
+        await fetch(`${API_URL}/api/products/${id}`, { method: 'DELETE' });
         await loadData();
     };
 
     const updateProduct = async (id, updates) => {
-        await mockApi.updateProduct(id, updates);
+        await fetch(`${API_URL}/api/products/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updates)
+        });
         await loadData();
     };
 
     const updateBanners = async (newBanners) => {
-        await mockApi.updateBanners(newBanners);
+        await fetch(`${API_URL}/api/banners`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newBanners)
+        });
         await loadData();
     };
 
-    const uploadMedia = async (base64, name) => {
-        const newMedia = await mockApi.uploadMedia(base64, name);
+    const uploadMedia = async (url, name) => {
+        const res = await fetch(`${API_URL}/api/media`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url, name })
+        });
+        const newMedia = await res.json();
         await loadData();
         return newMedia;
     };
@@ -137,7 +155,8 @@ export const ShopProvider = ({ children }) => {
     };
 
     const applyCoupon = async (code) => {
-        const coupons = await mockApi.getCoupons();
+        // Simplified coupon logic for phase 2 - still client side but matching structure
+        const coupons = [{ code: 'TUTU10', discount: 0.1, minSpend: 500 }];
         const found = coupons.find(c => c.code.toUpperCase() === code.toUpperCase());
         const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         
@@ -159,7 +178,12 @@ export const ShopProvider = ({ children }) => {
             total,
             couponCode: coupon?.code
         };
-        const result = await mockApi.placeOrder(order);
+        const res = await fetch(`${API_URL}/api/orders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(order)
+        });
+        const result = await res.json();
         clearCart();
         setCoupon(null);
         return result;

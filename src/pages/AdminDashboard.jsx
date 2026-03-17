@@ -9,8 +9,10 @@ import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, 
     ResponsiveContainer, AreaChart, Area, BarChart, Bar 
 } from 'recharts';
-import mockApi from '../api/mockApi';
+import { upload } from '@vercel/blob/client';
 import { useShop, getProductImage } from '../context/ShopContext';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 const AdminDashboard = () => {
     const { 
@@ -40,13 +42,14 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         const loadOrders = async () => {
-            const o = await mockApi.getOrders();
-            setOrders(o);
-            const total = o.reduce((sum, order) => sum + order.total, 0);
+            const res = await fetch(`${API_URL}/api/orders`);
+            const o = await res.json();
+            setOrders(o || []);
+            const total = (o || []).reduce((sum, order) => sum + order.total, 0);
             setStats(prev => ({
                 ...prev,
                 totalSales: total,
-                totalOrders: o.length,
+                totalOrders: (o || []).length,
                 totalCustomers: 142
             }));
             setLoading(false);
@@ -60,12 +63,17 @@ const AdminDashboard = () => {
         const file = e.target.files[0];
         if (!file) return;
         
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-            await uploadMedia(reader.result, file.name);
-            alert("Image uploaded to Media Library!");
-        };
-        reader.readAsDataURL(file);
+        try {
+            const newBlob = await upload(file.name, file, {
+                access: 'public',
+                handleUploadUrl: `${API_URL}/api/upload`,
+            });
+            await uploadMedia(newBlob.url, file.name);
+            alert("Identity uploaded to Vercel Cloud!");
+        } catch (error) {
+            console.error("Upload failed", error);
+            alert("Upload failed. Ensure VITE_BLOB_READ_WRITE_TOKEN is set.");
+        }
     };
 
     const SidebarItem = ({ id, icon: Icon, label }) => (
