@@ -39,42 +39,8 @@ const banners = [
     }
 ];
 
-const products = [
-    { 
-        id: "blue", 
-        name: "Azure Adventure Bandana", 
-        price: "$35.00", 
-        rating: 5, 
-        image: allImages.find(img => img.includes('IMG_6214')) || allImages.find(img => img.includes('IMG_6219')),
-        category: "The Blue Collection"
-    },
-    { 
-        id: "pink", 
-        name: "Blossom Heart Bandana", 
-        price: "$32.00", 
-        rating: 5, 
-        image: allImages.find(img => img.includes('IMG_6169')) || allImages.find(img => img.includes('IMG_6176')),
-        category: "The Pink Collection"
-    },
-    { 
-        id: "orange", 
-        name: "Sunset Sage Bandana", 
-        price: "$28.00", 
-        rating: 5, 
-        image: allImages.find(img => img.includes('IMG_6154')),
-        category: "The Orange Collection"
-    },
-    { 
-        id: "nano-banana", 
-        name: "The Nano Banana", 
-        price: "$30.00", 
-        rating: 5, 
-        image: allImages.find(img => img.includes('nano_banana')),
-        category: "Limited Edition"
-    },
-];
-
 const Home = () => {
+    const { products, loading } = useShop();
     const [currentBanner, setCurrentBanner] = useState(0);
     const [galleryImages, setGalleryImages] = useState([]);
 
@@ -86,7 +52,7 @@ const Home = () => {
         };
         
         shuffleGallery();
-        const interval = setInterval(shuffleGallery, 8000); // Shuffle every 8 seconds
+        const interval = setInterval(shuffleGallery, 8000); 
         return () => clearInterval(interval);
     }, []);
 
@@ -96,6 +62,8 @@ const Home = () => {
         }, 6000);
         return () => clearInterval(timer);
     }, []);
+
+    if (loading) return <div className="min-h-screen flex items-center justify-center font-serif">Loading Tutu & Co...</div>;
 
     return (
         <div className="pb-20 bg-white">
@@ -186,7 +154,7 @@ const Home = () => {
                         >
                             <div className="aspect-[4/5] bg-[#F8F4F0] overflow-hidden rounded-sm relative mb-6 shadow-sm hover:shadow-xl transition-shadow duration-500">
                                 <motion.img
-                                    src={product.image}
+                                    src={getProductImage(product.imageName)}
                                     alt={product.name}
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                                 />
@@ -201,11 +169,11 @@ const Home = () => {
                                 <span className="text-[10px] uppercase tracking-widest text-[#8C916C] font-bold mb-2 block">{product.category}</span>
                                 <div className="flex justify-between items-start">
                                     <h3 className="text-xl font-serif text-black">{product.name}</h3>
-                                    <p className="text-[#95714F] font-bold">{product.price}</p>
+                                    <p className="text-[#95714F] font-bold">${product.price.toFixed(2)}</p>
                                 </div>
                                 <div className="flex items-center mt-3">
-                                    {[...Array(product.rating)].map((_, i) => (
-                                        <Star key={i} size={12} fill="#95714F" className="text-[#95714F] mr-1" />
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star key={i} size={12} fill={i < product.rating ? "#95714F" : "none"} className="text-[#95714F] mr-1" />
                                     ))}
                                     <span className="text-[10px] text-[#95714F]/60 ml-2 font-medium">Top Rated</span>
                                 </div>
@@ -256,6 +224,57 @@ const Home = () => {
                             </motion.div>
                         ))}
                     </AnimatePresence>
+                </div>
+            </section>
+
+            {/* Testimonials */}
+            <section className="py-32 bg-[#EADED0]/30 overflow-hidden">
+                <div className="max-w-7xl mx-auto px-6">
+                    <header className="text-center mb-20">
+                        <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-[#8C916C] mb-6 block">Kind Words</span>
+                        <h2 className="text-4xl md:text-5xl font-serif text-black">The Community Voice</h2>
+                    </header>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                        {[
+                            { name: "Sarah & Oliver", text: "The quality of the bandana is unmatched. Oliver looks so dapper and the fabric is incredibly soft.", rating: 5 },
+                            { name: "Michael & Luna", text: "Finally, a brand that cares about sustainability as much as style. The packaging was beautiful too!", rating: 5 },
+                            { name: "Emma & Cooper", text: "The sizing guide was perfect. Cooper's new harness fits like a glove. Highly recommend!", rating: 5 }
+                        ].map((t, i) => (
+                            <motion.div 
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.1 }}
+                                className="bg-white p-12 rounded-sm shadow-sm border border-[#C7AF94]/10"
+                            >
+                                <div className="flex mb-8 text-[#95714F]">
+                                    {[...Array(t.rating)].map((_, j) => <Star key={j} size={16} fill="currentColor" />)}
+                                </div>
+                                <p className="text-black italic font-serif text-lg leading-relaxed mb-10">"{t.text}"</p>
+                                <div className="flex items-center space-x-4">
+                                    <div className="w-8 h-px bg-[#C7AF94]" />
+                                    <p className="text-[10px] uppercase font-bold tracking-[0.3em] text-[#95714F]">{t.name}</p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Moments Teaser */}
+            <section className="py-32 bg-white">
+                <div className="max-w-7xl mx-auto px-6 text-center">
+                    <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-[#8C916C] mb-6 block">Stay Connected</span>
+                    <h2 className="text-4xl md:text-6xl font-serif text-black mb-10">#TutuAndCo Family</h2>
+                    <p className="text-[#95714F] mb-16 text-xl font-light">Capture the joy. Share your moments with us.</p>
+                    <Link 
+                        to="/moments"
+                        className="inline-flex items-center space-x-4 bg-black text-white px-12 py-6 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-[#95714F] transition-all shadow-xl"
+                    >
+                        <span>Visit the Gallery</span>
+                        <ArrowRight size={16} />
+                    </Link>
                 </div>
             </section>
 

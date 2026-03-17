@@ -5,13 +5,16 @@ import { Lock } from 'lucide-react';
 const AdminLogin = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleLogin = (e) => {
         e.preventDefault();
-        // Simple mock login
-        if (username === 'admin' && password === 'admin') {
+        // Updated mock credentials
+        if (username === 'sneha@tutuandco.in' && password === 'Black@5353') {
             navigate('/admin/dashboard');
+        } else {
+            setError('Invalid credentials. Please try again.');
         }
     };
 
@@ -25,6 +28,16 @@ const AdminLogin = () => {
                     <h1 className="text-3xl font-serif text-black">Tutu & Co Admin</h1>
                     <p className="text-[#95714F]/60 mt-2 text-sm">Please sign in to access the dashboard</p>
                 </div>
+
+                {error && (
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 text-sm rounded-md text-center"
+                    >
+                        {error}
+                    </motion.div>
+                )}
 
                 <form onSubmit={handleLogin} className="space-y-6">
                     <div>

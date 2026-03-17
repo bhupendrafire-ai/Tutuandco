@@ -6,8 +6,10 @@ Premium organic pet apparel and accessories.
 
 - **Organic Comfort**: Ethically sourced materials for your pet's well-being.
 - **Modern Design**: Minimalist and functional aesthetics.
+- **E-commerce Engine**: Integrated cart, coupon system, and multi-step checkout with real-time shipping calculations.
+- **Admin Intelligence**: Comprehensive dashboard with inventory management, order tracking, and sales analytics.
 - **HeroShot Gallery**: High-quality showcase of the Tutu & Co lifestyle.
-- **Responsive UI**: Built with React, Tailwind CSS, and Framer Motion for a premium feel.
+- **Interactive Support**: Built-in help chatbot for sizing, shipping, and returns.
 
 ## Tech Stack
 
@@ -15,14 +17,17 @@ Premium organic pet apparel and accessories.
 - **Tailwind CSS**
 - **Framer Motion**
 - **Lucide Icons**
+- **Recharts** (Data Visualization)
+- **LocalStorage** (Data Persistence)
 
 ## Recent Updates
 
-- **Product Detail Pages**: Implemented dedicated pages for each pet accessory with high-resolution imagery and detailed descriptions.
-- **Dynamic Gallery**: Added a shuffling, uneven masonry grid at the bottom of the home page to showcase the Tutu & Co lifestyle dynamically.
-- **AI-Enhanced Assets**: Generated a new "Nano Banana" product shot to expand the collection.
-- **Improved Navigation**: Seamless routing between collection overview and deep-dive product views.
-- **Visual Polish**: Premium transitions, hover effects, and responsive layout optimizations.
+- **Full E-commerce Integration**: Developed a complete storefront experience including cart state management, discount logic, and checkout workflow.
+- **Admin Dashboard**: Created a secure admin panel (`/admin/login`) for inventory tracking, order fulfillment, and business analytics.
+- **Content Pages**: Implemented full-featured pages for Blogs (The Journal), Artist Collaborations, Sizing Guides, and detailed Policies.
+- **Social Connectivity**: Added a customer reviews system and a user-generated "Moments" gallery to build community trust.
+- **Operations Simulation**: Automated generation of tax invoices and shipping labels during the order process.
+- **Visual & UX Polish**: Premium transitions, hover effects, and a responsive assistant (Chatbot) integrated across all pages.
 
 ## Development
 

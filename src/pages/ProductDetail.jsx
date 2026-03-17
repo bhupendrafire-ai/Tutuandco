@@ -48,13 +48,26 @@ const productsData = {
 
 const ProductDetail = () => {
     const { id } = useParams();
-    const product = productsData[id] || productsData["orange"];
-    const [selectedImage, setSelectedImage] = useState(product.mainImage);
+    const { products, addToCart, loading } = useShop();
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [reviews, setReviews] = useState([]);
+    
+    const product = products.find(p => p.id === id) || products[0];
 
     useEffect(() => {
-        setSelectedImage(product.mainImage);
+        if (product) {
+            setSelectedImage(getProductImage(product.imageName));
+            mockApi.getReviews(product.id).then(setReviews);
+        }
         window.scrollTo(0, 0);
     }, [product]);
+
+    if (loading || !product) return <div className="min-h-screen flex items-center justify-center font-serif">Loading Product...</div>;
+
+    const handleAddToCart = () => {
+        addToCart(product);
+        alert(`${product.name} added to cart!`);
+    };
 
     return (
         <div className="bg-white min-h-screen pt-24 pb-32">
@@ -69,6 +82,7 @@ const ProductDetail = () => {
                     {/* Image Gallery */}
                     <div className="space-y-6">
                         <motion.div 
+                            key={selectedImage}
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             className="aspect-[4/5] bg-[#EADED0] rounded-sm overflow-hidden"
@@ -101,13 +115,13 @@ const ProductDetail = () => {
                         <div className="flex items-center mb-8">
                             <div className="flex mr-4">
                                 {[...Array(5)].map((_, i) => (
-                                    <Star key={i} size={16} fill="#95714F" className="text-[#95714F]" />
+                                    <Star key={i} size={16} fill={i < product.rating ? "#95714F" : "none"} className="text-[#95714F]" />
                                 ))}
                             </div>
-                            <span className="text-[#95714F] text-sm">(24 Reviews)</span>
+                            <span className="text-[#95714F] text-sm">({reviews.length} Reviews)</span>
                         </div>
 
-                        <p className="text-3xl font-light text-black mb-8">{product.price}</p>
+                        <p className="text-3xl font-light text-black mb-8">${product.price.toFixed(2)}</p>
                         
                         <p className="text-[#95714F] leading-relaxed mb-10 text-lg">
                             {product.description}
@@ -123,7 +137,10 @@ const ProductDetail = () => {
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-4 mb-16">
-                            <button className="flex-1 bg-black text-white py-5 rounded-sm flex items-center justify-center font-medium tracking-widest uppercase text-sm hover:bg-[#1a1a1a] transition-colors shadow-lg">
+                            <button 
+                                onClick={handleAddToCart}
+                                className="flex-1 bg-black text-white py-5 rounded-sm flex items-center justify-center font-medium tracking-widest uppercase text-sm hover:bg-[#1a1a1a] transition-colors shadow-lg"
+                            >
                                 <ShoppingBag size={18} className="mr-2" />
                                 Add to Cart
                             </button>
@@ -153,6 +170,88 @@ const ProductDetail = () => {
                     </div>
                 </div>
 
+                {/* Reviews Section */}
+                <section className="mt-32 pt-32 border-t border-[#EADED0]">
+                    <div className="flex flex-col md:flex-row justify-between items-start mb-16 gap-8">
+                        <div>
+                            <h2 className="text-4xl font-serif text-black mb-4">Customer Reviews</h2>
+                            <div className="flex items-center">
+                                <div className="flex mr-4">
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star key={i} size={20} fill={i < product.rating ? "#95714F" : "none"} className="text-[#95714F]" />
+                                    ))}
+                                </div>
+                                <span className="text-[#95714F] font-bold">{product.rating.toFixed(1)} out of 5</span>
+                            </div>
+                        </div>
+                        <button className="text-[10px] uppercase font-bold tracking-[0.2em] border-2 border-black px-10 py-4 hover:bg-black hover:text-white transition-all">
+                            Write a Review
+                        </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                        {/* Review List */}
+                        <div className="space-y-12">
+                            {reviews.length > 0 ? reviews.map((review, i) => (
+                                <div key={i} className="pb-8 border-b border-[#F8F4F0]">
+                                    <div className="flex items-center mb-4">
+                                        <div className="flex mr-4">
+                                            {[...Array(5)].map((_, j) => (
+                                                <Star key={j} size={12} fill={j < review.rating ? "#95714F" : "none"} className="text-[#95714F]" />
+                                            ))}
+                                        </div>
+                                        <span className="text-xs font-bold text-black uppercase tracking-widest">{review.userName}</span>
+                                    </div>
+                                    <h4 className="font-serif text-black mb-2">{review.title}</h4>
+                                    <p className="text-[#95714F] text-sm leading-relaxed mb-4">{review.comment}</p>
+                                    <span className="text-[10px] text-[#95714F]/40 uppercase tracking-widest">{new Date(review.createdAt).toLocaleDateString()}</span>
+                                </div>
+                            )) : (
+                                <p className="text-[#95714F] italic">No reviews yet. Be the first to share your experience!</p>
+                            )}
+                        </div>
+
+                        {/* Review Form */}
+                        <div className="bg-[#F8F4F0] p-10 rounded-sm h-fit">
+                            <h3 className="text-xl font-serif text-black mb-8">Tell us what you think</h3>
+                            <form onSubmit={async (e) => {
+                                e.preventDefault();
+                                const data = {
+                                    productId: product.id,
+                                    userName: e.target.userName.value,
+                                    rating: parseInt(e.target.rating.value),
+                                    title: e.target.title.value,
+                                    comment: e.target.comment.value
+                                };
+                                await mockApi.addReview(data);
+                                mockApi.getReviews(product.id).then(setReviews);
+                                e.target.reset();
+                                alert("Review submitted! Thank you.");
+                            }} className="space-y-6">
+                                <div>
+                                    <label className="block text-[10px] uppercase font-bold text-[#95714F] tracking-widest mb-2">Display Name</label>
+                                    <input required name="userName" className="w-full bg-white border border-[#C7AF94]/30 p-4 text-sm focus:border-[#95714F] outline-none" />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] uppercase font-bold text-[#95714F] tracking-widest mb-2">Rating</label>
+                                    <select name="rating" className="w-full bg-white border border-[#C7AF94]/30 p-4 text-sm focus:border-[#95714F] outline-none appearance-none">
+                                        {[5,4,3,2,1].map(n => <option key={n} value={n}>{n} Stars</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] uppercase font-bold text-[#95714F] tracking-widest mb-2">Review Title</label>
+                                    <input required name="title" className="w-full bg-white border border-[#C7AF94]/30 p-4 text-sm focus:border-[#95714F] outline-none" />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] uppercase font-bold text-[#95714F] tracking-widest mb-2">Your Experience</label>
+                                    <textarea required name="comment" rows="4" className="w-full bg-white border border-[#C7AF94]/30 p-4 text-sm focus:border-[#95714F] outline-none" />
+                                </div>
+                                <button type="submit" className="w-full bg-black text-white py-5 font-bold uppercase tracking-widest text-[10px] hover:bg-[#1a1a1a]">Post Review</button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
                 {/* Full Imagery Section */}
                 <section className="mt-32 pt-32 border-t border-[#EADED0]">
                     <div className="text-center mb-16">
@@ -160,7 +259,7 @@ const ProductDetail = () => {
                         <p className="text-[#95714F]/60">Every angle of the craftsmanship.</p>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {allImages.map((img, index) => (
+                        {allImages.slice(0, 8).map((img, index) => (
                             <motion.div 
                                 key={index}
                                 whileHover={{ y: -10 }}
