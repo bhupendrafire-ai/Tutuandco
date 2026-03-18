@@ -14,8 +14,17 @@ const VITE_API_URL = import.meta.env.VITE_API_URL;
 const IS_PROD = import.meta.env.PROD;
 const FALLBACK_URL = 'http://localhost:3001';
 
-// Auto-fix missing protocol for Railway URLs
+// Auto-fix missing protocol OR Auto-detect for the live domain if variable was missed in build
 let resolvedUrl = VITE_API_URL;
+
+if (!resolvedUrl && IS_PROD && typeof window !== 'undefined') {
+    const isLiveSite = window.location.hostname === 'www.tutuandco.in' || window.location.hostname === 'tutuandco.in';
+    if (isLiveSite) {
+        resolvedUrl = 'https://tutuandco-production.up.railway.app';
+        console.warn("🛡️ AUTO-DETECT: Connected to production backend via domain fallback.");
+    }
+}
+
 if (resolvedUrl && !resolvedUrl.startsWith('http')) {
     resolvedUrl = `https://${resolvedUrl}`;
 }
