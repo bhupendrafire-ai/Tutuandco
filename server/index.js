@@ -28,6 +28,7 @@ app.get('/api/products', async (req, res) => {
             ...p,
             price: parseFloat(p.price),
             discountPrice: p.discount_price ? parseFloat(p.discount_price) : null,
+            rating: p.rating ? parseFloat(p.rating) : 5,
             imageName: p.image_name,
             descriptionBlocks: p.description_blocks
         }));
