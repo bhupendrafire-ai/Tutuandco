@@ -117,7 +117,7 @@ const AdminDashboard = () => {
             }
         } catch (error) {
             console.error("Upload failed", error);
-            alert("Upload failed. Ensure VITE_BLOB_READ_WRITE_TOKEN is set.");
+            alert(`Upload failed: ${error.message || "Unknown error"}. Check server logs and environment variables (BLOB_READ_WRITE_TOKEN).`);
         }
     };
 
@@ -680,15 +680,46 @@ const AdminDashboard = () => {
 
                 {activeTab === 'banners' && (
                     <div className="space-y-12">
-                        <div className="flex justify-between items-center mb-4">
+                        <div className="flex justify-between items-center mb-8">
                             <h2 className="text-xl font-serif">Front-Page Identities</h2>
-                            <p className="text-[10px] uppercase font-bold tracking-widest text-[#9FA993]">Total Active Banners: {banners.length}</p>
+                            <div className="flex items-center gap-6">
+                                <button 
+                                    onClick={() => {
+                                        const newBanner = { 
+                                            title: 'New Identity', 
+                                            subtitle: 'Brief brand narrative...', 
+                                            cta: 'Explore', 
+                                            image: '' 
+                                        };
+                                        updateBanners([...banners, newBanner]);
+                                    }}
+                                    className="bg-[#CD664D] text-white px-6 py-3 rounded-sm flex items-center space-x-2 text-[10px] uppercase font-bold tracking-widest shadow-lg hover:bg-[#3E362E] transition-all"
+                                >
+                                    <Plus size={16} />
+                                    <span>Initiate New Banner</span>
+                                </button>
+                                <p className="text-[10px] uppercase font-bold tracking-widest text-[#9FA993]">Total Active: {banners.length}</p>
+                            </div>
                         </div>
                         
                         {banners.map((banner, index) => (
                             <div key={banner.id} className="bg-white p-10 rounded-sm shadow-sm border border-[#CD664D]/10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                                 <div className="space-y-6">
-                                    <h3 className="text-[10px] uppercase font-bold tracking-widest text-[#9FA993]">Hero Banner {index + 1}</h3>
+                                    <div className="flex justify-between items-center">
+                                        <h3 className="text-[10px] uppercase font-bold tracking-widest text-[#9FA993]">Hero Banner {index + 1}</h3>
+                                        <button 
+                                            onClick={() => {
+                                                if (window.confirm('Dissolve this front-page identity?')) {
+                                                    const nb = banners.filter((_, i) => i !== index);
+                                                    updateBanners(nb);
+                                                }
+                                            }}
+                                            className="text-red-400 hover:text-red-500 transition-colors p-1"
+                                            title="Delete Banner"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
                                     <div className="space-y-4">
                                         <div className="space-y-1">
                                             <label className="text-[10px] font-bold text-[#9FA993] uppercase tracking-tighter">Main Title</label>
