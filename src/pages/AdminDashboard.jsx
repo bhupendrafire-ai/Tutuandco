@@ -13,10 +13,18 @@ import {
 import { upload } from '@vercel/blob/client';
 import { useShop, getProductImage } from '../context/ShopContext';
 
-const API_URL = import.meta.env.VITE_API_URL;
+// Static constant for Vite replacement
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 const IS_PROD = import.meta.env.PROD;
 const FALLBACK_URL = 'http://localhost:3001';
-const FINAL_API_URL = API_URL || (IS_PROD ? '' : FALLBACK_URL);
+
+// Auto-fix protocol
+let resolvedUrl = VITE_API_URL;
+if (resolvedUrl && !resolvedUrl.startsWith('http')) {
+    resolvedUrl = `https://${resolvedUrl}`;
+}
+
+const FINAL_API_URL = (resolvedUrl || (IS_PROD ? '' : FALLBACK_URL))?.replace(/\/$/, "");
 
 const AdminDashboard = () => {
     const { 
