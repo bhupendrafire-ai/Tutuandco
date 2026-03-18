@@ -9,44 +9,6 @@ import mockApi from '../api/mockApi';
 const imageModules = import.meta.glob('../assets/heroshots/*.{jpg,png,jpeg}', { eager: true });
 const allImages = Object.values(imageModules).map(m => m.default).filter(img => typeof img === 'string');
 
-const productsData = {
-    "orange": {
-        id: "orange",
-        name: "Sunset Sage Bandana",
-        price: "$28.00",
-        rating: 5,
-        mainImage: allImages.find(img => img.includes('IMG_6154')),
-        description: "A vibrant burst of autumn hues, the Sunset Sage Bandana features an intricate earthy pattern. Designed for the adventurous pet who loves to stand out in the golden hour.",
-        details: ["100% Organic Cotton", "Hand-stitched in small batches", "Breathable & Lightweight", "Machine Washable"]
-    },
-    "pink": {
-        id: "pink",
-        name: "Blossom Heart Bandana",
-        price: "$32.00",
-        rating: 5,
-        mainImage: allImages.find(img => img.includes('IMG_6169')) || allImages.find(img => img.includes('IMG_6176')),
-        description: "Soft, sweet, and perfectly charming. This pink checkered bandana is adorned with delicate white hearts, bringing a touch of romance to every walk.",
-        details: ["Premium Linen Blend", "Signature Heart Pattern", "Reinforced Stitching", "Adjustable Fit"]
-    },
-    "blue": {
-        id: "blue",
-        name: "Azure Adventure Collab",
-        price: "$35.00",
-        rating: 5,
-        mainImage: allImages.find(img => img.includes('IMG_6214')) || allImages.find(img => img.includes('IMG_6219')),
-        description: "Deep azure tones meet modern geometric patterns. This piece is built for durability and style, perfect for long weekends in the hills or city strolls.",
-        details: ["Utility Grade Fabric", "Reflective Accents", "Quick-Dry Tech", "Comfort-First Design"]
-    },
-    "nano-banana": {
-        id: "nano-banana",
-        name: "The Nano Banana Special",
-        price: "$30.00",
-        rating: 5,
-        mainImage: allImages.find(img => img.includes('nano_banana')),
-        description: "A quirky and minimalist take on the classic banana print. The Nano Banana features tiny, hand-drawn motifs on a soft sage canvas, offering a refined yet playful look.",
-        details: ["Custom Illustration Print", "Eco-Friendly Dyes", "Extra Soft Finish", "Limited Edition Cloth"]
-    }
-};
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -54,7 +16,7 @@ const ProductDetail = () => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [reviews, setReviews] = useState([]);
     
-    const product = products.find(p => p.id === id) || products[0];
+    const product = products.find(p => String(p.id) === String(id)) || products[0];
 
     useEffect(() => {
         if (product) {

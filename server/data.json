@@ -1,54 +1,60 @@
 {
   "products": [
     {
-      "id": 1,
-      "name": "The Blue Bandana",
+      "id": "blue",
+      "name": "Azure Adventure Collab",
+      "category": "Safety",
+      "price": 35,
+      "rating": 5,
+      "imageName": "IMG_6214",
+      "description": "Deep azure tones meet modern geometric patterns. This piece is built for durability and style, perfect for long weekends in the hills or city strolls.",
+      "details": ["Utility Grade Fabric", "Reflective Accents", "Quick-Dry Tech", "Comfort-First Design"]
+    },
+    {
+      "id": "pink",
+      "name": "Blossom Heart Bandana",
       "category": "Apparel",
-      "price": 12,
+      "price": 32,
       "rating": 5,
-      "imageName": "IMG_6135",
-      "description": "Premium organic cotton bandana in a deep sky blue."
+      "imageName": "IMG_6169",
+      "description": "Soft, sweet, and perfectly charming. This pink checkered bandana is adorned with delicate white hearts, bringing a touch of romance to every walk.",
+      "details": ["Premium Linen Blend", "Signature Heart Pattern", "Reinforced Stitching", "Adjustable Fit"]
     },
     {
-      "id": 2,
-      "name": "Terracotta Harness",
-      "category": "Safety",
-      "price": 45,
+      "id": "orange",
+      "name": "Sunset Sage Bandana",
+      "category": "Apparel",
+      "price": 28,
       "rating": 5,
-      "imageName": "IMG_6137",
-      "description": "Durable and stylish harness for daily adventures."
+      "imageName": "IMG_6154",
+      "description": "A vibrant burst of autumn hues, the Sunset Sage Bandana features an intricate earthy pattern. Designed for the adventurous pet who loves to stand out in the golden hour.",
+      "details": ["100% Organic Cotton", "Hand-stitched in small batches", "Breathable & Lightweight", "Machine Washable"]
     },
     {
-      "id": 3,
-      "name": "Sage Walking Set",
-      "category": "Safety",
-      "price": 89,
+      "id": "nano-banana",
+      "name": "The Nano Banana Special",
+      "category": "Limited Edition",
+      "price": 30,
       "rating": 5,
-      "imageName": "IMG_6144",
-      "description": "Complete set with leash and harness in our signature sage."
+      "imageName": "nano_banana",
+      "description": "A quirky and minimalist take on the classic banana print. The Nano Banana features tiny, hand-drawn motifs on a soft sage canvas, offering a refined yet playful look.",
+      "details": ["Custom Illustration Print", "Eco-Friendly Dyes", "Extra Soft Finish", "Limited Edition Cloth"]
     }
   ],
   "banners": [
     {
       "id": 1,
-      "title": "Organic & Premium Comfort",
-      "subtitle": "Eco-friendly apparel for your best friends.",
-      "cta": "Shop the Collection",
-      "image": "IMG_6135"
+      "title": "Sunset Sage Collection",
+      "subtitle": "Naturally sourced fabrics for the modern adventurer.",
+      "cta": "Shop the Edit",
+      "image": "IMG_6154"
     },
     {
       "id": 2,
-      "title": "MVP: The Signature Harness",
-      "subtitle": "Durable, stylish, and pet-approved.",
-      "cta": "View MVP Items",
-      "image": "IMG_6137"
-    },
-    {
-      "id": 3,
-      "title": "New Arrivals: Sage Collection",
-      "subtitle": "Minimalist designs in our favorite hues.",
-      "cta": "Expose Style",
-      "image": "IMG_6144"
+      "title": "Blossom & Blue",
+      "subtitle": "Hand-stitched details in signature seasonal hues.",
+      "cta": "Explore Designs",
+      "image": "IMG_6169"
     }
   ],
   "media": [],
