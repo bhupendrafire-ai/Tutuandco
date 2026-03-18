@@ -44,7 +44,7 @@ const Cart = () => {
                                 >
                                     <div className="w-32 h-40 bg-[#F8F4F0] rounded-sm overflow-hidden flex-shrink-0 shadow-sm">
                                         <img 
-                                            src={getProductImage(item.imageName)} 
+                                            src={getProductImage(item.images?.[0]?.url || item.imageName)} 
                                             alt={item.name} 
                                             className="w-full h-full object-cover"
                                         />

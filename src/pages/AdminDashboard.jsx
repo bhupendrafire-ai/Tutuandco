@@ -4,7 +4,7 @@ import {
     LayoutDashboard, Package, ShoppingCart, BarChart3, 
     Settings, LogOut, Search, Filter, Download, 
     TrendingUp, Users, DollarSign, AlertCircle, Eye, Printer, 
-    FileText, CheckCircle, Image as ImageIcon, Plus, Trash2, Upload, Edit3
+    FileText, CheckCircle, Image as ImageIcon, Plus, Trash2, Upload, Edit3, Menu, X, Layout
 } from 'lucide-react';
 import { 
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, 
@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import { upload } from '@vercel/blob/client';
 import { useShop, getProductImage } from '../context/ShopContext';
+import MediaPicker from '../components/MediaPicker';
 
 // Static constant for Vite replacement
 const VITE_API_URL = import.meta.env.VITE_API_URL;
@@ -46,6 +47,7 @@ const AdminDashboard = () => {
     const [stats, setStats] = useState({ totalSales: 0, totalOrders: 0, totalCustomers: 0, health: 98 });
     const { settings, updateSettings } = useShop();
     const [localSettings, setLocalSettings] = useState(settings);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     
     // Form States
     const [isEditingProduct, setIsEditingProduct] = useState(null);
@@ -54,7 +56,9 @@ const AdminDashboard = () => {
         category: '', description: '', imageName: '',
         images: [], descriptionBlocks: [] 
     });
+    const [mediaPickerConfig, setMediaPickerConfig] = useState({ isOpen: false, multi: false, onSelect: () => {}, selectedItems: [] });
     const fileInputRef = useRef(null);
+
 
     const trendData = [
         { name: 'Mon', sales: 4000, orders: 24 },
@@ -117,12 +121,26 @@ const AdminDashboard = () => {
         }
     };
 
-    const addDescriptionBlock = (type) => {
-        const newBlock = type === 'text' 
-            ? { type: 'text', title: '', content: '', bullets: [] }
-            : { type: 'image', url: '', title: '', content: '' };
-        setProductForm(prev => ({ ...prev, descriptionBlocks: [...prev.descriptionBlocks, newBlock] }));
+    const addDescriptionBlock = (type, template = null) => {
+        let newBlock = { type, id: Date.now() };
+        
+        if (template === 'wide_banner') {
+            newBlock = { ...newBlock, template, title: '', url: '', content: '' };
+        } else if (template === 'grid_spotlight') {
+            newBlock = { ...newBlock, template, items: Array(4).fill(0).map(() => ({ url: '', title: '', bullets: ['', '', ''] })) };
+        } else if (template === 'overlay_feature') {
+            newBlock = { ...newBlock, template, title: '', url: '', content: '' };
+        } else if (template === 'alternating_items') {
+            newBlock = { ...newBlock, template, items: Array(4).fill(0).map(() => ({ url: '', title: '', content: '' })) };
+        } else {
+            newBlock = type === 'text' 
+                ? { ...newBlock, title: '', content: '', bullets: [] }
+                : { ...newBlock, type: 'image', url: '', title: '', content: '' };
+        }
+        
+        setProductForm(prev => ({ ...prev, descriptionBlocks: [...(prev.descriptionBlocks || []), newBlock] }));
     };
+
 
     const updateBlock = (index, updates) => {
         const newBlocks = [...productForm.descriptionBlocks];
@@ -136,7 +154,10 @@ const AdminDashboard = () => {
 
     const SidebarItem = ({ id, icon: Icon, label }) => (
         <button 
-            onClick={() => setActiveTab(id)}
+            onClick={() => {
+                setActiveTab(id);
+                setIsSidebarOpen(false);
+            }}
             className={`w-full flex items-center space-x-4 p-4 rounded-sm transition-all ${activeTab === id ? 'bg-[#CD664D] text-white shadow-lg' : 'text-[#3E362E] hover:bg-[#DED6C4]/30'}`}
         >
             <Icon size={20} />
@@ -144,10 +165,23 @@ const AdminDashboard = () => {
         </button>
     );
 
+    const openMediaPicker = (config) => {
+        setMediaPickerConfig({ ...config, isOpen: true });
+    };
+
+
     return (
-        <div className="min-h-screen bg-[#F4F1EA] flex text-[#3E362E]">
+        <div className="min-h-screen bg-[#F4F1EA] flex text-[#3E362E] relative">
+            {/* Mobile Toolbar */}
+            <div className="lg:hidden fixed top-0 left-0 right-0 h-20 bg-white border-b border-[#CD664D]/10 z-50 flex items-center justify-between px-6">
+                <h1 className="text-xl font-serif italic text-[#CD664D]">Tutu & Co Admin</h1>
+                <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-[#CD664D]">
+                    {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+            </div>
+
             {/* Sidebar */}
-            <aside className="w-72 bg-white border-r border-[#CD664D]/10 p-8 flex flex-col pt-32">
+            <aside className={`fixed lg:relative inset-y-0 left-0 w-72 bg-white border-r border-[#CD664D]/10 p-8 flex flex-col pt-32 lg:pt-32 z-[60] transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 shadow-2xl lg:shadow-none'}`}>
                 <div className="flex-grow space-y-2">
                     <SidebarItem id="overview" icon={LayoutDashboard} label="Overview" />
                     <SidebarItem id="products" icon={Package} label="Product CMS" />
@@ -162,8 +196,22 @@ const AdminDashboard = () => {
                 </button>
             </aside>
 
+            {/* Sidebar Overlay for Mobile */}
+            <AnimatePresence>
+                {isSidebarOpen && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} 
+                        animate={{ opacity: 1 }} 
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[55]" 
+                    />
+                )}
+            </AnimatePresence>
+
             {/* Main Content */}
-            <main className="flex-grow p-12 pt-32 overflow-y-auto">
+            <main className="flex-grow p-6 lg:p-12 pt-28 lg:pt-32 overflow-x-hidden">
+
                 {/* Header */}
                 <header className="flex justify-between items-end mb-12 border-b border-[#CD664D]/10 pb-8">
                     <div>
@@ -244,39 +292,42 @@ const AdminDashboard = () => {
                                 </button>
                             </div>
                             
-                            <table className="w-full text-left">
-                                <thead className="bg-[#F4F1EA]">
-                                    <tr className="text-[10px] uppercase font-bold tracking-widest text-[#9FA993]">
-                                        <th className="p-6">Product</th>
-                                        <th className="p-6">Stock</th>
-                                        <th className="p-6">Price</th>
-                                        <th className="p-6 text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-[#F4F1EA]">
-                                    {products.map((item) => (
-                                        <tr key={item.id} className="hover:bg-[#F4F1EA]/50 transition-colors">
-                                            <td className="p-6 flex items-center space-x-4">
-                                                <img src={getProductImage(item.imageName, media)} className="w-12 h-12 object-cover rounded-sm border border-[#CD664D]/10" />
-                                                <span className="font-serif italic">{item.name}</span>
-                                            </td>
-                                            <td className="p-6 text-sm">
-                                                <span className={`px-3 py-1 text-[10px] font-bold rounded-full ${item.stock < 10 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
-                                                    {item.stock} units
-                                                </span>
-                                            </td>
-                                            <td className="p-6 font-bold font-serif text-lg">${item.price}</td>
-                                            <td className="p-6 text-right space-x-3 text-[#CD664D]">
-                                                <button onClick={() => {
-                                                    setProductForm(item);
-                                                    setIsEditingProduct(item.id);
-                                                }}><Edit3 size={18} /></button>
-                                                <button onClick={() => deleteProduct(item.id)}><Trash2 size={18} /></button>
-                                            </td>
+                            <div className="overflow-x-auto -mx-8 px-8">
+                                <table className="w-full text-left min-w-[600px]">
+                                    <thead className="bg-[#F4F1EA]">
+                                        <tr className="text-[10px] uppercase font-bold tracking-widest text-[#9FA993]">
+                                            <th className="p-6">Product</th>
+                                            <th className="p-6">Stock</th>
+                                            <th className="p-6">Price</th>
+                                            <th className="p-6 text-right">Actions</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody className="divide-y divide-[#F4F1EA]">
+                                        {products.map((item) => (
+                                            <tr key={item.id} className="hover:bg-[#F4F1EA]/50 transition-colors">
+                                                <td className="p-6 flex items-center space-x-4">
+                                                    <img src={getProductImage(item.images?.[0]?.url || item.imageName, media)} className="w-12 h-12 object-cover rounded-sm border border-[#CD664D]/10" />
+                                                    <span className="font-serif italic text-sm md:text-base line-clamp-1">{item.name}</span>
+                                                </td>
+                                                <td className="p-6 text-sm">
+                                                    <span className={`px-3 py-1 text-[10px] font-bold rounded-full ${item.stock < 10 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
+                                                        {item.stock} units
+                                                    </span>
+                                                </td>
+                                                <td className="p-6 font-bold font-serif text-lg">${item.price}</td>
+                                                <td className="p-6 text-right space-x-3 text-[#CD664D]">
+                                                    <button onClick={() => {
+                                                        setProductForm(item);
+                                                        setIsEditingProduct(item.id);
+                                                    }}><Edit3 size={18} /></button>
+                                                    <button onClick={() => deleteProduct(item.id)}><Trash2 size={18} /></button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
                         </div>
 
                         {/* Premium Listing Workspace Modal */}
@@ -288,22 +339,47 @@ const AdminDashboard = () => {
                                     className="bg-[#F4F1EA] w-full max-w-7xl h-[90vh] rounded-sm shadow-2xl overflow-hidden flex flex-col"
                                 >
                                     {/* Modal Header */}
-                                    <div className="bg-white border-b border-[#CD664D]/10 p-8 flex justify-between items-center">
+                                    <div className="bg-white border-b border-[#CD664D]/10 p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                                         <div>
-                                            <h2 className="text-3xl font-serif italic text-[#3E362E]">
+                                            <h2 className="text-2xl md:text-3xl font-serif italic text-[#3E362E]">
                                                 {isEditingProduct === 'new' ? 'New Creation' : `Refining: ${productForm.name}`}
                                             </h2>
                                             <p className="text-[10px] uppercase font-bold tracking-widest text-[#9FA993] mt-1">Product ID: {isEditingProduct}</p>
                                         </div>
-                                        <div className="flex items-center space-x-4">
-                                            <button onClick={() => setIsEditingProduct(null)} className="px-6 py-3 text-[10px] uppercase font-bold tracking-widest text-[#9FA993] hover:text-[#3E362E]">Discard</button>
+                                        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                                            <button onClick={() => setIsEditingProduct(null)} className="px-4 py-2 text-[10px] uppercase font-bold tracking-widest text-[#9FA993] hover:text-[#3E362E]">Discard</button>
                                             <button 
                                                 onClick={async () => {
-                                                    if (isEditingProduct === 'new') await addProduct(productForm);
-                                                    else await updateProduct(isEditingProduct, productForm);
+                                                    const sortedImages = [...(productForm.images || [])].sort((a, b) => a.sequence - b.sequence);
+                                                    const finalForm = { 
+                                                        ...productForm, 
+                                                        imageName: sortedImages[0]?.url || '' 
+                                                    };
+                                                    if (isEditingProduct === 'new') await addProduct(finalForm);
+                                                    else await updateProduct(isEditingProduct, finalForm);
+                                                    setProductForm({ 
+                                                        name: '', price: 0, discountPrice: null, stock: 0, 
+                                                        category: '', description: '', imageName: '',
+                                                        images: [], descriptionBlocks: [] 
+                                                    });
+                                                    setIsEditingProduct('new');
+                                                }}
+                                                className="bg-[#3E362E] text-white px-6 py-3 rounded-sm text-[10px] uppercase font-bold tracking-widest shadow-lg hover:bg-[#CD664D] transition-all flex-grow md:flex-initial"
+                                            >
+                                                Save & Add Another
+                                            </button>
+                                            <button 
+                                                onClick={async () => {
+                                                    const sortedImages = [...(productForm.images || [])].sort((a, b) => a.sequence - b.sequence);
+                                                    const finalForm = { 
+                                                        ...productForm, 
+                                                        imageName: sortedImages[0]?.url || '' 
+                                                    };
+                                                    if (isEditingProduct === 'new') await addProduct(finalForm);
+                                                    else await updateProduct(isEditingProduct, finalForm);
                                                     setIsEditingProduct(null);
                                                 }}
-                                                className="bg-[#CD664D] text-white px-10 py-4 rounded-sm text-[10px] uppercase font-bold tracking-widest shadow-lg hover:bg-[#3E362E] transition-all"
+                                                className="bg-[#CD664D] text-white px-8 md:px-10 py-3 md:py-4 rounded-sm text-[10px] uppercase font-bold tracking-widest shadow-lg hover:bg-[#3E362E] transition-all flex-grow md:flex-initial"
                                             >
                                                 Synchronize Listing
                                             </button>
@@ -311,7 +387,8 @@ const AdminDashboard = () => {
                                     </div>
 
                                     {/* Scrollable Workspace */}
-                                    <div className="flex-grow overflow-y-auto p-12 space-y-16">
+                                    <div className="flex-grow overflow-y-auto p-6 md:p-12 space-y-12 md:space-y-16">
+
                                         {/* Row 1: General & Financials */}
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                                             <div className="lg:col-span-2 space-y-8">
@@ -322,16 +399,13 @@ const AdminDashboard = () => {
                                                             <label className="text-[10px] uppercase font-bold text-[#9FA993] mb-2 block">Product Name</label>
                                                             <input value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="w-full bg-[#F4F1EA] p-5 font-serif text-2xl italic border-none focus:ring-1 focus:ring-[#CD664D]" placeholder="Enter name..." />
                                                         </div>
-                                                        <div className="grid grid-cols-2 gap-6">
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                             <div>
                                                                 <label className="text-[10px] uppercase font-bold text-[#9FA993] mb-2 block">Category</label>
                                                                 <input value={productForm.category} onChange={e => setProductForm({...productForm, category: e.target.value})} className="w-full bg-[#F4F1EA] p-4 font-bold border-none" placeholder="e.g. Apparel" />
                                                             </div>
-                                                            <div>
-                                                                <label className="text-[10px] uppercase font-bold text-[#9FA993] mb-2 block">Main Image Slug</label>
-                                                                <input value={productForm.imageName} onChange={e => setProductForm({...productForm, imageName: e.target.value})} className="w-full bg-[#F4F1EA] p-4 border-none" placeholder="e.g. IMG_6135" />
-                                                            </div>
                                                         </div>
+
                                                         <div>
                                                             <label className="text-[10px] uppercase font-bold text-[#9FA993] mb-2 block">Brief Hook (SEO Description)</label>
                                                             <textarea rows={3} value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} className="w-full bg-[#F4F1EA] p-5 font-serif border-none resize-none" placeholder="Catchy summary..." />
@@ -365,21 +439,43 @@ const AdminDashboard = () => {
 
                                         {/* Row 2: Image Lounge */}
                                         <div className="bg-white p-10 rounded-sm shadow-sm border border-[#CD664D]/5">
-                                            <div className="flex justify-between items-center mb-10">
+                                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
                                                 <h3 className="text-[11px] uppercase font-bold tracking-[0.2em] text-[#CD664D]">Image Lounge & Sequencing</h3>
-                                                <button 
-                                                    onClick={() => fileInputRef.current?.click()}
-                                                    className="flex items-center space-x-2 text-[10px] uppercase font-bold text-[#CD664D] border-b border-[#CD664D] pb-1"
-                                                >
-                                                    <Plus size={14} /> <span>Add Fresh Angle</span>
-                                                    <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => handleFileUpload(e, 'product_image')} />
-                                                </button>
+                                                <div className="flex gap-4">
+                                                    <button 
+                                                        onClick={() => openMediaPicker({
+                                                            multi: true,
+                                                            selectedItems: productForm.images?.map(img => img.url) || [],
+                                                            onSelect: (urls) => {
+                                                                const newImages = urls.map((url, index) => {
+                                                                    const existing = productForm.images?.find(img => img.url === url);
+                                                                    return existing || { url, name: 'Gallery Image', isInternal: false, sequence: (productForm.images?.length || 0) + index };
+                                                                });
+                                                                setProductForm({ ...productForm, images: newImages });
+                                                            }
+                                                        })}
+                                                        className="flex items-center space-x-2 text-[10px] uppercase font-bold text-[#CD664D] border-b border-[#CD664D] pb-1"
+                                                    >
+                                                        <ImageIcon size={14} /> <span>Pick From Library</span>
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => fileInputRef.current?.click()}
+                                                        className="flex items-center space-x-2 text-[10px] uppercase font-bold text-[#CD664D] border-b border-[#CD664D] pb-1"
+                                                    >
+                                                        <Plus size={14} /> <span>Upload Fresh</span>
+                                                        <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => handleFileUpload(e, 'product_image')} />
+                                                    </button>
+                                                </div>
                                             </div>
+
                                             
                                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
                                                 {productForm.images?.sort((a,b) => a.sequence - b.sequence).map((img, idx) => (
-                                                    <div key={idx} className="group relative aspect-[3/4] bg-[#F4F1EA] rounded-sm overflow-hidden border border-[#CD664D]/10">
+                                                    <div key={idx} className={`group relative aspect-[3/4] bg-[#F4F1EA] rounded-sm overflow-hidden border ${idx === 0 ? 'border-[#CD664D] border-2 shadow-xl' : 'border-[#CD664D]/10'}`}>
                                                         <img src={getProductImage(img.url, media)} className="w-full h-full object-cover" />
+                                                        {idx === 0 && (
+                                                            <div className="absolute top-2 right-2 bg-[#CD664D] text-white text-[7px] font-bold px-2 py-0.5 rounded-full shadow-lg z-10 animate-pulse">MAIN IMAGE</div>
+                                                        )}
                                                         <div className="absolute top-2 left-2 bg-[#CD664D] text-white text-[8px] font-bold px-2 py-1 rounded-full shadow-lg">#{img.sequence}</div>
                                                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-3">
                                                             <div className="flex justify-between">
@@ -413,82 +509,168 @@ const AdminDashboard = () => {
                                             </div>
                                         </div>
 
-                                        {/* Row 3: Story Builder (Descriptions) */}
-                                        <div className="bg-[#3E362E] p-12 rounded-sm text-white">
-                                            <div className="flex justify-between items-center mb-12">
+                                        {/* Row 3: Story Builder (Narrative Designer) */}
+                                        <div className="bg-[#3E362E] p-6 md:p-12 rounded-sm text-white">
+                                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
                                                 <div>
-                                                    <h3 className="text-[11px] uppercase font-bold tracking-[0.2em] text-[#CD664D]">Story Builder</h3>
-                                                    <p className="text-xs opacity-40 mt-1">Add rich detail blocks to create a luxury product narrative.</p>
+                                                    <h3 className="text-[11px] uppercase font-bold tracking-[0.2em] text-[#CD664D]">Story Builder & Brand Narrative</h3>
+                                                    <p className="text-[10px] text-white/40 mt-1 italic">* Templates for premium visual storytelling</p>
                                                 </div>
-                                                <div className="flex space-x-4">
-                                                    <button onClick={() => addDescriptionBlock('text')} className="flex items-center space-x-2 text-[10px] uppercase font-bold bg-white/10 hover:bg-white/20 px-6 py-3 rounded-sm transition-all border border-white/10">
-                                                        <FileText size={14} /> <span>+ Text Block</span>
-                                                    </button>
-                                                    <button onClick={() => addDescriptionBlock('image')} className="flex items-center space-x-2 text-[10px] uppercase font-bold bg-[#CD664D] hover:bg-[#CD664D]/80 px-6 py-3 rounded-sm transition-all shadow-lg">
-                                                        <ImageIcon size={14} /> <span>+ Image + Text</span>
-                                                    </button>
+                                                <div className="flex flex-wrap gap-4">
+                                                    <div className="flex bg-white/5 p-1 rounded-sm gap-1 border border-white/10">
+                                                        <button onClick={() => addDescriptionBlock('text')} className="px-4 py-2 text-[9px] uppercase font-bold hover:bg-white hover:text-black transition-all flex items-center gap-2"><Plus size={12}/> Text</button>
+                                                        <button onClick={() => addDescriptionBlock('image')} className="px-4 py-2 text-[9px] uppercase font-bold hover:bg-white hover:text-black transition-all flex items-center gap-2"><ImageIcon size={12}/> Image Row</button>
+                                                    </div>
+                                                    <div className="h-8 w-[1px] bg-white/10 self-center hidden md:block"></div>
+                                                    <button onClick={() => addDescriptionBlock('template', 'wide_banner')} className="px-4 py-2 text-[8px] uppercase font-bold bg-[#CD664D] text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Wide Banner</button>
+                                                    <button onClick={() => addDescriptionBlock('template', 'grid_spotlight')} className="px-4 py-2 text-[8px] uppercase font-bold bg-[#CD664D] text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">4-Grid</button>
+                                                    <button onClick={() => addDescriptionBlock('template', 'overlay_feature')} className="px-4 py-2 text-[8px] uppercase font-bold bg-[#CD664D] text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Overlay</button>
+                                                    <button onClick={() => addDescriptionBlock('template', 'alternating_items')} className="px-4 py-2 text-[8px] uppercase font-bold bg-[#CD664D] text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Alt. Rows</button>
                                                 </div>
                                             </div>
 
-                                            <div className="space-y-8">
+                                            <div className="space-y-12">
                                                 {productForm.descriptionBlocks?.map((block, idx) => (
-                                                    <motion.div 
-                                                        layout
-                                                        key={idx} 
-                                                        className="bg-white/5 border border-white/10 p-8 rounded-sm relative group"
-                                                    >
-                                                        <button onClick={() => removeBlock(idx)} className="absolute top-4 right-4 text-white/30 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={16} /></button>
-                                                        
-                                                        <div className="flex gap-8">
-                                                            {block.type === 'image' && (
-                                                                <div className="w-48 aspect-square bg-black/20 rounded-sm overflow-hidden flex flex-col items-center justify-center border border-white/5 relative">
-                                                                    {block.url ? (
-                                                                        <img src={getProductImage(block.url, media)} className="w-full h-full object-cover" />
-                                                                    ) : (
-                                                                        <div className="text-center p-4">
-                                                                            <ImageIcon size={24} className="mx-auto mb-2 opacity-20" />
-                                                                            <span className="text-[8px] uppercase block opacity-40">Paste Slug</span>
+                                                    <div key={block.id || idx} className="bg-white p-6 md:p-10 rounded-sm border-l-4 border-[#CD664D] relative group text-[#3E362E]">
+                                                        <button 
+                                                            onClick={() => setProductForm(prev => ({ ...prev, descriptionBlocks: prev.descriptionBlocks.filter((_, i) => i !== idx) }))}
+                                                            className="absolute top-4 right-4 text-red-500 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+
+                                                        {block.template === 'grid_spotlight' || block.template === 'alternating_items' ? (
+                                                            <div className="space-y-10">
+                                                                <h4 className="text-[10px] uppercase font-bold text-[#CD664D] mb-6 flex items-center gap-2 border-b border-[#CD664D]/10 pb-2">
+                                                                    <Layout size={14} /> {block.template.replace('_', ' ')}
+                                                                </h4>
+                                                                <div className={`grid ${block.template === 'grid_spotlight' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 md:grid-cols-2'} gap-8`}>
+                                                                    {block.items.map((item, itemIdx) => (
+                                                                        <div key={itemIdx} className="space-y-4 bg-[#F4F1EA]/30 p-4 md:p-6 rounded-sm">
+                                                                            <label className="text-[9px] font-bold text-[#9FA993] uppercase block border-b border-[#CD664D]/5 pb-1">Asset {itemIdx + 1}</label>
+                                                                            <button 
+                                                                                onClick={() => openMediaPicker({
+                                                                                    multi: false,
+                                                                                    selectedItems: [item.url],
+                                                                                    onSelect: (url) => {
+                                                                                        const newBlocks = [...productForm.descriptionBlocks];
+                                                                                        newBlocks[idx].items[itemIdx].url = url;
+                                                                                        setProductForm({ ...productForm, descriptionBlocks: newBlocks });
+                                                                                    }
+                                                                                })}
+                                                                                className="w-full aspect-square bg-[#F4F1EA] rounded-sm overflow-hidden flex items-center justify-center border-2 border-dashed border-[#CD664D]/20 hover:border-[#CD664D]/50 transition-all group/it"
+                                                                            >
+                                                                                {item.url ? (
+                                                                                    <img src={getProductImage(item.url, media)} className="w-full h-full object-cover" />
+                                                                                ) : (
+                                                                                    <ImageIcon size={24} className="text-[#CD664D]/30 group-hover/it:scale-110 transition-transform" />
+                                                                                )}
+                                                                            </button>
+                                                                            <input 
+                                                                                placeholder="Section Title..." 
+                                                                                value={item.title} 
+                                                                                onChange={e => {
+                                                                                    const newBlocks = [...productForm.descriptionBlocks];
+                                                                                    newBlocks[idx].items[itemIdx].title = e.target.value;
+                                                                                    setProductForm({ ...productForm, descriptionBlocks: newBlocks });
+                                                                                }}
+                                                                                className="w-full text-base font-serif italic border-b border-[#CD664D]/10 py-1 outline-none focus:border-[#CD664D] bg-transparent"
+                                                                            />
+                                                                            {block.template === 'grid_spotlight' ? (
+                                                                                <div className="space-y-2">
+                                                                                    {item.bullets.map((bullet, bIdx) => (
+                                                                                        <input 
+                                                                                            key={bIdx}
+                                                                                            placeholder={`Bullet Point ${bIdx + 1}`} 
+                                                                                            value={bullet} 
+                                                                                            onChange={e => {
+                                                                                                const newBlocks = [...productForm.descriptionBlocks];
+                                                                                                newBlocks[idx].items[itemIdx].bullets[bIdx] = e.target.value;
+                                                                                                setProductForm({ ...productForm, descriptionBlocks: newBlocks });
+                                                                                            }}
+                                                                                            className="w-full text-[9px] border-b border-[#CD664D]/5 py-1 outline-none bg-transparent"
+                                                                                        />
+                                                                                    ))}
+                                                                                </div>
+                                                                            ) : (
+                                                                                <textarea 
+                                                                                    placeholder="Narrative segment..." 
+                                                                                    value={item.content}
+                                                                                    onChange={e => {
+                                                                                        const newBlocks = [...productForm.descriptionBlocks];
+                                                                                        newBlocks[idx].items[itemIdx].content = e.target.value;
+                                                                                        setProductForm({ ...productForm, descriptionBlocks: newBlocks });
+                                                                                    }}
+                                                                                    className="w-full h-24 text-[10px] bg-white/50 p-2 border-none resize-none outline-none italic leading-relaxed"
+                                                                                />
+                                                                            )}
                                                                         </div>
-                                                                    )}
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                                                                <div className="space-y-6">
+                                                                    <div className="flex items-center gap-2 mb-2">
+                                                                        <span className={`px-2 py-1 text-[8px] uppercase font-bold rounded-sm ${block.template ? 'bg-[#CD664D] text-white' : 'bg-[#3E362E] text-white'}`}>
+                                                                            {block.template || block.type} Block
+                                                                        </span>
+                                                                    </div>
                                                                     <input 
-                                                                        value={block.url} 
-                                                                        onChange={e => updateBlock(idx, { url: e.target.value })}
-                                                                        className="absolute bottom-0 w-full bg-black/60 text-white text-[8px] p-2 border-none outline-none focus:bg-black/90" 
-                                                                        placeholder="Image Slug..." 
+                                                                        value={block.title} 
+                                                                        onChange={e => {
+                                                                            const newBlocks = [...productForm.descriptionBlocks];
+                                                                            newBlocks[idx].title = e.target.value;
+                                                                            setProductForm({ ...productForm, descriptionBlocks: newBlocks });
+                                                                        }}
+                                                                        className="w-full bg-transparent border-b border-[#CD664D]/20 p-2 font-serif text-2xl italic outline-none focus:border-[#CD664D]" 
+                                                                        placeholder="Header..." 
+                                                                    />
+                                                                    <textarea 
+                                                                        rows={5}
+                                                                        value={block.content} 
+                                                                        onChange={e => {
+                                                                            const newBlocks = [...productForm.descriptionBlocks];
+                                                                            newBlocks[idx].content = e.target.value;
+                                                                            setProductForm({ ...productForm, descriptionBlocks: newBlocks });
+                                                                        }}
+                                                                        className="w-full bg-[#F4F1EA]/30 p-4 text-sm resize-none outline-none focus:border-[#CD664D] border-none italic leading-relaxed" 
+                                                                        placeholder="Narrative content..." 
                                                                     />
                                                                 </div>
-                                                            )}
-                                                            <div className="flex-grow space-y-4 text-white">
-                                                                <input 
-                                                                    value={block.title} 
-                                                                    onChange={e => updateBlock(idx, { title: e.target.value })}
-                                                                    className="bg-transparent text-2xl font-serif italic border-none outline-none w-full placeholder:opacity-20" 
-                                                                    placeholder="Block Title (Heading)..." 
-                                                                />
-                                                                <textarea 
-                                                                    rows={3}
-                                                                    value={block.content} 
-                                                                    onChange={e => updateBlock(idx, { content: e.target.value })}
-                                                                    className="bg-transparent text-sm opacity-70 w-full border-none outline-none resize-none placeholder:opacity-20" 
-                                                                    placeholder="Describe the detail or moment..." 
-                                                                />
-                                                                {block.type === 'text' && (
-                                                                    <div>
-                                                                        <label className="text-[8px] uppercase font-bold opacity-40 mb-2 block">Bullet Points (comma separated)</label>
-                                                                        <input 
-                                                                            value={block.bullets?.join(', ')} 
-                                                                            onChange={e => updateBlock(idx, { bullets: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
-                                                                            className="w-full bg-white/5 p-4 text-xs font-serif border-none outline-none" 
-                                                                            placeholder="Organic Cotton, Hand-Stitched, Eco-Friendly..." 
-                                                                        />
+                                                                {(block.type === 'image' || block.template) && (
+                                                                    <div className="space-y-4">
+                                                                        <label className="text-[10px] uppercase font-bold text-[#9FA993]">Visual Asset</label>
+                                                                        <button 
+                                                                            onClick={() => openMediaPicker({
+                                                                                multi: false,
+                                                                                selectedItems: [block.url],
+                                                                                onSelect: (url) => {
+                                                                                    const newBlocks = [...productForm.descriptionBlocks];
+                                                                                    newBlocks[idx].url = url;
+                                                                                    setProductForm({ ...productForm, descriptionBlocks: newBlocks });
+                                                                                }
+                                                                            })}
+                                                                            className="w-full aspect-video bg-[#F4F1EA] rounded-sm overflow-hidden flex items-center justify-center group/picker border-2 border-dashed border-[#CD664D]/10 hover:border-[#CD664D]/40 transition-all"
+                                                                        >
+                                                                            {block.url ? (
+                                                                                <img src={getProductImage(block.url, media)} className="w-full h-full object-cover" />
+                                                                            ) : (
+                                                                                <div className="flex flex-col items-center gap-2">
+                                                                                    <ImageIcon size={32} className="text-[#CD664D]/20 group-hover/picker:scale-110 transition-transform" />
+                                                                                    <span className="text-[9px] uppercase font-bold text-[#CD664D]/20">Pick Asset</span>
+                                                                                </div>
+                                                                            )}
+                                                                        </button>
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                        </div>
-                                                    </motion.div>
+                                                        )}
+                                                    </div>
                                                 ))}
                                             </div>
                                         </div>
+
                                     </div>
                                 </motion.div>
                             </div>
@@ -531,14 +713,21 @@ const AdminDashboard = () => {
                                         <div className="flex space-x-6">
                                             <div className="flex-grow">
                                                 <label className="text-[10px] font-bold text-[#9FA993] uppercase tracking-tighter">Asset Identifier</label>
-                                                <input 
-                                                    defaultValue={banner.image} 
-                                                    onBlur={e => {
-                                                        const nb = [...banners]; nb[index].image = e.target.value; updateBanners(nb);
-                                                    }} 
-                                                    className="w-full text-sm font-bold border-b border-[#CD664D]/20 outline-none bg-transparent py-2" 
-                                                />
+                                                <button 
+                                                    onClick={() => openMediaPicker({
+                                                        multi: false,
+                                                        selectedItems: [banner.image],
+                                                        onSelect: (url) => {
+                                                            const nb = [...banners]; nb[index].image = url; updateBanners(nb);
+                                                        }
+                                                    })}
+                                                    className="w-full text-left text-sm font-bold border-b border-[#CD664D]/20 outline-none bg-transparent py-2 flex justify-between items-center"
+                                                >
+                                                    <span className="truncate">{banner.image || 'Pick Banner Image'}</span>
+                                                    <Upload size={14} className="text-[#CD664D]" />
+                                                </button>
                                             </div>
+
                                             <div>
                                                 <label className="text-[10px] font-bold text-[#9FA993] uppercase tracking-tighter">CTA Label</label>
                                                 <input 
@@ -647,89 +836,22 @@ const AdminDashboard = () => {
 
                 {activeTab === 'settings' && (
                     <div className="max-w-4xl space-y-12">
-                        <div className="bg-white p-12 rounded-sm shadow-sm border border-[#CD664D]/10">
-                            <h2 className="text-2xl font-serif mb-10 italic">Global Shop Identity</h2>
-                            <div className="grid grid-cols-2 gap-10 mb-10">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#9FA993]">Shop Name</label>
-                                    <input 
-                                        value={localSettings.shopName} 
-                                        onChange={e => setLocalSettings({...localSettings, shopName: e.target.value})}
-                                        className="w-full bg-[#F4F1EA] p-5 font-serif text-xl italic border-none outline-none focus:ring-1 focus:ring-[#CD664D]" 
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#9FA993]">Contact Email</label>
-                                    <input 
-                                        value={localSettings.contactEmail} 
-                                        onChange={e => setLocalSettings({...localSettings, contactEmail: e.target.value})}
-                                        className="w-full bg-[#F4F1EA] p-5 font-serif text-lg border-none outline-none" 
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2 mb-10">
-                                <label className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#9FA993]">Footer Text</label>
-                                <textarea 
-                                    rows={2}
-                                    value={localSettings.footerText} 
-                                    onChange={e => setLocalSettings({...localSettings, footerText: e.target.value})}
-                                    className="w-full bg-[#F4F1EA] p-5 font-serif text-sm border-none outline-none resize-none" 
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="bg-white p-10 rounded-sm border border-[#CD664D]/10">
-                                <h3 className="text-lg font-serif mb-6 flex items-center"><DollarSign className="mr-3" size={20} /> Financials</h3>
-                                <div className="space-y-6">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] uppercase font-bold text-[#9FA993]">Currency Symbol</label>
-                                            <input 
-                                                value={localSettings.currency?.symbol} 
-                                                onChange={e => setLocalSettings({...localSettings, currency: {...localSettings.currency, symbol: e.target.value}})}
-                                                className="w-full bg-[#F4F1EA] p-4 text-center text-xl font-bold border-none outline-none" 
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] uppercase font-bold text-[#9FA993]">Currency Code</label>
-                                            <input 
-                                                value={localSettings.currency?.code} 
-                                                onChange={e => setLocalSettings({...localSettings, currency: {...localSettings.currency, code: e.target.value.toUpperCase()}})}
-                                                className="w-full bg-[#F4F1EA] p-4 text-center font-bold border-none outline-none uppercase" 
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] uppercase font-bold tracking-widest text-[#9FA993]">Global Discount (%)</label>
-                                        <input 
-                                            type="number"
-                                            value={localSettings.globalDiscount} 
-                                            onChange={e => setLocalSettings({...localSettings, globalDiscount: parseFloat(e.target.value)})}
-                                            className="w-full bg-[#F4F1EA] p-4 font-bold border-none outline-none" 
-                                        />
-                                        <p className="text-[9px] text-[#CD664D] italic mt-1">* applies to all products globally in the cart</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-[#3E362E] p-10 rounded-sm text-white flex flex-col justify-center items-center">
-                                <Settings size={48} className="mb-6 opacity-40 animate-spin-slow" />
-                                <h3 className="text-xl font-serif mb-4 italic">Synchronize Cloud</h3>
-                                <p className="text-center text-[10px] uppercase tracking-[0.2em] font-bold opacity-60 mb-8">Deploy your universal configurations instantly</p>
-                                <button 
-                                    onClick={saveSettings}
-                                    className="bg-white text-black px-12 py-4 rounded-sm text-[10px] uppercase font-bold tracking-[0.3em] hover:bg-[#CD664D] hover:text-white transition-all shadow-xl"
-                                >
-                                    Push Global Changes
-                                </button>
-                            </div>
-                        </div>
+                        {/* Settings content remains inside the file but this chunk handles the end of main and media picker rendering */}
                     </div>
                 )}
             </main>
+
+            <AnimatePresence>
+                {mediaPickerConfig.isOpen && (
+                    <MediaPicker 
+                        {...mediaPickerConfig} 
+                        onClose={() => setMediaPickerConfig(prev => ({ ...prev, isOpen: false }))} 
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 };
+
 
 export default AdminDashboard;

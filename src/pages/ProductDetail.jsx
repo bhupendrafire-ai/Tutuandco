@@ -150,40 +150,109 @@ const ProductDetail = () => {
                 {/* Story Builder Blocks */}
                 {product.descriptionBlocks?.length > 0 && (
                     <section className="mt-32 space-y-32">
-                        {product.descriptionBlocks.map((block, i) => (
-                            <motion.div 
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                key={i} 
-                                className={`flex flex-col ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} gap-16 items-center`}
-                            >
-                                {block.type === 'image' && (
-                                    <div className="flex-1 w-full aspect-[4/5] bg-[#F4F1EA] rounded-sm overflow-hidden shadow-2xl">
-                                        <img src={getProductImage(block.url, media)} className="w-full h-full object-cover" />
+                        {product.descriptionBlocks.map((block, i) => {
+                            if (block.template === 'wide_banner') {
+                                return (
+                                    <div key={i} className="space-y-12">
+                                        <h3 className="text-4xl md:text-6xl font-serif text-center text-black italic max-w-4xl mx-auto leading-tight">{block.title}</h3>
+                                        <div className="w-full aspect-[21/9] bg-[#F4F1EA] rounded-sm overflow-hidden shadow-xl">
+                                            <img src={getProductImage(block.url, media)} className="w-full h-full object-cover" />
+                                        </div>
+                                        <p className="text-[#95714F] text-xl text-center max-w-3xl mx-auto leading-relaxed">{block.content}</p>
                                     </div>
-                                )}
-                                <div className="flex-1 space-y-8">
-                                    <h3 className="text-4xl md:text-5xl font-serif text-black leading-tight italic">
-                                        {block.title}
-                                    </h3>
-                                    <p className="text-[#95714F] text-lg leading-relaxed">
-                                        {block.content}
-                                    </p>
-                                    {block.bullets?.length > 0 && (
-                                        <ul className="space-y-4">
-                                            {block.bullets.map((bullet, j) => (
-                                                <li key={j} className="flex items-center text-[#3E362E] font-serif italic">
-                                                    <span className="w-2 h-2 rounded-full bg-[#CD664D] mr-4" />
-                                                    {bullet}
-                                                </li>
+                                );
+                            }
+
+                            if (block.template === 'grid_spotlight') {
+                                return (
+                                    <div key={i} className="space-y-16">
+                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
+                                            {block.items.map((item, j) => (
+                                                <div key={j} className="space-y-6 text-center">
+                                                    <div className="aspect-square bg-[#F4F1EA] rounded-sm overflow-hidden shadow-md">
+                                                        <img src={getProductImage(item.url, media)} className="w-full h-full object-cover" />
+                                                    </div>
+                                                    <h4 className="text-xl font-serif italic text-black">{item.title}</h4>
+                                                    <ul className="space-y-2">
+                                                        {item.bullets?.map((bullet, k) => bullet && (
+                                                            <li key={k} className="text-[10px] uppercase font-bold tracking-widest text-[#CD664D]">{bullet}</li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
                                             ))}
-                                        </ul>
+                                        </div>
+                                    </div>
+                                );
+                            }
+
+                            if (block.template === 'overlay_feature') {
+                                return (
+                                    <div key={i} className="relative w-full aspect-[16/9] md:aspect-[21/9] bg-[#F4F1EA] rounded-sm overflow-hidden shadow-2xl">
+                                        <img src={getProductImage(block.url, media)} className="w-full h-full object-cover" />
+                                        <div className="absolute inset-0 bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
+                                        <div className="absolute top-8 left-8 md:top-16 md:left-16 max-w-[90%] md:max-w-[30%] space-y-6">
+                                            <h3 className="text-3xl md:text-5xl font-serif text-black leading-tight italic break-words">{block.title}</h3>
+                                            <p className="text-black/80 text-sm md:text-lg leading-relaxed">{block.content}</p>
+                                        </div>
+                                    </div>
+                                );
+                            }
+
+                            if (block.template === 'alternating_items') {
+                                return (
+                                    <div key={i} className="space-y-32">
+                                        {block.items.map((item, j) => (
+                                            <div key={j} className={`flex flex-col ${j % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} gap-12 md:gap-24 items-center`}>
+                                                <div className="flex-1 w-full aspect-square bg-[#F4F1EA] rounded-sm overflow-hidden shadow-xl">
+                                                    <img src={getProductImage(item.url, media)} className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="flex-1 space-y-6">
+                                                    <h4 className="text-3xl md:text-4xl font-serif italic text-black leading-tight">{item.title}</h4>
+                                                    <p className="text-[#95714F] text-lg leading-relaxed">{item.content}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                );
+                            }
+
+                            // Default rendering for legacy blocks
+                            return (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 30 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    key={i} 
+                                    className={`flex flex-col ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} gap-16 items-center`}
+                                >
+                                    {block.type === 'image' && (
+                                        <div className="flex-1 w-full aspect-[4/5] bg-[#F4F1EA] rounded-sm overflow-hidden shadow-2xl">
+                                            <img src={getProductImage(block.url, media)} className="w-full h-full object-cover" />
+                                        </div>
                                     )}
-                                </div>
-                            </motion.div>
-                        ))}
+                                    <div className="flex-1 space-y-8">
+                                        <h3 className="text-4xl md:text-5xl font-serif text-black leading-tight italic">
+                                            {block.title}
+                                        </h3>
+                                        <p className="text-[#95714F] text-lg leading-relaxed">
+                                            {block.content}
+                                        </p>
+                                        {block.bullets?.length > 0 && (
+                                            <ul className="space-y-4">
+                                                {block.bullets.map((bullet, j) => (
+                                                    <li key={j} className="flex items-center text-[#3E362E] font-serif italic">
+                                                        <span className="w-2 h-2 rounded-full bg-[#CD664D] mr-4" />
+                                                        {bullet}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
                     </section>
                 )}
+
 
                 {/* Reviews Section */}
                 <section className="mt-32 pt-32 border-t border-[#EADED0]">

@@ -189,7 +189,7 @@ const Checkout = () => {
                                 <div key={item.id} className="flex justify-between items-center text-sm">
                                     <div className="flex items-center space-x-4">
                                         <div className="w-12 h-16 bg-[#F8F4F0] rounded-sm overflow-hidden flex-shrink-0">
-                                            <img src={getProductImage(item.imageName, media)} className="w-full h-full object-cover" alt="" />
+                                            <img src={getProductImage(item.images?.[0]?.url || item.imageName, media)} className="w-full h-full object-cover" alt="" />
                                         </div>
                                         <div>
                                             <p className="font-medium text-black">{item.name}</p>

@@ -144,7 +144,7 @@ const Home = () => {
                         >
                             <div className="aspect-[4/5] bg-[#F8F4F0] overflow-hidden rounded-sm relative mb-6 shadow-sm hover:shadow-xl transition-shadow duration-500">
                                 <motion.img
-                                    src={getProductImage(product.imageName)}
+                                    src={getProductImage(product.images?.sort((a,b) => a.sequence - b.sequence)[0]?.url || product.imageName)}
                                     alt={product.name}
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                                 />
