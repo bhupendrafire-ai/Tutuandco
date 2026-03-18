@@ -68,7 +68,7 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         const loadOrders = async () => {
-            const res = await fetch(`${API_URL}/api/orders`);
+            const res = await fetch(`${FINAL_API_URL}/api/orders`);
             const o = await res.json();
             setOrders(o || []);
             const total = (o || []).reduce((sum, order) => sum + order.total, 0);
@@ -101,7 +101,7 @@ const AdminDashboard = () => {
         try {
             const newBlob = await upload(file.name, file, {
                 access: 'public',
-                handleUploadUrl: `${API_URL}/api/upload`,
+                handleUploadUrl: `${FINAL_API_URL}/api/upload`,
             });
             
             if (type === 'product_image') {
