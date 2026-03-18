@@ -9,22 +9,26 @@ export const useShop = () => {
 };
 
 // Only use fallback in development if VITE_API_URL is missing
-let API_URL = import.meta.env.VITE_API_URL;
+// We use static constants to ensure Vite's string replacement works perfectly in production
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 const IS_PROD = import.meta.env.PROD;
 const FALLBACK_URL = 'http://localhost:3001';
 
 // Auto-fix missing protocol for Railway URLs
-if (API_URL && !API_URL.startsWith('http')) {
-    API_URL = `https://${API_URL}`;
+let resolvedUrl = VITE_API_URL;
+if (resolvedUrl && !resolvedUrl.startsWith('http')) {
+    resolvedUrl = `https://${resolvedUrl}`;
 }
 
-const FINAL_API_URL = (API_URL || (IS_PROD ? '' : FALLBACK_URL))?.replace(/\/$/, "");
+const FINAL_API_URL = (resolvedUrl || (IS_PROD ? '' : FALLBACK_URL))?.replace(/\/$/, "");
 
 if (IS_PROD) {
-    if (!API_URL) {
-        console.error("❌ CRITICAL: VITE_API_URL is missing in Vercel. Images and products will NOT load for customers.");
-    } else {
-        console.log("🌐 Connected to Production API:", FINAL_API_URL);
+    console.log("🛠️ Production Build Info:", { 
+        has_api_url: !!VITE_API_URL, 
+        resolved_url: FINAL_API_URL 
+    });
+    if (!VITE_API_URL) {
+        console.error("❌ CRITICAL: VITE_API_URL is undefined in this build. Please Redeploy on Vercel with 'Clear Cache'.");
     }
 }
 
