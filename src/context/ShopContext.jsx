@@ -119,7 +119,13 @@ export const ShopProvider = ({ children }) => {
                 fetch(`${FINAL_API_URL}/api/settings`)
             ]);
             
-            const p = productRes.ok ? await productRes.json() : [];
+            const rawProducts = productRes.ok ? await productRes.json() : [];
+            const p = rawProducts.map(prod => ({
+                ...prod,
+                price: Number(prod.price) || 0,
+                discountPrice: prod.discountPrice ? Number(prod.discountPrice) : null,
+                rating: Number(prod.rating) || 5
+            }));
             const b = bannerRes.ok ? await bannerRes.json() : [];
             const m = mediaRes.ok ? await mediaRes.json() : [];
             const s = settingsRes.ok ? await settingsRes.json() : {

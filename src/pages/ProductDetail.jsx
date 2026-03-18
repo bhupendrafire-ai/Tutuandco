@@ -196,7 +196,7 @@ const ProductDetail = () => {
                                         <Star key={i} size={20} fill={i < product.rating ? "#95714F" : "none"} className="text-[#95714F]" />
                                     ))}
                                 </div>
-                                <span className="text-[#95714F] font-bold">{product.rating.toFixed(1)} out of 5</span>
+                                <span className="text-[#95714F] font-bold">{(Number(product.rating) || 5).toFixed(1)} out of 5</span>
                             </div>
                         </div>
                         <button className="text-[10px] uppercase font-bold tracking-[0.2em] border-2 border-black px-10 py-4 hover:bg-black hover:text-white transition-all">
