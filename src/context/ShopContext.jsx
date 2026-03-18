@@ -8,7 +8,12 @@ export const useShop = () => {
     return context;
 };
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL;
+const IS_PROD = import.meta.env.PROD;
+const FALLBACK_URL = 'http://localhost:3001';
+
+// Only use fallback in development if VITE_API_URL is missing
+const FINAL_API_URL = API_URL || (IS_PROD ? '' : FALLBACK_URL);
 
 // Image Mapper - Resolves imageName from API to actual asset
 const imageModules = import.meta.glob('../assets/heroshots/*.{jpg,png,jpeg}', { eager: true });
@@ -74,12 +79,18 @@ export const ShopProvider = ({ children }) => {
     }, [cart]);
 
     const loadData = async () => {
+        if (!FINAL_API_URL) {
+            console.error("API_URL is not configured for this environment.");
+            setLoading(false);
+            return;
+        }
+
         try {
             const [productRes, bannerRes, mediaRes, settingsRes] = await Promise.all([
-                fetch(`${API_URL}/api/products`),
-                fetch(`${API_URL}/api/banners`),
-                fetch(`${API_URL}/api/media`),
-                fetch(`${API_URL}/api/settings`)
+                fetch(`${FINAL_API_URL}/api/products`),
+                fetch(`${FINAL_API_URL}/api/banners`),
+                fetch(`${FINAL_API_URL}/api/media`),
+                fetch(`${FINAL_API_URL}/api/settings`)
             ]);
             
             const p = productRes.ok ? await productRes.json() : [];
@@ -107,7 +118,8 @@ export const ShopProvider = ({ children }) => {
     };
 
     const updateSettings = async (newSettings) => {
-        const res = await fetch(`${API_URL}/api/settings`, {
+        if (!FINAL_API_URL) return;
+        const res = await fetch(`${FINAL_API_URL}/api/settings`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newSettings)
@@ -118,7 +130,8 @@ export const ShopProvider = ({ children }) => {
     };
 
     const addProduct = async (product) => {
-        const res = await fetch(`${API_URL}/api/products`, {
+        if (!FINAL_API_URL) return;
+        const res = await fetch(`${FINAL_API_URL}/api/products`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(product)
@@ -129,12 +142,14 @@ export const ShopProvider = ({ children }) => {
     };
 
     const deleteProduct = async (id) => {
-        await fetch(`${API_URL}/api/products/${id}`, { method: 'DELETE' });
+        if (!FINAL_API_URL) return;
+        await fetch(`${FINAL_API_URL}/api/products/${id}`, { method: 'DELETE' });
         await loadData();
     };
 
     const updateProduct = async (id, updates) => {
-        await fetch(`${API_URL}/api/products/${id}`, {
+        if (!FINAL_API_URL) return;
+        await fetch(`${FINAL_API_URL}/api/products/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updates)
@@ -143,7 +158,8 @@ export const ShopProvider = ({ children }) => {
     };
 
     const updateBanners = async (newBanners) => {
-        await fetch(`${API_URL}/api/banners`, {
+        if (!FINAL_API_URL) return;
+        await fetch(`${FINAL_API_URL}/api/banners`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newBanners)
@@ -152,7 +168,8 @@ export const ShopProvider = ({ children }) => {
     };
 
     const uploadMedia = async (url, name) => {
-        const res = await fetch(`${API_URL}/api/media`, {
+        if (!FINAL_API_URL) return;
+        const res = await fetch(`${FINAL_API_URL}/api/media`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ url, name })
@@ -211,6 +228,7 @@ export const ShopProvider = ({ children }) => {
     };
 
     const checkout = async (details) => {
+        if (!FINAL_API_URL) return { success: false, message: 'Service temporarily unavailable' };
         const { subtotal, discountAmount, shipping, total } = getCartTotal();
         const order = {
             items: cart,
@@ -221,7 +239,7 @@ export const ShopProvider = ({ children }) => {
             total,
             couponCode: coupon?.code
         };
-        const res = await fetch(`${API_URL}/api/orders`, {
+        const res = await fetch(`${FINAL_API_URL}/api/orders`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(order)

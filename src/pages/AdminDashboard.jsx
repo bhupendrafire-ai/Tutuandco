@@ -13,7 +13,10 @@ import {
 import { upload } from '@vercel/blob/client';
 import { useShop, getProductImage } from '../context/ShopContext';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL;
+const IS_PROD = import.meta.env.PROD;
+const FALLBACK_URL = 'http://localhost:3001';
+const FINAL_API_URL = API_URL || (IS_PROD ? '' : FALLBACK_URL);
 
 const AdminDashboard = () => {
     const { 
