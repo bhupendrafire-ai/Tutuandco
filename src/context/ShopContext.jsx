@@ -8,12 +8,25 @@ export const useShop = () => {
     return context;
 };
 
-const API_URL = import.meta.env.VITE_API_URL;
+// Only use fallback in development if VITE_API_URL is missing
+let API_URL = import.meta.env.VITE_API_URL;
 const IS_PROD = import.meta.env.PROD;
 const FALLBACK_URL = 'http://localhost:3001';
 
-// Only use fallback in development if VITE_API_URL is missing
-const FINAL_API_URL = API_URL || (IS_PROD ? '' : FALLBACK_URL);
+// Auto-fix missing protocol for Railway URLs
+if (API_URL && !API_URL.startsWith('http')) {
+    API_URL = `https://${API_URL}`;
+}
+
+const FINAL_API_URL = (API_URL || (IS_PROD ? '' : FALLBACK_URL))?.replace(/\/$/, "");
+
+if (IS_PROD) {
+    if (!API_URL) {
+        console.error("❌ CRITICAL: VITE_API_URL is missing in Vercel. Images and products will NOT load for customers.");
+    } else {
+        console.log("🌐 Connected to Production API:", FINAL_API_URL);
+    }
+}
 
 // Image Mapper - Resolves imageName from API to actual asset
 const imageModules = import.meta.glob('../assets/heroshots/*.{jpg,png,jpeg}', { eager: true });
@@ -130,15 +143,28 @@ export const ShopProvider = ({ children }) => {
     };
 
     const addProduct = async (product) => {
-        if (!FINAL_API_URL) return;
-        const res = await fetch(`${FINAL_API_URL}/api/products`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(product)
-        });
-        const newProduct = await res.json();
-        await loadData();
-        return newProduct;
+        if (!FINAL_API_URL) {
+            console.error("❌ API_URL is not configured. Cannot add product.");
+            return;
+        }
+        try {
+            const res = await fetch(`${FINAL_API_URL}/api/products`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(product)
+            });
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(`API returned ${res.status}: ${errorData.message || 'Unknown error'}`);
+            }
+            const newProduct = await res.json();
+            await loadData();
+            return newProduct;
+        } catch (err) {
+            console.error("❌ Failed to add product:", err.message);
+            // Optionally, you might want to set loading to false or show a user-facing error
+            throw err; // Re-throw to allow caller to handle
+        }
     };
 
     const deleteProduct = async (id) => {
