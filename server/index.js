@@ -4,136 +4,173 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 const { handleUpload } = require('@vercel/blob/client');
+const db = require('./db');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const DATA_FILE = path.join(__dirname, 'data.json');
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 
-// Initial Data Structure
-const initialData = {
-    products: [
-        { id: 1, name: "The Blue Bandana", category: "Apparel", price: 12.00, rating: 5, imageName: "IMG_6135", description: "Premium organic cotton bandana in a deep sky blue." },
-        { id: 2, name: "Terracotta Harness", category: "Safety", price: 45.00, rating: 5, imageName: "IMG_6137", description: "Durable and stylish harness for daily adventures." },
-        { id: 3, name: "Sage Walking Set", category: "Safety", price: 89.00, rating: 5, imageName: "IMG_6144", description: "Complete set with leash and harness in our signature sage." }
-    ],
-    banners: [
-        { id: 1, title: "Organic & Premium Comfort", subtitle: "Eco-friendly apparel for your best friends.", cta: "Shop the Collection", image: "IMG_6135" },
-        { id: 2, title: "MVP: The Signature Harness", subtitle: "Durable, stylish, and pet-approved.", cta: "View MVP Items", image: "IMG_6137" },
-        { id: 3, title: "New Arrivals: Sage Collection", subtitle: "Minimalist designs in our favorite hues.", cta: "Expose Style", image: "IMG_6144" }
-    ],
-    media: [],
-    orders: [],
-    reviews: []
-};
-
-// Helper to read data
-const readData = () => {
-    if (!fs.existsSync(DATA_FILE)) {
-        fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2));
-        return initialData;
-    }
-    const content = fs.readFileSync(DATA_FILE, 'utf-8');
-    return JSON.parse(content);
-};
-
-// Helper to write data
-const writeData = (data) => {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-};
+// --- DATABASE MIGRATION TRIGGER ---
+// We will call migrate.js separately or on startup if needed.
+// For now, assume migration is handled via Railway deployment.
 
 // --- API ROUTES ---
 
 // Products
-app.get('/api/products', (req, res) => {
-    const data = readData();
-    res.json(data.products);
-});
-
-app.post('/api/products', (req, res) => {
-    const data = readData();
-    const newProduct = { ...req.body, id: Date.now() };
-    data.products.push(newProduct);
-    writeData(data);
-    res.status(201).json(newProduct);
-});
-
-app.put('/api/products/:id', (req, res) => {
-    const data = readData();
-    const index = data.products.findIndex(p => p.id == req.params.id);
-    if (index !== -1) {
-        data.products[index] = { ...data.products[index], ...req.body };
-        writeData(data);
-        res.json(data.products[index]);
-    } else {
-        res.status(404).json({ error: "Product not found" });
+app.get('/api/products', async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM products ORDER BY created_at DESC');
+        // Map decimal strings to numbers for frontend compatibility
+        const products = result.rows.map(p => ({
+            ...p,
+            price: parseFloat(p.price),
+            discountPrice: p.discount_price ? parseFloat(p.discount_price) : null,
+            imageName: p.image_name,
+            descriptionBlocks: p.description_blocks
+        }));
+        res.json(products);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
-app.delete('/api/products/:id', (req, res) => {
-    const data = readData();
-    data.products = data.products.filter(p => p.id != req.params.id);
-    writeData(data);
-    res.status(204).send();
+app.post('/api/products', async (req, res) => {
+    const p = req.body;
+    const id = p.id || `prod_${Date.now()}`;
+    try {
+        const result = await db.query(
+            `INSERT INTO products (id, name, category, price, discount_price, rating, stock, image_name, images, description, details, description_blocks)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
+            [id, p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks)]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/api/products/:id', async (req, res) => {
+    const p = req.body;
+    try {
+        const result = await db.query(
+            `UPDATE products SET name=$1, category=$2, price=$3, discount_price=$4, rating=$5, stock=$6, image_name=$7, images=$8, description=$9, details=$10, description_blocks=$11
+             WHERE id=$12 RETURNING *`,
+            [p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks), req.params.id]
+        );
+        if (result.rowCount === 0) return res.status(404).json({ error: "Product not found" });
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/products/:id', async (req, res) => {
+    try {
+        await db.query('DELETE FROM products WHERE id=$1', [req.params.id]);
+        res.status(204).send();
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Banners
-app.get('/api/banners', (req, res) => {
-    const data = readData();
-    res.json(data.banners);
+app.get('/api/banners', async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM banners ORDER BY id ASC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-app.put('/api/banners', (req, res) => {
-    const data = readData();
-    data.banners = req.body;
-    writeData(data);
-    res.json(data.banners);
+app.put('/api/banners', async (req, res) => {
+    try {
+        // Simple full replacement for banners
+        await db.query('DELETE FROM banners');
+        for (const b of req.body) {
+            await db.query(
+                'INSERT INTO banners (title, subtitle, cta, image) VALUES ($1, $2, $3, $4)',
+                [b.title, b.subtitle, b.cta, b.image]
+            );
+        }
+        const result = await db.query('SELECT * FROM banners ORDER BY id ASC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Media
-app.get('/api/media', (req, res) => {
-    const data = readData();
-    res.json(data.media);
+app.get('/api/media', async (req, res) => {
+    try {
+        const result = await db.query('SELECT data FROM settings WHERE id=$1', ['media']);
+        res.json(result.rows[0]?.data || []);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-app.post('/api/media', (req, res) => {
-    const data = readData();
-    const newMedia = { ...req.body, id: Date.now() };
-    data.media.push(newMedia);
-    writeData(data);
-    res.status(201).json(newMedia);
+app.post('/api/media', async (req, res) => {
+    try {
+        const result = await db.query('SELECT data FROM settings WHERE id=$1', ['media']);
+        let media = result.rows[0]?.data || [];
+        const newMedia = { ...req.body, id: Date.now() };
+        media.push(newMedia);
+        await db.query('INSERT INTO settings (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data', ['media', JSON.stringify(media)]);
+        res.status(201).json(newMedia);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Orders
-app.get('/api/orders', (req, res) => {
-    const data = readData();
-    res.json(data.orders);
+app.get('/api/orders', async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM orders ORDER BY created_at DESC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-app.post('/api/orders', (req, res) => {
-    const data = readData();
-    const newOrder = { ...req.body, id: Date.now(), status: 'Pending' };
-    data.orders.push(newOrder);
-    writeData(data);
-    res.status(201).json(newOrder);
+app.post('/api/orders', async (req, res) => {
+    try {
+        const result = await db.query(
+            'INSERT INTO orders (data, status) VALUES ($1, $2) RETURNING *',
+            [JSON.stringify(req.body), 'Pending']
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Settings Routes
-app.get('/api/settings', (req, res) => {
-    const data = readData();
-    res.json(data.settings || {});
+app.get('/api/settings', async (req, res) => {
+    try {
+        const result = await db.query('SELECT data FROM settings WHERE id=$1', ['global']);
+        res.json(result.rows[0]?.data || {});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-app.put('/api/settings', (req, res) => {
-    const data = readData();
-    data.settings = req.body;
-    writeData(data);
-    res.json(data.settings);
+app.put('/api/settings', async (req, res) => {
+    try {
+        await db.query(
+            'INSERT INTO settings (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data',
+            ['global', JSON.stringify(req.body)]
+        );
+        res.json(req.body);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
+// Vercel Blob Signature Route
 // Vercel Blob Signature Route
 app.post('/api/upload', async (request, response) => {
     const body = request.body;
@@ -159,18 +196,27 @@ app.post('/api/upload', async (request, response) => {
         return response.status(400).json({ error: error.message });
     }
 });
-app.get('/api/reviews/:productId', (req, res) => {
-    const data = readData();
-    const productReviews = data.reviews.filter(r => r.productId == req.params.productId);
-    res.json(productReviews);
+
+app.get('/api/reviews/:productId', async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM reviews WHERE product_id=$1', [req.params.productId]);
+        res.json(result.rows.map(r => r.data));
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-app.post('/api/reviews', (req, res) => {
-    const data = readData();
-    const newReview = { ...req.body, id: Date.now(), date: new Date().toISOString().split('T')[0] };
-    data.reviews.push(newReview);
-    writeData(data);
-    res.status(201).json(newReview);
+app.post('/api/reviews', async (req, res) => {
+    try {
+        const newReview = { ...req.body, id: Date.now(), date: new Date().toISOString().split('T')[0] };
+        await db.query(
+            'INSERT INTO reviews (product_id, data, date) VALUES ($1, $2, $3)',
+            [req.body.productId, JSON.stringify(newReview), newReview.date]
+        );
+        res.status(201).json(newReview);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Start Server
