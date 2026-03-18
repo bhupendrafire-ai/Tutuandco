@@ -28,6 +28,23 @@ Premium organic pet apparel and accessories.
 - **Mock API Architecture**: Full data persistence via `localStorage` simulating a robust cloud-ready backend.
 - **Operational Automation**: On-the-fly generation of tax invoices and shipping labels during checkout.
 
+## Deployment
+
+### Backend (Railway)
+1.  Connect your GitHub repo to **Railway**.
+2.  In **Settings > General**, set the **Root Directory** to `server`.
+3.  In **Variables**, add:
+    - `BLOB_READ_WRITE_TOKEN`: Your Vercel Blob token.
+    - `PORT`: `3001` (default).
+4.  (Optional) Add a **Railway Volume** mounted to `/app` for `data.json` persistence.
+
+### Assets (Vercel Blob)
+1.  Create a **Blob** store in Vercel Storage.
+2.  Copy the `BLOB_READ_WRITE_TOKEN` to your Railway environment variables and local `.env` file.
+
+### Frontend
+- When deploying the frontend, ensure `VITE_API_URL` environment variable is set to your Railway app URL.
+
 ## Development
 
 ```bash

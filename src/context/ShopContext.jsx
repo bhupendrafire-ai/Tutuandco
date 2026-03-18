@@ -1,5 +1,13 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
+
+const ShopContext = createContext();
+
+export const useShop = () => {
+    const context = useContext(ShopContext);
+    if (!context) throw new Error("useShop must be used within a ShopProvider");
+    return context;
+};
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 // Image Mapper - Resolves imageName from API to actual asset

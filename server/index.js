@@ -128,8 +128,8 @@ app.post('/api/upload', async (request, response) => {
         const jsonResponse = await handleUpload({
             body,
             request,
+            token: process.env.BLOB_READ_WRITE_TOKEN,
             onBeforeGenerateToken: async (pathname) => {
-                // In a real app, verify admin session here
                 return {
                     allowedContentTypes: ['image/jpeg', 'image/png'],
                     tokenPayload: JSON.stringify({

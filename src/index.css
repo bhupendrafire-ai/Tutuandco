@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -37,8 +39,6 @@
     --transition-smooth: all 0.3s ease;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-
 * {
     margin: 0;
     padding: 0;
@@ -48,7 +48,7 @@
 body {
     font-family: var(--font-main);
     background-color: var(--bg-primary);
-    color: var(--color-black);
+    color: var(--color-ebony);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
 }
@@ -94,6 +94,6 @@ button {
 }
 
 .cta-button:hover {
-    background-color: var(--color-earth);
+    background-color: var(--color-terracotta);
     transform: translateY(-1px);
 }
