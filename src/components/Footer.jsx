@@ -1,12 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import { useShop } from '../context/ShopContext';
+
 const Footer = () => {
+    const { settings } = useShop();
     return (
         <footer className="bg-[#EADED0] border-t border-[#C7AF94]/30 py-24">
             <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-16">
                 <div className="space-y-6">
-                    <h3 className="text-2xl font-serif text-black">Tutu & Co</h3>
+                    <h3 className="text-2xl font-serif text-black">{settings.shopName}</h3>
                     <p className="text-[#95714F] text-sm leading-relaxed">
                         Curating organic comfort and timeless style for your most beloved companions. Designed in London, enjoyed worldwide.
                     </p>
@@ -42,7 +45,7 @@ const Footer = () => {
                 </div>
             </div>
             <div className="max-w-7xl mx-auto px-6 mt-24 pt-8 border-t border-[#C7AF94]/20 flex flex-col md:flex-row justify-between items-center text-[10px] text-[#95714F]/60 uppercase tracking-widest font-bold">
-                <span>© 2026 Tutu & Co. Crafted with care.</span>
+                <span>{settings.footerText || `© 2026 ${settings.shopName}. Crafted with care.`}</span>
                 <div className="flex space-x-8 mt-6 md:mt-0">
                     <Link to="/moments" className="hover:text-black transition-colors">User Gallery</Link>
                     <Link to="/blogs" className="hover:text-black transition-colors">Journal</Link>

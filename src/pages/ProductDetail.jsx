@@ -12,7 +12,7 @@ const allImages = Object.values(imageModules).map(m => m.default).filter(img => 
 
 const ProductDetail = () => {
     const { id } = useParams();
-    const { products, addToCart, loading } = useShop();
+    const { products, addToCart, loading, formatPrice, settings, media } = useShop();
     const [selectedImage, setSelectedImage] = useState(null);
     const [reviews, setReviews] = useState([]);
     
@@ -20,7 +20,8 @@ const ProductDetail = () => {
 
     useEffect(() => {
         if (product) {
-            setSelectedImage(getProductImage(product.imageName));
+            const mainImg = product.images?.sort((a,b) => a.sequence - b.sequence)[0]?.url || product.imageName;
+            setSelectedImage(getProductImage(mainImg, media));
             mockApi.getReviews(product.id).then(setReviews);
         }
         window.scrollTo(0, 0);
@@ -59,15 +60,18 @@ const ProductDetail = () => {
                         </motion.div>
                         
                         <div className="grid grid-cols-5 gap-4">
-                            {allImages.slice(0, 10).map((img, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setSelectedImage(img)}
-                                    className={`aspect-square bg-[#EADED0] rounded-sm overflow-hidden border-2 transition-all ${selectedImage === img ? 'border-[#95714F]' : 'border-transparent'}`}
-                                >
-                                    <img src={img} alt="Gallery thumbnail" className="w-full h-full object-cover" />
-                                </button>
-                            ))}
+                            {(product.images?.length > 0 ? product.images.sort((a,b) => a.sequence - b.sequence) : [{url: product.imageName}]).map((imgObj, index) => {
+                                const imgUrl = getProductImage(imgObj.url, media);
+                                return (
+                                    <button
+                                        key={index}
+                                        onClick={() => setSelectedImage(imgUrl)}
+                                        className={`aspect-square bg-[#EADED0] rounded-sm overflow-hidden border-2 transition-all ${selectedImage === imgUrl ? 'border-[#95714F]' : 'border-transparent'}`}
+                                    >
+                                        <img src={imgUrl} alt="Gallery thumbnail" className="w-full h-full object-cover" />
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -85,7 +89,16 @@ const ProductDetail = () => {
                             <span className="text-[#95714F] text-sm">({reviews.length} Reviews)</span>
                         </div>
 
-                        <p className="text-3xl font-light text-black mb-8">${product.price.toFixed(2)}</p>
+                        <div className="flex items-center space-x-4 mb-8">
+                            <p className="text-3xl font-serif text-[#CD664D]">
+                                {formatPrice(product.discountPrice || product.price)}
+                            </p>
+                            {product.discountPrice && (
+                                <p className="text-lg opacity-30 line-through">
+                                    {formatPrice(product.price)}
+                                </p>
+                            )}
+                        </div>
                         
                         <p className="text-[#95714F] leading-relaxed mb-10 text-lg">
                             {product.description}
@@ -133,6 +146,44 @@ const ProductDetail = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Story Builder Blocks */}
+                {product.descriptionBlocks?.length > 0 && (
+                    <section className="mt-32 space-y-32">
+                        {product.descriptionBlocks.map((block, i) => (
+                            <motion.div 
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                key={i} 
+                                className={`flex flex-col ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} gap-16 items-center`}
+                            >
+                                {block.type === 'image' && (
+                                    <div className="flex-1 w-full aspect-[4/5] bg-[#F4F1EA] rounded-sm overflow-hidden shadow-2xl">
+                                        <img src={getProductImage(block.url, media)} className="w-full h-full object-cover" />
+                                    </div>
+                                )}
+                                <div className="flex-1 space-y-8">
+                                    <h3 className="text-4xl md:text-5xl font-serif text-black leading-tight italic">
+                                        {block.title}
+                                    </h3>
+                                    <p className="text-[#95714F] text-lg leading-relaxed">
+                                        {block.content}
+                                    </p>
+                                    {block.bullets?.length > 0 && (
+                                        <ul className="space-y-4">
+                                            {block.bullets.map((bullet, j) => (
+                                                <li key={j} className="flex items-center text-[#3E362E] font-serif italic">
+                                                    <span className="w-2 h-2 rounded-full bg-[#CD664D] mr-4" />
+                                                    {bullet}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </section>
+                )}
 
                 {/* Reviews Section */}
                 <section className="mt-32 pt-32 border-t border-[#EADED0]">

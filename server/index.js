@@ -121,6 +121,19 @@ app.post('/api/orders', (req, res) => {
     res.status(201).json(newOrder);
 });
 
+// Settings Routes
+app.get('/api/settings', (req, res) => {
+    const data = readData();
+    res.json(data.settings || {});
+});
+
+app.put('/api/settings', (req, res) => {
+    const data = readData();
+    data.settings = req.body;
+    writeData(data);
+    res.json(data.settings);
+});
+
 // Vercel Blob Signature Route
 app.post('/api/upload', async (request, response) => {
     const body = request.body;

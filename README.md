@@ -22,11 +22,10 @@ Premium organic pet apparel and accessories.
 
 ## Recent Updates
 
-- **Integrated E-commerce CMS**: Powerful admin dashboard for real-time product management, banner configuration, and media library uploads.
+- **Premium Listing Workspace**: Redesigned product CMS with interactive image sequencing and a smart block-based story builder.
+- **Universal Shop Settings**: Global control over currency, global discounts, and shop-wide identity from a single tab.
 - **Earthy Aesthetic Overhaul**: Premium color palette (`#F4F1EA`, `#CD664D`, `#9FA993`, `#3E362E`) applied globally for a modern, natural feel.
-- **Gallery Intelligence**: Optimized 10-image unique shuffling gallery for a varied and premium homepage presence.
-- **Mock API Architecture**: Full data persistence via `localStorage` simulating a robust cloud-ready backend.
-- **Operational Automation**: On-the-fly generation of tax invoices and shipping labels during checkout.
+- **Storytelling Product Pages**: Dynamic, block-based product descriptions with automated photo-text arrangement.
 
 ## Deployment
 

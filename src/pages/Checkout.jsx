@@ -6,7 +6,7 @@ import { CheckCircle, Truck, FileText, CreditCard, ChevronRight, ArrowLeft } fro
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Checkout = () => {
-    const { cart, getCartTotal, checkout } = useShop();
+    const { cart, getCartTotal, checkout, formatPrice, settings, media } = useShop();
     const { subtotal, discountAmount, shipping, total } = getCartTotal();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -142,7 +142,7 @@ const Checkout = () => {
                                         disabled={loading}
                                         className="w-full bg-black text-white py-5 flex items-center justify-center font-bold tracking-[0.2em] uppercase text-xs hover:bg-[#1a1a1a] transition-all"
                                     >
-                                        {loading ? 'Processing...' : `Place Order • $${total.toFixed(2)}`}
+                                    {loading ? 'Processing...' : `Place Order • ${formatPrice(total)}`}
                                     </button>
                                 </motion.div>
                             )}
@@ -189,35 +189,35 @@ const Checkout = () => {
                                 <div key={item.id} className="flex justify-between items-center text-sm">
                                     <div className="flex items-center space-x-4">
                                         <div className="w-12 h-16 bg-[#F8F4F0] rounded-sm overflow-hidden flex-shrink-0">
-                                            <img src={getProductImage(item.imageName)} className="w-full h-full object-cover" alt="" />
+                                            <img src={getProductImage(item.imageName, media)} className="w-full h-full object-cover" alt="" />
                                         </div>
                                         <div>
                                             <p className="font-medium text-black">{item.name}</p>
                                             <p className="text-[10px] text-[#95714F]">Qty: {item.quantity}</p>
                                         </div>
                                     </div>
-                                    <span className="text-[#95714F] font-bold">${(item.price * item.quantity).toFixed(2)}</span>
+                                    <span className="text-[#95714F] font-bold">{formatPrice((item.discountPrice || item.price) * item.quantity)}</span>
                                 </div>
                             ))}
                             
                             <div className="pt-6 border-t border-[#F8F4F0] space-y-3">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-[#95714F]">Subtotal</span>
-                                    <span className="text-black font-medium">${subtotal.toFixed(2)}</span>
+                                    <span className="text-black font-medium">{formatPrice(subtotal)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-[#95714F]">Shipping</span>
-                                    <span className="text-black font-medium">{shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}</span>
+                                    <span className="text-black font-medium">{shipping === 0 ? 'FREE' : formatPrice(shipping)}</span>
                                 </div>
                                 {discountAmount > 0 && (
                                     <div className="flex justify-between text-sm text-[#8C916C]">
                                         <span>Discount</span>
-                                        <span>-${discountAmount.toFixed(2)}</span>
+                                        <span>-{formatPrice(discountAmount)}</span>
                                     </div>
                                 )}
                                 <div className="pt-4 flex justify-between items-end">
                                     <span className="text-[10px] uppercase font-bold tracking-widest text-black">Total</span>
-                                    <span className="text-2xl font-serif text-black">${total.toFixed(2)}</span>
+                                    <span className="text-2xl font-serif text-black">{formatPrice(total)}</span>
                                 </div>
                             </div>
                          </div>

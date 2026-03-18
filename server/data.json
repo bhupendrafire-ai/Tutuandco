@@ -5,40 +5,85 @@
       "name": "Azure Adventure Collab",
       "category": "Safety",
       "price": 35,
+      "discountPrice": 30,
       "rating": 5,
+      "stock": 50,
       "imageName": "IMG_6214",
-      "description": "Deep azure tones meet modern geometric patterns. This piece is built for durability and style, perfect for long weekends in the hills or city strolls.",
-      "details": ["Utility Grade Fabric", "Reflective Accents", "Quick-Dry Tech", "Comfort-First Design"]
+      "images": [
+        { "url": "IMG_6214", "name": "Main Angle", "isInternal": false, "sequence": 0 },
+        { "url": "IMG_6219", "name": "Side Profile", "isInternal": false, "sequence": 1 }
+      ],
+      "description": "Deep azure tones meet modern geometric patterns. This piece is built for durability and style.",
+      "details": ["Utility Grade Fabric", "Reflective Accents", "Quick-Dry Tech", "Comfort-First Design"],
+      "descriptionBlocks": [
+        {
+          "type": "text",
+          "title": "Built for Exploration",
+          "content": "Our Azure Adventure Collab isn't just a bandana; it's a piece of gear. Tested in the rugged terrains of the north, it's designed to withstand the elements while keeping your pet comfortable.",
+          "bullets": ["Water-resistant finish", "Internal name tag slot", "Cold-shaping technology"]
+        },
+        {
+          "type": "image",
+          "url": "IMG_6214",
+          "title": "Rugged Durability",
+          "content": "Close-up of the reinforced stitching and high-visibility weave."
+        }
+      ]
     },
     {
       "id": "pink",
       "name": "Blossom Heart Bandana",
       "category": "Apparel",
       "price": 32,
+      "discountPrice": null,
       "rating": 5,
+      "stock": 35,
       "imageName": "IMG_6169",
-      "description": "Soft, sweet, and perfectly charming. This pink checkered bandana is adorned with delicate white hearts, bringing a touch of romance to every walk.",
-      "details": ["Premium Linen Blend", "Signature Heart Pattern", "Reinforced Stitching", "Adjustable Fit"]
+      "images": [
+        { "url": "IMG_6169", "name": "Main Shot", "isInternal": false, "sequence": 0 },
+        { "url": "IMG_6176", "name": "Detail Shot", "isInternal": false, "sequence": 1 }
+      ],
+      "description": "Soft, sweet, and perfectly charming. This pink checkered bandana is adorned with delicate white hearts.",
+      "details": ["Premium Linen Blend", "Signature Heart Pattern", "Reinforced Stitching", "Adjustable Fit"],
+      "descriptionBlocks": [
+        {
+          "type": "text",
+          "title": "A Touch of Romance",
+          "content": "Perfect for spring walks and garden parties, the Blossom Heart series is our most loved design for its delicate aesthetic and soft-to-touch feel."
+        }
+      ]
     },
     {
       "id": "orange",
       "name": "Sunset Sage Bandana",
       "category": "Apparel",
       "price": 28,
+      "discountPrice": null,
       "rating": 5,
+      "stock": 42,
       "imageName": "IMG_6154",
-      "description": "A vibrant burst of autumn hues, the Sunset Sage Bandana features an intricate earthy pattern. Designed for the adventurous pet who loves to stand out in the golden hour.",
-      "details": ["100% Organic Cotton", "Hand-stitched in small batches", "Breathable & Lightweight", "Machine Washable"]
+      "images": [
+        { "url": "IMG_6154", "name": "Featured", "isInternal": false, "sequence": 0 }
+      ],
+      "description": "A vibrant burst of autumn hues, the Sunset Sage Bandana features an intricate earthy pattern.",
+      "details": ["100% Organic Cotton", "Hand-stitched in small batches", "Breathable & Lightweight", "Machine Washable"],
+      "descriptionBlocks": []
     },
     {
       "id": "nano-banana",
       "name": "The Nano Banana Special",
       "category": "Limited Edition",
       "price": 30,
+      "discountPrice": 25,
       "rating": 5,
+      "stock": 10,
       "imageName": "nano_banana",
-      "description": "A quirky and minimalist take on the classic banana print. The Nano Banana features tiny, hand-drawn motifs on a soft sage canvas, offering a refined yet playful look.",
-      "details": ["Custom Illustration Print", "Eco-Friendly Dyes", "Extra Soft Finish", "Limited Edition Cloth"]
+      "images": [
+        { "url": "nano_banana", "name": "Main Identity", "isInternal": false, "sequence": 0 }
+      ],
+      "description": "A quirky and minimalist take on the classic banana print. The Nano Banana features tiny, hand-drawn motifs.",
+      "details": ["Custom Illustration Print", "Eco-Friendly Dyes", "Extra Soft Finish", "Limited Edition Cloth"],
+      "descriptionBlocks": []
     }
   ],
   "banners": [
@@ -57,6 +102,18 @@
       "image": "IMG_6169"
     }
   ],
+  "settings": {
+    "currency": {
+      "code": "USD",
+      "symbol": "$",
+      "rate": 1
+    },
+    "globalDiscount": 0,
+    "shopName": "Tutu & Co",
+    "theme": "premium",
+    "footerText": "© 2026 Tutu & Co. Handcrafted for your companions.",
+    "contactEmail": "hello@tutuandco.com"
+  },
   "media": [],
   "orders": [],
   "reviews": []

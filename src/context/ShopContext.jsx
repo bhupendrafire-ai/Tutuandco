@@ -36,11 +36,22 @@ export const getProductImage = (namePart, customMedia = []) => {
     return images[index] || images[0];
 };
 
+export const formatPrice = (amount, settings) => {
+    if (!settings || !settings.currency) return `$${amount}`;
+    const { symbol, rate } = settings.currency;
+    return `${symbol}${(amount * rate).toFixed(2)}`;
+};
+
 export const ShopProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
     const [banners, setBanners] = useState([]);
     const [media, setMedia] = useState([]);
     const [cart, setCart] = useState([]);
+    const [settings, setSettings] = useState({
+        currency: { code: 'USD', symbol: '$', rate: 1 },
+        globalDiscount: 0,
+        shopName: 'Tutu & Co'
+    });
     const [loading, setLoading] = useState(true);
     const [coupon, setCoupon] = useState(null);
 
@@ -64,24 +75,46 @@ export const ShopProvider = ({ children }) => {
 
     const loadData = async () => {
         try {
-            const [productRes, bannerRes, mediaRes] = await Promise.all([
+            const [productRes, bannerRes, mediaRes, settingsRes] = await Promise.all([
                 fetch(`${API_URL}/api/products`),
                 fetch(`${API_URL}/api/banners`),
-                fetch(`${API_URL}/api/media`)
+                fetch(`${API_URL}/api/media`),
+                fetch(`${API_URL}/api/settings`)
             ]);
             
-            const p = await productRes.json();
-            const b = await bannerRes.json();
-            const m = await mediaRes.json();
+            const p = productRes.ok ? await productRes.json() : [];
+            const b = bannerRes.ok ? await bannerRes.json() : [];
+            const m = mediaRes.ok ? await mediaRes.json() : [];
+            const s = settingsRes.ok ? await settingsRes.json() : {
+                currency: { code: 'USD', symbol: '$', rate: 1 },
+                globalDiscount: 0,
+                shopName: 'Tutu & Co'
+            };
 
             setProducts(p || []);
             setBanners(b || []);
             setMedia(m || []);
+            setSettings(s || {
+                currency: { code: 'USD', symbol: '$', rate: 1 },
+                globalDiscount: 0,
+                shopName: 'Tutu & Co'
+            });
         } catch (error) {
             console.error("Failed to load shop data from server", error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const updateSettings = async (newSettings) => {
+        const res = await fetch(`${API_URL}/api/settings`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newSettings)
+        });
+        const data = await res.json();
+        setSettings(data);
+        return data;
     };
 
     const addProduct = async (product) => {
@@ -155,11 +188,13 @@ export const ShopProvider = ({ children }) => {
     const clearCart = () => setCart([]);
 
     const getCartTotal = () => {
-        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const discountAmount = coupon ? subtotal * coupon.discount : 0;
-        const total = subtotal - discountAmount;
+        const subtotal = cart.reduce((sum, item) => sum + ((item.discountPrice || item.price) * item.quantity), 0);
+        const globalDiscountAmount = settings.globalDiscount ? subtotal * (settings.globalDiscount / 100) : 0;
+        const couponDiscountAmount = coupon ? (subtotal - globalDiscountAmount) * coupon.discount : 0;
+        const totalDiscount = globalDiscountAmount + couponDiscountAmount;
+        const total = subtotal - totalDiscount;
         const shipping = total >= 999 ? 0 : 89;
-        return { subtotal, discountAmount, shipping, total: total + shipping };
+        return { subtotal, discountAmount: totalDiscount, shipping, total: total + shipping };
     };
 
     const applyCoupon = async (code) => {
@@ -215,6 +250,9 @@ export const ShopProvider = ({ children }) => {
         updateProduct,
         updateBanners,
         uploadMedia,
+        settings,
+        updateSettings,
+        formatPrice: (amt) => formatPrice(amt, settings),
         refreshData: loadData
     };
 

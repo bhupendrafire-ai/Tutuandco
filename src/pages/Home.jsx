@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { useShop, getProductImage } from '../context/ShopContext';
 
 const Home = () => {
-    const { products, banners, media, loading } = useShop();
+    const { products, banners, media, loading, formatPrice, settings } = useShop();
     const [currentBanner, setCurrentBanner] = useState(0);
     const [galleryImages, setGalleryImages] = useState([]);
 
@@ -159,7 +159,16 @@ const Home = () => {
                                 <span className="text-[10px] uppercase tracking-widest text-[#8C916C] font-bold mb-2 block">{product.category}</span>
                                 <div className="flex justify-between items-start">
                                     <h3 className="text-xl font-serif text-black">{product.name}</h3>
-                                    <p className="text-[#95714F] font-bold">${product.price.toFixed(2)}</p>
+                                <div className="flex flex-col items-end">
+                                    <span className="text-[#CD664D] font-bold">
+                                        {formatPrice(product.discountPrice || product.price)}
+                                    </span>
+                                    {product.discountPrice && (
+                                        <span className="text-[10px] opacity-30 line-through">
+                                            {formatPrice(product.price)}
+                                        </span>
+                                    )}
+                                </div>
                                 </div>
                                 <div className="flex items-center mt-3">
                                     {[...Array(5)].map((_, i) => (

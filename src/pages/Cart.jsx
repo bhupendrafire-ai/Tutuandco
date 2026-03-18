@@ -6,7 +6,7 @@ import { useShop, getProductImage } from '../context/ShopContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Cart = () => {
-    const { cart, removeFromCart, updateCartQuantity, getCartTotal, applyCoupon, coupon } = useShop();
+    const { cart, removeFromCart, updateCartQuantity, getCartTotal, applyCoupon, coupon, formatPrice, settings } = useShop();
     const { subtotal, discountAmount, shipping, total } = getCartTotal();
 
     if (cart.length === 0) {
@@ -53,7 +53,16 @@ const Cart = () => {
                                     <div className="flex-grow text-center sm:text-left">
                                         <span className="text-[10px] uppercase tracking-widest text-[#8C916C] font-bold mb-2 block">{item.category}</span>
                                         <h3 className="text-xl font-serif text-black mb-4">{item.name}</h3>
-                                        <p className="text-[#95714F] font-bold">${item.price.toFixed(2)}</p>
+                                        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mb-4">
+                                            <p className="text-[#CD664D] font-bold">
+                                                {formatPrice(item.discountPrice || item.price)}
+                                            </p>
+                                            {item.discountPrice && (
+                                                <p className="text-sm opacity-30 line-through">
+                                                    {formatPrice(item.price)}
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
 
                                     <div className="flex items-center space-x-6">
@@ -92,32 +101,32 @@ const Cart = () => {
                         <div className="space-y-6 mb-10">
                             <div className="flex justify-between text-sm">
                                 <span className="text-[#95714F]">Subtotal</span>
-                                <span className="text-black font-medium">${subtotal.toFixed(2)}</span>
+                                <span className="text-black font-medium">{formatPrice(subtotal)}</span>
                             </div>
 
                             {coupon && (
                                 <div className="flex justify-between text-sm text-[#8C916C]">
                                     <span>Discount ({coupon.code})</span>
-                                    <span>-${discountAmount.toFixed(2)}</span>
+                                    <span>-{formatPrice(discountAmount)}</span>
                                 </div>
                             )}
 
                             <div className="flex justify-between text-sm">
                                 <span className="text-[#95714F]">Shipping</span>
                                 <span className="text-black font-medium">
-                                    {shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}
+                                    {shipping === 0 ? 'FREE' : formatPrice(shipping)}
                                 </span>
                             </div>
 
                             {shipping > 0 && (
                                 <p className="text-[10px] text-[#95714F]/60 italic font-light">
-                                    Spend ${(999 - total + shipping).toFixed(2)} more for FREE shipping.
+                                    Spend {formatPrice(999 - total + shipping)} more for FREE shipping.
                                 </p>
                             )}
 
                             <div className="pt-6 border-t border-[#C7AF94]/20 flex justify-between items-end">
                                 <span className="text-lg font-serif text-black uppercase tracking-widest text-[10px]">Total</span>
-                                <span className="text-3xl font-serif text-black font-medium">${total.toFixed(2)}</span>
+                                <span className="text-3xl font-serif text-black font-medium">{formatPrice(total)}</span>
                             </div>
                         </div>
 
