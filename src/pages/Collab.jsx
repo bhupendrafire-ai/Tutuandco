@@ -3,13 +3,20 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Mail, ArrowRight } from 'lucide-react';
 import { getProductImage } from '../context/ShopContext';
+import logo from '../assets/logo.png';
+import logoWhite from '../assets/logo-white.png';
+
 
 const Collab = () => {
     return (
         <div className="bg-white min-h-screen pt-32 pb-32">
             <div className="max-w-7xl mx-auto px-6">
                 <header className="text-center mb-32">
-                    <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-[#8C916C] mb-6 block">Tutu & Co Creative</span>
+                    <div className="flex flex-col items-center mb-6">
+                        <img src={logo} alt="Tutu & Co" className="h-10 w-auto mb-2" />
+                        <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-[#8C916C]">Creative</span>
+                    </div>
+
                     <h1 className="text-6xl md:text-8xl font-serif text-black mb-12">Partnerships</h1>
                     <p className="text-[#95714F] max-w-2xl mx-auto text-xl font-light leading-relaxed">
                         We collaborate with artists, independent makers, and visionaries to create limited edition pieces that celebrate pet life.
@@ -24,7 +31,11 @@ const Collab = () => {
                         </div>
                         <div>
                             <span className="text-[10px] uppercase tracking-widest text-[#8C916C] font-bold mb-4 block">Spring 2024 Collection</span>
-                            <h2 className="text-4xl font-serif text-black mb-8">Tutu & Co x Minimalist Artisan</h2>
+                            <div className="flex items-center mb-8">
+                                <img src={logo} alt="Tutu & Co" className="h-8 w-auto mr-4" />
+                                <span className="text-3xl font-serif text-black">x Minimalist Artisan</span>
+                            </div>
+
                             <p className="text-[#95714F] leading-relaxed mb-10 text-lg">
                                 Our latest partnership explores the intersection of traditional weaving techniques and modern pet ergonomics. 
                                 Each piece is numbered and crafted using reclaimed designer fabrics.

@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useShop, getProductImage } from '../context/ShopContext';
+import logo from '../assets/logo.png';
+import logoWhite from '../assets/logo-white.png';
+
 
 const Home = () => {
     const { products, banners, media, loading, formatPrice, settings } = useShop();
@@ -51,7 +54,13 @@ const Home = () => {
         return () => clearInterval(timer);
     }, [banners]);
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center font-serif">Loading Tutu & Co...</div>;
+    if (loading) return (
+        <div className="min-h-screen flex flex-col items-center justify-center font-serif">
+            <img src={logo} alt="Tutu & Co" className="h-16 w-auto mb-4 animate-pulse" />
+            <div className="text-gray-400 text-sm tracking-widest uppercase">Loading</div>
+        </div>
+    );
+
 
     return (
         <div className="pb-20 bg-white">
@@ -74,13 +83,13 @@ const Home = () => {
                             />
                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-center p-6">
                                 <div className="max-w-3xl text-white">
-                                    <motion.span 
+                                    <motion.div 
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="uppercase tracking-[0.4em] text-[10px] font-bold mb-4 block"
+                                        className="mb-6"
                                     >
-                                        Tutu & Co Essentials
-                                    </motion.span>
+                                        <img src={logoWhite} alt="Tutu & Co" className="h-16 w-auto opacity-90" />
+                                    </motion.div>
                                     <motion.h1
                                         initial={{ y: 30, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}
@@ -184,9 +193,13 @@ const Home = () => {
 
             {/* Shuffling Uneven Grid Gallery */}
             <section className="max-w-7xl mx-auto px-6 mt-48">
-                <div className="text-center mb-24">
-                    <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-[#8C916C] block mb-6">Our Community</span>
-                    <h2 className="text-5xl md:text-6xl font-serif text-black">The Tutu & Co Lifestyle</h2>
+                <div className="flex flex-col items-center mb-24">
+                    <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-[#8C916C] block mb-6 text-center">Our Community</span>
+                    <div className="flex flex-col items-center">
+                        <span className="text-gray-400 text-[10px] tracking-widest uppercase mb-4">The</span>
+                        <img src={logo} alt="Tutu & Co" className="h-12 w-auto mb-4" />
+                        <span className="text-gray-400 text-[10px] tracking-widest uppercase">Lifestyle</span>
+                    </div>
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-5 auto-rows-[250px] gap-6">
@@ -264,9 +277,12 @@ const Home = () => {
 
             {/* Moments Teaser */}
             <section className="py-32 bg-white">
-                <div className="max-w-7xl mx-auto px-6 text-center">
+                <div className="max-w-7xl mx-auto px-6 text-center flex flex-col items-center">
                     <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-[#8C916C] mb-6 block">Stay Connected</span>
-                    <h2 className="text-4xl md:text-6xl font-serif text-black mb-10">#TutuAndCo Family</h2>
+                    <div className="flex flex-col items-center mb-10">
+                        <img src={logo} alt="Tutu & Co" className="h-16 w-auto mb-2" />
+                        <span className="text-gray-400 text-[10px] tracking-widest uppercase">Family</span>
+                    </div>
                     <p className="text-[#95714F] mb-16 text-xl font-light">Capture the joy. Share your moments with us.</p>
                     <Link 
                         to="/moments"

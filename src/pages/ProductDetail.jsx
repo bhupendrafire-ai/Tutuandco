@@ -3,6 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ArrowLeft, ShoppingBag, Heart, Shield, Truck, RefreshCcw } from 'lucide-react';
 import { useShop, getProductImage } from '../context/ShopContext';
+import logo from '../assets/logo.png';
+import logoWhite from '../assets/logo-white.png';
+
 import mockApi from '../api/mockApi';
 
 // Import all images from the folder
@@ -77,7 +80,11 @@ const ProductDetail = () => {
 
                     {/* Product Info */}
                     <div className="flex flex-col">
-                        <span className="uppercase tracking-[0.3em] text-[10px] font-bold text-[#8C916C] mb-4">Tutu & Co Signature</span>
+                        <div className="flex items-center mb-4">
+                            <img src={logo} alt="Tutu & Co" className="h-6 w-auto mr-3" />
+                            <span className="uppercase tracking-[0.3em] text-[10px] font-bold text-[#8C916C]">Signature</span>
+                        </div>
+
                         <h1 className="text-4xl md:text-5xl font-serif text-black mb-6">{product.name}</h1>
                         
                         <div className="flex items-center mb-8">

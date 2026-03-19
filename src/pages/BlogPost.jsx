@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, User, Share2 } from 'lucide-react';
 import mockApi from '../api/mockApi';
 import { getProductImage } from '../context/ShopContext';
+import logo from '../assets/logo.png';
+
 
 const BlogPost = () => {
     const { id } = useParams();
@@ -67,10 +69,11 @@ const BlogPost = () => {
                 </article>
 
                 <footer className="mt-24 pt-12 border-t border-[#EADED0] flex flex-col sm:flex-row justify-between items-center gap-8">
-                    <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-full bg-[#8C916C] flex items-center justify-center text-white font-serif text-lg">T</div>
+                    <div className="flex items-center space-x-6">
+                        <img src={logo} alt="Tutu & Co" className="h-8 w-auto" />
+                        <div className="h-8 w-px bg-[#EADED0]" />
                         <div>
-                            <p className="text-sm font-bold text-black uppercase tracking-widest">Tutu & Co Team</p>
+                            <p className="text-sm font-bold text-black uppercase tracking-widest">Global Team</p>
                             <p className="text-xs text-[#95714F]">Pet Apparel Enthusiasts</p>
                         </div>
                     </div>

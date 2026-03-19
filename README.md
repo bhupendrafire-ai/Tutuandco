@@ -22,7 +22,9 @@ Premium organic pet apparel and accessories.
 
 ## Recent Updates
 
+- **Signature Branding Integration**: Replaced all "Tutu & Co" text instances with a refined, high-resolution logo (black and white variants) for a consistent and premium brand identity across the entire platform.
 - **Automated Image Sequencing**: Removed manual main image selection; the product's primary (slug) image is now automatically synced with the first item in the gallery queue for a streamlined workflow.
+
 - **Premium Listing Workspace**: Redesigned product CMS with interactive image sequencing and a smart block-based story builder.
 - **Universal Shop Settings**: Global control over currency, global discounts, and shop-wide identity from a single tab.
 - **Earthy Aesthetic Overhaul**: Premium color palette (`#F4F1EA`, `#CD664D`, `#9FA993`, `#3E362E`) applied globally for a modern, natural feel.

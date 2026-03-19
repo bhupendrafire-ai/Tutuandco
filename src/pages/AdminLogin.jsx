@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Lock } from 'lucide-react';
+import logo from '../assets/logo.png';
+import logoWhite from '../assets/logo-white.png';
+
 
 const AdminLogin = () => {
     const [username, setUsername] = useState('');
@@ -26,7 +29,11 @@ const AdminLogin = () => {
                     <div className="bg-[#95714F] p-4 rounded-full mb-4">
                         <Lock className="text-white" size={32} />
                     </div>
-                    <h1 className="text-3xl font-serif text-black">Tutu & Co Admin</h1>
+                    <div className="flex flex-col items-center">
+                        <img src={logo} alt="Tutu & Co" className="h-12 w-auto mb-2" />
+                        <span className="text-xl font-serif text-[#95714F]">Admin Portal</span>
+                    </div>
+
                     <p className="text-[#95714F]/60 mt-2 text-sm">Please sign in to access the dashboard</p>
                 </div>
 

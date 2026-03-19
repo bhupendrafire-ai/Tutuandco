@@ -4,6 +4,9 @@ import { Camera, Heart, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import mockApi from '../api/mockApi';
 import { getProductImage } from '../context/ShopContext';
+import logo from '../assets/logo.png';
+import logoWhite from '../assets/logo-white.png';
+
 
 const Moments = () => {
     const [moments, setMoments] = useState([]);
@@ -58,9 +61,12 @@ const Moments = () => {
                             />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8 text-white">
                                 <div className="flex justify-between items-center translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                                    <div>
+                                    <div className="flex flex-col">
                                         <p className="font-serif text-xl">{moment.petName}</p>
-                                        <p className="text-[10px] uppercase tracking-widest opacity-80">Tutu & Co Family</p>
+                                        <div className="flex items-center mt-1">
+                                            <img src={logoWhite} alt="Tutu & Co" className="h-4 w-auto mr-2" />
+                                            <span className="text-[10px] uppercase tracking-widest opacity-80">Family</span>
+                                        </div>
                                     </div>
                                     <button className="p-3 bg-white/20 backdrop-blur-md rounded-full hover:bg-white hover:text-red-500 transition-all">
                                         <Heart size={18} />

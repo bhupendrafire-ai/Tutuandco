@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Calendar, User } from 'lucide-react';
 import mockApi from '../api/mockApi';
 import { getProductImage } from '../context/ShopContext';
+import logo from '../assets/logo.png';
+
 
 const Blogs = () => {
     const [posts, setPosts] = useState([]);
@@ -23,7 +25,11 @@ const Blogs = () => {
         <div className="bg-white min-h-screen pt-32 pb-32">
             <div className="max-w-7xl mx-auto px-6">
                 <header className="text-center mb-24">
-                    <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-[#8C916C] mb-6 block">Tutu & Co Journal</span>
+                    <div className="flex flex-col items-center mb-6">
+                        <img src={logo} alt="Tutu & Co" className="h-10 w-auto mb-2" />
+                        <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-[#8C916C]">Journal</span>
+                    </div>
+
                     <h1 className="text-5xl md:text-7xl font-serif text-black mb-8">Stories & Care</h1>
                     <p className="text-[#95714F] max-w-xl mx-auto text-lg font-light leading-relaxed">
                         Insights into pet wellness, sustainable living, and the community behind our craftsmanship.

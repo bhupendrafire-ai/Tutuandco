@@ -13,6 +13,9 @@ import {
 import { upload } from '@vercel/blob/client';
 import { useShop, getProductImage } from '../context/ShopContext';
 import MediaPicker from '../components/MediaPicker';
+import logo from '../assets/logo.png';
+import logoWhite from '../assets/logo-white.png';
+
 
 // Static constant for Vite replacement
 const VITE_API_URL = import.meta.env.VITE_API_URL;
@@ -174,7 +177,7 @@ const AdminDashboard = () => {
         <div className="min-h-screen bg-[#F4F1EA] flex text-[#3E362E] relative">
             {/* Mobile Toolbar */}
             <div className="lg:hidden fixed top-0 left-0 right-0 h-20 bg-white border-b border-[#CD664D]/10 z-50 flex items-center justify-between px-6">
-                <h1 className="text-xl font-serif italic text-[#CD664D]">Tutu & Co Admin</h1>
+                <img src={logo} alt="Tutu & Co" className="h-10 w-auto" />
                 <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-[#CD664D]">
                     {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
