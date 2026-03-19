@@ -870,7 +870,74 @@ const AdminDashboard = () => {
 
                 {activeTab === 'settings' && (
                     <div className="max-w-4xl space-y-12">
-                        {/* Settings content remains inside the file but this chunk handles the end of main and media picker rendering */}
+                        <div className="bg-white p-10 rounded-sm shadow-sm border border-[#CD664D]/5">
+                            <h3 className="text-[11px] uppercase font-bold tracking-[0.2em] text-[#CD664D] mb-8">Base Configuration</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-4">
+                                    <label className="text-[10px] uppercase font-bold text-[#9FA993] block">Shop Identity (Branding Text)</label>
+                                    <input 
+                                        value={localSettings.shopName} 
+                                        onChange={e => setLocalSettings({...localSettings, shopName: e.target.value})}
+                                        className="w-full bg-[#F4F1EA] p-4 font-serif text-xl border-none focus:ring-1 focus:ring-[#CD664D]"
+                                    />
+                                    <p className="text-[9px] text-[#9FA993] italic">Used in emails and SEO meta tags.</p>
+                                </div>
+                                <div className="space-y-4">
+                                    <label className="text-[10px] uppercase font-bold text-[#9FA993] block">Active Currency</label>
+                                    <select 
+                                        value={localSettings.currency?.code} 
+                                        onChange={e => {
+                                            const currencies = {
+                                                USD: { code: 'USD', symbol: '$', rate: 1 },
+                                                INR: { code: 'INR', symbol: '₹', rate: 83 },
+                                                EUR: { code: 'EUR', symbol: '€', rate: 0.92 }
+                                            };
+                                            setLocalSettings({...localSettings, currency: currencies[e.target.value]});
+                                        }}
+                                        className="w-full bg-[#F4F1EA] p-4 font-bold border-none focus:ring-1 focus:ring-[#CD664D] appearance-none"
+                                    >
+                                        <option value="USD">USD ($)</option>
+                                        <option value="INR">INR (₹)</option>
+                                        <option value="EUR">EUR (€)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-[#3E362E] p-10 rounded-sm text-white shadow-xl">
+                            <h3 className="text-[11px] uppercase font-bold tracking-[0.2em] text-[#CD664D] mb-8">Global Discount Override</h3>
+                            <div className="flex flex-col md:flex-row items-center gap-8">
+                                <div className="flex-1 space-y-4">
+                                    <p className="text-sm italic opacity-60">Apply a universal percentage reduction across all product listings instantly. Use 0 to disable.</p>
+                                    <div className="flex items-center space-x-4">
+                                        <input 
+                                            type="range" min="0" max="70" step="5"
+                                            value={localSettings.globalDiscount}
+                                            onChange={e => setLocalSettings({...localSettings, globalDiscount: parseInt(e.target.value)})}
+                                            className="flex-grow accent-[#CD664D]"
+                                        />
+                                        <span className="text-4xl font-serif text-[#CD664D] w-20 text-right">{localSettings.globalDiscount}%</span>
+                                    </div>
+                                </div>
+                                <div className="w-full md:w-px h-px md:h-20 bg-white/10" />
+                                <div className="flex-shrink-0">
+                                    <button 
+                                        onClick={saveSettings}
+                                        className="bg-[#CD664D] text-white px-10 py-5 rounded-sm text-[10px] uppercase font-bold tracking-[0.2em] shadow-lg hover:bg-white hover:text-[#CD664D] transition-all"
+                                    >
+                                        Synchronize All Settings
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-8 rounded-sm border border-yellow-200/50 flex items-start space-x-6">
+                            <AlertCircle className="text-yellow-600 flex-shrink-0" size={24} />
+                            <div>
+                                <h4 className="text-[10px] uppercase font-bold text-yellow-800 mb-1">Safety Protocol</h4>
+                                <p className="text-xs text-yellow-700/80 leading-relaxed">Changes made here are applied globally and in real-time. Ensure all values are verified before synchronization to prevent display inconsistencies in the storefront.</p>
+                            </div>
+                        </div>
                     </div>
                 )}
             </main>
