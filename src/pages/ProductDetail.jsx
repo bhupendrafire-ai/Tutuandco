@@ -117,12 +117,12 @@ const ProductDetail = () => {
                             )}
                         </div>
                         
-                        <p className="text-brand-charcoal/80 leading-relaxed mb-6 text-lg">
+                        <p className="text-brand-charcoal leading-relaxed mb-8 text-lg font-bold">
                             {product.description}
                         </p>
 
-                        <div className="mb-4">
-                            <h3 className="text-[11px] tracking-[0.2em] font-bold text-brand-charcoal/40 uppercase mb-4">Product Details</h3>
+                        <div className="mb-6">
+                            <h3 className="text-[18px] font-bold text-brand-charcoal tracking-tight">Product details</h3>
                         </div>
 
                         <div className="space-y-5 mb-12">
@@ -132,7 +132,7 @@ const ProductDetail = () => {
                                     <span>
                                         {detail.includes(':') ? (
                                             <>
-                                                <span className="font-bold">{detail.split(':')[0]}:</span>
+                                                <span className="font-medium">{detail.split(':')[0]}:</span>
                                                 {detail.split(':')[1]}
                                             </>
                                         ) : detail}
