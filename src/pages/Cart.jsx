@@ -54,7 +54,7 @@ const Cart = () => {
                                         <span className="text-[10px] uppercase tracking-widest text-brand-charcoal opacity-60 font-bold mb-2 block">{item.category}</span>
                                         <h3 className="text-xl font-serif text-brand-charcoal mb-4">{item.name}</h3>
                                         <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mb-4">
-                                            <p className="text-brand-rose font-bold">
+                                            <p className="text-brand-charcoal font-bold">
                                                 {formatPrice(item.discountPrice || item.price)}
                                             </p>
                                             {item.discountPrice && (
@@ -105,7 +105,7 @@ const Cart = () => {
                             </div>
 
                             {coupon && (
-                                <div className="flex justify-between text-sm text-brand-rose">
+                                <div className="flex justify-between text-sm text-brand-charcoal font-medium">
                                     <span>Discount ({coupon.code})</span>
                                     <span>-{formatPrice(discountAmount)}</span>
                                 </div>

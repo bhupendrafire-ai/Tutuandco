@@ -122,7 +122,7 @@ const Policy = () => {
                             </div>
                             <div className="flex justify-between border-b border-brand-charcoal/10 pb-4">
                                 <span>Orders above ₹999</span>
-                                <span className="font-bold text-brand-rose">FREE</span>
+                                <span className="font-bold text-brand-charcoal">FREE</span>
                             </div>
                         </div>
                         <p className="text-[10px] uppercase tracking-widest mt-6 text-brand-charcoal/40">Shipping charges (if applicable) will be calculated at checkout.</p>

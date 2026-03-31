@@ -169,7 +169,7 @@ const Home = () => {
                                 <div className="flex justify-between items-start">
                                     <h3 className="text-xl font-serif text-brand-charcoal">{product.name}</h3>
                                 <div className="flex flex-col items-end">
-                                    <span className="text-brand-rose font-bold">
+                                    <span className="text-brand-charcoal font-bold">
                                         {formatPrice(product.discountPrice || product.price)}
                                     </span>
                                     {product.discountPrice && (

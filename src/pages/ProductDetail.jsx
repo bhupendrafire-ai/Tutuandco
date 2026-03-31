@@ -97,7 +97,7 @@ const ProductDetail = () => {
                         </div>
 
                         <div className="flex items-center space-x-4 mb-8">
-                            <p className="text-3xl font-serif text-brand-rose">
+                            <p className="text-3xl font-serif text-brand-charcoal">
                                 {formatPrice(product.discountPrice || product.price)}
                             </p>
                             {product.discountPrice && (
@@ -182,7 +182,7 @@ const ProductDetail = () => {
                                                     <h4 className="text-xl font-serif italic text-brand-charcoal">{item.title}</h4>
                                                     <ul className="space-y-2">
                                                         {item.bullets?.map((bullet, k) => bullet && (
-                                                            <li key={k} className="text-[10px] uppercase font-bold tracking-widest text-brand-rose">{bullet}</li>
+                                                            <li key={k} className="text-[10px] uppercase font-bold tracking-widest text-brand-charcoal font-medium">{bullet}</li>
                                                         ))}
                                                     </ul>
                                                 </div>

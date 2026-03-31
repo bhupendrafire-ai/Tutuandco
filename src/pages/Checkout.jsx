@@ -209,7 +209,7 @@ const Checkout = () => {
                                     <span className="text-brand-charcoal font-medium">{shipping === 0 ? 'FREE' : formatPrice(shipping)}</span>
                                 </div>
                                 {discountAmount > 0 && (
-                                    <div className="flex justify-between text-sm text-brand-rose">
+                                    <div className="flex justify-between text-sm text-brand-charcoal font-bold">
                                         <span>Discount</span>
                                         <span>-{formatPrice(discountAmount)}</span>
                                     </div>
