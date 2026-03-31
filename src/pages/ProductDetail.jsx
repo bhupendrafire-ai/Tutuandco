@@ -111,11 +111,18 @@ const ProductDetail = () => {
                             {product.description}
                         </p>
 
-                        <div className="space-y-4 mb-12">
+                        <div className="space-y-5 mb-12">
                             {product.details.map((detail, i) => (
-                                <div key={i} className="flex items-center text-sm text-brand-charcoal/70">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/20 mr-3" />
-                                    {detail}
+                                <div key={i} className="flex items-start text-[18px] text-brand-charcoal/80 font-medium">
+                                    <Heart size={16} className="text-brand-rose mr-4 mt-1.5 flex-shrink-0" fill="currentColor" />
+                                    <span>
+                                        {detail.includes(':') ? (
+                                            <>
+                                                <span className="font-bold">{detail.split(':')[0]}:</span>
+                                                {detail.split(':')[1]}
+                                            </>
+                                        ) : detail}
+                                    </span>
                                 </div>
                             ))}
                         </div>
