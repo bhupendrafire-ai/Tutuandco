@@ -7,24 +7,20 @@
 /* Tutu & Co - Design System */
 
 :root {
-    /* Brand Colors - Earthy Refresh */
-    --color-almond: #F4F1EA;
-    --color-terracotta: #CD664D;
-    --color-moss: #9FA993;
-    --color-ebony: #3E362E;
-    --color-sand: #DED6C4;
-
-    /* Neutral Palette */
-    --color-white: #FFFFFF;
-    --color-gray-soft: #FAF9F6;
+    /* Brand Colors - New "Soft Earthy" Palette */
+    --brand-sage: #c5d1c0;
+    --brand-charcoal: #2f2f2f;
+    --brand-rose: #d8b7b1;
+    --brand-cream: #e6dfd4;
+    --brand-gray: #868686;
 
     /* Functional Colors */
-    --bg-primary: var(--color-almond);
-    --bg-secondary: var(--color-sand);
-    --text-primary: var(--color-ebony);
-    --text-secondary: var(--color-terracotta);
-    --accent-primary: var(--color-terracotta);
-    --accent-secondary: var(--color-moss);
+    --bg-primary: var(--brand-sage);
+    --bg-secondary: var(--brand-cream);
+    --text-primary: var(--brand-charcoal);
+    --text-secondary: var(--brand-gray);
+    --accent-primary: var(--brand-rose);
+    --accent-secondary: var(--brand-sage);
 
     /* Typography */
     --font-main: 'Inter', system-ui, -apple-system, sans-serif;

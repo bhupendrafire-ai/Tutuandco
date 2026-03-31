@@ -27,19 +27,19 @@ const Moments = () => {
     };
 
     return (
-        <div className="bg-white min-h-screen pt-32 pb-32">
+        <div className="bg-brand-sage min-h-screen pt-32 pb-32">
             <div className="max-w-7xl mx-auto px-6">
                 <header className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
                     <div className="max-w-2xl">
-                        <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-[#8C916C] mb-6 block">Our Community</span>
-                        <h1 className="text-5xl md:text-7xl font-serif text-black mb-8">Share Your Moments</h1>
-                        <p className="text-[#95714F] text-xl font-light leading-relaxed">
+                        <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-brand-charcoal opacity-60 mb-6 block">Our Community</span>
+                        <h1 className="text-5xl md:text-7xl font-serif text-brand-charcoal mb-8">Share Your Moments</h1>
+                        <p className="text-brand-charcoal/70 text-xl font-light leading-relaxed">
                             A celebration of life with your furry friends. Tag us @TutuAndCo or upload your favorite shots here.
                         </p>
                     </div>
                     <button 
                         onClick={() => setShowUpload(true)}
-                        className="bg-black text-white px-10 py-5 text-[10px] font-bold uppercase tracking-widest flex items-center space-x-3 hover:bg-[#1a1a1a] transition-all shadow-xl"
+                        className="bg-brand-charcoal text-white px-10 py-5 text-[10px] font-bold uppercase tracking-widest flex items-center space-x-3 hover:bg-brand-charcoal/80 transition-all shadow-xl"
                     >
                         <Camera size={16} />
                         <span>Upload Photo</span>
@@ -52,7 +52,7 @@ const Moments = () => {
                             key={moment.id}
                             initial={{ opacity: 0, scale: 0.9 }}
                             whileInView={{ opacity: 1, scale: 1 }}
-                            className="relative group rounded-sm overflow-hidden bg-[#F8F4F0] break-inside-avoid shadow-sm hover:shadow-2xl transition-all duration-500"
+                            className="relative group rounded-sm overflow-hidden bg-brand-cream break-inside-avoid shadow-sm hover:shadow-2xl transition-all duration-500"
                         >
                             <img 
                                 src={getProductImage(moment.imageUrl)} 
@@ -91,19 +91,19 @@ const Moments = () => {
                                 initial={{ scale: 0.9, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 exit={{ scale: 0.9, opacity: 0 }}
-                                className="relative bg-white p-12 rounded-sm max-w-lg w-full shadow-2xl"
+                                className="relative bg-brand-cream p-12 rounded-sm max-w-lg w-full shadow-2xl"
                             >
-                                <h2 className="text-3xl font-serif text-black mb-8">Share a Photo</h2>
+                                <h2 className="text-3xl font-serif text-brand-charcoal mb-8">Share a Photo</h2>
                                 <form onSubmit={handleUpload} className="space-y-6">
-                                    <div className="aspect-video bg-[#F8F4F0] border-2 border-dashed border-[#C7AF94]/30 flex flex-col items-center justify-center text-[#95714F] cursor-pointer hover:border-[#95714F] transition-colors rounded-sm">
+                                    <div className="aspect-video bg-brand-sage/20 border-2 border-dashed border-brand-charcoal/10 flex flex-col items-center justify-center text-brand-charcoal/60 cursor-pointer hover:border-brand-charcoal transition-colors rounded-sm">
                                         <Plus size={32} className="mb-2" />
                                         <span className="text-[10px] uppercase font-bold tracking-widest">Select Image</span>
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] uppercase font-bold text-[#95714F] tracking-widest mb-2">Pet's Name</label>
-                                        <input required className="w-full border border-[#C7AF94]/30 p-4 text-sm focus:border-[#95714F] outline-none" placeholder="e.g. Luna" />
+                                        <label className="block text-[10px] uppercase font-bold text-brand-charcoal/60 tracking-widest mb-2">Pet's Name</label>
+                                        <input required className="w-full border border-brand-charcoal/10 p-4 text-sm focus:border-brand-charcoal outline-none bg-brand-sage/5" placeholder="e.g. Luna" />
                                     </div>
-                                    <button type="submit" className="w-full bg-[#95714F] text-white py-5 font-bold uppercase tracking-widest text-[10px] hover:bg-[#8C916C]">Submit for Approval</button>
+                                    <button type="submit" className="w-full bg-brand-charcoal text-white py-5 font-bold uppercase tracking-widest text-[10px] hover:bg-brand-charcoal/80">Submit for Approval</button>
                                 </form>
                             </motion.div>
                         </div>

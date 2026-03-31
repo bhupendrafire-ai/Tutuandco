@@ -22,16 +22,16 @@ const Blogs = () => {
     if (loading) return <div className="min-h-screen flex items-center justify-center font-serif">Loading Journal...</div>;
 
     return (
-        <div className="bg-white min-h-screen pt-32 pb-32">
+        <div className="bg-brand-sage min-h-screen pt-32 pb-32">
             <div className="max-w-7xl mx-auto px-6">
                 <header className="text-center mb-24">
                     <div className="flex flex-col items-center mb-6">
                         <img src={logo} alt="Tutu & Co" className="h-10 w-auto mb-2" />
-                        <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-[#8C916C]">Journal</span>
+                        <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-brand-charcoal opacity-60">Journal</span>
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-serif text-black mb-8">Stories & Care</h1>
-                    <p className="text-[#95714F] max-w-xl mx-auto text-lg font-light leading-relaxed">
+                    <h1 className="text-5xl md:text-7xl font-serif text-brand-charcoal mb-8">Stories & Care</h1>
+                    <p className="text-brand-charcoal/70 max-w-xl mx-auto text-lg font-light leading-relaxed">
                         Insights into pet wellness, sustainable living, and the community behind our craftsmanship.
                     </p>
                 </header>
@@ -46,24 +46,24 @@ const Blogs = () => {
                             transition={{ delay: index * 0.1 }}
                             className="group"
                         >
-                            <Link to={`/blogs/${post.id}`} className="block overflow-hidden rounded-sm bg-[#F8F4F0] mb-8 aspect-[16/9]">
+                            <Link to={`/blogs/${post.id}`} className="block overflow-hidden rounded-sm bg-brand-cream mb-8 aspect-[16/9] shadow-sm">
                                 <img 
                                     src={getProductImage(post.imageName)} 
                                     alt={post.title} 
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
                                 />
                             </Link>
-                            <div className="flex items-center space-x-6 text-[10px] uppercase tracking-widest text-[#8C916C] font-bold mb-4">
+                            <div className="flex items-center space-x-6 text-[10px] uppercase tracking-widest text-brand-charcoal opacity-60 font-bold mb-4">
                                 <span className="flex items-center"><Calendar size={12} className="mr-2" /> {post.date}</span>
                                 <span className="flex items-center"><User size={12} className="mr-2" /> {post.author}</span>
                             </div>
-                            <h2 className="text-3xl font-serif text-black mb-6 group-hover:text-[#95714F] transition-colors">{post.title}</h2>
-                            <p className="text-[#95714F] leading-relaxed mb-8 flex-grow">
+                            <h2 className="text-3xl font-serif text-brand-charcoal mb-6 group-hover:text-brand-charcoal opacity-80 transition-opacity">{post.title}</h2>
+                            <p className="text-brand-charcoal/70 leading-relaxed mb-8 flex-grow">
                                 {post.excerpt}
                             </p>
                             <Link 
                                 to={`/blogs/${post.id}`} 
-                                className="inline-flex items-center text-[10px] uppercase font-bold tracking-[0.2em] text-black border-b-2 border-black pb-2 hover:opacity-70 transition-all group/link"
+                                className="inline-flex items-center text-[10px] uppercase font-bold tracking-[0.2em] text-brand-charcoal border-b-2 border-brand-charcoal pb-2 hover:opacity-70 transition-all group/link"
                             >
                                 Read Full Story 
                                 <ArrowRight size={14} className="ml-2 group-hover/link:translate-x-1 transition-transform" />

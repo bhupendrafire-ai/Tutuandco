@@ -4,7 +4,7 @@ import Chatbot from './Chatbot';
 
 const Layout = ({ children }) => {
     return (
-        <div className="min-h-screen flex flex-col font-sans selection:bg-[#95714F] selection:text-white">
+        <div className="min-h-screen flex flex-col font-sans selection:bg-brand-charcoal selection:text-white">
             <Header />
             <main className="flex-grow">
                 {children}

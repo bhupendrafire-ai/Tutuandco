@@ -51,10 +51,10 @@ const Chatbot = () => {
                         initial={{ opacity: 0, y: 20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                        className="bg-white w-[380px] h-[550px] shadow-2xl rounded-sm flex flex-col overflow-hidden border border-[#C7AF94]/30"
+                        className="bg-brand-cream w-[380px] h-[550px] shadow-2xl rounded-sm flex flex-col overflow-hidden border border-brand-charcoal/10"
                     >
                         {/* Header */}
-                        <div className="bg-[#95714F] p-6 text-white flex justify-between items-center">
+                        <div className="bg-brand-charcoal p-6 text-white flex justify-between items-center shadow-md">
                             <div>
                                 <h3 className="font-serif text-lg">Tutu Assistant</h3>
                                 <div className="flex items-center text-[10px] opacity-80 uppercase tracking-widest mt-1">
@@ -66,10 +66,10 @@ const Chatbot = () => {
                         </div>
 
                         {/* Messages */}
-                        <div className="flex-grow overflow-y-auto p-6 space-y-4 bg-[#F8F4F0]/50">
+                        <div className="flex-grow overflow-y-auto p-6 space-y-4 bg-brand-sage/20 backdrop-blur-sm">
                             {messages.map(msg => (
                                 <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-[80%] p-4 text-sm ${msg.sender === 'user' ? 'bg-[#95714F] text-white rounded-l-lg rounded-tr-lg shadow-sm' : 'bg-white text-[#95714F] rounded-r-lg rounded-tl-lg shadow-sm'}`}>
+                                    <div className={`max-w-[80%] p-4 text-sm ${msg.sender === 'user' ? 'bg-brand-charcoal text-white rounded-l-lg rounded-tr-lg shadow-sm font-medium' : 'bg-brand-cream text-brand-charcoal rounded-r-lg rounded-tl-lg shadow-sm border border-brand-charcoal/5'}`}>
                                         {msg.text}
                                     </div>
                                 </div>
@@ -82,7 +82,7 @@ const Chatbot = () => {
                                         key={i} 
                                         to={s.link} 
                                         onClick={() => setIsOpen(false)}
-                                        className="text-[10px] uppercase font-bold tracking-widest bg-white border border-[#C7AF94]/30 px-3 py-2 rounded-full text-[#95714F] hover:bg-[#95714F] hover:text-white transition-all flex items-center shadow-sm"
+                                        className="text-[10px] uppercase font-bold tracking-widest bg-brand-cream border border-brand-charcoal/10 px-3 py-2 rounded-full text-brand-charcoal/70 hover:bg-brand-charcoal hover:text-white transition-all flex items-center shadow-sm"
                                     >
                                         {s.label} <ChevronRight size={10} className="ml-1" />
                                     </Link>
@@ -91,14 +91,14 @@ const Chatbot = () => {
                         </div>
 
                         {/* Input */}
-                        <form onSubmit={handleSend} className="p-4 bg-white border-t border-[#C7AF94]/20 flex gap-2">
+                        <form onSubmit={handleSend} className="p-4 bg-brand-cream border-t border-brand-charcoal/10 flex gap-2">
                             <input 
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 placeholder="Type a message..." 
-                                className="flex-grow p-3 text-sm focus:outline-none"
+                                className="flex-grow p-3 text-sm focus:outline-none bg-transparent text-brand-charcoal"
                             />
-                            <button type="submit" className="bg-[#95714F] text-white p-3 rounded-sm hover:bg-[#8C916C] transition-colors">
+                            <button type="submit" className="bg-brand-charcoal text-white p-3 rounded-sm hover:opacity-90 transition-opacity">
                                 <Send size={18} />
                             </button>
                         </form>
@@ -108,10 +108,10 @@ const Chatbot = () => {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => setIsOpen(true)}
-                        className="bg-[#95714F] text-white p-5 rounded-full shadow-2xl flex items-center justify-center hover:bg-[#8C916C] transition-colors relative"
+                        className="bg-brand-charcoal text-white p-5 rounded-full shadow-2xl flex items-center justify-center hover:opacity-90 transition-opacity relative"
                     >
                         <MessageSquare size={24} />
-                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white" />
+                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand-rose rounded-full border-2 border-white" />
                     </motion.button>
                 )}
             </AnimatePresence>

@@ -80,47 +80,47 @@ const MediaPicker = ({ isOpen, onClose, onSelect, multi = false, selectedItems =
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-[#3E362E]/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-brand-charcoal/80 backdrop-blur-sm">
             <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white w-full max-w-5xl h-[80vh] rounded-sm shadow-2xl flex flex-col overflow-hidden"
+                className="bg-brand-cream w-full max-w-5xl h-[80vh] rounded-sm shadow-2xl flex flex-col overflow-hidden border border-brand-charcoal/10"
             >
                 {/* Header */}
-                <div className="p-6 border-b border-[#CD664D]/10 flex justify-between items-center">
+                <div className="p-6 border-b border-brand-charcoal/10 flex justify-between items-center bg-brand-cream">
                     <div>
-                        <h2 className="text-2xl font-serif italic">Media Library</h2>
-                        <p className="text-[10px] uppercase font-bold tracking-widest text-[#9FA993]">
+                        <h2 className="text-2xl font-serif italic text-brand-charcoal">Media Library</h2>
+                        <p className="text-[10px] uppercase font-bold tracking-widest text-brand-charcoal/40">
                             {multi ? 'Select Multiple Assets' : 'Select an Asset'}
                         </p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-[#F4F1EA] rounded-full transition-colors">
+                    <button onClick={onClose} className="p-2 hover:bg-brand-sage/50 rounded-full transition-colors text-brand-charcoal">
                         <X size={24} />
                     </button>
                 </div>
 
                 {/* Toolbar */}
-                <div className="p-6 bg-[#F4F1EA] flex flex-col md:flex-row gap-4 justify-between items-center">
+                <div className="p-6 bg-brand-sage/50 flex flex-col md:flex-row gap-4 justify-between items-center border-b border-brand-charcoal/5">
                     <div className="relative w-full md:w-96">
-                        <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#3E362E]/40" />
+                        <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-charcoal/40" />
                         <input 
                             type="text" 
                             placeholder="Search assets..." 
-                            className="w-full pl-12 pr-4 py-3 bg-white border border-[#CD664D]/10 rounded-sm text-sm focus:outline-none focus:border-[#CD664D]"
+                            className="w-full pl-12 pr-4 py-3 bg-brand-cream border border-brand-charcoal/10 rounded-sm text-sm focus:outline-none focus:border-brand-charcoal text-brand-charcoal"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
                     <div className="flex items-center gap-4 w-full md:w-auto">
-                        <label className="flex-grow md:flex-initial flex items-center justify-center gap-2 bg-[#3E362E] text-white px-6 py-3 rounded-sm text-[10px] uppercase font-bold tracking-widest cursor-pointer hover:bg-[#CD664D] transition-all">
+                        <label className="flex-grow md:flex-initial flex items-center justify-center gap-2 bg-brand-charcoal text-white px-6 py-3 rounded-sm text-[10px] uppercase font-bold tracking-widest cursor-pointer hover:opacity-90 transition-all shadow-md">
                             {isUploading ? 'Uploading...' : <><Upload size={16} /> Upload New</>}
                             <input type="file" className="hidden" onChange={handleFileUpload} disabled={isUploading} accept="image/*" />
                         </label>
                         {multi && (
                             <button 
                                 onClick={handleConfirm}
-                                className="flex-grow md:flex-initial bg-[#CD664D] text-white px-8 py-3 rounded-sm text-[10px] uppercase font-bold tracking-widest hover:bg-[#3E362E] transition-all"
+                                className="flex-grow md:flex-initial bg-brand-charcoal/80 text-white px-8 py-3 rounded-sm text-[10px] uppercase font-bold tracking-widest hover:bg-brand-charcoal transition-all shadow-md"
                             >
                                 Confirm Selection ({localSelected.length})
                             </button>
@@ -139,7 +139,7 @@ const MediaPicker = ({ isOpen, onClose, onSelect, multi = false, selectedItems =
                                 <div 
                                     key={idx}
                                     onClick={() => toggleSelect(item)}
-                                    className={`group relative aspect-square bg-[#F4F1EA] rounded-sm overflow-hidden border-2 cursor-pointer transition-all ${isSelected ? 'border-[#CD664D]' : 'border-transparent hover:border-[#CD664D]/30'}`}
+                                    className={`group relative aspect-square bg-brand-sage/20 rounded-sm overflow-hidden border-2 cursor-pointer transition-all ${isSelected ? 'border-brand-charcoal' : 'border-transparent hover:border-brand-charcoal/30'}`}
                                 >
                                     <img src={item.url} className="w-full h-full object-cover" alt={item.name} />
                                     {item.isStatic && (
@@ -149,15 +149,15 @@ const MediaPicker = ({ isOpen, onClose, onSelect, multi = false, selectedItems =
                                         <p className="text-white text-[10px] font-bold uppercase text-center px-4 truncate w-full">{item.name}</p>
                                     </div>
                                     {isSelected && (
-                                        <div className="absolute top-2 right-2 bg-[#CD664D] text-white p-1 rounded-full shadow-lg">
+                                        <div className="absolute top-2 right-2 bg-brand-charcoal text-white p-1 rounded-full shadow-lg">
                                             <Check size={12} />
                                         </div>
                                     )}
                                     {!multi && isSelected && (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-[#CD664D]/20">
+                                        <div className="absolute inset-0 flex items-center justify-center bg-brand-charcoal/20">
                                             <button 
                                                 onClick={(e) => { e.stopPropagation(); handleConfirm(); }}
-                                                className="bg-[#CD664D] text-white px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest"
+                                                className="bg-brand-charcoal text-white px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest shadow-lg"
                                             >
                                                 Select
                                             </button>

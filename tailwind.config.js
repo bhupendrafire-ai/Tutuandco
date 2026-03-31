@@ -12,6 +12,11 @@ export default {
                 sand: '#C7AF94',
                 almond: '#EADED0',
                 sage: '#ACB087',
+                'brand-sage': '#c5d1c0',
+                'brand-charcoal': '#2f2f2f',
+                'brand-rose': '#d8b7b1',
+                'brand-cream': '#e6dfd4',
+                'brand-gray': '#868686',
             },
             fontFamily: {
                 serif: ['Playfair Display', 'serif'],

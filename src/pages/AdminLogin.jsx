@@ -23,18 +23,18 @@ const AdminLogin = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#EADED0] flex items-center justify-center p-6">
-            <div className="w-full max-w-md bg-white rounded-lg shadow-xl p-10">
+        <div className="min-h-screen bg-brand-sage flex items-center justify-center p-6">
+            <div className="w-full max-w-md bg-brand-cream rounded-lg shadow-xl p-10 border border-brand-charcoal/5">
                 <div className="flex flex-col items-center mb-10">
-                    <div className="bg-[#95714F] p-4 rounded-full mb-4">
+                    <div className="bg-brand-charcoal p-4 rounded-full mb-4 shadow-lg">
                         <Lock className="text-white" size={32} />
                     </div>
                     <div className="flex flex-col items-center">
                         <img src={logo} alt="Tutu & Co" className="h-12 w-auto mb-2" />
-                        <span className="text-xl font-serif text-[#95714F]">Admin Portal</span>
+                        <span className="text-xl font-serif text-brand-charcoal">Admin Portal</span>
                     </div>
 
-                    <p className="text-[#95714F]/60 mt-2 text-sm">Please sign in to access the dashboard</p>
+                    <p className="text-brand-charcoal/40 mt-2 text-sm italic">Please sign in to access the dashboard</p>
                 </div>
 
                 {error && (
@@ -49,34 +49,34 @@ const AdminLogin = () => {
 
                 <form onSubmit={handleLogin} className="space-y-6">
                     <div>
-                        <label className="block text-xs font-bold text-[#95714F] uppercase tracking-wider mb-2">Username</label>
+                        <label className="block text-xs font-bold text-brand-charcoal/60 uppercase tracking-wider mb-2">Username</label>
                         <input
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="w-full bg-[#F5F5F3] border border-[#C7AF94]/30 rounded-md py-3 px-4 focus:outline-none focus:border-[#95714F] text-[#1A1A1A] transition-colors"
+                            className="w-full bg-brand-sage/20 border border-brand-charcoal/10 rounded-md py-3 px-4 focus:outline-none focus:border-brand-charcoal text-brand-charcoal transition-colors"
                             required
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-[#95714F] uppercase tracking-wider mb-2">Password</label>
+                        <label className="block text-xs font-bold text-brand-charcoal/60 uppercase tracking-wider mb-2">Password</label>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-[#F5F5F3] border border-[#C7AF94]/30 rounded-md py-3 px-4 focus:outline-none focus:border-[#95714F] text-[#1A1A1A] transition-colors"
+                            className="w-full bg-brand-sage/20 border border-brand-charcoal/10 rounded-md py-3 px-4 focus:outline-none focus:border-brand-charcoal text-brand-charcoal transition-colors"
                             required
                         />
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-[#95714F] text-white py-4 rounded-md font-medium hover:bg-[#8C916C] transition-colors uppercase tracking-widest text-sm"
+                        className="w-full bg-brand-charcoal text-white py-4 rounded-md font-medium hover:bg-brand-charcoal/90 transition-colors uppercase tracking-widest text-sm shadow-lg"
                     >
                         Enter Dashboard
                     </button>
                 </form>
 
-                <div className="mt-8 text-center text-xs text-[#95714F]/40 hover:text-[#95714F] cursor-pointer">
+                <div className="mt-8 text-center text-xs text-brand-charcoal/40 hover:text-brand-charcoal cursor-pointer transition-colors">
                     Forgot Password?
                 </div>
             </div>

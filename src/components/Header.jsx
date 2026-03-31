@@ -10,11 +10,11 @@ const Header = () => {
     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
-        <header className="sticky top-0 z-50 bg-[#EADED0]/80 backdrop-blur-md border-b border-[#C7AF94]/30">
+        <header className="sticky top-0 z-50 bg-brand-sage/80 backdrop-blur-md border-b border-brand-charcoal/10">
             <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                 {/* Left: Nav Links (Desktop) or Menu (Mobile) */}
                 <div className="flex-1 flex items-center">
-                    <nav className="hidden md:flex items-center space-x-8 text-[#95714F] font-medium uppercase tracking-widest text-[10px]">
+                    <nav className="hidden md:flex items-center space-x-8 text-brand-charcoal font-medium uppercase tracking-widest text-[10px]">
                         <Link to="/" className="hover:opacity-70 transition-opacity">Shop</Link>
                         <Link to="/collab" className="hover:opacity-70 transition-opacity">Collab</Link>
                         <Link to="/blogs" className="hover:opacity-70 transition-opacity">Journal</Link>
@@ -32,7 +32,7 @@ const Header = () => {
                 </div>
 
                 {/* Right: Icons */}
-                <div className="flex-1 flex items-center justify-end space-x-4 md:space-x-6 text-[#95714F]">
+                <div className="flex-1 flex items-center justify-end space-x-4 md:space-x-6 text-brand-charcoal">
                     <button className="hover:opacity-70 transition-opacity">
                         <Search size={20} />
                     </button>
@@ -42,7 +42,7 @@ const Header = () => {
                     <Link to="/cart" className="hover:opacity-70 transition-opacity relative">
                         <ShoppingCart size={20} />
                         {cartCount > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-[#8C916C] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                            <span className="absolute -top-2 -right-2 bg-brand-charcoal text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                                 {cartCount}
                             </span>
                         )}

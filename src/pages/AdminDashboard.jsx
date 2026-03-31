@@ -99,7 +99,7 @@ const AdminDashboard = () => {
         alert("Universal settings synchronized!");
     };
 
-    if (loading || shopLoading) return <div className="min-h-screen flex items-center justify-center font-serif bg-[#F4F1EA] text-[#3E362E]">Accessing Secured Dashboard...</div>;
+    if (loading || shopLoading) return <div className="min-h-screen flex items-center justify-center font-serif bg-brand-sage text-brand-charcoal">Accessing Secured Dashboard...</div>;
 
     const handleFileUpload = async (e, type = 'media') => {
         const file = e.target.files[0];
@@ -161,7 +161,7 @@ const AdminDashboard = () => {
                 setActiveTab(id);
                 setIsSidebarOpen(false);
             }}
-            className={`w-full flex items-center space-x-4 p-4 rounded-sm transition-all ${activeTab === id ? 'bg-[#CD664D] text-white shadow-lg' : 'text-[#3E362E] hover:bg-[#DED6C4]/30'}`}
+            className={`w-full flex items-center space-x-4 p-4 rounded-sm transition-all ${activeTab === id ? 'bg-brand-charcoal text-white shadow-lg' : 'text-brand-charcoal hover:bg-brand-charcoal/5'}`}
         >
             <Icon size={20} />
             <span className="text-[10px] uppercase font-bold tracking-widest">{label}</span>
@@ -174,17 +174,17 @@ const AdminDashboard = () => {
 
 
     return (
-        <div className="min-h-screen bg-[#F4F1EA] flex text-[#3E362E] relative">
+        <div className="min-h-screen bg-brand-sage flex text-brand-charcoal relative">
             {/* Mobile Toolbar */}
-            <div className="lg:hidden fixed top-0 left-0 right-0 h-20 bg-white border-b border-[#CD664D]/10 z-50 flex items-center justify-between px-6">
+            <div className="lg:hidden fixed top-0 left-0 right-0 h-20 bg-brand-cream border-b border-brand-charcoal/10 z-50 flex items-center justify-between px-6">
                 <img src={logo} alt="Tutu & Co" className="h-10 w-auto" />
-                <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-[#CD664D]">
+                <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-brand-charcoal">
                     {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
             </div>
 
             {/* Sidebar */}
-            <aside className={`fixed lg:relative inset-y-0 left-0 w-72 bg-white border-r border-[#CD664D]/10 p-8 flex flex-col pt-32 lg:pt-32 z-[60] transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 shadow-2xl lg:shadow-none'}`}>
+            <aside className={`fixed lg:relative inset-y-0 left-0 w-72 bg-brand-cream border-r border-brand-charcoal/10 p-8 flex flex-col pt-32 lg:pt-32 z-[60] transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 shadow-2xl lg:shadow-none'}`}>
                 <div className="flex-grow space-y-2">
                     <SidebarItem id="overview" icon={LayoutDashboard} label="Overview" />
                     <SidebarItem id="products" icon={Package} label="Product CMS" />
@@ -216,15 +216,15 @@ const AdminDashboard = () => {
             <main className="flex-grow p-6 lg:p-12 pt-28 lg:pt-32 overflow-x-hidden">
 
                 {/* Header */}
-                <header className="flex justify-between items-end mb-12 border-b border-[#CD664D]/10 pb-8">
+                <header className="flex justify-between items-end mb-12 border-b border-brand-charcoal/10 pb-8">
                     <div>
-                        <h1 className="text-4xl font-serif text-[#3E362E] mb-2 lowercase italic capitalize">{activeTab.replace('-', ' ')}</h1>
-                        <p className="text-[#9FA993] text-sm">System status: All systems operational.</p>
+                        <h1 className="text-4xl font-serif text-brand-charcoal mb-2 lowercase italic capitalize">{activeTab.replace('-', ' ')}</h1>
+                        <p className="text-brand-charcoal/60 text-sm">System status: All systems operational.</p>
                     </div>
                     <div className="flex space-x-4">
                         <div className="relative">
-                            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#3E362E]/40" />
-                            <input className="bg-white border border-[#CD664D]/10 pl-12 pr-6 py-3 rounded-sm text-sm focus:outline-none focus:border-[#CD664D]" placeholder="Search data..." />
+                            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-charcoal/40" />
+                            <input className="bg-brand-cream border border-brand-charcoal/10 pl-12 pr-6 py-3 rounded-sm text-sm focus:outline-none focus:border-brand-charcoal" placeholder="Search data..." />
                         </div>
                     </div>
                 </header>
@@ -238,14 +238,14 @@ const AdminDashboard = () => {
                                 { label: 'Active Orders', val: stats.totalOrders, trend: '+4 today', icon: ShoppingCart, color: '#9FA993' },
                                 { label: 'Customers', val: stats.totalCustomers, trend: '+18%', icon: Users, color: '#DED6C4' },
                                 { label: 'Site Health', val: `${stats.health}%`, trend: 'Optimal', icon: TrendingUp, color: '#3E362E' }
-                            ].map((stat, i) => (
-                                <div key={i} className="bg-white p-8 rounded-sm shadow-sm border-b-4" style={{ borderColor: stat.color }}>
+                             ].map((stat, i) => (
+                                <div key={i} className="bg-brand-cream p-8 rounded-sm shadow-sm border-b-4" style={{ borderColor: stat.color === '#CD664D' ? '#3B3B3B' : (stat.color === '#9FA993' ? '#8C916C' : stat.color) }}>
                                     <div className="flex justify-between items-start mb-6">
-                                        <div className="p-3 bg-[#F4F1EA] rounded-sm text-[#CD664D]"><stat.icon size={24} /></div>
+                                        <div className="p-3 bg-brand-sage/50 rounded-sm text-brand-charcoal"><stat.icon size={24} /></div>
                                         <span className="text-[10px] font-bold text-green-600">{stat.trend}</span>
                                     </div>
-                                    <p className="text-[10px] uppercase font-bold tracking-widest text-[#9FA993] mb-1">{stat.label}</p>
-                                    <h3 className="text-3xl font-serif text-[#3E362E]">{stat.val}</h3>
+                                    <p className="text-[10px] uppercase font-bold tracking-widest text-brand-charcoal/40 mb-1">{stat.label}</p>
+                                    <h3 className="text-3xl font-serif text-brand-charcoal">{stat.val}</h3>
                                 </div>
                             ))}
                         </div>
@@ -262,11 +262,11 @@ const AdminDashboard = () => {
                                                 <stop offset="95%" stopColor="#CD664D" stopOpacity={0}/>
                                             </linearGradient>
                                         </defs>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#DED6C4" />
-                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#3E362E'}} />
-                                        <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#3E362E'}} />
-                                        <Tooltip contentStyle={{borderRadius: '0px', border: '1px solid #CD664D'}} />
-                                        <Area type="monotone" dataKey="sales" stroke="#CD664D" fillOpacity={1} fill="url(#colorSales)" strokeWidth={3} />
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#3B3B3B'}} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#3B3B3B'}} />
+                                        <Tooltip contentStyle={{borderRadius: '0px', border: '1px solid #3B3B3B'}} />
+                                        <Area type="monotone" dataKey="sales" stroke="#3B3B3B" fillOpacity={1} fill="url(#colorSales)" strokeWidth={3} />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </div>
@@ -288,7 +288,7 @@ const AdminDashboard = () => {
                                         });
                                         setIsEditingProduct('new');
                                     }}
-                                    className="bg-[#CD664D] text-white px-6 py-3 rounded-sm flex items-center space-x-2 text-[10px] uppercase font-bold tracking-widest"
+                                    className="bg-brand-charcoal text-white px-6 py-3 rounded-sm flex items-center space-x-2 text-[10px] uppercase font-bold tracking-widest shadow-lg"
                                 >
                                     <Plus size={16} />
                                     <span>Add New Product</span>

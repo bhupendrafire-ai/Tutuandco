@@ -63,7 +63,7 @@ const Home = () => {
 
 
     return (
-        <div className="pb-20 bg-white">
+        <div className="pb-20 bg-brand-sage">
             {/* Revolving Banner */}
             <section className="relative h-[85vh] overflow-hidden">
                 <AnimatePresence mode="wait">
@@ -135,10 +135,10 @@ const Home = () => {
             <section className="max-w-7xl mx-auto px-6 mt-32">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                     <div>
-                        <span className="uppercase tracking-[0.3em] text-[10px] font-bold text-[#8C916C]">The Seasonal Edit</span>
-                        <h2 className="text-4xl md:text-5xl font-serif text-black mt-4">Curated Essentials</h2>
+                        <span className="uppercase tracking-[0.3em] text-[10px] font-bold text-brand-charcoal opacity-60">The Seasonal Edit</span>
+                        <h2 className="text-4xl md:text-5xl font-serif text-brand-charcoal mt-4">Curated Essentials</h2>
                     </div>
-                    <Link to="/" className="text-[#95714F] font-bold tracking-widest text-[10px] uppercase border-b-2 border-[#95714F] pb-2 hover:opacity-70 transition-all flex items-center group">
+                    <Link to="/" className="text-brand-charcoal font-bold tracking-widest text-[10px] uppercase border-b-2 border-brand-charcoal pb-2 hover:opacity-70 transition-all flex items-center group">
                         Browse All Collections
                         <ArrowRight size={14} className="ml-2 group-hover:translate-x-1 transition-transform" />
                     </Link>
@@ -151,7 +151,7 @@ const Home = () => {
                             key={product.id}
                             className="group"
                         >
-                            <div className="aspect-[4/5] bg-[#F8F4F0] overflow-hidden rounded-sm relative mb-6 shadow-sm hover:shadow-xl transition-shadow duration-500">
+                            <div className="aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm relative mb-6 shadow-sm hover:shadow-xl transition-shadow duration-500">
                                 <motion.img
                                     src={getProductImage(product.images?.sort((a,b) => a.sequence - b.sequence)[0]?.url || product.imageName)}
                                     alt={product.name}
@@ -167,9 +167,9 @@ const Home = () => {
                             <div>
                                 <span className="text-[10px] uppercase tracking-widest text-[#8C916C] font-bold mb-2 block">{product.category}</span>
                                 <div className="flex justify-between items-start">
-                                    <h3 className="text-xl font-serif text-black">{product.name}</h3>
+                                    <h3 className="text-xl font-serif text-brand-charcoal">{product.name}</h3>
                                 <div className="flex flex-col items-end">
-                                    <span className="text-[#CD664D] font-bold">
+                                    <span className="text-brand-rose font-bold">
                                         {formatPrice(product.discountPrice || product.price)}
                                     </span>
                                     {product.discountPrice && (
@@ -194,11 +194,11 @@ const Home = () => {
             {/* Shuffling Uneven Grid Gallery */}
             <section className="max-w-7xl mx-auto px-6 mt-48">
                 <div className="flex flex-col items-center mb-24">
-                    <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-[#8C916C] block mb-6 text-center">Our Community</span>
+                    <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-brand-charcoal opacity-60 block mb-6 text-center">Our Community</span>
                     <div className="flex flex-col items-center">
-                        <span className="text-gray-400 text-[10px] tracking-widest uppercase mb-4">The</span>
+                        <span className="text-brand-charcoal/40 text-[10px] tracking-widest uppercase mb-4">The</span>
                         <img src={logo} alt="Tutu & Co" className="h-12 w-auto mb-4" />
-                        <span className="text-gray-400 text-[10px] tracking-widest uppercase">Lifestyle</span>
+                        <span className="text-brand-charcoal/40 text-[10px] tracking-widest uppercase">Lifestyle</span>
                     </div>
                 </div>
                 
@@ -218,7 +218,7 @@ const Home = () => {
                                     opacity: { duration: 0.5 }
                                 }}
                                 className={`
-                                    relative bg-[#F4F1EA] overflow-hidden rounded-sm cursor-pointer group shadow-md
+                                    relative bg-brand-cream overflow-hidden rounded-sm cursor-pointer group shadow-md
                                     ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''}
                                     ${index === 4 ? 'md:row-span-2' : ''}
                                     ${index === 5 ? 'md:col-span-2' : ''}
@@ -241,11 +241,11 @@ const Home = () => {
             </section>
 
             {/* Testimonials */}
-            <section className="py-32 bg-[#EADED0]/30 overflow-hidden">
+            <section className="py-32 bg-brand-cream/30 overflow-hidden">
                 <div className="max-w-7xl mx-auto px-6">
                     <header className="text-center mb-20">
-                        <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-[#8C916C] mb-6 block">Kind Words</span>
-                        <h2 className="text-4xl md:text-5xl font-serif text-black">The Community Voice</h2>
+                        <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-brand-charcoal opacity-60 mb-6 block">Kind Words</span>
+                        <h2 className="text-4xl md:text-5xl font-serif text-brand-charcoal">The Community Voice</h2>
                     </header>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                         {[
@@ -264,10 +264,10 @@ const Home = () => {
                                 <div className="flex mb-8 text-[#95714F]">
                                     {[...Array(t.rating)].map((_, j) => <Star key={j} size={16} fill="currentColor" />)}
                                 </div>
-                                <p className="text-black italic font-serif text-lg leading-relaxed mb-10">"{t.text}"</p>
+                                <p className="text-brand-charcoal italic font-serif text-lg leading-relaxed mb-10">"{t.text}"</p>
                                 <div className="flex items-center space-x-4">
-                                    <div className="w-8 h-px bg-[#C7AF94]" />
-                                    <p className="text-[10px] uppercase font-bold tracking-[0.3em] text-[#95714F]">{t.name}</p>
+                                    <div className="w-8 h-px bg-brand-charcoal/20" />
+                                    <p className="text-[10px] uppercase font-bold tracking-[0.3em] text-brand-charcoal/60">{t.name}</p>
                                 </div>
                             </motion.div>
                         ))}
@@ -295,21 +295,21 @@ const Home = () => {
             </section>
 
             {/* Brand Ethos */}
-            <section className="bg-[#F8F4F0] mt-48 py-32 px-6 text-center relative overflow-hidden">
+            <section className="bg-brand-cream mt-48 py-32 px-6 text-center relative overflow-hidden">
                 <div className="max-w-4xl mx-auto relative z-10">
-                    <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-[#8C916C]">Our Philosophy</span>
-                    <h2 className="text-5xl md:text-7xl font-serif text-black mt-8 mb-12 leading-tight">Naturally Sourced.<br/>Designed for Movement.</h2>
-                    <p className="text-[#95714F] leading-relaxed text-2xl italic font-serif opacity-80 max-w-2xl mx-auto">
+                    <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-brand-charcoal opacity-60">Our Philosophy</span>
+                    <h2 className="text-5xl md:text-7xl font-serif text-brand-charcoal mt-8 mb-12 leading-tight">Naturally Sourced.<br/>Designed for Movement.</h2>
+                    <p className="text-brand-charcoal/80 leading-relaxed text-2xl italic font-serif opacity-80 max-w-2xl mx-auto">
                         "At Tutu & Co, we believe our pet companions deserve the same quality of organic materials and thoughtful design as we do."
                     </p>
                     <div className="mt-16 flex flex-col items-center">
-                        <div className="w-px h-24 bg-[#C7AF94] mb-8" />
-                        <Link to="/" className="text-[10px] uppercase tracking-[0.3em] font-bold text-black hover:opacity-70 transition-opacity">Discover Our Story</Link>
+                        <div className="w-px h-24 bg-brand-charcoal/20 mb-8" />
+                        <Link to="/" className="text-[10px] uppercase tracking-[0.3em] font-bold text-brand-charcoal hover:opacity-70 transition-opacity">Discover Our Story</Link>
                     </div>
                 </div>
                 {/* Decorative Elements */}
-                <div className="absolute top-0 left-0 w-64 h-64 bg-[#EADED0] rounded-full -translate-x-1/2 -translate-y-1/2 opacity-30" />
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#8C916C] rounded-full translate-x-1/3 translate-y-1/3 opacity-10" />
+                <div className="absolute top-0 left-0 w-64 h-64 bg-brand-cream/50 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-30" />
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-brand-sage/50 rounded-full translate-x-1/3 translate-y-1/3 opacity-10" />
             </section>
         </div>
     );
