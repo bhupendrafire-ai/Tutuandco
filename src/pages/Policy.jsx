@@ -1,12 +1,96 @@
 
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Shield, RefreshCw, Truck, HeartHandshake } from 'lucide-react';
+import { Shield, RefreshCw, Truck, HeartHandshake, Ruler } from 'lucide-react';
 
 const Policy = () => {
     const { section } = useParams();
 
     const sections = {
+        'sizing': {
+            title: 'Sizing Guide',
+            icon: Ruler,
+            content: (
+                <div className="space-y-10">
+                    <p className="text-xl italic font-serif text-black leading-relaxed">"Finding the right fit for your pet is important — a comfortable bandana is a happy bandana ✨"</p>
+
+                    <div>
+                        <h3 className="text-2xl font-serif text-black mt-10 mb-6 underline underline-offset-8">How to Measure</h3>
+                        <div className="space-y-4">
+                            <p>Use a soft measuring tape and measure around your pet’s neck where the bandana would naturally sit <span className="font-bold text-black">(not too tight, not too loose).</span></p>
+                            <div className="bg-[#F8F4F0] p-6 border-l-4 border-[#8C916C]">
+                                <p className="text-sm italic">"Make sure you can comfortably fit two fingers between the tape and your pet’s neck."</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 className="text-2xl font-serif text-black mt-10 mb-6 underline underline-offset-8">Size Chart</h3>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="border-b border-[#C7AF94]/30 text-[10px] uppercase font-bold text-[#8C916C] tracking-widest">
+                                        <th className="py-4 pr-6">Size</th>
+                                        <th className="py-4 px-6 text-right">Neck Size</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-[#F8F4F0]">
+                                    <tr className="text-[#95714F]">
+                                        <td className="py-4 pr-6 font-bold text-black">Small</td>
+                                        <td className="py-4 px-6 text-right">20 – 30 cm (8 – 12 in)</td>
+                                    </tr>
+                                    <tr className="text-[#95714F]">
+                                        <td className="py-4 pr-6 font-bold text-black">Medium</td>
+                                        <td className="py-4 px-6 text-right">30 – 40 cm (12 – 16 in)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p className="text-[10px] uppercase tracking-widest mt-6 text-[#8C916C] font-bold">(If your pet is between sizes, we recommend sizing up for comfort.)</p>
+                    </div>
+
+                    <div>
+                        <h3 className="text-2xl font-serif text-black mt-10 mb-6 underline underline-offset-8">Find Your Pet’s Size</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="bg-[#EADED0]/30 p-8 rounded-sm">
+                                <h4 className="font-bold text-black uppercase tracking-widest text-xs mb-4">Small (S)</h4>
+                                <p className="text-sm leading-relaxed text-[#95714F]">Ideal for smaller pets such as: Shih Tzu, Lhasa Apso, Pug, Toy Poodle, Dachshund, most adult cats</p>
+                            </div>
+                            <div className="bg-[#EADED0]/30 p-8 rounded-sm">
+                                <h4 className="font-bold text-black uppercase tracking-widest text-xs mb-4">Medium (M)</h4>
+                                <p className="text-sm leading-relaxed text-[#95714F]">Ideal for medium-sized pets such as: Indie (Indian Pariah), Beagle, Cocker Spaniel, French Bulldog, small Indies and mixed breeds</p>
+                            </div>
+                        </div>
+                        <p className="text-[10px] uppercase tracking-widest mt-6 text-[#95714F]/60">General guidelines — always measure your pet for the best fit.</p>
+                    </div>
+
+                    <div className="pt-10 border-t border-[#C7AF94]/30 mt-12 grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div>
+                            <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-4">Adjustable Fit</h3>
+                            <p className="text-sm">Each bandana comes with two adjustable snap button levels, allowing you to customise the fit as needed.</p>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-4">Hardware Quality</h3>
+                            <p className="text-sm italic">"The buttons are high-quality, anti-tarnish snaps designed for durability and everyday wear."</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-[#F8F4F0] p-10 rounded-sm">
+                        <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-6">Fit Tips</h3>
+                        <ul className="space-y-4 text-sm">
+                            <li className="flex items-center">• Fluffy pets may need a slightly larger size</li>
+                            <li className="flex items-center">• For growing pets, consider sizing up</li>
+                            <li className="flex items-center">• The bandana should sit comfortably without restricting movement</li>
+                        </ul>
+                    </div>
+
+                    <div className="pt-10 border-t border-[#C7AF94]/30">
+                         <h4 className="font-bold text-black uppercase tracking-widest text-xs mb-4">Still Unsure?</h4>
+                         <p className="text-sm italic">We’re happy to help! Reach out to us at <span className="font-bold text-black underline">support@tutuandco.com</span> or DM us on Instagram with your pet’s breed and measurements.</p>
+                    </div>
+                </div>
+            )
+        },
         'shipping': {
             title: 'Shipping Policy',
             icon: Truck,
