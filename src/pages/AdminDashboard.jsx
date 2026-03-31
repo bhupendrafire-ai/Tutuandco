@@ -13,6 +13,7 @@ import {
 import { upload } from '@vercel/blob/client';
 import { useShop, getProductImage } from '../context/ShopContext';
 import MediaPicker from '../components/MediaPicker';
+import mockApi from '../api/mockApi';
 import logo from '../assets/logo.png';
 import logoWhite from '../assets/logo-white.png';
 
