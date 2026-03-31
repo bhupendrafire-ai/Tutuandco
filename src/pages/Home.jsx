@@ -78,13 +78,13 @@ const Home = () => {
                                 alt={banners[currentBanner].title}
                                 className="w-full h-full object-cover object-[center_20%] transition-transform duration-1000"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-l from-black/70 via-black/20 to-transparent flex items-center justify-end text-right p-12 md:p-32">
-                                <div className="max-w-xl text-white flex flex-col items-end">
+                            <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/30 to-transparent flex items-center justify-end text-right p-12 md:p-32">
+                                <div className="max-w-xl text-white flex flex-col items-end backdrop-blur-[2px] p-8 rounded-sm">
                                     <motion.h1
                                         initial={{ opacity: 0, x: 20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ duration: 0.8, delay: 0.2 }}
-                                        className="text-4xl md:text-5xl font-medium mb-12 drop-shadow-lg leading-tight text-white/90"
+                                        className="text-4xl md:text-5xl font-medium mb-12 drop-shadow-xl leading-tight text-white/90"
                                     >
                                         {banners[currentBanner].title}
                                     </motion.h1>
