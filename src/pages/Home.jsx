@@ -171,8 +171,8 @@ const Home = () => {
                 </div>
             </section>
 
-            <section className="max-w-7xl mx-auto px-6 mt-48">
-                <div className="flex flex-col items-center mb-24">
+            <section className="max-w-7xl mx-auto px-6 mt-20">
+                <div className="flex flex-col items-center mb-16">
                     <h2 className="text-4xl md:text-5xl font-medium text-brand-charcoal text-center tracking-tight">Our community</h2>
                 </div>
                 
@@ -195,9 +195,9 @@ const Home = () => {
                 </div>
             </section>
 
-            <section className="py-32 bg-brand-cream/30 overflow-hidden">
+            <section className="py-20 bg-brand-cream/30 overflow-hidden">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-24">
+                    <div className="text-center mb-12">
                         <h2 className="text-4xl md:text-6xl font-medium text-brand-charcoal mb-6">Kind words</h2>
                         <div className="w-12 h-1 bg-brand-rose mx-auto opacity-30" />
                     </div>
@@ -228,7 +228,7 @@ const Home = () => {
                 </div>
             </section>
 
-            <section className="py-32 bg-white">
+            <section className="py-20 bg-white">
                 <div className="max-w-7xl mx-auto px-6 text-center flex flex-col items-center">
                     <span className="tracking-[0.3em] text-[10px] font-medium text-[#8C916C] mb-6 block">Stay connected</span>
                     <div className="flex flex-col items-center mb-10">
@@ -245,7 +245,7 @@ const Home = () => {
                 </div>
             </section>
 
-            <section className="bg-brand-cream mt-48 py-32 px-6 text-center relative overflow-hidden">
+            <section className="bg-brand-cream mt-20 py-20 px-6 text-center relative overflow-hidden">
                 <div className="max-w-4xl mx-auto relative z-10">
                     <span className="text-[11px] font-medium text-brand-charcoal opacity-60">Our philosophy</span>
                     <h2 className="text-5xl md:text-7xl font-medium text-brand-charcoal mt-8 mb-12 leading-tight">Naturally Sourced.<br/>Designed for Movement.</h2>
