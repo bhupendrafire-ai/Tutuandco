@@ -785,7 +785,7 @@ const AdminDashboard = () => {
                         ))}
                         
                         <div className="flex justify-center pt-8">
-                            <button className="bg-brand-rose text-brand-charcoal px-12 py-5 rounded-sm text-sm font-medium shadow-xl hover:opacity-80 transition-all">
+                            <button className="bg-brand-rose text-brand-charcoal px-12 py-5 rounded-sm text-[18px] font-medium shadow-xl hover:opacity-80 transition-all">
                                 All configurations synchronized
                             </button>
                         </div>
@@ -861,7 +861,7 @@ const AdminDashboard = () => {
                                         <Printer size={16} />
                                         <span>Invoice</span>
                                     </button>
-                                    <button className="p-4 bg-brand-rose text-brand-charcoal px-8 rounded-sm text-[10px] font-medium hover:opacity-80 transition-colors">Details</button>
+                                    <button className="bg-brand-rose text-brand-charcoal px-12 py-5 text-[18px] font-medium hover:bg-white transition-all shadow-md">Details</button>
                                 </div>
                             </div>
                         ))}

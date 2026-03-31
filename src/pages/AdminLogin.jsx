@@ -70,7 +70,7 @@ const AdminLogin = () => {
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-brand-rose text-brand-charcoal py-4 rounded-md font-medium hover:bg-white transition-colors text-sm shadow-lg"
+                        className="w-full bg-brand-rose text-brand-charcoal py-5 rounded-md font-medium hover:bg-white transition-colors text-[18px] shadow-lg"
                     >
                         Enter dashboard
                     </button>

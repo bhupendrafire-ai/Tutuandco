@@ -109,7 +109,7 @@ const Home = () => {
                                         </h1>
                                         <Link 
                                             to={banners[currentBanner].link || "/"}
-                                            className="inline-block bg-brand-rose text-brand-charcoal px-12 py-5 font-medium text-base hover:bg-white transition-all shadow-xl"
+                                            className="inline-block bg-brand-rose text-brand-charcoal px-14 py-6 font-medium text-[18px] hover:bg-white transition-all shadow-xl"
                                         >
                                             {banners[currentBanner].cta}
                                         </Link>
@@ -253,10 +253,10 @@ const Home = () => {
                     <p className="text-[#95714F] mb-16 text-xl font-light">Capture the joy. Share your moments with us.</p>
                     <Link 
                         to="/moments"
-                        className="inline-flex items-center space-x-6 bg-brand-rose text-brand-charcoal px-14 py-8 text-[14px] font-medium hover:bg-white transition-all shadow-lg"
+                        className="inline-flex items-center space-x-6 bg-brand-rose text-brand-charcoal px-16 py-10 text-[18px] font-medium hover:bg-white transition-all shadow-lg"
                     >
                         <span>Visit the gallery</span>
-                        <ArrowRight size={20} />
+                        <ArrowRight size={24} />
                     </Link>
                 </div>
             </section>

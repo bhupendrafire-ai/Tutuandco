@@ -123,9 +123,9 @@ const ProductDetail = () => {
                          <div className="flex flex-col sm:flex-row gap-4 mb-16">
                             <button 
                                 onClick={handleAddToCart}
-                                className="flex-1 bg-brand-rose text-brand-charcoal py-6 flex items-center justify-center font-medium text-base hover:bg-white transition-all shadow-lg"
+                                className="flex-1 bg-brand-rose text-brand-charcoal py-7 flex items-center justify-center font-medium text-[18px] hover:bg-white transition-all shadow-lg"
                             >
-                                <ShoppingBag size={20} className="mr-2" />
+                                <ShoppingBag size={24} className="mr-3" />
                                 Add to cart
                             </button>
                              <button className="px-8 py-5 border border-brand-charcoal/20 rounded-sm hover:bg-brand-cream/50 transition-colors">
@@ -285,7 +285,7 @@ const ProductDetail = () => {
                                 <span className="text-brand-charcoal/60 font-medium">{(Number(product.rating) || 5).toFixed(1)} out of 5</span>
                             </div>
                         </div>
-                        <button className="text-base font-medium bg-brand-rose text-brand-charcoal px-12 py-5 hover:bg-white transition-all shadow-md">
+                        <button className="text-[18px] font-medium bg-brand-rose text-brand-charcoal px-14 py-6 hover:bg-white transition-all shadow-md">
                             Write a review
                         </button>
                     </div>
@@ -347,7 +347,7 @@ const ProductDetail = () => {
                                     <label className="block text-[11px] font-medium text-brand-charcoal/40 mb-2">Your experience</label>
                                     <textarea required name="comment" rows="4" className="w-full bg-white border border-brand-charcoal/10 p-4 text-sm focus:border-brand-charcoal outline-none" />
                                 </div>
-                                <button type="submit" className="w-full bg-brand-rose text-brand-charcoal py-5 font-medium text-base hover:bg-white transition-all">Post review</button>
+                                <button type="submit" className="w-full bg-brand-rose text-brand-charcoal py-6 font-medium text-[18px] hover:bg-white transition-all">Post review</button>
                             </form>
                         </div>
                     </div>
