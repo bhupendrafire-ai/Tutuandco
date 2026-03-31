@@ -99,7 +99,7 @@ const AdminDashboard = () => {
         alert("Universal settings synchronized!");
     };
 
-    if (loading || shopLoading) return <div className="min-h-screen flex items-center justify-center font-serif bg-brand-sage text-brand-charcoal">Accessing Secured Dashboard...</div>;
+    if (loading || shopLoading) return <div className="min-h-screen flex items-center justify-center font-medium bg-brand-sage text-brand-charcoal">Accessing secured dashboard...</div>;
 
     const handleFileUpload = async (e, type = 'media') => {
         const file = e.target.files[0];
@@ -164,7 +164,7 @@ const AdminDashboard = () => {
             className={`w-full flex items-center space-x-4 p-4 rounded-sm transition-all ${activeTab === id ? 'bg-brand-charcoal text-white shadow-lg' : 'text-brand-charcoal hover:bg-brand-charcoal/5'}`}
         >
             <Icon size={20} />
-            <span className="text-[10px] uppercase font-bold tracking-widest">{label}</span>
+            <span className="text-[11px] font-medium">{label}</span>
         </button>
     );
 
@@ -195,7 +195,7 @@ const AdminDashboard = () => {
                 </div>
                 <button className="flex items-center space-x-4 p-4 text-red-500 hover:bg-red-50 transition-all rounded-sm">
                     <LogOut size={20} />
-                    <span className="text-[10px] uppercase font-bold tracking-widest">Logout</span>
+                    <span className="text-[11px] font-medium">Logout</span>
                 </button>
             </aside>
 
@@ -218,7 +218,7 @@ const AdminDashboard = () => {
                 {/* Header */}
                 <header className="flex justify-between items-end mb-12 border-b border-brand-charcoal/10 pb-8">
                     <div>
-                        <h1 className="text-4xl font-serif text-brand-charcoal mb-2 lowercase italic capitalize">{activeTab.replace('-', ' ')}</h1>
+                        <h1 className="text-4xl font-medium text-brand-charcoal mb-2 capitalize">{activeTab.replace('-', ' ')}</h1>
                         <p className="text-brand-charcoal/60 text-sm">System status: All systems operational.</p>
                     </div>
                     <div className="flex space-x-4">
@@ -242,17 +242,17 @@ const AdminDashboard = () => {
                                 <div key={i} className="bg-brand-cream p-8 rounded-sm shadow-sm border-b-4" style={{ borderColor: stat.color === '#CD664D' ? '#3B3B3B' : (stat.color === '#9FA993' ? '#8C916C' : stat.color) }}>
                                     <div className="flex justify-between items-start mb-6">
                                         <div className="p-3 bg-brand-sage/50 rounded-sm text-brand-charcoal"><stat.icon size={24} /></div>
-                                        <span className="text-[10px] font-bold text-green-600">{stat.trend}</span>
+                                        <span className="text-[11px] font-medium text-green-600">{stat.trend}</span>
                                     </div>
-                                    <p className="text-[10px] uppercase font-bold tracking-widest text-brand-charcoal/40 mb-1">{stat.label}</p>
-                                    <h3 className="text-3xl font-serif text-brand-charcoal">{stat.val}</h3>
+                                    <p className="text-[11px] font-medium text-brand-charcoal/40 mb-1">{stat.label}</p>
+                                    <h3 className="text-3xl font-medium text-brand-charcoal">{stat.val}</h3>
                                 </div>
                             ))}
                         </div>
 
                         {/* Chart */}
-                        <div className="bg-white p-10 rounded-sm shadow-sm border border-[#CD664D]/5">
-                            <h2 className="text-xl font-serif text-[#3E362E] mb-8 italic">Revenue Trends (Weekly)</h2>
+                        <div className="bg-white p-10 rounded-sm shadow-sm border border-brand-charcoal/5">
+                            <h2 className="text-xl font-medium text-brand-charcoal mb-8">Revenue trends (weekly)</h2>
                             <div className="h-[400px]">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <AreaChart data={trendData}>
@@ -276,9 +276,9 @@ const AdminDashboard = () => {
 
                 {activeTab === 'products' && (
                     <div className="space-y-8">
-                        <div className="bg-white p-8 rounded-sm shadow-sm border border-[#CD664D]/10">
+                        <div className="bg-white p-8 rounded-sm shadow-sm border border-brand-charcoal/5">
                             <div className="flex justify-between items-center mb-8">
-                                <h2 className="text-xl font-serif">Product Catalog</h2>
+                                <h2 className="text-xl font-medium">Product catalog</h2>
                                 <button 
                                     onClick={() => {
                                         setProductForm({ 
@@ -288,17 +288,17 @@ const AdminDashboard = () => {
                                         });
                                         setIsEditingProduct('new');
                                     }}
-                                    className="bg-brand-charcoal text-white px-6 py-3 rounded-sm flex items-center space-x-2 text-[10px] uppercase font-bold tracking-widest shadow-lg"
+                                    className="bg-brand-charcoal text-white px-6 py-3 rounded-sm flex items-center space-x-2 text-[11px] font-medium shadow-lg hover:opacity-80 transition-all"
                                 >
                                     <Plus size={16} />
-                                    <span>Add New Product</span>
+                                    <span>Add new product</span>
                                 </button>
                             </div>
                             
                             <div className="overflow-x-auto -mx-8 px-8">
                                 <table className="w-full text-left min-w-[600px]">
-                                    <thead className="bg-[#F4F1EA]">
-                                        <tr className="text-[10px] uppercase font-bold tracking-widest text-[#9FA993]">
+                                    <thead className="bg-brand-cream">
+                                        <tr className="text-[11px] font-medium text-brand-charcoal/40">
                                             <th className="p-6">Product</th>
                                             <th className="p-6">Stock</th>
                                             <th className="p-6">Price</th>
@@ -309,15 +309,15 @@ const AdminDashboard = () => {
                                         {products.map((item) => (
                                             <tr key={item.id} className="hover:bg-[#F4F1EA]/50 transition-colors">
                                                 <td className="p-6 flex items-center space-x-4">
-                                                    <img src={getProductImage(item.images?.[0]?.url || item.imageName, media)} className="w-12 h-12 object-cover rounded-sm border border-[#CD664D]/10" />
-                                                    <span className="font-serif italic text-sm md:text-base line-clamp-1">{item.name}</span>
+                                                    <img src={getProductImage(item.images?.[0]?.url || item.imageName, media)} className="w-12 h-12 object-cover rounded-sm border border-brand-charcoal/10" />
+                                                    <span className="font-medium text-sm md:text-base line-clamp-1">{item.name}</span>
                                                 </td>
                                                 <td className="p-6 text-sm">
-                                                    <span className={`px-3 py-1 text-[10px] font-bold rounded-full ${item.stock < 10 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
+                                                    <span className={`px-3 py-1 text-[10px] font-medium rounded-full ${item.stock < 10 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
                                                         {item.stock} units
                                                     </span>
                                                 </td>
-                                                <td className="p-6 font-bold font-serif text-lg">${item.price}</td>
+                                                <td className="p-6 font-medium text-lg">₹{item.price}</td>
                                                 <td className="p-6 text-right space-x-3 text-[#CD664D]">
                                                     <button onClick={() => {
                                                         setProductForm(item);
@@ -344,13 +344,13 @@ const AdminDashboard = () => {
                                     {/* Modal Header */}
                                     <div className="bg-white border-b border-[#CD664D]/10 p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                                         <div>
-                                            <h2 className="text-2xl md:text-3xl font-serif italic text-[#3E362E]">
-                                                {isEditingProduct === 'new' ? 'New Creation' : `Refining: ${productForm.name}`}
+                                            <h2 className="text-2xl md:text-3xl font-medium text-brand-charcoal">
+                                                {isEditingProduct === 'new' ? 'New creation' : `Refining: ${productForm.name}`}
                                             </h2>
-                                            <p className="text-[10px] uppercase font-bold tracking-widest text-[#9FA993] mt-1">Product ID: {isEditingProduct}</p>
+                                            <p className="text-[10px] font-medium text-brand-charcoal/40 mt-1">Product ID: {isEditingProduct}</p>
                                         </div>
                                         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                                            <button onClick={() => setIsEditingProduct(null)} className="px-4 py-2 text-[10px] uppercase font-bold tracking-widest text-[#9FA993] hover:text-[#3E362E]">Discard</button>
+                                            <button onClick={() => setIsEditingProduct(null)} className="px-4 py-2 text-[10px] font-medium text-brand-charcoal/40 hover:text-brand-charcoal">Discard</button>
                                             <button 
                                                 onClick={async () => {
                                                     const sortedImages = [...(productForm.images || [])].sort((a, b) => a.sequence - b.sequence);
@@ -367,9 +367,9 @@ const AdminDashboard = () => {
                                                     });
                                                     setIsEditingProduct('new');
                                                 }}
-                                                className="bg-[#3E362E] text-white px-6 py-3 rounded-sm text-[10px] uppercase font-bold tracking-widest shadow-lg hover:bg-[#CD664D] transition-all flex-grow md:flex-initial"
+                                                className="bg-brand-charcoal text-white px-6 py-3 rounded-sm text-[11px] font-medium shadow-lg hover:opacity-80 transition-all flex-grow md:flex-initial"
                                             >
-                                                Save & Add Another
+                                                Save & add another
                                             </button>
                                             <button 
                                                 onClick={async () => {
@@ -382,9 +382,9 @@ const AdminDashboard = () => {
                                                     else await updateProduct(isEditingProduct, finalForm);
                                                     setIsEditingProduct(null);
                                                 }}
-                                                className="bg-[#CD664D] text-white px-8 md:px-10 py-3 md:py-4 rounded-sm text-[10px] uppercase font-bold tracking-widest shadow-lg hover:bg-[#3E362E] transition-all flex-grow md:flex-initial"
+                                                className="bg-brand-charcoal text-white px-8 md:px-10 py-3 md:py-4 rounded-sm text-[11px] font-medium shadow-lg hover:opacity-80 transition-all flex-grow md:flex-initial"
                                             >
-                                                Synchronize Listing
+                                                Synchronize listing
                                             </button>
                                         </div>
                                     </div>
@@ -395,45 +395,45 @@ const AdminDashboard = () => {
                                         {/* Row 1: General & Financials */}
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                                             <div className="lg:col-span-2 space-y-8">
-                                                <div className="bg-white p-8 rounded-sm shadow-sm border border-[#CD664D]/5">
-                                                    <h3 className="text-[11px] uppercase font-bold tracking-[0.2em] text-[#CD664D] mb-6">General Identity</h3>
+                                                <div className="bg-white p-8 rounded-sm shadow-sm border border-brand-charcoal/5">
+                                                    <h3 className="text-[11px] font-medium text-brand-charcoal/40 mb-6">General identity</h3>
                                                     <div className="space-y-6">
                                                         <div>
-                                                            <label className="text-[10px] uppercase font-bold text-[#9FA993] mb-2 block">Product Name</label>
-                                                            <input value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="w-full bg-[#F4F1EA] p-5 font-serif text-2xl italic border-none focus:ring-1 focus:ring-[#CD664D]" placeholder="Enter name..." />
+                                                            <label className="text-[11px] font-medium text-brand-charcoal/40 mb-2 block">Product name</label>
+                                                            <input value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="w-full bg-brand-cream/50 p-5 font-medium text-2xl border-none focus:ring-1 focus:ring-brand-charcoal/10" placeholder="Enter name..." />
                                                         </div>
                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                             <div>
-                                                                <label className="text-[10px] uppercase font-bold text-[#9FA993] mb-2 block">Category</label>
-                                                                <input value={productForm.category} onChange={e => setProductForm({...productForm, category: e.target.value})} className="w-full bg-[#F4F1EA] p-4 font-bold border-none" placeholder="e.g. Apparel" />
+                                                                <label className="text-[11px] font-medium text-brand-charcoal/40 mb-2 block">Category</label>
+                                                                <input value={productForm.category} onChange={e => setProductForm({...productForm, category: e.target.value})} className="w-full bg-brand-cream/50 p-4 font-medium border-none" placeholder="e.g. Apparel" />
                                                             </div>
                                                         </div>
 
                                                         <div>
-                                                            <label className="text-[10px] uppercase font-bold text-[#9FA993] mb-2 block">Brief Hook (SEO Description)</label>
-                                                            <textarea rows={3} value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} className="w-full bg-[#F4F1EA] p-5 font-serif border-none resize-none" placeholder="Catchy summary..." />
+                                                            <label className="text-[11px] font-medium text-brand-charcoal/40 mb-2 block">Brief hook (SEO description)</label>
+                                                            <textarea rows={3} value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} className="w-full bg-brand-cream/50 p-5 font-medium border-none resize-none" placeholder="Catchy summary..." />
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div className="space-y-8">
-                                                <div className="bg-white p-8 rounded-sm shadow-sm border border-[#CD664D]/5 h-full">
-                                                    <h3 className="text-[11px] uppercase font-bold tracking-[0.2em] text-[#CD664D] mb-6">Financial Controls</h3>
+                                                <div className="bg-white p-8 rounded-sm shadow-sm border border-brand-charcoal/5 h-full">
+                                                    <h3 className="text-[11px] font-medium text-brand-charcoal/40 mb-6">Financial controls</h3>
                                                     <div className="space-y-6">
                                                         <div className="grid grid-cols-2 gap-4">
-                                                            <div className="p-4 bg-[#F4F1EA] rounded-sm">
-                                                                <label className="text-[9px] uppercase font-bold text-[#9FA993] block mb-1">Base Price ({settings.currency?.symbol})</label>
-                                                                <input type="number" value={productForm.price} onChange={e => setProductForm({...productForm, price: parseFloat(e.target.value)})} className="w-full bg-transparent text-2xl font-serif font-bold p-0 border-none outline-none" />
+                                                            <div className="p-4 bg-brand-cream/50 rounded-sm">
+                                                                <label className="text-[10px] font-medium text-brand-charcoal/40 block mb-1">Base price ({settings.currency?.symbol})</label>
+                                                                <input type="number" value={productForm.price} onChange={e => setProductForm({...productForm, price: parseFloat(e.target.value)})} className="w-full bg-transparent text-2xl font-medium p-0 border-none outline-none" />
                                                             </div>
-                                                            <div className="p-4 bg-[#CD664D]/5 rounded-sm border border-[#CD664D]/10">
-                                                                <label className="text-[9px] uppercase font-bold text-[#CD664D] block mb-1">Discount Price</label>
-                                                                <input type="number" value={productForm.discountPrice || ''} onChange={e => setProductForm({...productForm, discountPrice: e.target.value ? parseFloat(e.target.value) : null})} className="w-full bg-transparent text-2xl font-serif font-bold p-0 border-none outline-none text-[#CD664D]" placeholder="None" />
+                                                            <div className="p-4 bg-brand-charcoal/5 rounded-sm border border-brand-charcoal/5">
+                                                                <label className="text-[10px] font-medium text-brand-charcoal/40 block mb-1">Discount price</label>
+                                                                <input type="number" value={productForm.discountPrice || ''} onChange={e => setProductForm({...productForm, discountPrice: e.target.value ? parseFloat(e.target.value) : null})} className="w-full bg-transparent text-2xl font-medium p-0 border-none outline-none text-brand-charcoal" placeholder="None" />
                                                             </div>
                                                         </div>
-                                                        <div className="p-4 bg-[#F4F1EA] rounded-sm">
-                                                            <label className="text-[9px] uppercase font-bold text-[#9FA993] block mb-1">Available Stock</label>
-                                                            <input type="number" value={productForm.stock} onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} className="w-full bg-transparent text-xl font-bold p-0 border-none outline-none" />
+                                                        <div className="p-4 bg-brand-cream/50 rounded-sm">
+                                                            <label className="text-[10px] font-medium text-brand-charcoal/40 block mb-1">Available stock</label>
+                                                            <input type="number" value={productForm.stock} onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} className="w-full bg-transparent text-xl font-medium p-0 border-none outline-none" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -441,9 +441,9 @@ const AdminDashboard = () => {
                                         </div>
 
                                         {/* Row 2: Image Lounge */}
-                                        <div className="bg-white p-10 rounded-sm shadow-sm border border-[#CD664D]/5">
+                                        <div className="bg-white p-10 rounded-sm shadow-sm border border-brand-charcoal/5">
                                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
-                                                <h3 className="text-[11px] uppercase font-bold tracking-[0.2em] text-[#CD664D]">Image Lounge & Sequencing</h3>
+                                                <h3 className="text-[11px] font-medium text-brand-charcoal/40">Image lounge & sequencing</h3>
                                                 <div className="flex gap-4">
                                                     <button 
                                                         onClick={() => openMediaPicker({
@@ -457,15 +457,15 @@ const AdminDashboard = () => {
                                                                 setProductForm({ ...productForm, images: newImages });
                                                             }
                                                         })}
-                                                        className="flex items-center space-x-2 text-[10px] uppercase font-bold text-[#CD664D] border-b border-[#CD664D] pb-1"
+                                                        className="flex items-center space-x-2 text-[10px] font-medium text-brand-charcoal/40 border-b border-brand-charcoal/10 pb-1"
                                                     >
-                                                        <ImageIcon size={14} /> <span>Pick From Library</span>
+                                                        <ImageIcon size={14} /> <span>Pick from library</span>
                                                     </button>
                                                     <button 
                                                         onClick={() => fileInputRef.current?.click()}
-                                                        className="flex items-center space-x-2 text-[10px] uppercase font-bold text-[#CD664D] border-b border-[#CD664D] pb-1"
+                                                        className="flex items-center space-x-2 text-[10px] font-medium text-brand-charcoal/40 border-b border-brand-charcoal/10 pb-1"
                                                     >
-                                                        <Plus size={14} /> <span>Upload Fresh</span>
+                                                        <Plus size={14} /> <span>Upload fresh</span>
                                                         <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => handleFileUpload(e, 'product_image')} />
                                                     </button>
                                                 </div>
@@ -486,7 +486,7 @@ const AdminDashboard = () => {
                                                                     const newer = [...productForm.images];
                                                                     newer[idx].isInternal = !newer[idx].isInternal;
                                                                     setProductForm({...productForm, images: newer});
-                                                                }} className={`text-[8px] font-bold uppercase ${img.isInternal ? 'text-yellow-400' : 'text-green-400'}`}>
+                                                                }} className={`text-[9px] font-medium ${img.isInternal ? 'text-yellow-400' : 'text-green-400'}`}>
                                                                     {img.isInternal ? 'Internal' : 'Public'}
                                                                 </button>
                                                                 <button onClick={() => {
@@ -499,12 +499,12 @@ const AdminDashboard = () => {
                                                                     const newer = [...productForm.images];
                                                                     newer[idx].sequence--;
                                                                     setProductForm({...productForm, images: newer});
-                                                                }} className="flex-1 bg-white/20 hover:bg-white/40 text-white rounded p-1 text-[8px] uppercase font-bold">Up</button>
+                                                                }} className="flex-1 bg-white/20 hover:bg-white/40 text-white rounded p-1 text-[9px] font-medium">Up</button>
                                                                 <button onClick={() => {
                                                                     const newer = [...productForm.images];
                                                                     newer[idx].sequence++;
                                                                     setProductForm({...productForm, images: newer});
-                                                                }} className="flex-1 bg-white/20 hover:bg-white/40 text-white rounded p-1 text-[8px] uppercase font-bold">Down</button>
+                                                                }} className="flex-1 bg-white/20 hover:bg-white/40 text-white rounded p-1 text-[9px] font-medium">Down</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -516,19 +516,19 @@ const AdminDashboard = () => {
                                         <div className="bg-[#3E362E] p-6 md:p-12 rounded-sm text-white">
                                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
                                                 <div>
-                                                    <h3 className="text-[11px] uppercase font-bold tracking-[0.2em] text-[#CD664D]">Story Builder & Brand Narrative</h3>
-                                                    <p className="text-[10px] text-white/40 mt-1 italic">* Templates for premium visual storytelling</p>
+                                                    <h3 className="text-[11px] font-medium text-brand-charcoal opacity-40">Story builder & brand narrative</h3>
+                                                    <p className="text-[10px] text-white/20 mt-1 italic">* Templates for premium visual storytelling</p>
                                                 </div>
                                                 <div className="flex flex-wrap gap-4">
                                                     <div className="flex bg-white/5 p-1 rounded-sm gap-1 border border-white/10">
-                                                        <button onClick={() => addDescriptionBlock('text')} className="px-4 py-2 text-[9px] uppercase font-bold hover:bg-white hover:text-black transition-all flex items-center gap-2"><Plus size={12}/> Text</button>
-                                                        <button onClick={() => addDescriptionBlock('image')} className="px-4 py-2 text-[9px] uppercase font-bold hover:bg-white hover:text-black transition-all flex items-center gap-2"><ImageIcon size={12}/> Image Row</button>
+                                                        <button onClick={() => addDescriptionBlock('text')} className="px-4 py-2 text-[10px] font-medium hover:bg-white hover:text-black transition-all flex items-center gap-2"><Plus size={12}/> Text</button>
+                                                        <button onClick={() => addDescriptionBlock('image')} className="px-4 py-2 text-[10px] font-medium hover:bg-white hover:text-black transition-all flex items-center gap-2"><ImageIcon size={12}/> Image row</button>
                                                     </div>
                                                     <div className="h-8 w-[1px] bg-white/10 self-center hidden md:block"></div>
-                                                    <button onClick={() => addDescriptionBlock('template', 'wide_banner')} className="px-4 py-2 text-[8px] uppercase font-bold bg-[#CD664D] text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Wide Banner</button>
-                                                    <button onClick={() => addDescriptionBlock('template', 'grid_spotlight')} className="px-4 py-2 text-[8px] uppercase font-bold bg-[#CD664D] text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">4-Grid</button>
-                                                    <button onClick={() => addDescriptionBlock('template', 'overlay_feature')} className="px-4 py-2 text-[8px] uppercase font-bold bg-[#CD664D] text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Overlay</button>
-                                                    <button onClick={() => addDescriptionBlock('template', 'alternating_items')} className="px-4 py-2 text-[8px] uppercase font-bold bg-[#CD664D] text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Alt. Rows</button>
+                                                    <button onClick={() => addDescriptionBlock('template', 'wide_banner')} className="px-4 py-2 text-[10px] font-medium bg-brand-charcoal text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Wide banner</button>
+                                                    <button onClick={() => addDescriptionBlock('template', 'grid_spotlight')} className="px-4 py-2 text-[10px] font-medium bg-brand-charcoal text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">4-Grid</button>
+                                                    <button onClick={() => addDescriptionBlock('template', 'overlay_feature')} className="px-4 py-2 text-[10px] font-medium bg-brand-charcoal text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Overlay</button>
+                                                    <button onClick={() => addDescriptionBlock('template', 'alternating_items')} className="px-4 py-2 text-[10px] font-medium bg-brand-charcoal text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Alt. rows</button>
                                                 </div>
                                             </div>
 
@@ -544,13 +544,13 @@ const AdminDashboard = () => {
 
                                                         {block.template === 'grid_spotlight' || block.template === 'alternating_items' ? (
                                                             <div className="space-y-10">
-                                                                <h4 className="text-[10px] uppercase font-bold text-[#CD664D] mb-6 flex items-center gap-2 border-b border-[#CD664D]/10 pb-2">
+                                                                <h4 className="text-[11px] font-medium text-brand-charcoal opacity-40 mb-6 flex items-center gap-2 border-b border-brand-charcoal/10 pb-2">
                                                                     <Layout size={14} /> {block.template.replace('_', ' ')}
                                                                 </h4>
                                                                 <div className={`grid ${block.template === 'grid_spotlight' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 md:grid-cols-2'} gap-8`}>
                                                                     {block.items.map((item, itemIdx) => (
                                                                         <div key={itemIdx} className="space-y-4 bg-[#F4F1EA]/30 p-4 md:p-6 rounded-sm">
-                                                                            <label className="text-[9px] font-bold text-[#9FA993] uppercase block border-b border-[#CD664D]/5 pb-1">Asset {itemIdx + 1}</label>
+                                                                            <label className="text-[11px] font-medium text-brand-charcoal/40 block pb-1">Asset {itemIdx + 1}</label>
                                                                             <button 
                                                                                 onClick={() => openMediaPicker({
                                                                                     multi: false,
@@ -577,7 +577,7 @@ const AdminDashboard = () => {
                                                                                     newBlocks[idx].items[itemIdx].title = e.target.value;
                                                                                     setProductForm({ ...productForm, descriptionBlocks: newBlocks });
                                                                                 }}
-                                                                                className="w-full text-base font-serif italic border-b border-[#CD664D]/10 py-1 outline-none focus:border-[#CD664D] bg-transparent"
+                                                                                className="w-full text-base font-medium italic border-b border-brand-charcoal/10 py-1 outline-none focus:border-brand-charcoal bg-transparent"
                                                                             />
                                                                             {block.template === 'grid_spotlight' ? (
                                                                                 <div className="space-y-2">
@@ -615,8 +615,8 @@ const AdminDashboard = () => {
                                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                                                                 <div className="space-y-6">
                                                                     <div className="flex items-center gap-2 mb-2">
-                                                                        <span className={`px-2 py-1 text-[8px] uppercase font-bold rounded-sm ${block.template ? 'bg-[#CD664D] text-white' : 'bg-[#3E362E] text-white'}`}>
-                                                                            {block.template || block.type} Block
+                                                                        <span className={`px-2 py-1 text-[10px] font-medium rounded-sm ${block.template ? 'bg-brand-charcoal text-white' : 'bg-brand-charcoal/10 text-brand-charcoal'}`}>
+                                                                            {block.template || block.type} block
                                                                         </span>
                                                                     </div>
                                                                     <input 
@@ -626,7 +626,7 @@ const AdminDashboard = () => {
                                                                             newBlocks[idx].title = e.target.value;
                                                                             setProductForm({ ...productForm, descriptionBlocks: newBlocks });
                                                                         }}
-                                                                        className="w-full bg-transparent border-b border-[#CD664D]/20 p-2 font-serif text-2xl italic outline-none focus:border-[#CD664D]" 
+                                                                        className="w-full bg-transparent border-b border-brand-charcoal/10 p-2 font-medium text-2xl italic outline-none focus:border-brand-charcoal" 
                                                                         placeholder="Header..." 
                                                                     />
                                                                     <textarea 
@@ -643,7 +643,7 @@ const AdminDashboard = () => {
                                                                 </div>
                                                                 {(block.type === 'image' || block.template) && (
                                                                     <div className="space-y-4">
-                                                                        <label className="text-[10px] uppercase font-bold text-[#9FA993]">Visual Asset</label>
+                                                                        <label className="text-[11px] font-medium text-brand-charcoal/40">Visual asset</label>
                                                                         <button 
                                                                             onClick={() => openMediaPicker({
                                                                                 multi: false,
@@ -661,7 +661,7 @@ const AdminDashboard = () => {
                                                                             ) : (
                                                                                 <div className="flex flex-col items-center gap-2">
                                                                                     <ImageIcon size={32} className="text-[#CD664D]/20 group-hover/picker:scale-110 transition-transform" />
-                                                                                    <span className="text-[9px] uppercase font-bold text-[#CD664D]/20">Pick Asset</span>
+                                                                                    <span className="text-[11px] font-medium text-brand-charcoal/40">Pick asset</span>
                                                                                 </div>
                                                                             )}
                                                                         </button>
@@ -684,7 +684,7 @@ const AdminDashboard = () => {
                 {activeTab === 'banners' && (
                     <div className="space-y-12">
                         <div className="flex justify-between items-center mb-8">
-                            <h2 className="text-xl font-serif">Front-Page Identities</h2>
+                            <h2 className="text-xl font-medium">Front-page identities</h2>
                             <div className="flex items-center gap-6">
                                 <button 
                                     onClick={() => {
@@ -696,12 +696,12 @@ const AdminDashboard = () => {
                                         };
                                         updateBanners([...banners, newBanner]);
                                     }}
-                                    className="bg-[#CD664D] text-white px-6 py-3 rounded-sm flex items-center space-x-2 text-[10px] uppercase font-bold tracking-widest shadow-lg hover:bg-[#3E362E] transition-all"
+                                    className="bg-brand-charcoal text-white px-6 py-3 rounded-sm flex items-center space-x-2 text-[11px] font-medium shadow-lg hover:opacity-80 transition-all"
                                 >
                                     <Plus size={16} />
-                                    <span>Initiate New Banner</span>
+                                    <span>Initiate new banner</span>
                                 </button>
-                                <p className="text-[10px] uppercase font-bold tracking-widest text-[#9FA993]">Total Active: {banners.length}</p>
+                                <p className="text-[11px] font-medium text-brand-charcoal/40">Total active: {banners.length}</p>
                             </div>
                         </div>
                         
@@ -709,7 +709,7 @@ const AdminDashboard = () => {
                             <div key={banner.id} className="bg-white p-10 rounded-sm shadow-sm border border-[#CD664D]/10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                                 <div className="space-y-6">
                                     <div className="flex justify-between items-center">
-                                        <h3 className="text-[10px] uppercase font-bold tracking-widest text-[#9FA993]">Hero Banner {index + 1}</h3>
+                                        <h3 className="text-[11px] font-medium text-brand-charcoal opacity-40">Hero banner {index + 1}</h3>
                                         <button 
                                             onClick={() => {
                                                 if (window.confirm('Dissolve this front-page identity?')) {
@@ -725,28 +725,28 @@ const AdminDashboard = () => {
                                     </div>
                                     <div className="space-y-4">
                                         <div className="space-y-1">
-                                            <label className="text-[10px] font-bold text-[#9FA993] uppercase tracking-tighter">Main Title</label>
+                                            <label className="text-[11px] font-medium text-brand-charcoal/40 mb-1 block">Main title</label>
                                             <input 
                                                 defaultValue={banner.title} 
                                                 onBlur={e => {
                                                     const nb = [...banners]; nb[index].title = e.target.value; updateBanners(nb);
                                                 }} 
-                                                className="w-full text-3xl font-serif italic border-b border-[#CD664D]/20 focus:border-[#CD664D] outline-none bg-transparent py-2" 
+                                                className="w-full text-3xl font-medium border-b border-brand-charcoal/10 focus:border-brand-charcoal outline-none bg-transparent py-2" 
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] font-bold text-[#9FA993] uppercase tracking-tighter">Sub-Narrative</label>
+                                            <label className="text-[11px] font-medium text-brand-charcoal/40 mb-1 block">Sub-narrative</label>
                                             <input 
                                                 defaultValue={banner.subtitle} 
                                                 onBlur={e => {
                                                     const nb = [...banners]; nb[index].subtitle = e.target.value; updateBanners(nb);
                                                 }} 
-                                                className="w-full text-[#3E362E]/70 border-b border-[#CD664D]/20 focus:border-[#CD664D] outline-none bg-transparent py-2" 
+                                                className="w-full text-brand-charcoal/70 border-b border-brand-charcoal/10 focus:border-brand-charcoal outline-none bg-transparent py-2" 
                                             />
                                         </div>
                                         <div className="flex space-x-6">
                                             <div className="flex-grow">
-                                                <label className="text-[10px] font-bold text-[#9FA993] uppercase tracking-tighter">Asset Identifier</label>
+                                                <label className="text-[11px] font-medium text-brand-charcoal/40 mb-1 block">Asset identifier</label>
                                                 <button 
                                                     onClick={() => openMediaPicker({
                                                         multi: false,
@@ -755,21 +755,21 @@ const AdminDashboard = () => {
                                                             const nb = [...banners]; nb[index].image = url; updateBanners(nb);
                                                         }
                                                     })}
-                                                    className="w-full text-left text-sm font-bold border-b border-[#CD664D]/20 outline-none bg-transparent py-2 flex justify-between items-center"
+                                                    className="w-full text-left text-sm font-medium border-b border-brand-charcoal/10 outline-none bg-transparent py-2 flex justify-between items-center"
                                                 >
-                                                    <span className="truncate">{banner.image || 'Pick Banner Image'}</span>
-                                                    <Upload size={14} className="text-[#CD664D]" />
+                                                    <span className="truncate">{banner.image || 'Pick banner image'}</span>
+                                                    <Upload size={14} className="text-brand-charcoal/40" />
                                                 </button>
                                             </div>
 
                                             <div>
-                                                <label className="text-[10px] font-bold text-[#9FA993] uppercase tracking-tighter">CTA Label</label>
+                                                <label className="text-[11px] font-medium text-brand-charcoal/40 mb-1 block">CTA label</label>
                                                 <input 
                                                     defaultValue={banner.cta} 
                                                     onBlur={e => {
                                                         const nb = [...banners]; nb[index].cta = e.target.value; updateBanners(nb);
                                                     }} 
-                                                    className="w-full text-sm font-bold border-b border-[#CD664D]/20 outline-none bg-transparent py-2" 
+                                                    className="w-full text-sm font-medium border-b border-brand-charcoal/10 outline-none bg-transparent py-2" 
                                                 />
                                             </div>
                                         </div>
@@ -785,8 +785,8 @@ const AdminDashboard = () => {
                         ))}
                         
                         <div className="flex justify-center pt-8">
-                            <button className="bg-[#3E362E] text-white px-12 py-5 rounded-sm text-[10px] uppercase font-bold tracking-[0.2em] shadow-xl hover:bg-[#CD664D] transition-all">
-                                All Configurations Synchronized
+                            <button className="bg-brand-charcoal text-white px-12 py-5 rounded-sm text-sm font-medium shadow-xl hover:opacity-80 transition-all">
+                                All configurations synchronized
                             </button>
                         </div>
                     </div>
@@ -798,9 +798,9 @@ const AdminDashboard = () => {
                             <div className="border-2 border-dashed border-[#CD664D]/20 rounded-sm p-12 text-center hover:border-[#CD664D]/50 transition-colors cursor-pointer group" onClick={() => fileInputRef.current.click()}>
                                 <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} accept="image/jpeg,image/png" />
                                 <div className="flex flex-col items-center">
-                                    <Upload className="text-[#CD664D] mb-4 group-hover:scale-110 transition-transform" size={48} />
-                                    <h3 className="text-xl font-serif italic mb-2 capitalize">Upload New Identity</h3>
-                                    <p className="text-[#9FA993] text-sm font-bold tracking-widest uppercase text-[10px]">JPEG or PNG up to 10MB</p>
+                                    <Upload className="text-brand-charcoal/40 mb-4 group-hover:scale-110 transition-transform" size={48} />
+                                    <h3 className="text-xl font-medium mb-2">Upload new identity</h3>
+                                    <p className="text-brand-charcoal/40 text-sm font-medium">JPEG or PNG up to 10MB</p>
                                 </div>
                             </div>
                         </div>
@@ -810,7 +810,7 @@ const AdminDashboard = () => {
                                 <div key={item.id} className="group relative bg-white border border-[#CD664D]/10 rounded-sm overflow-hidden aspect-square">
                                     <img src={item.url} className="w-full h-full object-cover" alt={item.name} />
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
-                                        <p className="text-white text-[10px] font-bold uppercase truncate">{item.name}</p>
+                                        <p className="text-white text-[10px] font-medium truncate">{item.name}</p>
                                         <button className="text-white mt-2 hover:text-red-400 absolute top-4 right-4"><Trash2 size={16} /></button>
                                     </div>
                                 </div>
@@ -820,7 +820,7 @@ const AdminDashboard = () => {
                                 <div key={name} className="group relative bg-white border border-[#CD664D]/10 rounded-sm overflow-hidden aspect-square opacity-50">
                                     <img src={getProductImage(name)} className="w-full h-full object-cover" />
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                        <span className="bg-white/80 px-2 py-1 text-[8px] font-bold uppercase tracking-widest">Static Asset</span>
+                                        <span className="bg-white/80 px-2 py-1 text-[8px] font-medium tracking-wide">Static asset</span>
                                     </div>
                                 </div>
                             ))}
@@ -831,37 +831,37 @@ const AdminDashboard = () => {
                 {activeTab === 'orders' && (
                     <div className="space-y-6">
                         {orders.map((order) => (
-                            <div key={order.id} className="bg-white p-8 rounded-sm shadow-sm border border-[#CD664D]/10 flex flex-col md:flex-row justify-between items-center gap-8">
+                            <div key={order.id} className="bg-white p-8 rounded-sm shadow-sm border border-brand-charcoal/5 flex flex-col md:flex-row justify-between items-center gap-8">
                                 <div className="flex items-center space-x-6">
-                                    <div className="w-16 h-16 bg-[#CD664D]/10 rounded-full flex items-center justify-center text-[#CD664D]">
+                                    <div className="w-16 h-16 bg-brand-charcoal/5 rounded-full flex items-center justify-center text-brand-charcoal/40">
                                         <FileText size={24} />
                                     </div>
                                     <div>
-                                        <h3 className="font-serif text-[#3E362E] text-xl">Order #{order.id.slice(-6).toUpperCase()}</h3>
-                                        <p className="text-xs text-[#9FA993] uppercase tracking-widest mt-1 font-bold">{order.customerName} • {new Date(order.createdAt).toLocaleDateString()}</p>
+                                        <h3 className="font-medium text-brand-charcoal text-xl">Order #{order.id.slice(-6).toUpperCase()}</h3>
+                                        <p className="text-xs text-brand-charcoal/40 mt-1 font-medium">{order.customerName} • {new Date(order.createdAt).toLocaleDateString()}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-12">
                                     <div className="text-right">
-                                        <p className="text-[10px] uppercase font-bold text-[#9FA993] tracking-widest mb-1">Status</p>
-                                        <div className="flex items-center text-green-600 text-[10px] font-bold uppercase tracking-widest">
+                                        <p className="text-[10px] font-medium text-brand-charcoal/40 mb-1">Status</p>
+                                        <div className="flex items-center text-green-600 text-[10px] font-medium tracking-wide">
                                             <CheckCircle size={14} className="mr-2" /> {order.status}
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-[10px] uppercase font-bold text-[#9FA993] tracking-widest mb-1">Impact</p>
-                                        <p className="font-serif text-[#3E362E] text-xl font-bold">${order.total.toFixed(2)}</p>
+                                        <p className="text-[10px] font-medium text-brand-charcoal/40 mb-1">Impact</p>
+                                        <p className="font-medium text-brand-charcoal text-xl">₹{order.total.toFixed(2)}</p>
                                     </div>
                                 </div>
                                 <div className="flex space-x-4">
                                     <button 
-                                        onClick={() => alert(`Generating Tax Invoice for Order #${order.id}...`)}
-                                        className="p-4 bg-[#F4F1EA] text-[#CD664D] hover:bg-[#CD664D] hover:text-white transition-all rounded-sm flex items-center space-x-2 text-[10px] uppercase font-bold tracking-widest"
+                                        onClick={() => alert(`Generating tax invoice for order #${order.id}...`)}
+                                        className="p-4 bg-brand-cream text-brand-charcoal/60 hover:bg-brand-charcoal hover:text-white transition-all rounded-sm flex items-center space-x-2 text-[10px] font-medium"
                                     >
                                         <Printer size={16} />
                                         <span>Invoice</span>
                                     </button>
-                                    <button className="p-4 bg-[#3E362E] text-white px-8 rounded-sm text-[10px] uppercase font-bold tracking-widest hover:bg-[#CD664D] transition-colors">Details</button>
+                                    <button className="p-4 bg-brand-charcoal text-white px-8 rounded-sm text-[10px] font-medium hover:opacity-80 transition-colors">Details</button>
                                 </div>
                             </div>
                         ))}
@@ -870,20 +870,20 @@ const AdminDashboard = () => {
 
                 {activeTab === 'settings' && (
                     <div className="max-w-4xl space-y-12">
-                        <div className="bg-white p-10 rounded-sm shadow-sm border border-[#CD664D]/5">
-                            <h3 className="text-[11px] uppercase font-bold tracking-[0.2em] text-[#CD664D] mb-8">Base Configuration</h3>
+                        <div className="bg-white p-10 rounded-sm shadow-sm border border-brand-charcoal/5">
+                            <h3 className="text-[11px] font-medium text-brand-charcoal/40 mb-8">Base configuration</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-4">
-                                    <label className="text-[10px] uppercase font-bold text-[#9FA993] block">Shop Identity (Branding Text)</label>
+                                    <label className="text-[11px] font-medium text-brand-charcoal/40 block">Shop identity (branding text)</label>
                                     <input 
                                         value={localSettings.shopName} 
                                         onChange={e => setLocalSettings({...localSettings, shopName: e.target.value})}
-                                        className="w-full bg-[#F4F1EA] p-4 font-serif text-xl border-none focus:ring-1 focus:ring-[#CD664D]"
+                                        className="w-full bg-brand-cream p-4 font-medium text-xl border-none focus:ring-1 focus:ring-brand-charcoal/10"
                                     />
-                                    <p className="text-[9px] text-[#9FA993] italic">Used in emails and SEO meta tags.</p>
+                                    <p className="text-[10px] text-brand-charcoal/40 italic">Used in emails and SEO meta tags.</p>
                                 </div>
                                 <div className="space-y-4">
-                                    <label className="text-[10px] uppercase font-bold text-[#9FA993] block">Active Currency</label>
+                                    <label className="text-[11px] font-medium text-brand-charcoal/40 block">Active currency</label>
                                     <select 
                                         value={localSettings.currency?.code} 
                                         onChange={e => {
@@ -894,7 +894,7 @@ const AdminDashboard = () => {
                                             };
                                             setLocalSettings({...localSettings, currency: currencies[e.target.value]});
                                         }}
-                                        className="w-full bg-[#F4F1EA] p-4 font-bold border-none focus:ring-1 focus:ring-[#CD664D] appearance-none"
+                                        className="w-full bg-brand-cream p-4 font-medium border-none focus:ring-1 focus:ring-brand-charcoal/10 appearance-none"
                                     >
                                         <option value="USD">USD ($)</option>
                                         <option value="INR">INR (₹)</option>
@@ -904,8 +904,8 @@ const AdminDashboard = () => {
                             </div>
                         </div>
 
-                        <div className="bg-[#3E362E] p-10 rounded-sm text-white shadow-xl">
-                            <h3 className="text-[11px] uppercase font-bold tracking-[0.2em] text-[#CD664D] mb-8">Global Discount Override</h3>
+                        <div className="bg-brand-charcoal p-10 rounded-sm text-white shadow-xl">
+                            <h3 className="text-[11px] font-medium opacity-40 mb-8">Global discount override</h3>
                             <div className="flex flex-col md:flex-row items-center gap-8">
                                 <div className="flex-1 space-y-4">
                                     <p className="text-sm italic opacity-60">Apply a universal percentage reduction across all product listings instantly. Use 0 to disable.</p>
@@ -914,18 +914,18 @@ const AdminDashboard = () => {
                                             type="range" min="0" max="70" step="5"
                                             value={localSettings.globalDiscount}
                                             onChange={e => setLocalSettings({...localSettings, globalDiscount: parseInt(e.target.value)})}
-                                            className="flex-grow accent-[#CD664D]"
+                                            className="flex-grow accent-white"
                                         />
-                                        <span className="text-4xl font-serif text-[#CD664D] w-20 text-right">{localSettings.globalDiscount}%</span>
+                                        <span className="text-4xl font-medium w-20 text-right">{localSettings.globalDiscount}%</span>
                                     </div>
                                 </div>
                                 <div className="w-full md:w-px h-px md:h-20 bg-white/10" />
                                 <div className="flex-shrink-0">
                                     <button 
                                         onClick={saveSettings}
-                                        className="bg-[#CD664D] text-white px-10 py-5 rounded-sm text-[10px] uppercase font-bold tracking-[0.2em] shadow-lg hover:bg-white hover:text-[#CD664D] transition-all"
+                                        className="bg-white text-brand-charcoal px-10 py-5 rounded-sm text-sm font-medium shadow-lg hover:bg-brand-sage transition-all"
                                     >
-                                        Synchronize All Settings
+                                        Synchronize all settings
                                     </button>
                                 </div>
                             </div>
@@ -934,7 +934,7 @@ const AdminDashboard = () => {
                         <div className="bg-white p-8 rounded-sm border border-yellow-200/50 flex items-start space-x-6">
                             <AlertCircle className="text-yellow-600 flex-shrink-0" size={24} />
                             <div>
-                                <h4 className="text-[10px] uppercase font-bold text-yellow-800 mb-1">Safety Protocol</h4>
+                                <h4 className="text-[11px] font-medium text-yellow-800 mb-1">Safety protocol</h4>
                                 <p className="text-xs text-yellow-700/80 leading-relaxed">Changes made here are applied globally and in real-time. Ensure all values are verified before synchronization to prevent display inconsistencies in the storefront.</p>
                             </div>
                         </div>

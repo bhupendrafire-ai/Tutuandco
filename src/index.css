@@ -110,8 +110,6 @@ button {
     padding: 12px 32px;
     border-radius: var(--radius-sm);
     font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
     transition: var(--transition-smooth);
 }
 

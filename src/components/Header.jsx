@@ -14,7 +14,7 @@ const Header = () => {
             <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                 {/* Left: Nav Links (Desktop) or Menu (Mobile) */}
                 <div className="flex-1 flex items-center">
-                    <nav className="hidden md:flex items-center space-x-8 text-brand-charcoal font-medium uppercase tracking-widest text-[10px]">
+                    <nav className="hidden md:flex items-center space-x-8 text-brand-charcoal font-medium text-sm">
                         <Link to="/" className="hover:opacity-70 transition-opacity">Shop</Link>
                         <Link to="/collab" className="hover:opacity-70 transition-opacity">Collab</Link>
                         <Link to="/blogs" className="hover:opacity-70 transition-opacity">Journal</Link>

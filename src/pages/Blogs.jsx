@@ -19,17 +19,17 @@ const Blogs = () => {
         });
     }, []);
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center font-serif">Loading Journal...</div>;
+    if (loading) return <div className="min-h-screen flex items-center justify-center font-medium">Loading journal...</div>;
 
     return (
         <div className="bg-brand-sage min-h-screen pt-32 pb-32">
             <div className="max-w-7xl mx-auto px-6">
                 <header className="text-center mb-24">
                     <div className="flex flex-col items-center mb-6">
-                        <span className="uppercase tracking-[0.4em] text-[10px] font-medium text-brand-charcoal opacity-60">Journal</span>
+                        <span className="text-[11px] font-medium text-brand-charcoal opacity-40">Journal</span>
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-serif text-brand-charcoal mb-8">Stories & Care</h1>
+                    <h1 className="text-5xl md:text-7xl font-semibold text-brand-charcoal mb-8">Stories & care</h1>
                     <p className="text-brand-charcoal/70 max-w-xl mx-auto text-lg font-light leading-relaxed">
                         Insights into pet wellness, sustainable living, and the community behind our craftsmanship.
                     </p>
@@ -52,19 +52,19 @@ const Blogs = () => {
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
                                 />
                             </Link>
-                            <div className="flex items-center space-x-6 text-[10px] uppercase tracking-widest text-brand-charcoal opacity-60 font-medium mb-4">
+                            <div className="flex items-center space-x-6 text-[11px] text-brand-charcoal opacity-40 font-medium mb-4">
                                 <span className="flex items-center"><Calendar size={12} className="mr-2" /> {post.date}</span>
                                 <span className="flex items-center"><User size={12} className="mr-2" /> {post.author}</span>
                             </div>
-                            <h2 className="text-3xl font-serif text-brand-charcoal mb-6 group-hover:text-brand-charcoal opacity-80 transition-opacity">{post.title}</h2>
+                            <h2 className="text-3xl font-medium text-brand-charcoal mb-6 group-hover:opacity-60 transition-opacity">{post.title}</h2>
                             <p className="text-brand-charcoal/70 leading-relaxed mb-8 flex-grow">
                                 {post.excerpt}
                             </p>
                             <Link 
                                 to={`/blogs/${post.id}`} 
-                                className="inline-flex items-center text-[10px] uppercase font-medium tracking-[0.2em] text-brand-charcoal border-b-2 border-brand-charcoal pb-2 hover:opacity-70 transition-all group/link"
+                                className="inline-flex items-center text-[10px] font-medium text-brand-charcoal border-b-2 border-brand-charcoal pb-2 hover:opacity-70 transition-all group/link"
                             >
-                                Read Full Story 
+                                Read story 
                                 <ArrowRight size={14} className="ml-2 group-hover/link:translate-x-1 transition-transform" />
                             </Link>
                         </motion.div>

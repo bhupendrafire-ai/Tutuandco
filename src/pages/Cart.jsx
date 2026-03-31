@@ -15,12 +15,12 @@ const Cart = () => {
                 <div className="w-24 h-24 bg-brand-cream rounded-full flex items-center justify-center mb-8 shadow-sm">
                     <ShoppingBag size={40} className="text-brand-charcoal/20" />
                 </div>
-                <h2 className="text-3xl font-serif text-brand-charcoal mb-4">Your cart is empty</h2>
+                <h2 className="text-3xl font-medium text-brand-charcoal mb-4">Your cart is empty</h2>
                 <p className="text-brand-charcoal/60 mb-12 text-center max-w-md">
                     Explore our collections and find the perfect pieces for your best friend.
                 </p>
-                <Link to="/" className="bg-black text-white px-12 py-5 rounded-sm tracking-widest text-xs uppercase font-medium hover:bg-[#1a1a1a] transition-all">
-                    Start Shopping
+                <Link to="/" className="bg-black text-white px-12 py-5 text-sm font-medium hover:bg-[#1a1a1a] transition-all">
+                    Start shopping
                 </Link>
             </div>
         );
@@ -29,7 +29,7 @@ const Cart = () => {
     return (
         <div className="bg-brand-sage min-h-screen pt-24 pb-32">
             <div className="max-w-7xl mx-auto px-6">
-                <h1 className="text-4xl md:text-5xl font-serif text-brand-charcoal mb-16">Your Shopping Bag</h1>
+                <h1 className="text-4xl md:text-5xl font-semibold text-brand-charcoal mb-16">Shopping bag</h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
                     {/* Cart Items */}
@@ -51,14 +51,14 @@ const Cart = () => {
                                     </div>
 
                                     <div className="flex-grow text-center sm:text-left">
-                                        <span className="text-[10px] uppercase tracking-[0.3em] text-brand-charcoal opacity-40 font-medium mb-3 block">{item.category}</span>
-                                        <h3 className="text-xl font-serif text-brand-charcoal mb-2">{item.name}</h3>
+                                        <span className="text-[11px] font-medium text-brand-charcoal opacity-40 mb-3 block">{item.category}</span>
+                                        <h3 className="text-xl font-medium text-brand-charcoal mb-2">{item.name}</h3>
                                         <div className="flex flex-col items-start gap-1">
                                             <p className="text-brand-charcoal font-medium text-sm">
                                                 {formatPrice(item.discountPrice || item.price)}
                                             </p>
                                             {item.discountPrice && (
-                                                <p className="text-[10px] opacity-20 line-through text-brand-charcoal font-serif">
+                                                <p className="text-[10px] opacity-20 line-through text-brand-charcoal">
                                                     {formatPrice(item.price)}
                                                 </p>
                                             )}
@@ -96,7 +96,7 @@ const Cart = () => {
 
                     {/* Summary */}
                     <div className="lg:col-span-4 lg:sticky lg:top-32 h-fit bg-brand-cream/80 backdrop-blur-sm p-10 rounded-sm shadow-sm">
-                        <h3 className="text-2xl font-serif text-brand-charcoal mb-8 pb-4 border-b border-brand-charcoal/10">Order Summary</h3>
+                        <h3 className="text-2xl font-medium text-brand-charcoal mb-8 pb-4 border-b border-brand-charcoal/10">Order summary</h3>
                         
                         <div className="space-y-6 mb-10">
                             <div className="flex justify-between text-sm">
@@ -123,8 +123,8 @@ const Cart = () => {
                                 </p>
 
                             <div className="pt-6 border-t border-brand-charcoal/10 flex justify-between items-end">
-                                <span className="text-[11px] font-medium text-brand-charcoal uppercase tracking-wider">Total</span>
-                                <span className="text-3xl font-serif text-brand-charcoal font-medium">{formatPrice(total)}</span>
+                                <span className="text-[11px] font-medium text-brand-charcoal">Total</span>
+                                <span className="text-3xl font-medium text-brand-charcoal">{formatPrice(total)}</span>
                             </div>
                         </div>
 
@@ -135,7 +135,7 @@ const Cart = () => {
                             applyCoupon(code).then(res => alert(res.message));
                             e.target.coupon.value = '';
                         }}>
-                             <label className="block text-[11px] uppercase font-medium text-brand-charcoal/40 tracking-wider mb-3">Promo Code</label>
+                             <label className="block text-[11px] font-medium text-brand-charcoal/40 mb-3">Promo code</label>
                              <div className="flex gap-2">
                                 <input 
                                     name="coupon"
@@ -143,15 +143,15 @@ const Cart = () => {
                                     placeholder="Enter code" 
                                     className="flex-grow bg-brand-sage/20 border border-brand-charcoal/10 px-4 py-3 text-sm focus:outline-none focus:border-brand-charcoal"
                                 />
-                                <button type="submit" className="bg-brand-charcoal text-white px-6 py-3 text-[11px] font-medium uppercase tracking-wider hover:bg-brand-charcoal/80 transition-colors">Apply</button>
+                                <button type="submit" className="bg-brand-charcoal text-white px-6 py-3 text-[11px] font-medium hover:bg-brand-charcoal/80 transition-colors">Apply</button>
                              </div>
                         </form>
 
                         <Link 
                             to="/checkout" 
-                            className="w-full bg-black text-white py-5 flex items-center justify-center font-medium tracking-[0.2em] uppercase text-xs hover:bg-[#1a1a1a] transition-all group"
+                            className="w-full bg-black text-white py-5 flex items-center justify-center font-medium text-sm hover:bg-[#1a1a1a] transition-all group"
                         >
-                            Checkout Summary
+                            Checkout summary
                             <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
                         </Link>
 

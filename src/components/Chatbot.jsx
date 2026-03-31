@@ -56,10 +56,10 @@ const Chatbot = () => {
                         {/* Header */}
                         <div className="bg-brand-charcoal p-6 text-white flex justify-between items-center shadow-md">
                             <div>
-                                <h3 className="font-serif text-lg">Tutu Assistant</h3>
-                                <div className="flex items-center text-[10px] font-medium opacity-80 uppercase tracking-widest mt-1">
+                                <h3 className="font-medium text-lg text-white">Tutu assistant</h3>
+                                <div className="flex items-center text-[10px] font-medium opacity-80 mt-1">
                                     <div className="w-2 h-2 rounded-full bg-green-400 mr-2 animate-pulse" />
-                                    Online
+                                    Online now
                                 </div>
                             </div>
                             <button onClick={() => setIsOpen(false)} className="hover:opacity-70 transition-opacity"><X size={20} /></button>
@@ -82,7 +82,7 @@ const Chatbot = () => {
                                         key={i} 
                                         to={s.link} 
                                         onClick={() => setIsOpen(false)}
-                                        className="text-[10px] uppercase font-medium tracking-widest bg-brand-cream border border-brand-charcoal/10 px-3 py-2 rounded-full text-brand-charcoal/70 hover:bg-brand-charcoal hover:text-white transition-all flex items-center shadow-sm"
+                                        className="text-[10px] font-medium bg-brand-cream border border-brand-charcoal/10 px-3 py-2 rounded-full text-brand-charcoal/70 hover:bg-brand-charcoal hover:text-white transition-all flex items-center shadow-sm"
                                     >
                                         {s.label} <ChevronRight size={10} className="ml-1" />
                                     </Link>

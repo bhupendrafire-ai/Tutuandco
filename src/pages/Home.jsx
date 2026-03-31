@@ -55,9 +55,9 @@ const Home = () => {
     }, [banners]);
 
     if (loading) return (
-        <div className="min-h-screen flex flex-col items-center justify-center font-serif">
-            <img src={logo} alt="Tutu & Co" className="h-16 w-auto mb-4 animate-pulse" />
-            <div className="text-gray-400 text-sm tracking-widest uppercase">Loading</div>
+        <div className="min-h-screen flex flex-col items-center justify-center font-medium">
+            <div className="w-12 h-12 border-4 border-brand-charcoal/10 border-t-brand-charcoal rounded-full animate-spin mb-6" />
+            <div className="text-gray-400 text-sm tracking-wide">Loading</div>
         </div>
     );
 
@@ -94,32 +94,32 @@ const Home = () => {
                                         initial={{ y: 30, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}
                                         transition={{ delay: 0.2 }}
-                                        className="text-6xl md:text-8xl font-serif mb-8 drop-shadow-2xl leading-tight"
+                                        className="text-6xl md:text-8xl font-semibold mb-8 drop-shadow-2xl leading-tight"
                                     >
                                         {banners[currentBanner].title}
                                     </motion.h1>
-                                    <motion.p
+                                    <motion.div 
                                         initial={{ y: 20, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}
                                         transition={{ delay: 0.4 }}
-                                        className="text-xl md:text-2xl mb-12 font-light drop-shadow-lg max-w-xl mx-auto opacity-90"
                                     >
-                                        {banners[currentBanner].subtitle}
-                                    </motion.p>
-                                    <motion.button
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        className="bg-white text-black px-12 py-5 rounded-sm tracking-widest text-xs uppercase font-medium hover:bg-[#EADED0] transition-all shadow-2xl"
-                                    >
-                                        {banners[currentBanner].cta}
-                                    </motion.button>
+                                        <span className="text-[11px] font-medium text-white/40 mb-4 block">New arrival</span>
+                                        <h1 className="text-5xl md:text-7xl font-semibold text-white mb-8 leading-tight">
+                                            {banners[currentBanner].title}
+                                        </h1>
+                                        <Link 
+                                            to={banners[currentBanner].link || "/"}
+                                            className="inline-block bg-white text-brand-charcoal px-10 py-4 font-medium text-sm hover:bg-brand-cream transition-all shadow-xl"
+                                        >
+                                            {banners[currentBanner].cta}
+                                        </Link>
+                                    </motion.div>
                                 </div>
                             </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
 
-                {/* Banner Navigation Dots */}
                 <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex space-x-4">
                     {banners.map((_, i) => (
                         <button
@@ -131,16 +131,14 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Featured Products Grid */}
             <section className="max-w-7xl mx-auto px-6 mt-32">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
                     <div>
-                        <span className="uppercase tracking-[0.3em] text-[10px] font-medium text-brand-charcoal opacity-60">The Seasonal Edit</span>
-                        <h2 className="text-4xl md:text-5xl font-serif text-brand-charcoal mt-4">Curated Essentials</h2>
+                        <h2 className="text-4xl md:text-5xl font-medium text-brand-charcoal mb-4">Featured Collections</h2>
+                        <p className="text-brand-charcoal/40 text-lg">Hand-picked essentials for the modern pet.</p>
                     </div>
-                    <Link to="/" className="text-brand-charcoal font-medium tracking-widest text-[10px] uppercase border-b-2 border-brand-charcoal pb-2 hover:opacity-70 transition-all flex items-center group">
-                        Browse All Collections
-                        <ArrowRight size={14} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                    <Link to="/" className="text-sm font-medium border-b border-brand-charcoal pb-1 hover:opacity-60 transition-opacity">
+                        View all items
                     </Link>
                 </div>
 
@@ -158,16 +156,11 @@ const Home = () => {
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                                 />
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
-                                <div className="absolute bottom-6 left-6 right-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                                    <button className="w-full bg-white/95 backdrop-blur-sm text-black py-4 text-[11px] uppercase tracking-wider font-medium shadow-lg">
-                                        View Details
-                                    </button>
-                                </div>
                             </div>
                             <div>
-                                <span className="text-[10px] uppercase tracking-[0.3em] text-[#8C916C] font-medium mb-3 block">{product.category}</span>
+                                <span className="text-[10px] tracking-wider text-[#8C916C] font-medium mb-3 block">{product.category}</span>
                                 <div className="flex flex-col items-start gap-1">
-                                    <h3 className="text-xl font-serif text-brand-charcoal leading-tight">{product.name}</h3>
+                                    <h3 className="text-xl font-medium text-brand-charcoal leading-tight">{product.name}</h3>
                                     <div className="flex items-center space-x-3">
                                         <span className="text-sm text-brand-charcoal font-medium">
                                             {formatPrice(product.discountPrice || product.price)}
@@ -183,7 +176,7 @@ const Home = () => {
                                     {[...Array(5)].map((_, i) => (
                                         <Star key={i} size={11} fill={i < product.rating ? "#95714F" : "none"} className="text-[#95714F] mr-1" />
                                     ))}
-                                    <span className="text-[10px] text-[#95714F]/60 ml-2 font-medium tracking-wider">Top Rated</span>
+                                    <span className="text-[10px] text-[#95714F]/60 ml-2 font-medium tracking-wider">Top rated</span>
                                 </div>
                             </div>
                         </Link>
@@ -191,14 +184,11 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Shuffling Uneven Grid Gallery */}
             <section className="max-w-7xl mx-auto px-6 mt-48">
                 <div className="flex flex-col items-center mb-24">
-                    <span className="uppercase tracking-[0.3em] text-[11px] font-medium text-brand-charcoal opacity-60 block mb-6 text-center focus:outline-none">Our Community</span>
+                    <span className="text-[11px] font-medium text-brand-charcoal opacity-40 block mb-6 text-center">Our community</span>
                     <div className="flex flex-col items-center">
-                        <span className="text-brand-charcoal/40 text-[11px] tracking-wider uppercase mb-4">The</span>
                         <img src={logo} alt="Tutu & Co" className="h-12 w-auto mb-4" />
-                        <span className="text-brand-charcoal/40 text-[11px] tracking-wider uppercase">Lifestyle</span>
                     </div>
                 </div>
                 
@@ -211,42 +201,22 @@ const Home = () => {
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.8 }}
-                                transition={{ 
-                                    type: "spring", 
-                                    stiffness: 100, 
-                                    damping: 20,
-                                    opacity: { duration: 0.5 }
-                                }}
-                                className={`
-                                    relative bg-brand-cream overflow-hidden rounded-sm cursor-pointer group shadow-md
-                                    ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''}
-                                    ${index === 4 ? 'md:row-span-2' : ''}
-                                    ${index === 5 ? 'md:col-span-2' : ''}
-                                    ${index === 9 ? 'md:col-span-2' : ''}
-                                `}
+                                transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                                className={`relative bg-brand-cream overflow-hidden rounded-sm cursor-pointer group shadow-md ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''} ${index === 4 ? 'md:row-span-2' : ''} ${index === 5 ? 'md:col-span-2' : ''} ${index === 9 ? 'md:col-span-2' : ''}`}
                             >
-                                <img 
-                                    src={img} 
-                                    alt={`Lifestyle ${index}`} 
-                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
-                                />
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500" />
-                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                    <span className="text-white text-[10px] uppercase tracking-[0.3em] font-medium border border-white/40 px-6 py-3 backdrop-blur-sm bg-black/10">Shop Look</span>
-                                </div>
+                                <img src={img} alt={`Lifestyle ${index}`} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                             </motion.div>
                         ))}
                     </AnimatePresence>
                 </div>
             </section>
 
-            {/* Testimonials */}
             <section className="py-32 bg-brand-cream/30 overflow-hidden">
                 <div className="max-w-7xl mx-auto px-6">
-                    <header className="text-center mb-20">
-                        <span className="uppercase tracking-[0.3em] text-[11px] font-medium text-brand-charcoal opacity-60 mb-6 block">Kind Words</span>
-                        <h2 className="text-4xl md:text-5xl font-serif text-brand-charcoal">The Community Voice</h2>
-                    </header>
+                    <div className="text-center mb-24">
+                        <h2 className="text-4xl md:text-6xl font-medium text-brand-charcoal mb-6">Kind words</h2>
+                        <div className="w-12 h-1 bg-brand-rose mx-auto opacity-30" />
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                         {[
                             { name: "Sarah & Oliver", text: "The quality of the bandana is unmatched. Oliver looks so dapper and the fabric is incredibly soft.", rating: 5 },
@@ -258,16 +228,15 @@ const Home = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ delay: i * 0.1 }}
                                 className="bg-white p-12 rounded-sm shadow-sm border border-[#C7AF94]/10"
                             >
                                 <div className="flex mb-8 text-[#95714F]">
                                     {[...Array(t.rating)].map((_, j) => <Star key={j} size={16} fill="currentColor" />)}
                                 </div>
-                                <p className="text-brand-charcoal italic font-serif text-lg leading-relaxed mb-10">"{t.text}"</p>
+                                <p className="text-brand-charcoal italic text-lg leading-relaxed mb-10">"{t.text}"</p>
                                 <div className="flex items-center space-x-4">
                                     <div className="w-8 h-px bg-brand-charcoal/20" />
-                                    <p className="text-[10px] uppercase font-medium tracking-[0.3em] text-brand-charcoal/60">{t.name}</p>
+                                    <p className="text-[10px] font-medium tracking-[0.3em] text-brand-charcoal/60">{t.name}</p>
                                 </div>
                             </motion.div>
                         ))}
@@ -275,39 +244,35 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Moments Teaser */}
             <section className="py-32 bg-white">
                 <div className="max-w-7xl mx-auto px-6 text-center flex flex-col items-center">
-                    <span className="uppercase tracking-[0.3em] text-[10px] font-medium text-[#8C916C] mb-6 block">Stay Connected</span>
+                    <span className="tracking-[0.3em] text-[10px] font-medium text-[#8C916C] mb-6 block">Stay connected</span>
                     <div className="flex flex-col items-center mb-10">
                         <img src={logo} alt="Tutu & Co" className="h-16 w-auto mb-2" />
-                        <span className="text-gray-400 text-[10px] tracking-widest uppercase">Family</span>
                     </div>
                     <p className="text-[#95714F] mb-16 text-xl font-light">Capture the joy. Share your moments with us.</p>
                     <Link 
                         to="/moments"
-                        className="inline-flex items-center space-x-4 bg-black text-white px-12 py-6 text-[10px] font-medium uppercase tracking-[0.3em] hover:bg-[#95714F] transition-all shadow-xl"
+                        className="inline-flex items-center space-x-4 bg-black text-white px-12 py-6 text-[10px] font-medium tracking-[0.3em] hover:bg-[#95714F] transition-all shadow-xl"
                     >
-                        <span>Visit the Gallery</span>
+                        <span>Visit the gallery</span>
                         <ArrowRight size={16} />
                     </Link>
                 </div>
             </section>
 
-            {/* Brand Ethos */}
             <section className="bg-brand-cream mt-48 py-32 px-6 text-center relative overflow-hidden">
                 <div className="max-w-4xl mx-auto relative z-10">
-                    <span className="uppercase tracking-[0.3em] text-[10px] font-medium text-brand-charcoal opacity-60">Our Philosophy</span>
-                    <h2 className="text-5xl md:text-7xl font-serif text-brand-charcoal mt-8 mb-12 leading-tight">Naturally Sourced.<br/>Designed for Movement.</h2>
-                    <p className="text-brand-charcoal/80 leading-relaxed text-2xl italic font-serif opacity-80 max-w-2xl mx-auto">
+                    <span className="text-[11px] font-medium text-brand-charcoal opacity-60">Our philosophy</span>
+                    <h2 className="text-5xl md:text-7xl font-medium text-brand-charcoal mt-8 mb-12 leading-tight">Naturally Sourced.<br/>Designed for Movement.</h2>
+                    <p className="text-brand-charcoal/80 leading-relaxed text-2xl italic opacity-80 max-w-2xl mx-auto">
                         "At Tutu & Co, we believe our pet companions deserve the same quality of organic materials and thoughtful design as we do."
                     </p>
                     <div className="mt-16 flex flex-col items-center">
                         <div className="w-px h-24 bg-brand-charcoal/20 mb-8" />
-                        <Link to="/" className="text-[10px] uppercase tracking-[0.3em] font-medium text-brand-charcoal hover:opacity-70 transition-opacity">Discover Our Story</Link>
+                        <Link to="/" className="text-[10px] tracking-[0.3em] font-medium text-brand-charcoal hover:opacity-70 transition-opacity">Discover our story</Link>
                     </div>
                 </div>
-                {/* Decorative Elements */}
                 <div className="absolute top-0 left-0 w-64 h-64 bg-brand-cream/50 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-30" />
                 <div className="absolute bottom-0 right-0 w-96 h-96 bg-brand-sage/50 rounded-full translate-x-1/3 translate-y-1/3 opacity-10" />
             </section>

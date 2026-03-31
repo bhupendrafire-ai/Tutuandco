@@ -22,15 +22,15 @@ const BlogPost = () => {
         });
     }, [id]);
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center font-serif">Loading Article...</div>;
-    if (!post) return <div className="min-h-screen flex items-center justify-center font-serif">Article Not Found</div>;
+    if (loading) return <div className="min-h-screen flex items-center justify-center font-medium">Loading journal...</div>;
+    if (!post) return <div className="min-h-screen flex items-center justify-center font-medium">Article not found</div>;
 
     return (
         <div className="bg-brand-sage min-h-screen pt-32 pb-32">
             <div className="max-w-4xl mx-auto px-6">
                 <Link to="/blogs" className="inline-flex items-center text-brand-charcoal opacity-70 hover:opacity-100 transition-all mb-16 group">
                     <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
-                    Back to Journal
+                    Back to journal
                 </Link>
 
                 <motion.header 
@@ -38,11 +38,11 @@ const BlogPost = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-16"
                 >
-                    <div className="flex items-center space-x-6 text-[10px] uppercase tracking-widest text-brand-charcoal opacity-60 font-medium mb-6">
+                    <div className="flex items-center space-x-6 text-[11px] text-brand-charcoal opacity-40 font-medium mb-6">
                         <span className="flex items-center"><Calendar size={12} className="mr-2" /> {post.date}</span>
                         <span className="flex items-center"><User size={12} className="mr-2" /> {post.author}</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-serif text-brand-charcoal leading-tight mb-8">
+                    <h1 className="text-4xl md:text-6xl font-semibold text-brand-charcoal leading-tight mb-8">
                         {post.title}
                     </h1>
                 </motion.header>
@@ -60,7 +60,7 @@ const BlogPost = () => {
                 </motion.div>
 
                 <article className="prose prose-lg max-w-none text-brand-charcoal/70 leading-relaxed">
-                    <p className="text-xl font-serif italic mb-12 text-brand-charcoal opacity-80 border-l-4 border-brand-charcoal/20 pl-8 py-2">
+                    <p className="text-xl font-medium italic mb-12 text-brand-charcoal opacity-80 border-l-4 border-brand-charcoal/20 pl-8 py-2">
                         {post.excerpt}
                     </p>
                     <div className="space-y-8 whitespace-pre-wrap">
@@ -73,13 +73,13 @@ const BlogPost = () => {
                         <img src={logo} alt="Tutu & Co" className="h-8 w-auto" />
                         <div className="h-8 w-px bg-brand-charcoal/10" />
                         <div>
-                            <p className="text-sm font-medium text-brand-charcoal uppercase tracking-widest">Global Team</p>
-                            <p className="text-xs text-brand-charcoal/60">Pet Apparel Enthusiasts</p>
+                            <p className="text-sm font-medium text-brand-charcoal">Global team</p>
+                            <p className="text-xs text-brand-charcoal/60">Pet apparel enthusiasts</p>
                         </div>
                     </div>
-                    <button onClick={() => window.history.back()} className="flex items-center space-x-2 text-[10px] uppercase font-medium tracking-widest text-brand-charcoal/60 hover:opacity-100 transition-opacity">
-                        <Share2 size={16} />
-                        <span>Share Article</span>
+                    <button onClick={() => window.history.back()} className="flex items-center space-x-2 text-[11px] font-medium text-brand-charcoal/60 hover:opacity-100 transition-opacity">
+                        <ArrowLeft size={16} />
+                        <span>Back to journal</span>
                     </button>
                 </footer>
             </div>

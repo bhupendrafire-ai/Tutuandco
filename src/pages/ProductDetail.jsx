@@ -30,7 +30,7 @@ const ProductDetail = () => {
         window.scrollTo(0, 0);
     }, [product]);
 
-    if (loading || !product) return <div className="min-h-screen flex items-center justify-center font-serif">Loading Product...</div>;
+    if (loading || !product) return <div className="min-h-screen flex items-center justify-center font-medium">Loading product...</div>;
 
     const handleAddToCart = () => {
         addToCart(product);
@@ -82,10 +82,10 @@ const ProductDetail = () => {
                     <div className="flex flex-col">
                         <div className="flex items-center mb-4">
                             <img src={logo} alt="Tutu & Co" className="h-6 w-auto mr-3" />
-                            <span className="uppercase tracking-[0.3em] text-[10px] font-medium text-brand-charcoal opacity-60">Signature</span>
+                            <span className="text-[11px] font-medium text-brand-charcoal opacity-40">Signature collection</span>
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl font-serif text-brand-charcoal mb-10 leading-tight">{product.name}</h1>
+                        <h1 className="text-4xl md:text-5xl font-semibold text-brand-charcoal mb-10 leading-tight">{product.name}</h1>
                         
                         <div className="flex items-center mb-10">
                             <div className="flex mr-4">
@@ -93,15 +93,15 @@ const ProductDetail = () => {
                                     <Star key={i} size={14} fill={i < product.rating ? "#2f2f2f" : "none"} className="text-brand-charcoal" />
                                 ))}
                             </div>
-                            <span className="text-brand-charcoal/40 text-[10px] uppercase tracking-widest font-medium">({reviews.length} Reviews)</span>
+                            <span className="text-brand-charcoal/40 text-[10px] items-center font-medium">({reviews.length} reviews)</span>
                         </div>
 
                         <div className="flex items-center space-x-6 mb-12">
-                            <p className="text-3xl font-serif text-brand-charcoal">
+                            <p className="text-3xl font-medium text-brand-charcoal">
                                 {formatPrice(product.discountPrice || product.price)}
                             </p>
                             {product.discountPrice && (
-                                <p className="text-lg opacity-20 line-through font-serif">
+                                <p className="text-lg opacity-20 line-through">
                                     {formatPrice(product.price)}
                                 </p>
                             )}
@@ -123,10 +123,10 @@ const ProductDetail = () => {
                         <div className="flex flex-col sm:flex-row gap-4 mb-16">
                             <button 
                                 onClick={handleAddToCart}
-                                className="flex-1 bg-black text-white py-5 rounded-sm flex items-center justify-center font-medium tracking-widest uppercase text-sm hover:bg-[#1a1a1a] transition-colors shadow-lg"
+                                className="flex-1 bg-black text-white py-5 flex items-center justify-center font-medium text-sm hover:bg-[#1a1a1a] transition-all shadow-lg"
                             >
                                 <ShoppingBag size={18} className="mr-2" />
-                                Add to Cart
+                                Add to cart
                             </button>
                              <button className="px-8 py-5 border border-brand-charcoal/20 rounded-sm hover:bg-brand-cream/50 transition-colors">
                                 <Heart size={18} className="text-brand-charcoal/60" />
@@ -136,19 +136,19 @@ const ProductDetail = () => {
                         {/* Shipping Info */}
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 border-t border-brand-charcoal/10 pt-12">
                              <div className="flex flex-col items-center text-center">
-                                 <Truck size={20} className="text-brand-charcoal/60 mb-3" />
-                                 <span className="text-[11px] uppercase tracking-wider font-medium text-brand-charcoal">Fast Shipping</span>
-                                 <span className="text-[10px] text-brand-charcoal/60 font-medium">2-4 Business Days</span>
+                                 <Truck size={20} className="text-brand-charcoal/40 mb-3" />
+                                 <span className="text-[11px] tracking-wider font-medium text-brand-charcoal">Fast shipping</span>
+                                 <span className="text-[10px] text-brand-charcoal/40 font-medium">2-4 Business days</span>
                              </div>
                              <div className="flex flex-col items-center text-center">
-                                 <RefreshCcw size={20} className="text-brand-charcoal/60 mb-3" />
-                                 <span className="text-[11px] uppercase tracking-wider font-medium text-brand-charcoal">Easy Returns</span>
-                                 <span className="text-[10px] text-brand-charcoal/60 font-medium">30 Day Window</span>
+                                 <RefreshCcw size={20} className="text-brand-charcoal/40 mb-3" />
+                                 <span className="text-[11px] tracking-wider font-medium text-brand-charcoal">Easy returns</span>
+                                 <span className="text-[10px] text-brand-charcoal/40 font-medium">30 Day window</span>
                              </div>
                              <div className="flex flex-col items-center text-center">
-                                 <Shield size={20} className="text-brand-charcoal/60 mb-3" />
-                                 <span className="text-[11px] uppercase tracking-wider font-medium text-brand-charcoal">Secure Payment</span>
-                                 <span className="text-[10px] text-brand-charcoal/60 font-medium">SSL Encrypted</span>
+                                 <Shield size={20} className="text-brand-charcoal/40 mb-3" />
+                                 <span className="text-[11px] tracking-wider font-medium text-brand-charcoal">Secure payment</span>
+                                 <span className="text-[10px] text-brand-charcoal/40 font-medium">SSL Encrypted</span>
                              </div>
                              <div className="flex flex-col items-center text-center">
                                  <div className="flex items-center space-x-1 mb-3">
@@ -156,8 +156,8 @@ const ProductDetail = () => {
                                          <span key={i} className="text-[#8B967E]">★</span>
                                      ))}
                                  </div>
-                                 <span className="text-[11px] uppercase tracking-wider font-medium text-brand-charcoal">5 Star Reviews</span>
-                                 <span className="text-[10px] text-brand-charcoal/60 font-medium">Verified Custom</span>
+                                 <span className="text-[11px] tracking-wider font-medium text-brand-charcoal">5 Star reviews</span>
+                                 <span className="text-[10px] text-brand-charcoal/40 font-medium">Verified customers</span>
                              </div>
                          </div>
                     </div>
@@ -170,7 +170,7 @@ const ProductDetail = () => {
                             if (block.template === 'wide_banner') {
                                 return (
                                     <div key={i} className="space-y-12">
-                                        <h3 className="text-4xl md:text-6xl font-serif text-center text-brand-charcoal italic max-w-4xl mx-auto leading-tight">{block.title}</h3>
+                                        <h3 className="text-4xl md:text-5xl font-medium text-center text-brand-charcoal italic max-w-4xl mx-auto leading-tight">{block.title}</h3>
                                         <div className="w-full aspect-[21/9] bg-brand-cream rounded-sm overflow-hidden shadow-xl">
                                             <img src={getProductImage(block.url, media)} className="w-full h-full object-cover" />
                                         </div>
@@ -188,10 +188,10 @@ const ProductDetail = () => {
                                                     <div className="aspect-square bg-brand-cream rounded-sm overflow-hidden shadow-md">
                                                         <img src={getProductImage(item.url, media)} className="w-full h-full object-cover" />
                                                     </div>
-                                                    <h4 className="text-xl font-serif italic text-brand-charcoal">{item.title}</h4>
+                                                    <h4 className="text-xl font-medium italic text-brand-charcoal">{item.title}</h4>
                                                     <ul className="space-y-2">
                                                         {item.bullets?.map((bullet, k) => bullet && (
-                                                            <li key={k} className="text-[11px] uppercase font-medium tracking-wider text-brand-charcoal opacity-80">{bullet}</li>
+                                                            <li key={k} className="text-[11px] font-medium text-brand-charcoal opacity-60">{bullet}</li>
                                                         ))}
                                                     </ul>
                                                 </div>
@@ -207,7 +207,7 @@ const ProductDetail = () => {
                                         <img src={getProductImage(block.url, media)} className="w-full h-full object-cover" />
                                         <div className="absolute inset-0 bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
                                         <div className="absolute top-8 left-8 md:top-16 md:left-16 max-w-[90%] md:max-w-[30%] space-y-6">
-                                            <h3 className="text-3xl md:text-5xl font-serif text-brand-charcoal leading-tight italic break-words">{block.title}</h3>
+                                            <h3 className="text-3xl md:text-5xl font-medium text-brand-charcoal leading-tight italic break-words">{block.title}</h3>
                                             <p className="text-brand-charcoal/80 text-sm md:text-lg leading-relaxed">{block.content}</p>
                                         </div>
                                     </div>
@@ -223,7 +223,7 @@ const ProductDetail = () => {
                                                     <img src={getProductImage(item.url, media)} className="w-full h-full object-cover" />
                                                 </div>
                                                 <div className="flex-1 space-y-6">
-                                                    <h4 className="text-3xl md:text-4xl font-serif italic text-brand-charcoal leading-tight">{item.title}</h4>
+                                                    <h4 className="text-3xl md:text-4xl font-medium italic text-brand-charcoal leading-tight">{item.title}</h4>
                                                     <p className="text-brand-charcoal/80 text-lg leading-relaxed">{item.content}</p>
                                                 </div>
                                             </div>
@@ -246,7 +246,7 @@ const ProductDetail = () => {
                                         </div>
                                     )}
                                     <div className="flex-1 space-y-8">
-                                        <h3 className="text-4xl md:text-5xl font-serif text-brand-charcoal leading-tight italic">
+                                        <h3 className="text-4xl md:text-5xl font-medium text-brand-charcoal leading-tight italic">
                                             {block.title}
                                         </h3>
                                         <p className="text-brand-charcoal/80 text-lg leading-relaxed">
@@ -255,7 +255,7 @@ const ProductDetail = () => {
                                         {block.bullets?.length > 0 && (
                                             <ul className="space-y-4">
                                                 {block.bullets.map((bullet, j) => (
-                                                    <li key={j} className="flex items-center text-brand-charcoal/80 font-serif italic">
+                                                    <li key={j} className="flex items-center text-brand-charcoal/80 italic">
                                                         <span className="w-2 h-2 rounded-full bg-brand-rose mr-4" />
                                                         {bullet}
                                                     </li>
@@ -274,7 +274,7 @@ const ProductDetail = () => {
                 <section className="mt-32 pt-32 border-t border-brand-charcoal/10">
                     <div className="flex flex-col md:flex-row justify-between items-start mb-16 gap-8">
                         <div>
-                            <h2 className="text-4xl font-serif text-brand-charcoal mb-4">Customer Reviews</h2>
+                            <h2 className="text-4xl font-medium text-brand-charcoal mb-4">Customer reviews</h2>
                             <div className="flex items-center">
                                 <div className="flex mr-4">
                                     {[...Array(5)].map((_, i) => (
@@ -284,8 +284,8 @@ const ProductDetail = () => {
                                 <span className="text-brand-charcoal/60 font-medium">{(Number(product.rating) || 5).toFixed(1)} out of 5</span>
                             </div>
                         </div>
-                        <button className="text-[10px] uppercase font-medium tracking-[0.2em] border-2 border-brand-charcoal px-10 py-4 hover:bg-brand-charcoal hover:text-white transition-all">
-                            Write a Review
+                        <button className="text-[11px] font-medium border-2 border-brand-charcoal px-10 py-4 hover:bg-brand-charcoal hover:text-white transition-all">
+                            Write a review
                         </button>
                     </div>
 
@@ -300,11 +300,11 @@ const ProductDetail = () => {
                                                 <Star key={j} size={12} fill={j < review.rating ? "#2f2f2f" : "none"} className="text-brand-charcoal" />
                                             ))}
                                         </div>
-                                        <span className="text-xs font-medium text-brand-charcoal/80 uppercase tracking-widest">{review.userName}</span>
+                                        <span className="text-xs font-medium text-brand-charcoal/80 tracking-wide">{review.userName}</span>
                                     </div>
-                                    <h4 className="font-serif text-brand-charcoal mb-2">{review.title}</h4>
+                                    <h4 className="font-medium text-brand-charcoal mb-2">{review.title}</h4>
                                     <p className="text-brand-charcoal/70 text-sm leading-relaxed mb-4">{review.comment}</p>
-                                    <span className="text-[10px] text-brand-charcoal/30 uppercase tracking-widest">{new Date(review.createdAt).toLocaleDateString()}</span>
+                                    <span className="text-[10px] text-brand-charcoal/30 font-medium tracking-wide">{new Date(review.createdAt).toLocaleDateString()}</span>
                                 </div>
                             )) : (
                                 <p className="text-brand-charcoal/40 italic">No reviews yet. Be the first to share your experience!</p>
@@ -313,7 +313,7 @@ const ProductDetail = () => {
 
                         {/* Review Form */}
                         <div className="bg-brand-cream/50 p-10 rounded-sm h-fit">
-                            <h3 className="text-xl font-serif text-brand-charcoal mb-8">Tell us what you think</h3>
+                            <h3 className="text-xl font-medium text-brand-charcoal mb-8">Tell us what you think</h3>
                             <form onSubmit={async (e) => {
                                 e.preventDefault();
                                 const data = {
@@ -329,24 +329,24 @@ const ProductDetail = () => {
                                 alert("Review submitted! Thank you.");
                             }} className="space-y-6">
                                 <div>
-                                    <label className="block text-[10px] uppercase font-medium text-brand-charcoal/60 tracking-widest mb-2">Display Name</label>
+                                    <label className="block text-[11px] font-medium text-brand-charcoal/40 mb-2">Display name</label>
                                     <input required name="userName" className="w-full bg-white border border-brand-charcoal/10 p-4 text-sm focus:border-brand-charcoal outline-none" />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] uppercase font-medium text-brand-charcoal/60 tracking-widest mb-2">Rating</label>
+                                    <label className="block text-[11px] font-medium text-brand-charcoal/40 mb-2">Rating</label>
                                     <select name="rating" className="w-full bg-white border border-brand-charcoal/10 p-4 text-sm focus:border-brand-charcoal outline-none appearance-none">
                                         {[5,4,3,2,1].map(n => <option key={n} value={n}>{n} Stars</option>)}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] uppercase font-medium text-brand-charcoal/60 tracking-widest mb-2">Review Title</label>
+                                    <label className="block text-[11px] font-medium text-brand-charcoal/40 mb-2">Review title</label>
                                     <input required name="title" className="w-full bg-white border border-brand-charcoal/10 p-4 text-sm focus:border-brand-charcoal outline-none" />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] uppercase font-medium text-brand-charcoal/60 tracking-widest mb-2">Your Experience</label>
+                                    <label className="block text-[11px] font-medium text-brand-charcoal/40 mb-2">Your experience</label>
                                     <textarea required name="comment" rows="4" className="w-full bg-white border border-brand-charcoal/10 p-4 text-sm focus:border-brand-charcoal outline-none" />
                                 </div>
-                                <button type="submit" className="w-full bg-black text-white py-5 font-medium uppercase tracking-widest text-[10px] hover:bg-[#1a1a1a]">Post Review</button>
+                                <button type="submit" className="w-full bg-black text-white py-5 font-medium text-[11px] hover:bg-[#1a1a1a]">Post review</button>
                             </form>
                         </div>
                     </div>
@@ -355,7 +355,7 @@ const ProductDetail = () => {
                 {/* Full Imagery Section */}
                 <section className="mt-32 pt-32 border-t border-brand-charcoal/10">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl font-serif text-brand-charcoal mb-4">Complete Showcase</h2>
+                        <h2 className="text-4xl font-medium text-brand-charcoal mb-4">Complete showcase</h2>
                         <p className="text-brand-charcoal/40">Every angle of the craftsmanship.</p>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
