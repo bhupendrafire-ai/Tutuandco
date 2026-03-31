@@ -45,13 +45,10 @@ const Home = () => {
         return () => clearInterval(interval);
     }, [products, media]);
 
+    // Static banner for now - no automatic timer
     useEffect(() => {
-        const timer = setInterval(() => {
-            if (banners.length) {
-                setCurrentBanner((prev) => (prev + 1) % banners.length);
-            }
-        }, 8000);
-        return () => clearInterval(timer);
+        // Keeping setCurrentBanner(0) to ensure we start at the first banner
+        setCurrentBanner(0);
     }, [banners]);
 
     if (loading) return (
@@ -64,8 +61,8 @@ const Home = () => {
 
     return (
         <div className="pb-20 bg-brand-sage">
-            {/* Revolving Banner */}
-            <section className="relative h-[65vh] overflow-hidden">
+            {/* Static Hero Banner */}
+            <section className="relative h-[75vh] overflow-hidden">
                 <AnimatePresence mode="wait">
                     {banners[currentBanner] && (
                         <motion.div
