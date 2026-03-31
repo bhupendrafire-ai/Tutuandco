@@ -83,18 +83,11 @@ const Home = () => {
                             />
                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-center p-6">
                                 <div className="max-w-3xl text-white">
-                                    <motion.div 
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="mb-6"
-                                    >
-                                        <img src={logoWhite} alt="Tutu & Co" className="h-16 w-auto opacity-90" />
-                                    </motion.div>
                                     <motion.h1
                                         initial={{ opacity: 0, y: 30 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.8, delay: 0.2 }}
-                                        className="text-6xl md:text-8xl font-medium mb-8 drop-shadow-2xl leading-tight text-white"
+                                        className="text-4xl md:text-5xl font-medium mb-12 drop-shadow-lg leading-tight text-white/90"
                                     >
                                         {banners[currentBanner].title}
                                     </motion.h1>
