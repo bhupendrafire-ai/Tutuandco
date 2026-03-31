@@ -159,17 +159,17 @@ const Home = () => {
                                 />
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
                                 <div className="absolute bottom-6 left-6 right-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                                    <button className="w-full bg-white/95 backdrop-blur-sm text-black py-4 text-[10px] uppercase tracking-[0.2em] font-bold shadow-lg">
+                                    <button className="w-full bg-white/95 backdrop-blur-sm text-black py-4 text-[11px] uppercase tracking-wider font-bold shadow-lg">
                                         View Details
                                     </button>
                                 </div>
                             </div>
                             <div>
-                                <span className="text-[10px] uppercase tracking-widest text-[#8C916C] font-bold mb-2 block">{product.category}</span>
+                                <span className="text-[11px] uppercase tracking-wider text-[#8C916C] font-bold mb-2 block">{product.category}</span>
                                 <div className="flex justify-between items-start">
                                     <h3 className="text-xl font-serif text-brand-charcoal">{product.name}</h3>
                                 <div className="flex flex-col items-end">
-                                    <span className="text-brand-charcoal font-bold">
+                                    <span className="text-brand-charcoal font-semibold">
                                         {formatPrice(product.discountPrice || product.price)}
                                     </span>
                                     {product.discountPrice && (
@@ -194,11 +194,11 @@ const Home = () => {
             {/* Shuffling Uneven Grid Gallery */}
             <section className="max-w-7xl mx-auto px-6 mt-48">
                 <div className="flex flex-col items-center mb-24">
-                    <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-brand-charcoal opacity-60 block mb-6 text-center">Our Community</span>
+                    <span className="uppercase tracking-[0.3em] text-[11px] font-bold text-brand-charcoal opacity-60 block mb-6 text-center focus:outline-none">Our Community</span>
                     <div className="flex flex-col items-center">
-                        <span className="text-brand-charcoal/40 text-[10px] tracking-widest uppercase mb-4">The</span>
+                        <span className="text-brand-charcoal/40 text-[11px] tracking-wider uppercase mb-4">The</span>
                         <img src={logo} alt="Tutu & Co" className="h-12 w-auto mb-4" />
-                        <span className="text-brand-charcoal/40 text-[10px] tracking-widest uppercase">Lifestyle</span>
+                        <span className="text-brand-charcoal/40 text-[11px] tracking-wider uppercase">Lifestyle</span>
                     </div>
                 </div>
                 
@@ -244,7 +244,7 @@ const Home = () => {
             <section className="py-32 bg-brand-cream/30 overflow-hidden">
                 <div className="max-w-7xl mx-auto px-6">
                     <header className="text-center mb-20">
-                        <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-brand-charcoal opacity-60 mb-6 block">Kind Words</span>
+                        <span className="uppercase tracking-[0.3em] text-[11px] font-bold text-brand-charcoal opacity-60 mb-6 block">Kind Words</span>
                         <h2 className="text-4xl md:text-5xl font-serif text-brand-charcoal">The Community Voice</h2>
                     </header>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12">

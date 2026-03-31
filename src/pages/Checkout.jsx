@@ -161,17 +161,17 @@ const Checkout = () => {
                                     <p className="text-brand-charcoal/60 mb-12">Thank you, {orderDetails.firstName}. Your order <strong>{orderResult.id}</strong> is being processed.</p>
                                     
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
-                                        <button className="flex items-center justify-center space-x-2 border border-brand-charcoal/10 p-5 text-xs font-bold uppercase tracking-widest text-brand-charcoal/60 hover:bg-white">
+                                        <button className="flex items-center justify-center space-x-2 border border-brand-charcoal/10 p-5 text-[11px] font-bold uppercase tracking-wider text-brand-charcoal/60 hover:bg-white">
                                             <FileText size={18} />
                                             <span>Download Tax Invoice</span>
                                         </button>
-                                        <button className="flex items-center justify-center space-x-2 border border-brand-charcoal/10 p-5 text-xs font-bold uppercase tracking-widest text-brand-charcoal/60 hover:bg-white">
+                                        <button className="flex items-center justify-center space-x-2 border border-brand-charcoal/10 p-5 text-[11px] font-bold uppercase tracking-wider text-brand-charcoal/60 hover:bg-white">
                                             <Truck size={18} />
                                             <span>Print Shipping Label</span>
                                         </button>
                                     </div>
 
-                                    <Link to="/" className="text-[10px] uppercase font-bold tracking-[0.4em] text-black border-b border-black pb-2 hover:opacity-70">
+                                    <Link to="/" className="text-[11px] uppercase font-bold tracking-[0.3em] text-black border-b border-black pb-2 hover:opacity-70">
                                         Continue Shopping
                                     </Link>
                                 </motion.div>
@@ -193,10 +193,10 @@ const Checkout = () => {
                                         </div>
                                         <div>
                                             <p className="font-medium text-brand-charcoal">{item.name}</p>
-                                            <p className="text-[10px] text-brand-charcoal/40">Qty: {item.quantity}</p>
+                                            <p className="text-[11px] uppercase tracking-wider text-brand-charcoal/40 font-bold">Qty: {item.quantity}</p>
                                         </div>
                                     </div>
-                                    <span className="text-brand-charcoal/60 font-bold">{formatPrice((item.discountPrice || item.price) * item.quantity)}</span>
+                                    <span className="text-brand-charcoal/60 font-semibold">{formatPrice((item.discountPrice || item.price) * item.quantity)}</span>
                                 </div>
                             ))}
                             <div className="pt-6 border-t border-brand-charcoal/10 space-y-3">
@@ -215,7 +215,7 @@ const Checkout = () => {
                                     </div>
                                 )}
                                 <div className="pt-4 flex justify-between items-end border-t border-brand-charcoal/10">
-                                    <span className="text-[10px] uppercase font-bold tracking-widest text-brand-charcoal/40">Total</span>
+                                    <span className="text-[11px] uppercase font-bold tracking-wider text-brand-charcoal/40">Total</span>
                                     <span className="text-2xl font-serif text-brand-charcoal">{formatPrice(total)}</span>
                                 </div>
                             </div>

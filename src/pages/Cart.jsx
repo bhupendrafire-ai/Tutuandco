@@ -19,7 +19,7 @@ const Cart = () => {
                 <p className="text-brand-charcoal/60 mb-12 text-center max-w-md">
                     Explore our collections and find the perfect pieces for your best friend.
                 </p>
-                <Link to="/" className="bg-black text-white px-12 py-5 rounded-sm tracking-[0.2em] text-xs uppercase font-bold hover:bg-[#1a1a1a] transition-all">
+                <Link to="/" className="bg-black text-white px-12 py-5 rounded-sm tracking-widest text-xs uppercase font-bold hover:bg-[#1a1a1a] transition-all">
                     Start Shopping
                 </Link>
             </div>
@@ -51,10 +51,10 @@ const Cart = () => {
                                     </div>
 
                                     <div className="flex-grow text-center sm:text-left">
-                                        <span className="text-[10px] uppercase tracking-widest text-brand-charcoal opacity-60 font-bold mb-2 block">{item.category}</span>
+                                        <span className="text-[11px] uppercase tracking-wider text-brand-charcoal opacity-60 font-bold mb-2 block">{item.category}</span>
                                         <h3 className="text-xl font-serif text-brand-charcoal mb-4">{item.name}</h3>
                                         <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mb-4">
-                                            <p className="text-brand-charcoal font-bold">
+                                            <p className="text-brand-charcoal font-semibold">
                                                 {formatPrice(item.discountPrice || item.price)}
                                             </p>
                                             {item.discountPrice && (
@@ -118,14 +118,12 @@ const Cart = () => {
                                 </span>
                             </div>
 
-                            {shipping > 0 && (
-                                <p className="text-[10px] text-brand-charcoal/60 italic font-light">
+                                <p className="text-[11px] text-brand-charcoal/60 italic font-medium">
                                     Spend {formatPrice(999 - total + shipping)} more for FREE shipping.
                                 </p>
-                            )}
 
                             <div className="pt-6 border-t border-brand-charcoal/10 flex justify-between items-end">
-                                <span className="text-lg font-serif text-brand-charcoal uppercase tracking-widest text-[10px]">Total</span>
+                                <span className="text-[11px] font-bold text-brand-charcoal uppercase tracking-wider">Total</span>
                                 <span className="text-3xl font-serif text-brand-charcoal font-medium">{formatPrice(total)}</span>
                             </div>
                         </div>
@@ -137,7 +135,7 @@ const Cart = () => {
                             applyCoupon(code).then(res => alert(res.message));
                             e.target.coupon.value = '';
                         }}>
-                             <label className="block text-[10px] uppercase font-bold text-brand-charcoal/40 tracking-widest mb-3">Promo Code</label>
+                             <label className="block text-[11px] uppercase font-bold text-brand-charcoal/40 tracking-wider mb-3">Promo Code</label>
                              <div className="flex gap-2">
                                 <input 
                                     name="coupon"
@@ -145,7 +143,7 @@ const Cart = () => {
                                     placeholder="Enter code" 
                                     className="flex-grow bg-brand-sage/20 border border-brand-charcoal/10 px-4 py-3 text-sm focus:outline-none focus:border-brand-charcoal"
                                 />
-                                <button type="submit" className="bg-brand-charcoal text-white px-6 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-brand-charcoal/80 transition-colors">Apply</button>
+                                <button type="submit" className="bg-brand-charcoal text-white px-6 py-3 text-[11px] font-bold uppercase tracking-wider hover:bg-brand-charcoal/80 transition-colors">Apply</button>
                              </div>
                         </form>
 

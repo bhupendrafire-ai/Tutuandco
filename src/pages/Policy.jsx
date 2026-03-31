@@ -30,9 +30,9 @@ const Policy = () => {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="border-b border-brand-charcoal/10 text-[10px] uppercase font-bold text-brand-charcoal tracking-widest">
-                                        <th className="py-4 pr-6">Size</th>
-                                        <th className="py-4 px-6 text-right">Neck Size</th>
+                                    <tr className="border-b border-brand-charcoal/10 text-[11px] uppercase font-bold text-brand-charcoal tracking-wider">
+                                        <th className="py-4 pr-6 opacity-80">Size</th>
+                                        <th className="py-4 px-6 text-right opacity-80">Neck Size</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-brand-charcoal/5">
@@ -47,14 +47,14 @@ const Policy = () => {
                                 </tbody>
                             </table>
                         </div>
-                        <p className="text-[10px] uppercase tracking-widest mt-6 text-brand-charcoal/60 font-bold">(If your pet is between sizes, we recommend sizing up for comfort.)</p>
+                        <p className="text-xs italic mt-6 text-brand-charcoal/60 font-medium">(If your pet is between sizes, we recommend sizing up for comfort.)</p>
                     </div>
 
                     <div>
                         <h3 className="text-2xl font-serif text-brand-charcoal mt-10 mb-6 underline underline-offset-8">Find Your Pet’s Size</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="bg-brand-cream/30 p-8 rounded-sm">
-                                <h4 className="font-bold text-brand-charcoal uppercase tracking-widest text-xs mb-4">Small (S)</h4>
+                                <h4 className="font-bold text-brand-charcoal uppercase tracking-wider text-[11px] mb-4">Small (S)</h4>
                                 <p className="text-sm leading-relaxed text-brand-charcoal/70">Ideal for smaller pets such as: Shih Tzu, Lhasa Apso, Pug, Toy Poodle, Dachshund, most adult cats</p>
                             </div>
                             <div className="bg-brand-cream/30 p-8 rounded-sm">
@@ -62,7 +62,7 @@ const Policy = () => {
                                 <p className="text-sm leading-relaxed text-brand-charcoal/70">Ideal for medium-sized pets such as: Indie (Indian Pariah), Beagle, Cocker Spaniel, French Bulldog, small Indies and mixed breeds</p>
                             </div>
                         </div>
-                        <p className="text-[10px] uppercase tracking-widest mt-6 text-brand-charcoal/40">General guidelines — always measure your pet for the best fit.</p>
+                        <p className="text-xs italic mt-6 text-brand-charcoal/40 font-medium">General guidelines — always measure your pet for the best fit.</p>
                     </div>
 
                     <div className="pt-10 border-t border-brand-charcoal/10 mt-12 grid grid-cols-1 md:grid-cols-2 gap-12">

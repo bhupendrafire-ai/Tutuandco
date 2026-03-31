@@ -134,23 +134,32 @@ const ProductDetail = () => {
                         </div>
 
                         {/* Shipping Info */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 py-10 border-t border-brand-charcoal/10">
-                            <div className="flex flex-col items-center text-center">
-                                <Truck size={20} className="text-brand-charcoal/60 mb-3" />
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-brand-charcoal">Fast Shipping</span>
-                                <span className="text-[10px] text-brand-charcoal/40">2-4 Business Days</span>
-                            </div>
-                            <div className="flex flex-col items-center text-center">
-                                <RefreshCcw size={20} className="text-brand-charcoal/60 mb-3" />
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-brand-charcoal">Easy Returns</span>
-                                <span className="text-[10px] text-brand-charcoal/40">30 Day Window</span>
-                            </div>
-                            <div className="flex flex-col items-center text-center">
-                                <Shield size={20} className="text-brand-charcoal/60 mb-3" />
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-brand-charcoal">Secure Payment</span>
-                                <span className="text-[10px] text-brand-charcoal/40">SSL Encrypted</span>
-                            </div>
-                        </div>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 border-t border-brand-charcoal/10 pt-12">
+                             <div className="flex flex-col items-center text-center">
+                                 <Truck size={20} className="text-brand-charcoal/60 mb-3" />
+                                 <span className="text-[11px] uppercase tracking-wider font-bold text-brand-charcoal">Fast Shipping</span>
+                                 <span className="text-[10px] text-brand-charcoal/60 font-medium">2-4 Business Days</span>
+                             </div>
+                             <div className="flex flex-col items-center text-center">
+                                 <RefreshCcw size={20} className="text-brand-charcoal/60 mb-3" />
+                                 <span className="text-[11px] uppercase tracking-wider font-bold text-brand-charcoal">Easy Returns</span>
+                                 <span className="text-[10px] text-brand-charcoal/60 font-medium">30 Day Window</span>
+                             </div>
+                             <div className="flex flex-col items-center text-center">
+                                 <Shield size={20} className="text-brand-charcoal/60 mb-3" />
+                                 <span className="text-[11px] uppercase tracking-wider font-bold text-brand-charcoal">Secure Payment</span>
+                                 <span className="text-[10px] text-brand-charcoal/60 font-medium">SSL Encrypted</span>
+                             </div>
+                             <div className="flex flex-col items-center text-center">
+                                 <div className="flex items-center space-x-1 mb-3">
+                                     {[...Array(5)].map((_, i) => (
+                                         <span key={i} className="text-[#8B967E]">★</span>
+                                     ))}
+                                 </div>
+                                 <span className="text-[11px] uppercase tracking-wider font-bold text-brand-charcoal">5 Star Reviews</span>
+                                 <span className="text-[10px] text-brand-charcoal/60 font-medium">Verified Custom</span>
+                             </div>
+                         </div>
                     </div>
                 </div>
 
@@ -182,7 +191,7 @@ const ProductDetail = () => {
                                                     <h4 className="text-xl font-serif italic text-brand-charcoal">{item.title}</h4>
                                                     <ul className="space-y-2">
                                                         {item.bullets?.map((bullet, k) => bullet && (
-                                                            <li key={k} className="text-[10px] uppercase font-bold tracking-widest text-brand-charcoal font-medium">{bullet}</li>
+                                                            <li key={k} className="text-[11px] uppercase font-bold tracking-wider text-brand-charcoal opacity-80">{bullet}</li>
                                                         ))}
                                                     </ul>
                                                 </div>
