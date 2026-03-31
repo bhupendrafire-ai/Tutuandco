@@ -23,9 +23,34 @@ const Policy = () => {
             content: 'To maintain the longevity of our organic fabrics, we recommend machine washing in cold water on a gentle cycle. Hang or lay flat to dry. Do not bleach.'
         },
         'privacy': {
-            title: 'Privacy Commitment',
+            title: 'Privacy Policy',
             icon: HeartHandshake,
-            content: 'Your data is as safe as your pet in our arms. We never share your personal information with third parties. All payments are securely encrypted.'
+            content: (
+                <div className="space-y-6">
+                    <h3 className="text-2xl font-serif text-black mt-8 mb-4">1. Information We Collect</h3>
+                    <p>We collect personal information that you voluntarily provide to us when you place an order, sign up for our newsletter, or contact us. This may include your name, email address, phone number, shipping and billing address, and payment details.</p>
+                    
+                    <h3 className="text-2xl font-serif text-black mt-8 mb-4">2. How We Use Your Information</h3>
+                    <p>Your information is used to:</p>
+                    <ul className="list-disc pl-5 space-y-2">
+                        <li>Process and fulfill your orders</li>
+                        <li>Communicate with you regarding your purchases or inquiries</li>
+                        <li>Provide customer support</li>
+                        <li>Send updates, offers, or newsletters (only if you opt in)</li>
+                    </ul>
+                    <p className="mt-4">We only use your information for purposes that improve your experience with our brand.</p>
+
+                    <h3 className="text-2xl font-serif text-black mt-8 mb-4">3. Information Sharing</h3>
+                    <p>We respect your privacy. Your personal information is never sold, traded, or rented to third parties.</p>
+                    <p>We may share necessary details with trusted partners (such as payment processors and delivery services) strictly to fulfill your orders.</p>
+
+                    <h3 className="text-2xl font-serif text-black mt-8 mb-4">4. Data Security</h3>
+                    <p>We take appropriate measures to protect your personal information. All payment transactions are processed through secure, encrypted gateways to ensure your data remains safe.</p>
+
+                    <h3 className="text-2xl font-serif text-black mt-8 mb-4">5. Cookies</h3>
+                    <p>Our website uses cookies to enhance your browsing experience. These help us understand how you interact with our site, remember your preferences, and improve functionality. You can choose to disable cookies through your browser settings.</p>
+                </div>
+            )
         }
     };
 
@@ -59,7 +84,7 @@ const Policy = () => {
                      <active.icon size={48} className="text-[#8C916C] mb-10" />
                      <h2 className="text-4xl font-serif text-black mb-10">{active.title}</h2>
                      <div className="prose prose-lg text-[#95714F] leading-relaxed space-y-8">
-                         <p>{active.content}</p>
+                         {typeof active.content === 'string' ? <p>{active.content}</p> : active.content}
                          <p>
                              Our team is dedicated to providing the best experience for both you and your furry companion. 
                              If you have any specific questions that aren't addressed here, please don't hesitate to reach out 
