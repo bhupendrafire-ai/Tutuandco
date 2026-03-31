@@ -76,7 +76,7 @@ const Home = () => {
                             <img
                                 src={getProductImage(banners[currentBanner].image, media)}
                                 alt={banners[currentBanner].title}
-                                className="w-full h-full object-cover scale-105"
+                                className="w-full h-full object-cover object-[center_20%] transition-transform duration-1000"
                             />
                             <div className="absolute inset-0 bg-gradient-to-l from-black/70 via-black/20 to-transparent flex items-center justify-end text-right p-12 md:p-32">
                                 <div className="max-w-xl text-white flex flex-col items-end">
