@@ -51,14 +51,14 @@ const Cart = () => {
                                     </div>
 
                                     <div className="flex-grow text-center sm:text-left">
-                                        <span className="text-[11px] uppercase tracking-wider text-brand-charcoal opacity-60 font-medium mb-2 block">{item.category}</span>
-                                        <h3 className="text-xl font-serif text-brand-charcoal mb-4">{item.name}</h3>
-                                        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mb-4">
-                                            <p className="text-brand-charcoal font-medium">
+                                        <span className="text-[10px] uppercase tracking-[0.3em] text-brand-charcoal opacity-40 font-medium mb-3 block">{item.category}</span>
+                                        <h3 className="text-xl font-serif text-brand-charcoal mb-2">{item.name}</h3>
+                                        <div className="flex flex-col items-start gap-1">
+                                            <p className="text-brand-charcoal font-medium text-sm">
                                                 {formatPrice(item.discountPrice || item.price)}
                                             </p>
                                             {item.discountPrice && (
-                                                <p className="text-sm opacity-30 line-through text-brand-charcoal/30">
+                                                <p className="text-[10px] opacity-20 line-through text-brand-charcoal font-serif">
                                                     {formatPrice(item.price)}
                                                 </p>
                                             )}

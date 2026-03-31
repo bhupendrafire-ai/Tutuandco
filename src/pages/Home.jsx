@@ -165,25 +165,25 @@ const Home = () => {
                                 </div>
                             </div>
                             <div>
-                                <span className="text-[11px] uppercase tracking-wider text-[#8C916C] font-medium mb-2 block">{product.category}</span>
-                                <div className="flex justify-between items-start">
-                                    <h3 className="text-xl font-serif text-brand-charcoal">{product.name}</h3>
-                                <div className="flex flex-col items-end">
-                                    <span className="text-brand-charcoal font-medium">
-                                        {formatPrice(product.discountPrice || product.price)}
-                                    </span>
-                                    {product.discountPrice && (
-                                        <span className="text-[10px] opacity-30 line-through">
-                                            {formatPrice(product.price)}
+                                <span className="text-[10px] uppercase tracking-[0.3em] text-[#8C916C] font-medium mb-3 block">{product.category}</span>
+                                <div className="flex flex-col items-start gap-1">
+                                    <h3 className="text-xl font-serif text-brand-charcoal leading-tight">{product.name}</h3>
+                                    <div className="flex items-center space-x-3">
+                                        <span className="text-sm text-brand-charcoal font-medium">
+                                            {formatPrice(product.discountPrice || product.price)}
                                         </span>
-                                    )}
+                                        {product.discountPrice && (
+                                            <span className="text-[10px] opacity-30 line-through">
+                                                {formatPrice(product.price)}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                                </div>
-                                <div className="flex items-center mt-3">
+                                <div className="flex items-center mt-4">
                                     {[...Array(5)].map((_, i) => (
-                                        <Star key={i} size={12} fill={i < product.rating ? "#95714F" : "none"} className="text-[#95714F] mr-1" />
+                                        <Star key={i} size={11} fill={i < product.rating ? "#95714F" : "none"} className="text-[#95714F] mr-1" />
                                     ))}
-                                    <span className="text-[10px] text-[#95714F]/60 ml-2 font-medium">Top Rated</span>
+                                    <span className="text-[10px] text-[#95714F]/60 ml-2 font-medium tracking-wider">Top Rated</span>
                                 </div>
                             </div>
                         </Link>

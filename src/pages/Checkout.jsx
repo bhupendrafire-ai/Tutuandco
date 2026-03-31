@@ -186,17 +186,17 @@ const Checkout = () => {
                          </div>
                          <div className="p-8 space-y-6">
                             {cart.map(item => (
-                                <div key={item.id} className="flex justify-between items-center text-sm">
-                                    <div className="flex items-center space-x-4">
-                                        <div className="w-12 h-16 bg-white rounded-sm overflow-hidden flex-shrink-0">
-                                            <img src={getProductImage(item.images?.[0]?.url || item.imageName, media)} className="w-full h-full object-cover" alt="" />
-                                        </div>
-                                        <div>
-                                            <p className="font-medium text-brand-charcoal">{item.name}</p>
-                                            <p className="text-[11px] uppercase tracking-wider text-brand-charcoal/40 font-medium">Qty: {item.quantity}</p>
+                                <div key={item.id} className="flex items-start gap-4 text-sm pb-6 border-b border-brand-charcoal/5 last:border-0 last:pb-0">
+                                    <div className="w-12 h-16 bg-white rounded-sm overflow-hidden flex-shrink-0 shadow-sm">
+                                        <img src={getProductImage(item.images?.[0]?.url || item.imageName, media)} className="w-full h-full object-cover" alt="" />
+                                    </div>
+                                    <div className="flex flex-col flex-grow">
+                                        <p className="font-serif text-brand-charcoal leading-tight mb-1">{item.name}</p>
+                                        <div className="flex items-center space-x-3">
+                                            <span className="text-[11px] font-medium text-brand-charcoal">{formatPrice((item.discountPrice || item.price) * item.quantity)}</span>
+                                            <span className="text-[10px] uppercase tracking-widest text-brand-charcoal/30 font-medium">Qty: {item.quantity}</span>
                                         </div>
                                     </div>
-                                    <span className="text-brand-charcoal/60 font-medium">{formatPrice((item.discountPrice || item.price) * item.quantity)}</span>
                                 </div>
                             ))}
                             <div className="pt-6 border-t border-brand-charcoal/10 space-y-3">

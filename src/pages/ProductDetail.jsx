@@ -85,23 +85,23 @@ const ProductDetail = () => {
                             <span className="uppercase tracking-[0.3em] text-[10px] font-medium text-brand-charcoal opacity-60">Signature</span>
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl font-serif text-brand-charcoal mb-6">{product.name}</h1>
+                        <h1 className="text-4xl md:text-5xl font-serif text-brand-charcoal mb-10 leading-tight">{product.name}</h1>
                         
-                        <div className="flex items-center mb-8">
+                        <div className="flex items-center mb-10">
                             <div className="flex mr-4">
                                 {[...Array(5)].map((_, i) => (
-                                    <Star key={i} size={16} fill={i < product.rating ? "#2f2f2f" : "none"} className="text-brand-charcoal" />
+                                    <Star key={i} size={14} fill={i < product.rating ? "#2f2f2f" : "none"} className="text-brand-charcoal" />
                                 ))}
                             </div>
-                            <span className="text-brand-charcoal/60 text-sm">({reviews.length} Reviews)</span>
+                            <span className="text-brand-charcoal/40 text-[10px] uppercase tracking-widest font-medium">({reviews.length} Reviews)</span>
                         </div>
 
-                        <div className="flex items-center space-x-4 mb-8">
+                        <div className="flex items-center space-x-6 mb-12">
                             <p className="text-3xl font-serif text-brand-charcoal">
                                 {formatPrice(product.discountPrice || product.price)}
                             </p>
                             {product.discountPrice && (
-                                <p className="text-lg opacity-30 line-through">
+                                <p className="text-lg opacity-20 line-through font-serif">
                                     {formatPrice(product.price)}
                                 </p>
                             )}
