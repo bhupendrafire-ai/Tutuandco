@@ -15,7 +15,60 @@ const Policy = () => {
         'returns': {
             title: 'Returns & Exchanges',
             icon: RefreshCw,
-            content: 'Not the perfect fit? No problem. We accept returns and exchanges on all unused items within 30 days of purchase. Please ensure tags are still attached and items are free of pet hair.'
+            content: (
+                <div className="space-y-8">
+                    <p className="text-xl italic font-serif text-black leading-relaxed">"We want you and your pet to love your Tutu & Co purchase. If something isn’t quite right, we’re here to help."</p>
+
+                    <div>
+                        <h3 className="text-2xl font-serif text-black mt-10 mb-6 underline underline-offset-8">Exchanges</h3>
+                        <p className="mb-4">We offer limited exchanges for size or defects.</p>
+                        <ul className="list-disc pl-5 space-y-2 mb-8">
+                            <li>Size exchange requests must be raised within 48 hours of delivery</li>
+                            <li>Only one exchange per order is allowed</li>
+                        </ul>
+
+                        <h4 className="font-bold text-black uppercase tracking-widest text-xs mb-4">To be eligible:</h4>
+                        <ul className="list-disc pl-5 space-y-2 mb-8">
+                            <li>The product must be unused, unwashed, and in original condition</li>
+                            <li>Free from pet hair, odour, or any signs of wear</li>
+                            <li>All tags and packaging must be intact</li>
+                        </ul>
+
+                        <div className="bg-[#EADED0]/40 p-6 rounded-sm border-l-4 border-[#95714F] mb-8">
+                            <p className="font-bold text-black text-xs uppercase tracking-widest mb-2">Please note:</p>
+                            <ul className="space-y-2 text-sm italic">
+                                <li>• Exchange shipping costs are to be borne by the customer</li>
+                                <li>• We recommend checking our size guide carefully before purchase, as fit may vary based on breed and fur type</li>
+                            </ul>
+                        </div>
+                        <p>To request an exchange, please email us at <span className="font-bold text-black underline">support@tutuandco.com</span> with your order details.</p>
+                    </div>
+
+                    <div className="pt-10 border-t border-[#C7AF94]/30 mt-12">
+                        <h3 className="text-2xl font-serif text-black mb-6">Returns</h3>
+                        <p>As a small, made-with-care brand, we currently do not offer returns or refunds, unless the item received is damaged or incorrect.</p>
+                    </div>
+
+                    <div>
+                        <h3 className="text-xl font-serif text-black mb-4">Damaged or Incorrect Orders</h3>
+                        <p>If you receive a damaged or wrong item, please contact us within 48 hours of delivery with photos, and we’ll make it right.</p>
+                    </div>
+
+                    <div>
+                        <h3 className="text-xl font-serif text-black mb-4">Exchange Process</h3>
+                        <p className="mb-4 text-xs font-bold uppercase tracking-widest text-[#95714F]">Once your request is approved:</p>
+                        <ol className="list-decimal pl-5 space-y-2">
+                            <li>The product will need to be shipped back to us</li>
+                            <li>The replacement will be processed after a quality check</li>
+                        </ol>
+                    </div>
+
+                    <div className="pt-10 border-t border-[#C7AF94]/30">
+                         <h4 className="font-bold text-black uppercase tracking-widest text-xs mb-2 italic">A Small Note</h4>
+                         <p className="italic text-sm">Each piece is handmade, so slight variations are natural and not considered defects.</p>
+                    </div>
+                </div>
+            )
         },
         'care': {
             title: 'Product Care',
