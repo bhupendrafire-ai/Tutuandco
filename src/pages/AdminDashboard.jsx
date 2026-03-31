@@ -785,16 +785,8 @@ const AdminDashboard = () => {
                         ))}
                         
                         <div className="flex justify-center pt-8">
-                            <button 
-                                onClick={async () => {
-                                    if(window.confirm("This will synchronize all branding and content to the latest version. Proceed?")) {
-                                        await mockApi.resetAllData();
-                                    }
-                                }}
-                                className="bg-brand-rose text-brand-charcoal px-14 py-8 rounded-sm text-[18px] font-medium shadow-xl hover:bg-white transition-all flex items-center space-x-4"
-                            >
-                                <RefreshCcw size={20} />
-                                <span>Sync brand & content</span>
+                            <button className="bg-brand-rose text-brand-charcoal px-12 py-5 rounded-sm text-[18px] font-medium shadow-xl hover:opacity-80 transition-all">
+                                All configurations synchronized
                             </button>
                         </div>
                     </div>
@@ -945,6 +937,20 @@ const AdminDashboard = () => {
                                 <h4 className="text-[11px] font-medium text-yellow-800 mb-1">Safety protocol</h4>
                                 <p className="text-xs text-yellow-700/80 leading-relaxed">Changes made here are applied globally and in real-time. Ensure all values are verified before synchronization to prevent display inconsistencies in the storefront.</p>
                             </div>
+                        </div>
+
+                        <div className="flex justify-start pt-4 border-t border-brand-charcoal/5">
+                            <button 
+                                onClick={async () => {
+                                    if(window.confirm("This will synchronize all branding and content to the latest version. Proceed?")) {
+                                        await mockApi.resetAllData();
+                                    }
+                                }}
+                                className="bg-brand-rose text-brand-charcoal px-14 py-8 rounded-sm text-[18px] font-medium shadow-xl hover:bg-white transition-all flex items-center space-x-4"
+                            >
+                                <RefreshCcw size={20} />
+                                <span>Sync brand & content</span>
+                            </button>
                         </div>
                     </div>
                 )}
