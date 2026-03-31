@@ -48,7 +48,7 @@ const Checkout = () => {
                 <div className="flex items-center justify-center mb-16 space-x-4 max-w-xl mx-auto">
                     {[1, 2, 3].map((s) => (
                         <React.Fragment key={s}>
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all ${step >= s ? 'bg-brand-charcoal border-brand-charcoal text-white' : 'bg-white border-brand-charcoal/10 text-brand-charcoal/40'}`}>
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium border-2 transition-all ${step >= s ? 'bg-brand-charcoal border-brand-charcoal text-white' : 'bg-white border-brand-charcoal/10 text-brand-charcoal/40'}`}>
                                 {step > s ? <CheckCircle size={18} /> : s}
                             </div>
                             {s < 3 && <div className={`h-0.5 flex-grow transition-all ${step > s ? 'bg-brand-charcoal' : 'bg-brand-charcoal/10'}`} />}
@@ -72,37 +72,37 @@ const Checkout = () => {
                                     <form onSubmit={(e) => { e.preventDefault(); setStep(2); }} className="space-y-6">
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                             <div>
-                                                <label className="block text-[10px] uppercase font-bold text-brand-charcoal/40 tracking-widest mb-2">First Name</label>
+                                                <label className="block text-[10px] uppercase font-medium text-brand-charcoal/40 tracking-widest mb-2">First Name</label>
                                                 <input required name="firstName" value={orderDetails.firstName} onChange={handleInputChange} className="w-full border border-brand-charcoal/10 bg-white p-4 text-sm focus:border-brand-charcoal outline-none" />
                                             </div>
                                             <div>
-                                                <label className="block text-[10px] uppercase font-bold text-brand-charcoal/40 tracking-widest mb-2">Last Name</label>
+                                                <label className="block text-[10px] uppercase font-medium text-brand-charcoal/40 tracking-widest mb-2">Last Name</label>
                                                 <input required name="lastName" value={orderDetails.lastName} onChange={handleInputChange} className="w-full border border-brand-charcoal/10 bg-white p-4 text-sm focus:border-brand-charcoal outline-none" />
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] uppercase font-bold text-brand-charcoal/40 tracking-widest mb-2">Email Address</label>
+                                            <label className="block text-[10px] uppercase font-medium text-brand-charcoal/40 tracking-widest mb-2">Email Address</label>
                                             <input required type="email" name="email" value={orderDetails.email} onChange={handleInputChange} className="w-full border border-brand-charcoal/10 bg-white p-4 text-sm focus:border-brand-charcoal outline-none" />
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] uppercase font-bold text-brand-charcoal/40 tracking-widest mb-2">Street Address</label>
+                                            <label className="block text-[10px] uppercase font-medium text-brand-charcoal/40 tracking-widest mb-2">Street Address</label>
                                             <input required name="address" value={orderDetails.address} onChange={handleInputChange} className="w-full border border-brand-charcoal/10 bg-white p-4 text-sm focus:border-brand-charcoal outline-none" />
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                                             <div>
-                                                <label className="block text-[10px] uppercase font-bold text-brand-charcoal/40 tracking-widest mb-2">City</label>
+                                                <label className="block text-[10px] uppercase font-medium text-brand-charcoal/40 tracking-widest mb-2">City</label>
                                                 <input required name="city" value={orderDetails.city} onChange={handleInputChange} className="w-full border border-brand-charcoal/10 bg-white p-4 text-sm focus:border-brand-charcoal outline-none" />
                                             </div>
                                             <div>
-                                                <label className="block text-[10px] uppercase font-bold text-brand-charcoal/40 tracking-widest mb-2">State</label>
+                                                <label className="block text-[10px] uppercase font-medium text-brand-charcoal/40 tracking-widest mb-2">State</label>
                                                 <input required name="state" value={orderDetails.state} onChange={handleInputChange} className="w-full border border-brand-charcoal/10 bg-white p-4 text-sm focus:border-brand-charcoal outline-none" />
                                             </div>
                                             <div>
-                                                <label className="block text-[10px] uppercase font-bold text-brand-charcoal/40 tracking-widest mb-2">ZIP</label>
+                                                <label className="block text-[10px] uppercase font-medium text-brand-charcoal/40 tracking-widest mb-2">ZIP</label>
                                                 <input required name="zip" value={orderDetails.zip} onChange={handleInputChange} className="w-full border border-brand-charcoal/10 bg-white p-4 text-sm focus:border-brand-charcoal outline-none" />
                                             </div>
                                         </div>
-                                        <button type="submit" className="w-full bg-brand-charcoal text-white py-5 flex items-center justify-center font-bold tracking-[0.2em] uppercase text-xs hover:bg-brand-charcoal/80">
+                                        <button type="submit" className="w-full bg-brand-charcoal text-white py-5 flex items-center justify-center font-medium tracking-[0.2em] uppercase text-xs hover:bg-brand-charcoal/80">
                                             Continue to Payment <ChevronRight size={16} className="ml-2" />
                                         </button>
                                     </form>
@@ -140,7 +140,7 @@ const Checkout = () => {
                                     <button 
                                         onClick={handleCheckout}
                                         disabled={loading}
-                                        className="w-full bg-black text-white py-5 flex items-center justify-center font-bold tracking-[0.2em] uppercase text-xs hover:bg-[#1a1a1a] transition-all"
+                                        className="w-full bg-black text-white py-5 flex items-center justify-center font-medium tracking-[0.2em] uppercase text-xs hover:bg-[#1a1a1a] transition-all"
                                     >
                                     {loading ? 'Processing...' : `Place Order • ${formatPrice(total)}`}
                                     </button>
@@ -161,17 +161,17 @@ const Checkout = () => {
                                     <p className="text-brand-charcoal/60 mb-12">Thank you, {orderDetails.firstName}. Your order <strong>{orderResult.id}</strong> is being processed.</p>
                                     
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
-                                        <button className="flex items-center justify-center space-x-2 border border-brand-charcoal/10 p-5 text-[11px] font-bold uppercase tracking-wider text-brand-charcoal/60 hover:bg-white">
+                                        <button className="flex items-center justify-center space-x-2 border border-brand-charcoal/10 p-5 text-[11px] font-medium uppercase tracking-wider text-brand-charcoal/60 hover:bg-white">
                                             <FileText size={18} />
                                             <span>Download Tax Invoice</span>
                                         </button>
-                                        <button className="flex items-center justify-center space-x-2 border border-brand-charcoal/10 p-5 text-[11px] font-bold uppercase tracking-wider text-brand-charcoal/60 hover:bg-white">
+                                        <button className="flex items-center justify-center space-x-2 border border-brand-charcoal/10 p-5 text-[11px] font-medium uppercase tracking-wider text-brand-charcoal/60 hover:bg-white">
                                             <Truck size={18} />
                                             <span>Print Shipping Label</span>
                                         </button>
                                     </div>
 
-                                    <Link to="/" className="text-[11px] uppercase font-bold tracking-[0.3em] text-black border-b border-black pb-2 hover:opacity-70">
+                                    <Link to="/" className="text-[11px] uppercase font-medium tracking-[0.3em] text-black border-b border-black pb-2 hover:opacity-70">
                                         Continue Shopping
                                     </Link>
                                 </motion.div>
@@ -193,10 +193,10 @@ const Checkout = () => {
                                         </div>
                                         <div>
                                             <p className="font-medium text-brand-charcoal">{item.name}</p>
-                                            <p className="text-[11px] uppercase tracking-wider text-brand-charcoal/40 font-bold">Qty: {item.quantity}</p>
+                                            <p className="text-[11px] uppercase tracking-wider text-brand-charcoal/40 font-medium">Qty: {item.quantity}</p>
                                         </div>
                                     </div>
-                                    <span className="text-brand-charcoal/60 font-semibold">{formatPrice((item.discountPrice || item.price) * item.quantity)}</span>
+                                    <span className="text-brand-charcoal/60 font-medium">{formatPrice((item.discountPrice || item.price) * item.quantity)}</span>
                                 </div>
                             ))}
                             <div className="pt-6 border-t border-brand-charcoal/10 space-y-3">
@@ -209,13 +209,13 @@ const Checkout = () => {
                                     <span className="text-brand-charcoal font-medium">{shipping === 0 ? 'FREE' : formatPrice(shipping)}</span>
                                 </div>
                                 {discountAmount > 0 && (
-                                    <div className="flex justify-between text-sm text-brand-charcoal font-bold">
+                                    <div className="flex justify-between text-sm text-brand-charcoal font-medium">
                                         <span>Discount</span>
                                         <span>-{formatPrice(discountAmount)}</span>
                                     </div>
                                 )}
                                 <div className="pt-4 flex justify-between items-end border-t border-brand-charcoal/10">
-                                    <span className="text-[11px] uppercase font-bold tracking-wider text-brand-charcoal/40">Total</span>
+                                    <span className="text-[11px] uppercase font-medium tracking-wider text-brand-charcoal/40">Total</span>
                                     <span className="text-2xl font-serif text-brand-charcoal">{formatPrice(total)}</span>
                                 </div>
                             </div>

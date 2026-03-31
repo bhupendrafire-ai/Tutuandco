@@ -49,7 +49,7 @@ const AdminLogin = () => {
 
                 <form onSubmit={handleLogin} className="space-y-6">
                     <div>
-                        <label className="block text-xs font-bold text-brand-charcoal/60 uppercase tracking-wider mb-2">Username</label>
+                        <label className="block text-xs font-medium text-brand-charcoal/60 uppercase tracking-wider mb-2">Username</label>
                         <input
                             type="text"
                             value={username}
@@ -59,7 +59,7 @@ const AdminLogin = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-brand-charcoal/60 uppercase tracking-wider mb-2">Password</label>
+                        <label className="block text-xs font-medium text-brand-charcoal/60 uppercase tracking-wider mb-2">Password</label>
                         <input
                             type="password"
                             value={password}

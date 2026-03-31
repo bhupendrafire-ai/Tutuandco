@@ -38,7 +38,7 @@ const BlogPost = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-16"
                 >
-                    <div className="flex items-center space-x-6 text-[10px] uppercase tracking-widest text-brand-charcoal opacity-60 font-bold mb-6">
+                    <div className="flex items-center space-x-6 text-[10px] uppercase tracking-widest text-brand-charcoal opacity-60 font-medium mb-6">
                         <span className="flex items-center"><Calendar size={12} className="mr-2" /> {post.date}</span>
                         <span className="flex items-center"><User size={12} className="mr-2" /> {post.author}</span>
                     </div>
@@ -73,11 +73,11 @@ const BlogPost = () => {
                         <img src={logo} alt="Tutu & Co" className="h-8 w-auto" />
                         <div className="h-8 w-px bg-brand-charcoal/10" />
                         <div>
-                            <p className="text-sm font-bold text-brand-charcoal uppercase tracking-widest">Global Team</p>
+                            <p className="text-sm font-medium text-brand-charcoal uppercase tracking-widest">Global Team</p>
                             <p className="text-xs text-brand-charcoal/60">Pet Apparel Enthusiasts</p>
                         </div>
                     </div>
-                    <button className="flex items-center space-x-2 text-[10px] uppercase font-bold tracking-widest text-brand-charcoal/60 hover:opacity-100 transition-opacity">
+                    <button onClick={() => window.history.back()} className="flex items-center space-x-2 text-[10px] uppercase font-medium tracking-widest text-brand-charcoal/60 hover:opacity-100 transition-opacity">
                         <Share2 size={16} />
                         <span>Share Article</span>
                     </button>

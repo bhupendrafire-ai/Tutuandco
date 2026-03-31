@@ -91,7 +91,7 @@ const MediaPicker = ({ isOpen, onClose, onSelect, multi = false, selectedItems =
                 <div className="p-6 border-b border-brand-charcoal/10 flex justify-between items-center bg-brand-cream">
                     <div>
                         <h2 className="text-2xl font-serif italic text-brand-charcoal">Media Library</h2>
-                        <p className="text-[10px] uppercase font-bold tracking-widest text-brand-charcoal/40">
+                        <p className="text-[10px] uppercase font-medium tracking-widest text-brand-charcoal/40">
                             {multi ? 'Select Multiple Assets' : 'Select an Asset'}
                         </p>
                     </div>
@@ -113,14 +113,14 @@ const MediaPicker = ({ isOpen, onClose, onSelect, multi = false, selectedItems =
                         />
                     </div>
                     <div className="flex items-center gap-4 w-full md:w-auto">
-                        <label className="flex-grow md:flex-initial flex items-center justify-center gap-2 bg-brand-charcoal text-white px-6 py-3 rounded-sm text-[10px] uppercase font-bold tracking-widest cursor-pointer hover:opacity-90 transition-all shadow-md">
+                        <label className="flex-grow md:flex-initial flex items-center justify-center gap-2 bg-brand-charcoal text-white px-6 py-3 rounded-sm text-[10px] uppercase font-medium tracking-widest cursor-pointer hover:opacity-90 transition-all shadow-md">
                             {isUploading ? 'Uploading...' : <><Upload size={16} /> Upload New</>}
                             <input type="file" className="hidden" onChange={handleFileUpload} disabled={isUploading} accept="image/*" />
                         </label>
                         {multi && (
                             <button 
                                 onClick={handleConfirm}
-                                className="flex-grow md:flex-initial bg-brand-charcoal/80 text-white px-8 py-3 rounded-sm text-[10px] uppercase font-bold tracking-widest hover:bg-brand-charcoal transition-all shadow-md"
+                                className="flex-grow md:flex-initial bg-brand-charcoal/80 text-white px-8 py-3 rounded-sm text-[10px] uppercase font-medium tracking-widest hover:bg-brand-charcoal transition-all shadow-md"
                             >
                                 Confirm Selection ({localSelected.length})
                             </button>
@@ -143,10 +143,10 @@ const MediaPicker = ({ isOpen, onClose, onSelect, multi = false, selectedItems =
                                 >
                                     <img src={item.url} className="w-full h-full object-cover" alt={item.name} />
                                     {item.isStatic && (
-                                        <div className="absolute top-2 left-2 bg-white/80 px-2 py-0.5 text-[8px] font-bold uppercase tracking-widest rounded-full">Static</div>
+                                        <div className="absolute top-2 left-2 bg-white/80 px-2 py-0.5 text-[8px] font-medium uppercase tracking-widest rounded-full">Static</div>
                                     )}
                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                        <p className="text-white text-[10px] font-bold uppercase text-center px-4 truncate w-full">{item.name}</p>
+                                        <p className="text-white text-[10px] font-medium uppercase text-center px-4 truncate w-full">{item.name}</p>
                                     </div>
                                     {isSelected && (
                                         <div className="absolute top-2 right-2 bg-brand-charcoal text-white p-1 rounded-full shadow-lg">
@@ -157,7 +157,7 @@ const MediaPicker = ({ isOpen, onClose, onSelect, multi = false, selectedItems =
                                         <div className="absolute inset-0 flex items-center justify-center bg-brand-charcoal/20">
                                             <button 
                                                 onClick={(e) => { e.stopPropagation(); handleConfirm(); }}
-                                                className="bg-brand-charcoal text-white px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest shadow-lg"
+                                                className="bg-brand-charcoal text-white px-4 py-2 rounded-sm text-[10px] font-medium uppercase tracking-widest shadow-lg"
                                             >
                                                 Select
                                             </button>

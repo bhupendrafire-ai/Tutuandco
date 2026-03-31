@@ -26,8 +26,7 @@ const Blogs = () => {
             <div className="max-w-7xl mx-auto px-6">
                 <header className="text-center mb-24">
                     <div className="flex flex-col items-center mb-6">
-                        <img src={logo} alt="Tutu & Co" className="h-10 w-auto mb-2" />
-                        <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-brand-charcoal opacity-60">Journal</span>
+                        <span className="uppercase tracking-[0.4em] text-[10px] font-medium text-brand-charcoal opacity-60">Journal</span>
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-serif text-brand-charcoal mb-8">Stories & Care</h1>
@@ -53,7 +52,7 @@ const Blogs = () => {
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
                                 />
                             </Link>
-                            <div className="flex items-center space-x-6 text-[10px] uppercase tracking-widest text-brand-charcoal opacity-60 font-bold mb-4">
+                            <div className="flex items-center space-x-6 text-[10px] uppercase tracking-widest text-brand-charcoal opacity-60 font-medium mb-4">
                                 <span className="flex items-center"><Calendar size={12} className="mr-2" /> {post.date}</span>
                                 <span className="flex items-center"><User size={12} className="mr-2" /> {post.author}</span>
                             </div>
@@ -63,7 +62,7 @@ const Blogs = () => {
                             </p>
                             <Link 
                                 to={`/blogs/${post.id}`} 
-                                className="inline-flex items-center text-[10px] uppercase font-bold tracking-[0.2em] text-brand-charcoal border-b-2 border-brand-charcoal pb-2 hover:opacity-70 transition-all group/link"
+                                className="inline-flex items-center text-[10px] uppercase font-medium tracking-[0.2em] text-brand-charcoal border-b-2 border-brand-charcoal pb-2 hover:opacity-70 transition-all group/link"
                             >
                                 Read Full Story 
                                 <ArrowRight size={14} className="ml-2 group-hover/link:translate-x-1 transition-transform" />

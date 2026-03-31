@@ -82,7 +82,7 @@ const ProductDetail = () => {
                     <div className="flex flex-col">
                         <div className="flex items-center mb-4">
                             <img src={logo} alt="Tutu & Co" className="h-6 w-auto mr-3" />
-                            <span className="uppercase tracking-[0.3em] text-[10px] font-bold text-brand-charcoal opacity-60">Signature</span>
+                            <span className="uppercase tracking-[0.3em] text-[10px] font-medium text-brand-charcoal opacity-60">Signature</span>
                         </div>
 
                         <h1 className="text-4xl md:text-5xl font-serif text-brand-charcoal mb-6">{product.name}</h1>
@@ -137,17 +137,17 @@ const ProductDetail = () => {
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 border-t border-brand-charcoal/10 pt-12">
                              <div className="flex flex-col items-center text-center">
                                  <Truck size={20} className="text-brand-charcoal/60 mb-3" />
-                                 <span className="text-[11px] uppercase tracking-wider font-bold text-brand-charcoal">Fast Shipping</span>
+                                 <span className="text-[11px] uppercase tracking-wider font-medium text-brand-charcoal">Fast Shipping</span>
                                  <span className="text-[10px] text-brand-charcoal/60 font-medium">2-4 Business Days</span>
                              </div>
                              <div className="flex flex-col items-center text-center">
                                  <RefreshCcw size={20} className="text-brand-charcoal/60 mb-3" />
-                                 <span className="text-[11px] uppercase tracking-wider font-bold text-brand-charcoal">Easy Returns</span>
+                                 <span className="text-[11px] uppercase tracking-wider font-medium text-brand-charcoal">Easy Returns</span>
                                  <span className="text-[10px] text-brand-charcoal/60 font-medium">30 Day Window</span>
                              </div>
                              <div className="flex flex-col items-center text-center">
                                  <Shield size={20} className="text-brand-charcoal/60 mb-3" />
-                                 <span className="text-[11px] uppercase tracking-wider font-bold text-brand-charcoal">Secure Payment</span>
+                                 <span className="text-[11px] uppercase tracking-wider font-medium text-brand-charcoal">Secure Payment</span>
                                  <span className="text-[10px] text-brand-charcoal/60 font-medium">SSL Encrypted</span>
                              </div>
                              <div className="flex flex-col items-center text-center">
@@ -156,7 +156,7 @@ const ProductDetail = () => {
                                          <span key={i} className="text-[#8B967E]">★</span>
                                      ))}
                                  </div>
-                                 <span className="text-[11px] uppercase tracking-wider font-bold text-brand-charcoal">5 Star Reviews</span>
+                                 <span className="text-[11px] uppercase tracking-wider font-medium text-brand-charcoal">5 Star Reviews</span>
                                  <span className="text-[10px] text-brand-charcoal/60 font-medium">Verified Custom</span>
                              </div>
                          </div>
@@ -191,7 +191,7 @@ const ProductDetail = () => {
                                                     <h4 className="text-xl font-serif italic text-brand-charcoal">{item.title}</h4>
                                                     <ul className="space-y-2">
                                                         {item.bullets?.map((bullet, k) => bullet && (
-                                                            <li key={k} className="text-[11px] uppercase font-bold tracking-wider text-brand-charcoal opacity-80">{bullet}</li>
+                                                            <li key={k} className="text-[11px] uppercase font-medium tracking-wider text-brand-charcoal opacity-80">{bullet}</li>
                                                         ))}
                                                     </ul>
                                                 </div>
@@ -281,10 +281,10 @@ const ProductDetail = () => {
                                         <Star key={i} size={20} fill={i < product.rating ? "#2f2f2f" : "none"} className="text-brand-charcoal" />
                                     ))}
                                 </div>
-                                <span className="text-brand-charcoal/60 font-bold">{(Number(product.rating) || 5).toFixed(1)} out of 5</span>
+                                <span className="text-brand-charcoal/60 font-medium">{(Number(product.rating) || 5).toFixed(1)} out of 5</span>
                             </div>
                         </div>
-                        <button className="text-[10px] uppercase font-bold tracking-[0.2em] border-2 border-brand-charcoal px-10 py-4 hover:bg-brand-charcoal hover:text-white transition-all">
+                        <button className="text-[10px] uppercase font-medium tracking-[0.2em] border-2 border-brand-charcoal px-10 py-4 hover:bg-brand-charcoal hover:text-white transition-all">
                             Write a Review
                         </button>
                     </div>
@@ -300,7 +300,7 @@ const ProductDetail = () => {
                                                 <Star key={j} size={12} fill={j < review.rating ? "#2f2f2f" : "none"} className="text-brand-charcoal" />
                                             ))}
                                         </div>
-                                        <span className="text-xs font-bold text-brand-charcoal/80 uppercase tracking-widest">{review.userName}</span>
+                                        <span className="text-xs font-medium text-brand-charcoal/80 uppercase tracking-widest">{review.userName}</span>
                                     </div>
                                     <h4 className="font-serif text-brand-charcoal mb-2">{review.title}</h4>
                                     <p className="text-brand-charcoal/70 text-sm leading-relaxed mb-4">{review.comment}</p>
@@ -329,24 +329,24 @@ const ProductDetail = () => {
                                 alert("Review submitted! Thank you.");
                             }} className="space-y-6">
                                 <div>
-                                    <label className="block text-[10px] uppercase font-bold text-brand-charcoal/60 tracking-widest mb-2">Display Name</label>
+                                    <label className="block text-[10px] uppercase font-medium text-brand-charcoal/60 tracking-widest mb-2">Display Name</label>
                                     <input required name="userName" className="w-full bg-white border border-brand-charcoal/10 p-4 text-sm focus:border-brand-charcoal outline-none" />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] uppercase font-bold text-brand-charcoal/60 tracking-widest mb-2">Rating</label>
+                                    <label className="block text-[10px] uppercase font-medium text-brand-charcoal/60 tracking-widest mb-2">Rating</label>
                                     <select name="rating" className="w-full bg-white border border-brand-charcoal/10 p-4 text-sm focus:border-brand-charcoal outline-none appearance-none">
                                         {[5,4,3,2,1].map(n => <option key={n} value={n}>{n} Stars</option>)}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] uppercase font-bold text-brand-charcoal/60 tracking-widest mb-2">Review Title</label>
+                                    <label className="block text-[10px] uppercase font-medium text-brand-charcoal/60 tracking-widest mb-2">Review Title</label>
                                     <input required name="title" className="w-full bg-white border border-brand-charcoal/10 p-4 text-sm focus:border-brand-charcoal outline-none" />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] uppercase font-bold text-brand-charcoal/60 tracking-widest mb-2">Your Experience</label>
+                                    <label className="block text-[10px] uppercase font-medium text-brand-charcoal/60 tracking-widest mb-2">Your Experience</label>
                                     <textarea required name="comment" rows="4" className="w-full bg-white border border-brand-charcoal/10 p-4 text-sm focus:border-brand-charcoal outline-none" />
                                 </div>
-                                <button type="submit" className="w-full bg-black text-white py-5 font-bold uppercase tracking-widest text-[10px] hover:bg-[#1a1a1a]">Post Review</button>
+                                <button type="submit" className="w-full bg-black text-white py-5 font-medium uppercase tracking-widest text-[10px] hover:bg-[#1a1a1a]">Post Review</button>
                             </form>
                         </div>
                     </div>

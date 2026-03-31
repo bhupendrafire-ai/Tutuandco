@@ -15,7 +15,7 @@ const Footer = () => {
                     </p>
                 </div>
                 <div>
-                    <h4 className="font-bold text-black uppercase tracking-widest text-[10px] mb-8">Shop</h4>
+                    <h4 className="font-medium text-black uppercase tracking-widest text-[10px] mb-8">Shop</h4>
                     <ul className="space-y-4 text-sm text-brand-charcoal/70">
                         <li><Link to="/" className="hover:text-black transition-colors">All Collections</Link></li>
                         <li><Link to="/collab" className="hover:text-black transition-colors">Collaborations</Link></li>
@@ -23,7 +23,7 @@ const Footer = () => {
                     </ul>
                 </div>
                 <div>
-                    <h4 className="font-bold text-black uppercase tracking-widest text-[10px] mb-8">Support</h4>
+                    <h4 className="font-medium text-black uppercase tracking-widest text-[10px] mb-8">Support</h4>
                     <ul className="space-y-4 text-sm text-brand-charcoal/70">
                         <li><Link to="/policy/shipping" className="hover:text-black transition-colors">Shipping Info</Link></li>
                         <li><Link to="/policy/returns" className="hover:text-black transition-colors">Returns & Exchanges</Link></li>
@@ -32,7 +32,7 @@ const Footer = () => {
                     </ul>
                 </div>
                 <div>
-                    <h4 className="font-bold text-black uppercase tracking-widest text-[10px] mb-8">Newsletter</h4>
+                    <h4 className="font-medium text-black uppercase tracking-widest text-[10px] mb-8">Newsletter</h4>
                     <p className="text-xs text-brand-charcoal/70 mb-6">Join our community for early access and pet care tips.</p>
                     <div className="flex">
                         <input
@@ -40,11 +40,11 @@ const Footer = () => {
                             placeholder="Email address"
                             className="bg-transparent border-b border-brand-charcoal/30 py-2	flex-grow focus:outline-none text-sm placeholder-brand-charcoal/40"
                         />
-                        <button className="text-black text-xs font-bold uppercase tracking-widest ml-4 hover:opacity-70 transition-opacity">Join</button>
+                        <button className="text-black text-xs font-medium uppercase tracking-widest ml-4 hover:opacity-70 transition-opacity">Join</button>
                     </div>
                 </div>
             </div>
-            <div className="max-w-7xl mx-auto px-6 mt-24 pt-8 border-t border-brand-charcoal/10 flex flex-col md:flex-row justify-between items-center text-[10px] text-brand-charcoal/60 uppercase tracking-widest font-bold">
+            <div className="max-w-7xl mx-auto px-6 mt-24 pt-8 border-t border-brand-charcoal/10 flex flex-col md:flex-row justify-between items-center text-[10px] text-brand-charcoal/60 uppercase tracking-widest font-medium">
                 <span>{settings.footerText || `© 2026 ${settings.shopName}. Crafted with care.`}</span>
                 <div className="flex space-x-8 mt-6 md:mt-0">
                     <Link to="/moments" className="hover:text-black transition-colors">User Gallery</Link>

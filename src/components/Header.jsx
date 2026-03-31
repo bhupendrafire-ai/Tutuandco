@@ -42,7 +42,7 @@ const Header = () => {
                     <Link to="/cart" className="hover:opacity-70 transition-opacity relative">
                         <ShoppingCart size={20} />
                         {cartCount > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-brand-charcoal text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                            <span className="absolute -top-2 -right-2 bg-brand-charcoal text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-medium">
                                 {cartCount}
                             </span>
                         )}

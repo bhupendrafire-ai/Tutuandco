@@ -18,7 +18,7 @@ const Policy = () => {
                     <div>
                         <h3 className="text-2xl font-serif text-brand-charcoal mt-10 mb-6 underline underline-offset-8">How to Measure</h3>
                         <div className="space-y-4">
-                            <p>Use a soft measuring tape and measure around your pet’s neck where the bandana would naturally sit <span className="font-bold text-brand-charcoal">(not too tight, not too loose).</span></p>
+                            <p>Use a soft measuring tape and measure around your pet’s neck where the bandana would naturally sit <span className="text-brand-charcoal opacity-80">(not too tight, not too loose).</span></p>
                             <div className="bg-brand-cream/50 p-6 border-l-4 border-brand-charcoal/30">
                                 <p className="text-sm italic">"Make sure you can comfortably fit two fingers between the tape and your pet’s neck."</p>
                             </div>
@@ -30,18 +30,18 @@ const Policy = () => {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="border-b border-brand-charcoal/10 text-[11px] uppercase font-bold text-brand-charcoal tracking-wider">
+                                    <tr className="border-b border-brand-charcoal/10 text-[11px] uppercase font-medium text-brand-charcoal tracking-wider">
                                         <th className="py-4 pr-6 opacity-80">Size</th>
                                         <th className="py-4 px-6 text-right opacity-80">Neck Size</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-brand-charcoal/5">
                                     <tr className="text-brand-charcoal/70">
-                                        <td className="py-4 pr-6 font-bold text-brand-charcoal">Small</td>
+                                        <td className="py-4 pr-6 font-medium text-brand-charcoal">Small</td>
                                         <td className="py-4 px-6 text-right">20 – 30 cm (8 – 12 in)</td>
                                     </tr>
                                     <tr className="text-brand-charcoal/70">
-                                        <td className="py-4 pr-6 font-bold text-brand-charcoal">Medium</td>
+                                        <td className="py-4 pr-6 font-medium text-brand-charcoal">Medium</td>
                                         <td className="py-4 px-6 text-right">30 – 40 cm (12 – 16 in)</td>
                                     </tr>
                                 </tbody>
@@ -54,11 +54,11 @@ const Policy = () => {
                         <h3 className="text-2xl font-serif text-brand-charcoal mt-10 mb-6 underline underline-offset-8">Find Your Pet’s Size</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="bg-brand-cream/30 p-8 rounded-sm">
-                                <h4 className="font-bold text-brand-charcoal uppercase tracking-wider text-[11px] mb-4">Small (S)</h4>
+                                <h4 className="font-medium text-brand-charcoal uppercase tracking-wider text-[11px] mb-4">Small (S)</h4>
                                 <p className="text-sm leading-relaxed text-brand-charcoal/70">Ideal for smaller pets such as: Shih Tzu, Lhasa Apso, Pug, Toy Poodle, Dachshund, most adult cats</p>
                             </div>
                             <div className="bg-brand-cream/30 p-8 rounded-sm">
-                                <h4 className="font-bold text-brand-charcoal uppercase tracking-widest text-xs mb-4">Medium (M)</h4>
+                                <h4 className="font-medium text-brand-charcoal uppercase tracking-widest text-xs mb-4">Medium (M)</h4>
                                 <p className="text-sm leading-relaxed text-brand-charcoal/70">Ideal for medium-sized pets such as: Indie (Indian Pariah), Beagle, Cocker Spaniel, French Bulldog, small Indies and mixed breeds</p>
                             </div>
                         </div>
@@ -67,17 +67,17 @@ const Policy = () => {
 
                     <div className="pt-10 border-t border-brand-charcoal/10 mt-12 grid grid-cols-1 md:grid-cols-2 gap-12">
                         <div>
-                            <h3 className="text-sm font-bold text-brand-charcoal uppercase tracking-widest mb-4">Adjustable Fit</h3>
+                            <h3 className="text-sm font-medium text-brand-charcoal uppercase tracking-widest mb-4">Adjustable Fit</h3>
                             <p className="text-sm">Each bandana comes with two adjustable snap button levels, allowing you to customise the fit as needed.</p>
                         </div>
                         <div>
-                            <h3 className="text-sm font-bold text-brand-charcoal uppercase tracking-widest mb-4">Hardware Quality</h3>
+                            <h3 className="text-sm font-medium text-brand-charcoal uppercase tracking-widest mb-4">Hardware Quality</h3>
                             <p className="text-sm italic text-brand-charcoal/70">"The buttons are high-quality, anti-tarnish snaps designed for durability and everyday wear."</p>
                         </div>
                     </div>
 
                     <div className="bg-brand-cream/50 p-10 rounded-sm shadow-sm">
-                        <h3 className="text-sm font-bold text-brand-charcoal uppercase tracking-widest mb-6">Fit Tips</h3>
+                        <h3 className="text-sm font-medium text-brand-charcoal uppercase tracking-widest mb-6">Fit Tips</h3>
                         <ul className="space-y-4 text-sm text-brand-charcoal/80">
                             <li className="flex items-center">• Fluffy pets may need a slightly larger size</li>
                             <li className="flex items-center">• For growing pets, consider sizing up</li>
@@ -86,8 +86,8 @@ const Policy = () => {
                     </div>
 
                     <div className="pt-10 border-t border-brand-charcoal/10">
-                         <h4 className="font-bold text-brand-charcoal uppercase tracking-widest text-xs mb-4">Still Unsure?</h4>
-                         <p className="text-sm italic text-brand-charcoal/70">We’re happy to help! Reach out to us at <span className="font-bold text-brand-charcoal underline">support@tutuandco.com</span> or DM us on Instagram with your pet’s breed and measurements.</p>
+                         <h4 className="font-medium text-brand-charcoal uppercase tracking-widest text-xs mb-4">Still Unsure?</h4>
+                         <p className="text-sm italic text-brand-charcoal/70">We’re happy to help! Reach out to us at <span className="font-medium text-brand-charcoal underline">support@tutuandco.com</span> or DM us on Instagram with your pet’s breed and measurements.</p>
                     </div>
                 </div>
             )
@@ -108,22 +108,22 @@ const Policy = () => {
                         <h3 className="text-2xl font-serif text-brand-charcoal mt-10 mb-6 underline underline-offset-8">Shipping Time</h3>
                         <p className="mb-4">Once dispatched, orders typically arrive within:</p>
                         <ul className="list-disc pl-5 space-y-2 mb-8 text-brand-charcoal/70">
-                            <li><span className="font-bold text-brand-charcoal">2–5 business days</span> for metro cities</li>
-                            <li><span className="font-bold text-brand-charcoal">3–7 business days</span> for other locations</li>
+                            <li><span className="font-medium text-brand-charcoal">2–5 business days</span> for metro cities</li>
+                            <li><span className="font-medium text-brand-charcoal">3–7 business days</span> for other locations</li>
                         </ul>
                         <p className="text-sm italic">Delivery timelines may vary depending on your location and courier partner.</p>
                     </div>
 
                     <div className="bg-brand-cream/50 p-10 rounded-sm border-l-4 border-brand-charcoal/30 my-12">
-                        <h3 className="text-sm font-bold text-brand-charcoal uppercase tracking-widest mb-6">Shipping Charges</h3>
+                        <h3 className="text-sm font-medium text-brand-charcoal uppercase tracking-widest mb-6">Shipping Charges</h3>
                         <div className="space-y-4">
                             <div className="flex justify-between border-b border-brand-charcoal/10 pb-4">
                                 <span>Flat shipping fee</span>
-                                <span className="font-bold text-brand-charcoal">₹89</span>
+                                <span className="font-medium text-brand-charcoal">₹89</span>
                             </div>
-                            <div className="flex justify-between border-b border-brand-charcoal/10 pb-4">
-                                <span>Orders above ₹999</span>
-                                <span className="font-bold text-brand-charcoal">FREE</span>
+                            <div className="flex justify-between items-center py-4">
+                                <span className="text-brand-charcoal">Orders over ₹999</span>
+                                <span className="font-medium text-brand-charcoal">FREE</span>
                             </div>
                         </div>
                         <p className="text-[10px] uppercase tracking-widest mt-6 text-brand-charcoal/40">Shipping charges (if applicable) will be calculated at checkout.</p>
@@ -136,11 +136,11 @@ const Policy = () => {
 
                     <div>
                         <h3 className="text-2xl font-serif text-brand-charcoal mt-10 mb-6 underline underline-offset-8">Delays & Issues</h3>
-                        <p>While we work with reliable delivery partners, delays can occasionally happen due to factors beyond our control. If your order is significantly delayed, feel free to reach out to us at <span className="font-bold text-brand-charcoal underline">support@tutuandco.com</span>.</p>
+                        <p>While we work with reliable delivery partners, delays can occasionally happen due to factors beyond our control. If your order is significantly delayed, feel free to reach out to us at <span className="font-medium text-brand-charcoal underline">support@tutuandco.com</span>.</p>
                     </div>
 
                     <div className="pt-10 border-t border-brand-charcoal/10 mt-12">
-                         <h4 className="font-bold text-brand-charcoal uppercase tracking-widest text-xs mb-2 italic">Incorrect Address</h4>
+                         <h4 className="font-medium text-brand-charcoal uppercase tracking-widest text-xs mb-2 italic">Incorrect Address</h4>
                          <p className="italic text-sm">Please ensure your shipping details are accurate at checkout. We are not responsible for delays or failed deliveries due to incorrect information.</p>
                     </div>
                 </div>
@@ -161,7 +161,7 @@ const Policy = () => {
                             <li>Only one exchange per order is allowed</li>
                         </ul>
 
-                        <h4 className="font-bold text-brand-charcoal uppercase tracking-widest text-xs mb-4">To be eligible:</h4>
+                        <h4 className="font-medium text-brand-charcoal uppercase tracking-widest text-xs mb-4">To be eligible:</h4>
                         <ul className="list-disc pl-5 space-y-2 mb-8">
                             <li>The product must be unused, unwashed, and in original condition</li>
                             <li>Free from pet hair, odour, or any signs of wear</li>
@@ -169,7 +169,7 @@ const Policy = () => {
                         </ul>
 
                         <div className="bg-brand-cream/50 p-6 rounded-sm border-l-4 border-brand-charcoal/30 mb-8">
-                            <p className="font-bold text-brand-charcoal text-xs uppercase tracking-widest mb-2">Please note:</p>
+                            <p className="font-medium text-brand-charcoal text-xs uppercase tracking-widest mb-2">Please note:</p>
                             <ul className="space-y-2 text-sm italic">
                                 <li>• Exchange shipping costs are to be borne by the customer</li>
                                 <li>• We recommend checking our size guide carefully before purchase, as fit may vary based on breed and fur type</li>
@@ -189,7 +189,7 @@ const Policy = () => {
 
                     <div>
                         <h3 className="text-xl font-serif text-brand-charcoal mb-4">Exchange Process</h3>
-                        <p className="mb-4 text-xs font-bold uppercase tracking-widest text-brand-charcoal/60">Once your request is approved:</p>
+                        <p className="mb-4 text-xs font-medium uppercase tracking-widest text-brand-charcoal/60">Once your request is approved:</p>
                         <ol className="list-decimal pl-5 space-y-2">
                             <li>The product will need to be shipped back to us</li>
                             <li>The replacement will be processed after a quality check</li>
@@ -197,7 +197,7 @@ const Policy = () => {
                     </div>
 
                     <div className="pt-10 border-t border-brand-charcoal/10">
-                         <h4 className="font-bold text-brand-charcoal uppercase tracking-widest text-xs mb-2 italic">A Small Note</h4>
+                         <h4 className="font-medium text-brand-charcoal uppercase tracking-widest text-xs mb-2 italic">A Small Note</h4>
                          <p className="italic text-sm">Each piece is handmade, so slight variations are natural and not considered defects.</p>
                     </div>
                 </div>
@@ -212,25 +212,25 @@ const Policy = () => {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8">
                         <div>
-                            <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-4">Washing</h3>
+                            <h3 className="text-sm font-medium text-brand-charcoal uppercase tracking-widest mb-4">Washing</h3>
                             <p>Machine wash on a gentle cycle with similar colours using mild detergent. Avoid bleach.</p>
                         </div>
                         <div>
-                            <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-4">Drying</h3>
+                            <h3 className="text-sm font-medium text-brand-charcoal uppercase tracking-widest mb-4">Drying</h3>
                             <p>Air dry for best results, or tumble dry on low.</p>
                         </div>
                         <div>
-                            <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-4">Ironing</h3>
+                            <h3 className="text-sm font-medium text-brand-charcoal uppercase tracking-widest mb-4">Ironing</h3>
                             <p>If needed, use a low heat setting.</p>
                         </div>
                         <div>
-                            <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-4">Storage</h3>
+                            <h3 className="text-sm font-medium text-brand-charcoal uppercase tracking-widest mb-4">Storage</h3>
                             <p>Store in a clean, dry place when not in use.</p>
                         </div>
                     </div>
 
                     <div className="pt-10 border-t border-brand-charcoal/10 mt-12">
-                        <h3 className="text-sm font-bold text-brand-charcoal uppercase tracking-widest mb-4">A Small Note</h3>
+                        <h3 className="text-sm font-medium text-brand-charcoal uppercase tracking-widest mb-4">A Small Note</h3>
                         <p className="italic">Each piece is handmade, so slight variations are natural. With regular use, some wear is expected — it’s all part of your pet’s adventures.</p>
                     </div>
                 </div>
@@ -283,7 +283,7 @@ const Policy = () => {
                                 to={`/policy/${key}`} 
                                 className={`flex items-center space-x-4 p-6 rounded-sm transition-all ${section === key ? 'bg-brand-charcoal text-white shadow-lg' : 'hover:bg-brand-cream/50 text-brand-charcoal'}`}
                             >
-                                <span className="text-[10px] uppercase font-bold tracking-[0.2em]">{sections[key].title}</span>
+                                <span className="text-[10px] uppercase font-medium tracking-[0.2em]">{sections[key].title}</span>
                             </Link>
                         ))}
                     </div>
@@ -300,7 +300,7 @@ const Policy = () => {
                              to our support team.
                          </p>
                           <div className="pt-10 border-t border-brand-charcoal/10">
-                             <p className="text-sm font-bold text-black uppercase tracking-widest mb-4">Contact Support</p>
+                             <p className="text-sm font-medium text-brand-charcoal uppercase tracking-widest mb-4">Contact Support</p>
                              <p className="text-sm">support@tutuandco.com</p>
                              <p className="text-sm">Mon - Fri: 9am - 6pm EST</p>
                          </div>
