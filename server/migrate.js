@@ -59,17 +59,26 @@ const migrate = async () => {
         if (fs.existsSync(DATA_FILE)) {
             const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
 
-            // Check if products already exist
-            const productCheck = await db.query('SELECT COUNT(*) FROM products');
-            if (parseInt(productCheck.rows[0].count) === 0) {
-                console.log('📦 Importing products...');
-                for (const p of data.products) {
-                    await db.query(
-                        `INSERT INTO products (id, name, category, price, discount_price, rating, stock, image_name, images, description, details, description_blocks)
-                         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
-                        [p.id, p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks)]
-                    );
-                }
+            // Sync products from JSON
+            console.log('📦 Synchronizing products...');
+            for (const p of data.products) {
+                await db.query(
+                    `INSERT INTO products (id, name, category, price, discount_price, rating, stock, image_name, images, description, details, description_blocks)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                     ON CONFLICT (id) DO UPDATE SET 
+                        name = EXCLUDED.name,
+                        category = EXCLUDED.category,
+                        price = EXCLUDED.price,
+                        discount_price = EXCLUDED.discount_price,
+                        rating = EXCLUDED.rating,
+                        stock = EXCLUDED.stock,
+                        image_name = EXCLUDED.image_name,
+                        images = EXCLUDED.images,
+                        description = EXCLUDED.description,
+                        details = EXCLUDED.details,
+                        description_blocks = EXCLUDED.description_blocks`,
+                    [p.id, p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks)]
+                );
             }
 
             // Banners
