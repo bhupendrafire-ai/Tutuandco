@@ -20,7 +20,35 @@ const Policy = () => {
         'care': {
             title: 'Product Care',
             icon: Shield,
-            content: 'To maintain the longevity of our organic fabrics, we recommend machine washing in cold water on a gentle cycle. Hang or lay flat to dry. Do not bleach.'
+            content: (
+                <div className="space-y-8">
+                    <p className="text-xl italic font-serif text-black leading-relaxed">"Each Tutu & Co piece is thoughtfully made to be worn, loved, and lived in. With a little care, it’ll stay just as special."</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8">
+                        <div>
+                            <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-4">Washing</h3>
+                            <p>Machine wash on a gentle cycle with similar colours using mild detergent. Avoid bleach.</p>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-4">Drying</h3>
+                            <p>Air dry for best results, or tumble dry on low.</p>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-4">Ironing</h3>
+                            <p>If needed, use a low heat setting.</p>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-4">Storage</h3>
+                            <p>Store in a clean, dry place when not in use.</p>
+                        </div>
+                    </div>
+
+                    <div className="pt-10 border-t border-[#C7AF94]/30 mt-12">
+                        <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-4">A Small Note</h3>
+                        <p className="italic">Each piece is handmade, so slight variations are natural. With regular use, some wear is expected — it’s all part of your pet’s adventures.</p>
+                    </div>
+                </div>
+            )
         },
         'privacy': {
             title: 'Privacy Policy',
