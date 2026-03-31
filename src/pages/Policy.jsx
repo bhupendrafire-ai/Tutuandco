@@ -10,7 +10,56 @@ const Policy = () => {
         'shipping': {
             title: 'Shipping Policy',
             icon: Truck,
-            content: 'We offer free standard shipping on orders over $999. For all other orders, a flat rate of $89 applies. Most orders are processed within 48 hours and delivered within 3-5 business days.'
+            content: (
+                <div className="space-y-8">
+                    <p className="text-xl italic font-serif text-black leading-relaxed">"We’re excited to get your Tutu & Co order to you ✨"</p>
+
+                    <div>
+                        <h3 className="text-2xl font-serif text-black mt-10 mb-6 underline underline-offset-8">Order Processing</h3>
+                        <p>All orders are processed within 1–3 business days. Since each piece is carefully prepared, slight delays during high-demand periods may occur.</p>
+                    </div>
+
+                    <div>
+                        <h3 className="text-2xl font-serif text-black mt-10 mb-6 underline underline-offset-8">Shipping Time</h3>
+                        <p className="mb-4">Once dispatched, orders typically arrive within:</p>
+                        <ul className="list-disc pl-5 space-y-2 mb-8 text-[#95714F]">
+                            <li><span className="font-bold text-black">2–5 business days</span> for metro cities</li>
+                            <li><span className="font-bold text-black">3–7 business days</span> for other locations</li>
+                        </ul>
+                        <p className="text-sm italic">Delivery timelines may vary depending on your location and courier partner.</p>
+                    </div>
+
+                    <div className="bg-[#EADED0]/40 p-10 rounded-sm border-l-4 border-[#95714F] my-12">
+                        <h3 className="text-sm font-bold text-black uppercase tracking-widest mb-6">Shipping Charges</h3>
+                        <div className="space-y-4">
+                            <div className="flex justify-between border-b border-[#C7AF94]/30 pb-4">
+                                <span>Flat shipping fee</span>
+                                <span className="font-bold text-black">₹89</span>
+                            </div>
+                            <div className="flex justify-between border-b border-[#C7AF94]/30 pb-4">
+                                <span>Orders above ₹999</span>
+                                <span className="font-bold text-[#8C916C]">FREE</span>
+                            </div>
+                        </div>
+                        <p className="text-[10px] uppercase tracking-widest mt-6 text-[#95714F]/60">Shipping charges (if applicable) will be calculated at checkout.</p>
+                    </div>
+
+                    <div>
+                        <h3 className="text-2xl font-serif text-black mt-10 mb-6 underline underline-offset-8">Order Tracking</h3>
+                        <p>Once your order is shipped, you’ll receive a tracking link via email or SMS to follow its journey.</p>
+                    </div>
+
+                    <div>
+                        <h3 className="text-2xl font-serif text-black mt-10 mb-6 underline underline-offset-8">Delays & Issues</h3>
+                        <p>While we work with reliable delivery partners, delays can occasionally happen due to factors beyond our control. If your order is significantly delayed, feel free to reach out to us at <span className="font-bold text-black underline">support@tutuandco.com</span>.</p>
+                    </div>
+
+                    <div className="pt-10 border-t border-[#C7AF94]/30 mt-12">
+                         <h4 className="font-bold text-black uppercase tracking-widest text-xs mb-2 italic">Incorrect Address</h4>
+                         <p className="italic text-sm">Please ensure your shipping details are accurate at checkout. We are not responsible for delays or failed deliveries due to incorrect information.</p>
+                    </div>
+                </div>
+            )
         },
         'returns': {
             title: 'Returns & Exchanges',
