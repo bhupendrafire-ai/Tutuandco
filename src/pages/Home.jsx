@@ -61,8 +61,8 @@ const Home = () => {
 
     return (
         <div className="pb-20 bg-brand-sage">
-            {/* Static Hero Banner */}
-            <section className="relative h-[75vh] overflow-hidden">
+            {/* Static Hero Banner with Group Hover */}
+            <section className="relative h-[75vh] overflow-hidden group">
                 <AnimatePresence mode="wait">
                     {banners[currentBanner] && (
                         <motion.div
@@ -78,11 +78,11 @@ const Home = () => {
                                 alt={banners[currentBanner].title}
                                 className="w-full h-full object-cover scale-105"
                             />
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-center p-6">
-                                <div className="max-w-3xl text-white">
+                            <div className="absolute inset-0 bg-gradient-to-l from-black/70 via-black/20 to-transparent flex items-center justify-end text-right p-12 md:p-32">
+                                <div className="max-w-xl text-white flex flex-col items-end">
                                     <motion.h1
-                                        initial={{ opacity: 0, y: 30 }}
-                                        animate={{ opacity: 1, y: 0 }}
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
                                         transition={{ duration: 0.8, delay: 0.2 }}
                                         className="text-4xl md:text-5xl font-medium mb-12 drop-shadow-lg leading-tight text-white/90"
                                     >
@@ -93,11 +93,10 @@ const Home = () => {
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.8, delay: 0.4 }}
-                                        className="flex flex-col items-center"
                                     >
                                         <Link 
                                             to={banners[currentBanner].link || "/"}
-                                            className="bg-brand-rose text-brand-charcoal px-16 py-8 text-[18px] font-medium hover:bg-white transition-all shadow-xl"
+                                            className="bg-[#4A5D4E] text-[#EADED0] px-16 py-8 text-[18px] font-medium hover:bg-white hover:text-brand-charcoal transition-all shadow-2xl"
                                         >
                                             {banners[currentBanner].cta || "Shop collection"}
                                         </Link>
@@ -108,12 +107,12 @@ const Home = () => {
                     )}
                 </AnimatePresence>
 
-                <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex space-x-4">
+                <div className="absolute bottom-4 right-12 flex space-x-2 bg-black/10 backdrop-blur-md px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     {banners.map((_, i) => (
                         <button
                             key={i}
-                            onClick={() => setCurrentBanner(i)}
-                            className={`h-1 rounded-full transition-all duration-500 ${currentBanner === i ? 'bg-white w-12' : 'bg-white/30 w-6'}`}
+                            onClick={(e) => { e.stopPropagation(); setCurrentBanner(i); }}
+                            className={`h-[2px] rounded-full transition-all duration-500 ${currentBanner === i ? 'bg-white w-8' : 'bg-white/20 w-4 hover:bg-white/40'}`}
                         />
                     ))}
                 </div>
