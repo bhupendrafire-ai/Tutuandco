@@ -19,8 +19,8 @@ export default {
                 'brand-gray': '#868686',
             },
             fontFamily: {
-                serif: ['Playfair Display', 'serif'],
-                sans: ['Inter', 'sans-serif'],
+                serif: ['Avenir Next Rounded Pro', 'serif'],
+                sans: ['Avenir Next Rounded Pro', 'sans-serif'],
             },
         },
     },

@@ -1,4 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+@font-face {
+    font-family: 'Avenir Next Rounded Pro';
+    src: url('./assets/fonts/avenir-rounded/avenir-next-rounded-pro-regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Avenir Next Rounded Pro';
+    src: url('./assets/fonts/avenir-rounded/avenir-next-rounded-pro-medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Avenir Next Rounded Pro';
+    src: url('./assets/fonts/avenir-rounded/avenir-next-rounded-pro-demi.otf') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Avenir Next Rounded Pro';
+    src: url('./assets/fonts/avenir-rounded/avenir-next-rounded-pro-bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+}
 
 @tailwind base;
 @tailwind components;
@@ -23,7 +49,7 @@
     --accent-secondary: var(--brand-sage);
 
     /* Typography */
-    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-main: 'Avenir Next Rounded Pro', system-ui, -apple-system, sans-serif;
 
     /* Spacing & Borders */
     --spacing-base: 8px;
