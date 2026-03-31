@@ -13,6 +13,16 @@ const imageModules = import.meta.glob('../assets/heroshots/*.{jpg,png,jpeg}', { 
 const allImages = Object.values(imageModules).map(m => m.default).filter(img => typeof img === 'string');
 
 
+const BRAND_DETAILS = [
+    "Fabric: Premium cotton, lightweight and breathable",
+    "Stitching: Reinforced for durability and everyday wear",
+    "Fit: Adjustable with two snap button levels for a secure, comfortable fit",
+    "Fastenings: High-quality, anti-tarnish snap buttons",
+    "Comfort: Soft on fur and gentle on your pet’s skin",
+    "Care: Designed for everyday wear and easy cleaning"
+];
+
+
 const ProductDetail = () => {
     const { id } = useParams();
     const { products, addToCart, loading, formatPrice, settings, media } = useShop();
@@ -116,7 +126,7 @@ const ProductDetail = () => {
                         </div>
 
                         <div className="space-y-5 mb-12">
-                            {product.details.map((detail, i) => (
+                            {BRAND_DETAILS.map((detail, i) => (
                                 <div key={i} className="flex items-start text-[18px] text-brand-charcoal/80 font-medium">
                                     <Heart size={16} className="text-brand-rose mr-4 mt-1.5 flex-shrink-0" fill="currentColor" />
                                     <span>
