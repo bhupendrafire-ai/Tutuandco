@@ -186,10 +186,7 @@ const Home = () => {
 
             <section className="max-w-7xl mx-auto px-6 mt-48">
                 <div className="flex flex-col items-center mb-24">
-                    <span className="text-[11px] font-medium text-brand-charcoal opacity-40 block mb-6 text-center">Our community</span>
-                    <div className="flex flex-col items-center">
-                        <img src={logo} alt="Tutu & Co" className="h-12 w-auto mb-4" />
-                    </div>
+                    <h2 className="text-4xl md:text-5xl font-bold text-brand-charcoal text-center tracking-tight">Our community</h2>
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-5 auto-rows-[250px] gap-6">
