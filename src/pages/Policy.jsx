@@ -2,6 +2,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Shield, RefreshCw, Truck, HeartHandshake, Ruler } from 'lucide-react';
+/* Icons removed from display per user request */
 
 const Policy = () => {
     const { section } = useParams();
@@ -276,25 +277,20 @@ const Policy = () => {
                 <nav className="lg:col-span-4 space-y-8">
                     <h1 className="text-4xl font-serif text-black mb-12">Customer Care</h1>
                     <div className="flex flex-col space-y-2">
-                        {Object.keys(sections).map((key) => {
-                            const Icon = sections[key].icon;
-                            return (
-                                <Link 
-                                    key={key}
-                                    to={`/policy/${key}`} 
-                                    className={`flex items-center space-x-4 p-6 rounded-sm transition-all ${section === key ? 'bg-brand-charcoal text-white shadow-lg' : 'hover:bg-brand-cream/50 text-brand-charcoal'}`}
-                                >
-                                    <Icon size={20} />
-                                    <span className="text-[10px] uppercase font-bold tracking-[0.2em]">{sections[key].title}</span>
-                                </Link>
-                            );
-                        })}
+                        {Object.keys(sections).map((key) => (
+                            <Link 
+                                key={key}
+                                to={`/policy/${key}`} 
+                                className={`flex items-center space-x-4 p-6 rounded-sm transition-all ${section === key ? 'bg-brand-charcoal text-white shadow-lg' : 'hover:bg-brand-cream/50 text-brand-charcoal'}`}
+                            >
+                                <span className="text-[10px] uppercase font-bold tracking-[0.2em]">{sections[key].title}</span>
+                            </Link>
+                        ))}
                     </div>
                 </nav>
 
                 {/* Content Area */}
                 <main className="lg:col-span-8 bg-brand-cream p-12 lg:p-20 rounded-sm shadow-sm">
-                      <active.icon size={48} className="text-brand-charcoal/80 mb-10" />
                      <h2 className="text-4xl font-serif text-brand-charcoal mb-10">{active.title}</h2>
                      <div className="prose prose-lg text-brand-charcoal/80 leading-relaxed space-y-8">
                          {typeof active.content === 'string' ? <p>{active.content}</p> : active.content}
