@@ -189,9 +189,19 @@ const ProductDetail = () => {
                                                         <img src={getProductImage(item.url, media)} className="w-full h-full object-cover" />
                                                     </div>
                                                     <h4 className="text-xl font-medium italic text-brand-charcoal">{item.title}</h4>
-                                                    <ul className="space-y-2">
+                                                    <ul className="space-y-3">
                                                         {item.bullets?.map((bullet, k) => bullet && (
-                                                            <li key={k} className="text-[11px] font-medium text-brand-charcoal opacity-60">{bullet}</li>
+                                                            <li key={k} className="text-[18px] font-medium text-brand-charcoal opacity-80 flex items-start space-x-3">
+                                                                <Heart size={14} className="text-brand-rose mt-1 flex-shrink-0" fill="currentColor" />
+                                                                <span>
+                                                                    {bullet.includes(':') ? (
+                                                                        <>
+                                                                            <span className="font-bold">{bullet.split(':')[0]}:</span>
+                                                                            {bullet.split(':')[1]}
+                                                                        </>
+                                                                    ) : bullet}
+                                                                </span>
+                                                            </li>
                                                         ))}
                                                     </ul>
                                                 </div>
@@ -256,9 +266,16 @@ const ProductDetail = () => {
                                         {block.bullets?.length > 0 && (
                                             <ul className="space-y-4">
                                                 {block.bullets.map((bullet, j) => (
-                                                    <li key={j} className="flex items-center text-brand-charcoal/80 italic">
-                                                        <span className="w-2 h-2 rounded-full bg-brand-rose mr-4" />
-                                                        {bullet}
+                                                    <li key={j} className="flex items-start text-brand-charcoal/80 text-[18px] italic">
+                                                        <Heart size={16} className="text-brand-rose mr-4 mt-1.5 flex-shrink-0" fill="currentColor" />
+                                                        <span>
+                                                            {bullet.includes(':') ? (
+                                                                <>
+                                                                    <span className="font-bold italic-none not-italic">{bullet.split(':')[0]}:</span>
+                                                                    {bullet.split(':')[1]}
+                                                                </>
+                                                            ) : bullet}
+                                                        </span>
                                                     </li>
                                                 ))}
                                             </ul>

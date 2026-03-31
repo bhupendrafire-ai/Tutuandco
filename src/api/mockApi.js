@@ -56,7 +56,14 @@ const getInitialProducts = () => {
             rating: 5, 
             category: "The Orange Collection",
             description: "A vibrant burst of autumn hues, the Sunset Sage Bandana features an intricate earthy pattern.",
-            details: ["100% Organic Cotton", "Hand-stitched in small batches"],
+            details: [
+                "Fabric: Premium cotton, lightweight and breathable",
+                "Stitching: Reinforced for durability and everyday wear",
+                "Fit: Adjustable with two snap button levels for a secure, comfortable fit",
+                "Fastenings: High-quality, anti-tarnish snap buttons",
+                "Comfort: Soft on fur and gentle on your pet’s skin",
+                "Care: Designed for everyday wear and easy cleaning"
+            ],
             imageName: 'IMG_6154'
         },
         { 
@@ -67,7 +74,14 @@ const getInitialProducts = () => {
             rating: 5, 
             category: "The Pink Collection",
             description: "Soft, sweet, and perfectly charming. This pink checkered bandana is adorned with delicate white hearts.",
-            details: ["Premium Linen Blend", "Signature Heart Pattern"],
+            details: [
+                "Fabric: Premium cotton, lightweight and breathable",
+                "Stitching: Reinforced for durability and everyday wear",
+                "Fit: Adjustable with two snap button levels for a secure, comfortable fit",
+                "Fastenings: High-quality, anti-tarnish snap buttons",
+                "Comfort: Soft on fur and gentle on your pet’s skin",
+                "Care: Designed for everyday wear and easy cleaning"
+            ],
             imageName: 'IMG_6169'
         },
         { 
@@ -78,7 +92,14 @@ const getInitialProducts = () => {
             rating: 5, 
             category: "The Blue Collection",
             description: "Deep azure tones meet modern geometric patterns. Built for durability and style.",
-            details: ["Utility Grade Fabric", "Reflective Accents"],
+            details: [
+                "Fabric: Premium cotton, lightweight and breathable",
+                "Stitching: Reinforced for durability and everyday wear",
+                "Fit: Adjustable with two snap button levels for a secure, comfortable fit",
+                "Fastenings: High-quality, anti-tarnish snap buttons",
+                "Comfort: Soft on fur and gentle on your pet’s skin",
+                "Care: Designed for everyday wear and easy cleaning"
+            ],
             imageName: 'IMG_6214'
         },
         { 
@@ -89,7 +110,14 @@ const getInitialProducts = () => {
             rating: 5, 
             category: "Limited Edition",
             description: "A quirky and minimalist take on the classic banana print.",
-            details: ["Custom Illustration Print", "Eco-Friendly Dyes"],
+            details: [
+                "Fabric: Premium cotton, lightweight and breathable",
+                "Stitching: Reinforced for durability and everyday wear",
+                "Fit: Adjustable with two snap button levels for a secure, comfortable fit",
+                "Fastenings: High-quality, anti-tarnish snap buttons",
+                "Comfort: Soft on fur and gentle on your pet’s skin",
+                "Care: Designed for everyday wear and easy cleaning"
+            ],
             imageName: 'nano_banana'
         }
     ];
