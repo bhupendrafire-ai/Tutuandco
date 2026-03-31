@@ -105,15 +105,17 @@ button {
 }
 
 .cta-button {
-    background-color: var(--accent-primary);
-    color: var(--color-white);
+    background-color: var(--brand-rose);
+    color: var(--brand-charcoal);
     padding: 12px 32px;
     border-radius: var(--radius-sm);
     font-weight: 500;
     transition: var(--transition-smooth);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .cta-button:hover {
-    background-color: var(--color-terracotta);
+    background-color: var(--brand-sage);
     transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }

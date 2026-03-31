@@ -161,7 +161,7 @@ const AdminDashboard = () => {
                 setActiveTab(id);
                 setIsSidebarOpen(false);
             }}
-            className={`w-full flex items-center space-x-4 p-4 rounded-sm transition-all ${activeTab === id ? 'bg-brand-charcoal text-white shadow-lg' : 'text-brand-charcoal hover:bg-brand-charcoal/5'}`}
+            className={`w-full flex items-center space-x-4 p-4 rounded-sm transition-all ${activeTab === id ? 'bg-brand-rose text-brand-charcoal shadow-lg' : 'text-brand-charcoal hover:bg-brand-rose/20'}`}
         >
             <Icon size={20} />
             <span className="text-[11px] font-medium">{label}</span>
@@ -288,7 +288,7 @@ const AdminDashboard = () => {
                                         });
                                         setIsEditingProduct('new');
                                     }}
-                                    className="bg-brand-charcoal text-white px-6 py-3 rounded-sm flex items-center space-x-2 text-[11px] font-medium shadow-lg hover:opacity-80 transition-all"
+                                    className="bg-brand-rose text-brand-charcoal px-6 py-3 rounded-sm flex items-center space-x-2 text-[11px] font-medium shadow-lg hover:opacity-80 transition-all"
                                 >
                                     <Plus size={16} />
                                     <span>Add new product</span>
@@ -367,7 +367,7 @@ const AdminDashboard = () => {
                                                     });
                                                     setIsEditingProduct('new');
                                                 }}
-                                                className="bg-brand-charcoal text-white px-6 py-3 rounded-sm text-[11px] font-medium shadow-lg hover:opacity-80 transition-all flex-grow md:flex-initial"
+                                                className="bg-brand-rose text-brand-charcoal px-6 py-3 rounded-sm text-[11px] font-medium shadow-lg hover:opacity-80 transition-all flex-grow md:flex-initial"
                                             >
                                                 Save & add another
                                             </button>
@@ -382,7 +382,7 @@ const AdminDashboard = () => {
                                                     else await updateProduct(isEditingProduct, finalForm);
                                                     setIsEditingProduct(null);
                                                 }}
-                                                className="bg-brand-charcoal text-white px-8 md:px-10 py-3 md:py-4 rounded-sm text-[11px] font-medium shadow-lg hover:opacity-80 transition-all flex-grow md:flex-initial"
+                                                className="bg-brand-rose text-brand-charcoal px-8 md:px-10 py-3 md:py-4 rounded-sm text-[11px] font-medium shadow-lg hover:opacity-80 transition-all flex-grow md:flex-initial"
                                             >
                                                 Synchronize listing
                                             </button>
@@ -525,10 +525,10 @@ const AdminDashboard = () => {
                                                         <button onClick={() => addDescriptionBlock('image')} className="px-4 py-2 text-[10px] font-medium hover:bg-white hover:text-black transition-all flex items-center gap-2"><ImageIcon size={12}/> Image row</button>
                                                     </div>
                                                     <div className="h-8 w-[1px] bg-white/10 self-center hidden md:block"></div>
-                                                    <button onClick={() => addDescriptionBlock('template', 'wide_banner')} className="px-4 py-2 text-[10px] font-medium bg-brand-charcoal text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Wide banner</button>
-                                                    <button onClick={() => addDescriptionBlock('template', 'grid_spotlight')} className="px-4 py-2 text-[10px] font-medium bg-brand-charcoal text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">4-Grid</button>
-                                                    <button onClick={() => addDescriptionBlock('template', 'overlay_feature')} className="px-4 py-2 text-[10px] font-medium bg-brand-charcoal text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Overlay</button>
-                                                    <button onClick={() => addDescriptionBlock('template', 'alternating_items')} className="px-4 py-2 text-[10px] font-medium bg-brand-charcoal text-white rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Alt. rows</button>
+                                                    <button onClick={() => addDescriptionBlock('template', 'wide_banner')} className="px-4 py-2 text-[10px] font-medium bg-brand-rose text-brand-charcoal rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Wide banner</button>
+                                                    <button onClick={() => addDescriptionBlock('template', 'grid_spotlight')} className="px-4 py-2 text-[10px] font-medium bg-brand-rose text-brand-charcoal rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">4-Grid</button>
+                                                    <button onClick={() => addDescriptionBlock('template', 'overlay_feature')} className="px-4 py-2 text-[10px] font-medium bg-brand-rose text-brand-charcoal rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Overlay</button>
+                                                    <button onClick={() => addDescriptionBlock('template', 'alternating_items')} className="px-4 py-2 text-[10px] font-medium bg-brand-rose text-brand-charcoal rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Alt. rows</button>
                                                 </div>
                                             </div>
 
@@ -615,7 +615,7 @@ const AdminDashboard = () => {
                                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                                                                 <div className="space-y-6">
                                                                     <div className="flex items-center gap-2 mb-2">
-                                                                        <span className={`px-2 py-1 text-[10px] font-medium rounded-sm ${block.template ? 'bg-brand-charcoal text-white' : 'bg-brand-charcoal/10 text-brand-charcoal'}`}>
+                                                                        <span className={`px-2 py-1 text-[10px] font-medium rounded-sm ${block.template ? 'bg-brand-rose text-brand-charcoal' : 'bg-brand-charcoal/10 text-brand-charcoal'}`}>
                                                                             {block.template || block.type} block
                                                                         </span>
                                                                     </div>
@@ -696,7 +696,7 @@ const AdminDashboard = () => {
                                         };
                                         updateBanners([...banners, newBanner]);
                                     }}
-                                    className="bg-brand-charcoal text-white px-6 py-3 rounded-sm flex items-center space-x-2 text-[11px] font-medium shadow-lg hover:opacity-80 transition-all"
+                                    className="bg-brand-rose text-brand-charcoal px-6 py-3 rounded-sm flex items-center space-x-2 text-[11px] font-medium shadow-lg hover:opacity-80 transition-all"
                                 >
                                     <Plus size={16} />
                                     <span>Initiate new banner</span>
@@ -785,7 +785,7 @@ const AdminDashboard = () => {
                         ))}
                         
                         <div className="flex justify-center pt-8">
-                            <button className="bg-brand-charcoal text-white px-12 py-5 rounded-sm text-sm font-medium shadow-xl hover:opacity-80 transition-all">
+                            <button className="bg-brand-rose text-brand-charcoal px-12 py-5 rounded-sm text-sm font-medium shadow-xl hover:opacity-80 transition-all">
                                 All configurations synchronized
                             </button>
                         </div>
@@ -856,12 +856,12 @@ const AdminDashboard = () => {
                                 <div className="flex space-x-4">
                                     <button 
                                         onClick={() => alert(`Generating tax invoice for order #${order.id}...`)}
-                                        className="p-4 bg-brand-cream text-brand-charcoal/60 hover:bg-brand-charcoal hover:text-white transition-all rounded-sm flex items-center space-x-2 text-[10px] font-medium"
+                                        className="w-full flex items-center px-6 py-4 rounded-sm text-brand-charcoal hover:bg-brand-rose/20 transition-colors"
                                     >
                                         <Printer size={16} />
                                         <span>Invoice</span>
                                     </button>
-                                    <button className="p-4 bg-brand-charcoal text-white px-8 rounded-sm text-[10px] font-medium hover:opacity-80 transition-colors">Details</button>
+                                    <button className="p-4 bg-brand-rose text-brand-charcoal px-8 rounded-sm text-[10px] font-medium hover:opacity-80 transition-colors">Details</button>
                                 </div>
                             </div>
                         ))}
@@ -904,7 +904,7 @@ const AdminDashboard = () => {
                             </div>
                         </div>
 
-                        <div className="bg-brand-charcoal p-10 rounded-sm text-white shadow-xl">
+                        <div className="bg-brand-rose p-10 rounded-sm text-brand-charcoal shadow-lg">
                             <h3 className="text-[11px] font-medium opacity-40 mb-8">Global discount override</h3>
                             <div className="flex flex-col md:flex-row items-center gap-8">
                                 <div className="flex-1 space-y-4">
@@ -914,7 +914,7 @@ const AdminDashboard = () => {
                                             type="range" min="0" max="70" step="5"
                                             value={localSettings.globalDiscount}
                                             onChange={e => setLocalSettings({...localSettings, globalDiscount: parseInt(e.target.value)})}
-                                            className="flex-grow accent-white"
+                                            className="flex-grow accent-brand-charcoal"
                                         />
                                         <span className="text-4xl font-medium w-20 text-right">{localSettings.globalDiscount}%</span>
                                     </div>

@@ -19,7 +19,7 @@ const Cart = () => {
                 <p className="text-brand-charcoal/60 mb-12 text-center max-w-md">
                     Explore our collections and find the perfect pieces for your best friend.
                 </p>
-                <Link to="/" className="bg-black text-white px-12 py-5 text-sm font-medium hover:bg-[#1a1a1a] transition-all">
+                <Link to="/" className="bg-brand-rose text-brand-charcoal px-12 py-5 text-sm font-medium hover:bg-white transition-all shadow-sm">
                     Start shopping
                 </Link>
             </div>
@@ -97,7 +97,6 @@ const Cart = () => {
                     {/* Summary */}
                     <div className="lg:col-span-4 lg:sticky lg:top-32 h-fit bg-brand-cream/80 backdrop-blur-sm p-10 rounded-sm shadow-sm">
                         <h3 className="text-2xl font-medium text-brand-charcoal mb-8 pb-4 border-b border-brand-charcoal/10">Order summary</h3>
-                        
                         <div className="space-y-6 mb-10">
                             <div className="flex justify-between text-sm">
                                 <span className="text-brand-charcoal/60">Subtotal</span>
@@ -143,13 +142,13 @@ const Cart = () => {
                                     placeholder="Enter code" 
                                     className="flex-grow bg-brand-sage/20 border border-brand-charcoal/10 px-4 py-3 text-sm focus:outline-none focus:border-brand-charcoal"
                                 />
-                                <button type="submit" className="bg-brand-charcoal text-white px-6 py-3 text-[11px] font-medium hover:bg-brand-charcoal/80 transition-colors">Apply</button>
+                                <button type="submit" className="bg-brand-rose text-brand-charcoal px-6 py-3 text-[11px] font-medium hover:bg-white transition-colors shadow-sm">Apply</button>
                              </div>
                         </form>
 
                         <Link 
                             to="/checkout" 
-                            className="w-full bg-black text-white py-5 flex items-center justify-center font-medium text-sm hover:bg-[#1a1a1a] transition-all group"
+                            className="w-full bg-brand-rose text-brand-charcoal py-5 flex items-center justify-center font-medium text-sm hover:bg-white transition-all shadow-lg group"
                         >
                             Checkout summary
                             <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />

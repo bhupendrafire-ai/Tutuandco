@@ -41,7 +41,7 @@ const Moments = () => {
                     </div>
                     <button 
                         onClick={() => setShowUpload(true)}
-                        className="bg-brand-charcoal text-white px-10 py-5 text-[11px] font-medium flex items-center space-x-3 hover:bg-brand-charcoal/80 transition-all shadow-xl"
+                        className="bg-brand-rose text-brand-charcoal px-10 py-5 text-[11px] font-medium flex items-center space-x-3 hover:bg-white transition-all shadow-xl"
                     >
                         <Heart size={16} />
                         <span>Share a photo</span>
@@ -105,7 +105,7 @@ const Moments = () => {
                                             <label className="block text-[11px] font-medium text-brand-charcoal/40 mb-2">Pet's name</label>
                                             <input name="petName" required className="w-full bg-white border border-brand-charcoal/10 p-4 text-sm focus:border-brand-charcoal outline-none" placeholder="e.g. Tutu" />
                                         </div>
-                                        <button type="submit" className="w-full bg-brand-charcoal text-white py-5 font-medium text-sm hover:bg-brand-charcoal/80">Submit for approval</button>
+                                        <button type="submit" className="w-full bg-brand-rose text-brand-charcoal py-5 font-medium text-sm hover:bg-white transition-all shadow-sm">Submit for approval</button>
                                     </div>
                                 </form>
                             </motion.div>

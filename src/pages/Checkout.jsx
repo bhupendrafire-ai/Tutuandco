@@ -48,10 +48,10 @@ const Checkout = () => {
                 <div className="flex items-center justify-center mb-16 space-x-4 max-w-xl mx-auto">
                     {[1, 2, 3].map((s) => (
                         <React.Fragment key={s}>
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium border-2 transition-all ${step >= s ? 'bg-brand-charcoal border-brand-charcoal text-white' : 'bg-white border-brand-charcoal/10 text-brand-charcoal/40'}`}>
-                                {step > s ? <CheckCircle size={18} /> : s}
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium border-2 transition-all ${step >= s ? 'bg-brand-rose border-brand-rose text-brand-charcoal shadow-sm' : 'bg-white border-brand-charcoal/10 text-brand-charcoal/40'}`}>
+                                {s}
                             </div>
-                            {s < 3 && <div className={`h-0.5 flex-grow transition-all ${step > s ? 'bg-brand-charcoal' : 'bg-brand-charcoal/10'}`} />}
+                            {s < 3 && <div className={`h-0.5 flex-grow transition-all ${step > s ? 'bg-brand-rose' : 'bg-brand-charcoal/10'}`} />}
                         </React.Fragment>
                     ))}
                 </div>
@@ -102,8 +102,9 @@ const Checkout = () => {
                                                 <input required name="zip" value={orderDetails.zip} onChange={handleInputChange} className="w-full border border-brand-charcoal/10 bg-white p-4 text-sm focus:border-brand-charcoal outline-none" />
                                             </div>
                                         </div>
-                                        <button type="submit" className="w-full bg-brand-charcoal text-white py-5 flex items-center justify-center font-medium text-sm hover:bg-brand-charcoal/80">
-                                            Continue to payment <ChevronRight size={16} className="ml-2" />
+                                        <button type="submit" className="w-full bg-brand-rose text-brand-charcoal py-5 flex items-center justify-center font-medium text-sm hover:bg-white transition-all shadow-sm">
+                                            <span>Continue to shipping</span>
+                                            <ArrowRight size={16} className="ml-3" />
                                         </button>
                                     </form>
                                 </motion.div>
@@ -132,7 +133,7 @@ const Checkout = () => {
                                                 <span className="font-medium text-brand-charcoal">Secure checkout simulation</span>
                                             </div>
                                             <div className="flex space-x-2 grayscale opacity-40">
-                                                <div className="w-8 h-4 bg-black rounded-sm" />
+                                                <div className="w-8 h-4 bg-brand-charcoal rounded-sm" />
                                                 <div className="w-8 h-4 bg-blue-900 rounded-sm" />
                                             </div>
                                         </div>
@@ -140,9 +141,9 @@ const Checkout = () => {
                                     <button 
                                         onClick={handleCheckout}
                                         disabled={loading}
-                                        className="w-full bg-black text-white py-6 font-medium text-sm hover:opacity-90 transition-all shadow-xl"
+                                        className="w-full bg-brand-rose text-brand-charcoal py-6 font-medium text-sm hover:bg-white transition-all shadow-xl"
                                     >
-                                    {loading ? 'Processing...' : `Place order • ${formatPrice(total)}`}
+                                    {loading ? 'Processing...' : 'Place order'}
                                     </button>
                                 </motion.div>
                             )}

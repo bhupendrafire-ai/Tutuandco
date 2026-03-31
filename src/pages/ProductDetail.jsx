@@ -120,10 +120,10 @@ const ProductDetail = () => {
                             ))}
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-4 mb-16">
+                         <div className="flex flex-col sm:flex-row gap-4 mb-16">
                             <button 
                                 onClick={handleAddToCart}
-                                className="flex-1 bg-black text-white py-5 flex items-center justify-center font-medium text-sm hover:bg-[#1a1a1a] transition-all shadow-lg"
+                                className="flex-1 bg-brand-rose text-brand-charcoal py-5 flex items-center justify-center font-medium text-sm hover:bg-white transition-all shadow-lg"
                             >
                                 <ShoppingBag size={18} className="mr-2" />
                                 Add to cart
@@ -246,6 +246,7 @@ const ProductDetail = () => {
                                         </div>
                                     )}
                                     <div className="flex-1 space-y-8">
+
                                         <h3 className="text-4xl md:text-5xl font-medium text-brand-charcoal leading-tight italic">
                                             {block.title}
                                         </h3>
@@ -284,7 +285,7 @@ const ProductDetail = () => {
                                 <span className="text-brand-charcoal/60 font-medium">{(Number(product.rating) || 5).toFixed(1)} out of 5</span>
                             </div>
                         </div>
-                        <button className="text-[11px] font-medium border-2 border-brand-charcoal px-10 py-4 hover:bg-brand-charcoal hover:text-white transition-all">
+                        <button className="text-[11px] font-medium bg-brand-rose text-brand-charcoal px-10 py-4 hover:bg-white transition-all shadow-sm">
                             Write a review
                         </button>
                     </div>
@@ -346,7 +347,7 @@ const ProductDetail = () => {
                                     <label className="block text-[11px] font-medium text-brand-charcoal/40 mb-2">Your experience</label>
                                     <textarea required name="comment" rows="4" className="w-full bg-white border border-brand-charcoal/10 p-4 text-sm focus:border-brand-charcoal outline-none" />
                                 </div>
-                                <button type="submit" className="w-full bg-black text-white py-5 font-medium text-[11px] hover:bg-[#1a1a1a]">Post review</button>
+                                <button type="submit" className="w-full bg-brand-rose text-brand-charcoal py-5 font-medium text-[11px] hover:bg-white transition-all">Post review</button>
                             </form>
                         </div>
                     </div>

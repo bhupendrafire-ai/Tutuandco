@@ -26,8 +26,8 @@ const AdminLogin = () => {
         <div className="min-h-screen bg-brand-sage flex items-center justify-center p-6">
             <div className="w-full max-w-md bg-brand-cream rounded-lg shadow-xl p-10 border border-brand-charcoal/5">
                 <div className="flex flex-col items-center mb-10">
-                    <div className="bg-brand-charcoal p-4 rounded-full mb-4 shadow-lg">
-                        <Lock className="text-white" size={32} />
+                    <div className="bg-brand-rose text-brand-charcoal p-4 rounded-full mb-4 shadow-lg">
+                        <Lock size={24} />
                     </div>
                     <div className="flex flex-col items-center">
                         <img src={logo} alt="Tutu & Co" className="h-12 w-auto mb-2" />
@@ -70,7 +70,7 @@ const AdminLogin = () => {
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-brand-charcoal text-white py-4 rounded-md font-medium hover:bg-brand-charcoal/90 transition-colors text-sm shadow-lg"
+                        className="w-full bg-brand-rose text-brand-charcoal py-4 rounded-md font-medium hover:bg-white transition-colors text-sm shadow-lg"
                     >
                         Enter dashboard
                     </button>

@@ -169,13 +169,13 @@ const Policy = () => {
             <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-20">
                 {/* Sidebar Nav */}
                 <nav className="lg:col-span-4 space-y-8">
-                    <h1 className="text-4xl font-medium text-black mb-12">Customer care</h1>
+                    <h1 className="text-4xl font-medium text-brand-charcoal mb-12">Customer care</h1>
                     <div className="flex flex-col space-y-2">
                         {Object.keys(sections).map((key) => (
                             <Link 
                                 key={key}
                                 to={`/policy/${key}`} 
-                                className={`flex items-center space-x-4 p-6 rounded-sm transition-all ${section === key ? 'bg-brand-charcoal text-white shadow-lg' : 'hover:bg-brand-cream/50 text-brand-charcoal'}`}
+                                className={`flex items-center space-x-4 p-6 rounded-sm transition-all ${section === key ? 'bg-brand-rose text-brand-charcoal shadow-md' : 'hover:bg-brand-cream/50 text-brand-charcoal'}`}
                             >
                                 <span className="text-[11px] font-medium tracking-wide">{sections[key].title}</span>
                             </Link>
