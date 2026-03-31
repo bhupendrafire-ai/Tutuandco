@@ -94,24 +94,22 @@ const Home = () => {
                                         initial={{ opacity: 0, y: 30 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.8, delay: 0.2 }}
-                                        className="text-6xl md:text-8xl font-medium mb-8 drop-shadow-2xl leading-tight"
+                                        className="text-6xl md:text-8xl font-medium mb-8 drop-shadow-2xl leading-tight text-white"
                                     >
-                                        Modern bandanas for modern companions
+                                        {banners[currentBanner].title}
                                     </motion.h1>
+                                    
                                     <motion.div
-                                        initial={{ opacity: 0, y: 30 }}
+                                        initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.8, delay: 0.2 }}
-                                        className="text-center px-6"
+                                        transition={{ duration: 0.8, delay: 0.4 }}
+                                        className="flex flex-col items-center"
                                     >
-                                        <h1 className="text-5xl md:text-7xl font-medium text-white mb-8 leading-tight">
-                                            Heritage for your companions
-                                        </h1>
                                         <Link 
                                             to={banners[currentBanner].link || "/"}
-                                            className="inline-block bg-brand-rose text-brand-charcoal px-14 py-6 font-medium text-[18px] hover:bg-white transition-all shadow-xl"
+                                            className="bg-brand-rose text-brand-charcoal px-16 py-8 text-[18px] font-medium hover:bg-white transition-all shadow-xl"
                                         >
-                                            {banners[currentBanner].cta}
+                                            {banners[currentBanner].cta || "Shop collection"}
                                         </Link>
                                     </motion.div>
                                 </div>
