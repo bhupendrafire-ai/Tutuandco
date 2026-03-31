@@ -4,7 +4,7 @@ import {
     LayoutDashboard, Package, ShoppingCart, BarChart3, 
     Settings, LogOut, Search, Filter, Download, 
     TrendingUp, Users, DollarSign, AlertCircle, Eye, Printer, 
-    FileText, CheckCircle, Image as ImageIcon, Plus, Trash2, Upload, Edit3, Menu, X, Layout
+    FileText, CheckCircle, Image as ImageIcon, Plus, Trash2, Upload, Edit3, Menu, X, Layout, RefreshCcw
 } from 'lucide-react';
 import { 
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, 
@@ -785,8 +785,16 @@ const AdminDashboard = () => {
                         ))}
                         
                         <div className="flex justify-center pt-8">
-                            <button className="bg-brand-rose text-brand-charcoal px-12 py-5 rounded-sm text-[18px] font-medium shadow-xl hover:opacity-80 transition-all">
-                                All configurations synchronized
+                            <button 
+                                onClick={async () => {
+                                    if(window.confirm("This will synchronize all branding and content to the latest version. Proceed?")) {
+                                        await mockApi.resetAllData();
+                                    }
+                                }}
+                                className="bg-brand-rose text-brand-charcoal px-14 py-8 rounded-sm text-[18px] font-medium shadow-xl hover:bg-white transition-all flex items-center space-x-4"
+                            >
+                                <RefreshCcw size={20} />
+                                <span>Sync brand & content</span>
                             </button>
                         </div>
                     </div>

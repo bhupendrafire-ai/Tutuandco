@@ -301,6 +301,11 @@ const mockApi = {
         moments.push(newMoment);
         mockApi._set(STORAGE_KEYS.MOMENTS, moments);
         return newMoment;
+    },
+    resetAllData: async () => {
+        await delay();
+        Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+        window.location.reload();
     }
 };
 
