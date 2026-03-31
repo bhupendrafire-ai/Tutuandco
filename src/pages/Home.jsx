@@ -65,7 +65,7 @@ const Home = () => {
     return (
         <div className="pb-20 bg-brand-sage">
             {/* Revolving Banner */}
-            <section className="relative h-[85vh] overflow-hidden">
+            <section className="relative h-[65vh] overflow-hidden">
                 <AnimatePresence mode="wait">
                     {banners[currentBanner] && (
                         <motion.div
