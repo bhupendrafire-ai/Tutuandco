@@ -102,9 +102,9 @@ const Checkout = () => {
                                                 <input required name="zip" value={orderDetails.zip} onChange={handleInputChange} className="w-full border border-brand-charcoal/10 bg-white p-4 text-sm focus:border-brand-charcoal outline-none" />
                                             </div>
                                         </div>
-                                        <button type="submit" className="w-full bg-brand-rose text-brand-charcoal py-5 flex items-center justify-center font-medium text-sm hover:bg-white transition-all shadow-sm">
+                                        <button type="submit" className="w-full bg-brand-rose text-brand-charcoal py-6 flex items-center justify-center font-medium text-base hover:bg-white transition-all shadow-sm">
                                             <span>Continue to shipping</span>
-                                            <ArrowRight size={16} className="ml-3" />
+                                            <ArrowRight size={18} className="ml-3" />
                                         </button>
                                     </form>
                                 </motion.div>
@@ -141,7 +141,7 @@ const Checkout = () => {
                                     <button 
                                         onClick={handleCheckout}
                                         disabled={loading}
-                                        className="w-full bg-brand-rose text-brand-charcoal py-6 font-medium text-sm hover:bg-white transition-all shadow-xl"
+                                        className="w-full bg-brand-rose text-brand-charcoal py-6 font-medium text-base hover:bg-white transition-all shadow-xl"
                                     >
                                     {loading ? 'Processing...' : 'Place order'}
                                     </button>

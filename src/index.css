@@ -107,9 +107,11 @@ button {
 .cta-button {
     background-color: var(--brand-rose);
     color: var(--brand-charcoal);
-    padding: 12px 32px;
+    padding: 16px 40px;
     border-radius: var(--radius-sm);
     font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.01em;
     transition: var(--transition-smooth);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }

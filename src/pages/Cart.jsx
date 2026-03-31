@@ -19,7 +19,7 @@ const Cart = () => {
                 <p className="text-brand-charcoal/60 mb-12 text-center max-w-md">
                     Explore our collections and find the perfect pieces for your best friend.
                 </p>
-                <Link to="/" className="bg-brand-rose text-brand-charcoal px-12 py-5 text-sm font-medium hover:bg-white transition-all shadow-sm">
+                <Link to="/" className="bg-brand-rose text-brand-charcoal px-14 py-6 text-base font-medium hover:bg-white transition-all shadow-md">
                     Start shopping
                 </Link>
             </div>
@@ -148,10 +148,10 @@ const Cart = () => {
 
                         <Link 
                             to="/checkout" 
-                            className="w-full bg-brand-rose text-brand-charcoal py-5 flex items-center justify-center font-medium text-sm hover:bg-white transition-all shadow-lg group"
+                            className="w-full bg-brand-rose text-brand-charcoal py-6 flex items-center justify-center font-medium text-base hover:bg-white transition-all shadow-lg group"
                         >
                             Checkout summary
-                            <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                            <ArrowRight size={18} className="ml-3 group-hover:translate-x-1 transition-transform" />
                         </Link>
 
                         <div className="mt-8 flex items-center justify-center space-x-6 opacity-40 grayscale">

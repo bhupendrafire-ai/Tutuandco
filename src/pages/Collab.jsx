@@ -40,7 +40,7 @@ const Collab = () => {
                                 Our latest partnership explores the intersection of traditional weaving techniques and modern pet ergonomics. 
                                 Each piece is numbered and crafted using reclaimed designer fabrics.
                             </p>
-                            <button className="bg-brand-rose text-brand-charcoal px-12 py-5 text-[11px] font-medium hover:bg-white transition-all shadow-lg">
+                            <button className="bg-brand-rose text-brand-charcoal px-14 py-6 text-sm font-medium hover:bg-white transition-all shadow-lg">
                                 Shop the collab
                             </button>
                         </div>
