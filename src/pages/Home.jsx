@@ -118,8 +118,8 @@ const Home = () => {
                 </div>
             </section>
 
-            <section className="max-w-7xl mx-auto px-6 mt-32">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+            <section className="max-w-7xl mx-auto px-6 mt-20">
+                <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-8">
                     <div>
                         <h2 className="text-4xl md:text-5xl font-medium text-brand-charcoal mb-4">Featured Collections</h2>
                         <p className="text-brand-charcoal/40 text-lg">Hand-picked essentials for the modern pet.</p>
