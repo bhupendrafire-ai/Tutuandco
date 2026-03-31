@@ -107,9 +107,13 @@ const ProductDetail = () => {
                             )}
                         </div>
                         
-                        <p className="text-brand-charcoal/80 leading-relaxed mb-10 text-lg">
+                        <p className="text-brand-charcoal/80 leading-relaxed mb-6 text-lg">
                             {product.description}
                         </p>
+
+                        <div className="mb-4">
+                            <h3 className="text-[11px] tracking-[0.2em] font-bold text-brand-charcoal/40 uppercase mb-4">Product Details</h3>
+                        </div>
 
                         <div className="space-y-5 mb-12">
                             {product.details.map((detail, i) => (
