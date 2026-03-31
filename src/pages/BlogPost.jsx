@@ -42,7 +42,7 @@ const BlogPost = () => {
                         <span className="flex items-center"><Calendar size={12} className="mr-2" /> {post.date}</span>
                         <span className="flex items-center"><User size={12} className="mr-2" /> {post.author}</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-semibold text-brand-charcoal leading-tight mb-8">
+                    <h1 className="text-4xl md:text-6xl font-medium text-brand-charcoal leading-tight mb-8">
                         {post.title}
                     </h1>
                 </motion.header>

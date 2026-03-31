@@ -12,20 +12,6 @@
     font-style: normal;
 }
 
-@font-face {
-    font-family: 'Avenir Next Rounded Pro';
-    src: url('./assets/fonts/avenir-rounded/avenir-next-rounded-pro-demi.otf') format('opentype');
-    font-weight: 600;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Avenir Next Rounded Pro';
-    src: url('./assets/fonts/avenir-rounded/avenir-next-rounded-pro-bold.otf') format('opentype');
-    font-weight: 700;
-    font-style: normal;
-}
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

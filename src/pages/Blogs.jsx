@@ -29,7 +29,7 @@ const Blogs = () => {
                         <span className="text-[11px] font-medium text-brand-charcoal opacity-40">Journal</span>
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-semibold text-brand-charcoal mb-8">Stories & care</h1>
+                    <h1 className="text-5xl md:text-7xl font-medium text-brand-charcoal mb-8">Stories & care</h1>
                     <p className="text-brand-charcoal/70 max-w-xl mx-auto text-lg font-light leading-relaxed">
                         Insights into pet wellness, sustainable living, and the community behind our craftsmanship.
                     </p>

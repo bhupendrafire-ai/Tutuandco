@@ -91,21 +91,21 @@ const Home = () => {
                                         <img src={logoWhite} alt="Tutu & Co" className="h-16 w-auto opacity-90" />
                                     </motion.div>
                                     <motion.h1
-                                        initial={{ y: 30, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 1 }}
-                                        transition={{ delay: 0.2 }}
-                                        className="text-6xl md:text-8xl font-semibold mb-8 drop-shadow-2xl leading-tight"
+                                        initial={{ opacity: 0, y: 30 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.8, delay: 0.2 }}
+                                        className="text-6xl md:text-8xl font-medium mb-8 drop-shadow-2xl leading-tight"
                                     >
-                                        {banners[currentBanner].title}
+                                        Modern bandanas for modern companions
                                     </motion.h1>
-                                    <motion.div 
-                                        initial={{ y: 20, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 1 }}
-                                        transition={{ delay: 0.4 }}
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 30 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.8, delay: 0.2 }}
+                                        className="text-center px-6"
                                     >
-                                        <span className="text-[11px] font-medium text-white/40 mb-4 block">New arrival</span>
-                                        <h1 className="text-5xl md:text-7xl font-semibold text-white mb-8 leading-tight">
-                                            {banners[currentBanner].title}
+                                        <h1 className="text-5xl md:text-7xl font-medium text-white mb-8 leading-tight">
+                                            Heritage for your companions
                                         </h1>
                                         <Link 
                                             to={banners[currentBanner].link || "/"}
@@ -186,7 +186,7 @@ const Home = () => {
 
             <section className="max-w-7xl mx-auto px-6 mt-48">
                 <div className="flex flex-col items-center mb-24">
-                    <h2 className="text-4xl md:text-5xl font-bold text-brand-charcoal text-center tracking-tight">Our community</h2>
+                    <h2 className="text-4xl md:text-5xl font-medium text-brand-charcoal text-center tracking-tight">Our community</h2>
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-5 auto-rows-[250px] gap-6">

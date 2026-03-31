@@ -33,7 +33,7 @@ const Moments = () => {
                     <div className="max-w-2xl">
                     <div className="flex flex-col items-center mb-6">
                         <span className="text-[11px] font-medium text-brand-charcoal opacity-40 mb-6 block">Our community</span>
-                        <h1 className="text-5xl md:text-7xl font-semibold text-brand-charcoal mb-8">Share your moments</h1>
+                        <h1 className="text-5xl md:text-7xl font-medium text-brand-charcoal mb-8">Share your moments</h1>
                     </div>
                         <p className="text-brand-charcoal/70 text-xl font-light leading-relaxed">
                             A celebration of life with your furry friends. Tag us @TutuAndCo or upload your favorite shots here.

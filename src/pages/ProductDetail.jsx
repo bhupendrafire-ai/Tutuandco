@@ -95,7 +95,7 @@ const ProductDetail = () => {
                             <span className="text-[11px] font-medium text-brand-charcoal opacity-40">Signature collection</span>
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl font-semibold text-brand-charcoal mb-10 leading-tight">{product.name}</h1>
+                        <h1 className="text-4xl md:text-5xl font-medium text-brand-charcoal mb-10 leading-tight">{product.name}</h1>
                         
                         <div className="flex items-center mb-10">
                             <div className="flex mr-4">
@@ -117,12 +117,12 @@ const ProductDetail = () => {
                             )}
                         </div>
                         
-                        <p className="text-brand-charcoal leading-relaxed mb-8 text-lg font-bold">
+                        <p className="text-brand-charcoal/90 leading-relaxed mb-8 text-lg font-normal">
                             {product.description}
                         </p>
 
                         <div className="mb-6">
-                            <h3 className="text-[18px] font-bold text-brand-charcoal tracking-tight">Product details</h3>
+                            <h3 className="text-[18px] font-medium text-brand-charcoal tracking-tight">Product details</h3>
                         </div>
 
                         <div className="space-y-5 mb-12">

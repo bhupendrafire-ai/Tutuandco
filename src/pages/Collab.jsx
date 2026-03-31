@@ -17,7 +17,7 @@ const Collab = () => {
                         <span className="text-[11px] font-medium text-brand-charcoal opacity-40">Creative space</span>
                     </div>
 
-                    <h1 className="text-6xl md:text-8xl font-semibold text-brand-charcoal mb-12">Partnerships</h1>
+                    <h1 className="text-6xl md:text-8xl font-medium text-brand-charcoal mb-12">Partnerships</h1>
                     <p className="text-brand-charcoal/70 max-w-2xl mx-auto text-xl font-light leading-relaxed">
                         We collaborate with artists, independent makers, and visionaries to create limited edition pieces that celebrate pet life.
                     </p>

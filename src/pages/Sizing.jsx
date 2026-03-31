@@ -8,7 +8,7 @@ const Sizing = () => {
             <div className="max-w-5xl mx-auto px-6">
                 <header className="mb-20">
                     <span className="text-[11px] font-medium text-brand-charcoal opacity-40 mb-6 block">Fitting guide</span>
-                    <h1 className="text-5xl md:text-7xl font-semibold text-brand-charcoal mb-12">Size guide</h1>
+                    <h1 className="text-5xl md:text-7xl font-medium text-brand-charcoal mb-12">Size guide</h1>
                     <p className="text-brand-charcoal/70 text-xl font-light leading-relaxed max-w-2xl">
                         Finding the right fit for your pet is important — a comfortable bandana is a happy bandana ✨
                     </p>
