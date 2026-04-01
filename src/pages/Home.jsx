@@ -118,8 +118,15 @@ const Home = () => {
                                             const tx = (b.translateX || 0) * ratioX;
                                             const ty = (b.translateY || 0) * ratioY;
                                             
-                                            return `translate3d(${tx}px, ${ty}px, 0) scale(${b.zoom || 1})`;
+                                    return `translate3d(${tx}px, ${ty}px, 0) scale(${b.zoom || 1})`;
                                         })()
+                                    }}
+                                />
+                                {/* Soft Gradient Divider Overlay */}
+                                <div 
+                                    className="absolute top-0 right-0 bottom-0 w-[10%] pointer-events-none z-10"
+                                    style={{
+                                        background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0.7) 100%)'
                                     }}
                                 />
                             </Link>
