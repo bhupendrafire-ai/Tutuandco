@@ -433,29 +433,39 @@ const AdminDashboard = () => {
                                             </h2>
                                             <p className="text-[10px] font-medium text-brand-charcoal/40 mt-1">Product ID: {isEditingProduct}</p>
                                         </div>
-                                        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                                            <button onClick={() => setIsEditingProduct(null)} className="px-4 py-2 text-[10px] font-medium text-brand-charcoal/40 hover:text-brand-charcoal">Discard</button>
+                                        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                                            {/* Requirements Checklist (Real-time feedback) */}
+                                            <div className="hidden lg:flex items-center gap-4 px-6 border-r border-brand-charcoal/10 mr-2 h-10">
+                                                <div className={`flex items-center gap-1.5 text-[9px] font-medium transition-all ${productForm.name?.trim() ? 'text-brand-sage' : 'text-brand-charcoal/30'}`}>
+                                                    {productForm.name?.trim() ? <Check size={12} strokeWidth={3} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/20" />} NAME
+                                                </div>
+                                                <div className={`flex items-center gap-1.5 text-[9px] font-medium transition-all ${productForm.price > 0 ? 'text-brand-sage' : 'text-brand-charcoal/30'}`}>
+                                                    {productForm.price > 0 ? <Check size={12} strokeWidth={3} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/20" />} PRICE
+                                                </div>
+                                                <div className={`flex items-center gap-1.5 text-[9px] font-medium transition-all ${(productForm.images || []).filter(img => img.url).length >= 2 ? 'text-brand-sage' : 'text-brand-charcoal/30'}`}>
+                                                    {(productForm.images || []).filter(img => img.url).length >= 2 ? <Check size={12} strokeWidth={3} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/20" />} 2+ PHOTOS
+                                                </div>
+                                            </div>
+
                                             <button 
+                                                disabled={!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2)}
                                                 onClick={async () => {
                                                     const sortedImages = [...(productForm.images || [])].sort((a, b) => a.sequence - b.sequence);
-                                                    const finalForm = { 
-                                                        ...productForm, 
-                                                        imageName: sortedImages[0]?.url || '' 
-                                                    };
+                                                    const finalForm = { ...productForm, imageName: sortedImages[0]?.url || '' };
                                                     if (isEditingProduct === 'new') await addProduct(finalForm);
                                                     else await updateProduct(isEditingProduct, finalForm);
                                                     setProductForm({ 
-                                                        name: '', price: 0, discountPrice: null, stock: 0, 
-                                                        category: '', description: '', imageName: '',
+                                                        name: '', category: '', price: 0, stock: 5, images: [], description: '',
                                                         images: [], descriptionBlocks: [] 
                                                     });
                                                     setIsEditingProduct('new');
                                                 }}
-                                                className="bg-brand-rose text-brand-charcoal px-6 py-3 rounded-sm text-[11px] font-medium shadow-lg hover:opacity-80 transition-all flex-grow md:flex-initial"
+                                                className={`px-6 py-3 rounded-sm text-[11px] font-medium shadow-lg transition-all flex-grow md:flex-initial ${!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2) ? 'bg-brand-charcoal/10 text-brand-charcoal/30 cursor-not-allowed shadow-none' : 'bg-brand-rose text-brand-charcoal hover:opacity-80'}`}
                                             >
                                                 Save & add another
                                             </button>
                                             <button 
+                                                disabled={!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2)}
                                                 onClick={async () => {
                                                     const sortedImages = [...(productForm.images || [])].sort((a, b) => a.sequence - b.sequence);
                                                     const finalForm = { 
@@ -466,7 +476,7 @@ const AdminDashboard = () => {
                                                     else await updateProduct(isEditingProduct, finalForm);
                                                     setIsEditingProduct(null);
                                                 }}
-                                                className="bg-brand-rose text-brand-charcoal px-8 md:px-10 py-3 md:py-4 rounded-sm text-[11px] font-medium shadow-lg hover:opacity-80 transition-all flex-grow md:flex-initial"
+                                                className={`px-8 md:px-10 py-3 md:py-4 rounded-sm text-[11px] font-medium shadow-lg transition-all flex-grow md:flex-initial ${!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2) ? 'bg-brand-sage/10 text-brand-sage/40 cursor-not-allowed shadow-none' : 'bg-brand-rose text-brand-charcoal hover:opacity-80'}`}
                                             >
                                                 Synchronize listing
                                             </button>
