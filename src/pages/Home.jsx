@@ -145,12 +145,13 @@ const Home = () => {
                 </AnimatePresence>
 
                 {/* Progress Indicators */}
-                <div className="absolute bottom-10 right-12 flex items-center gap-4 bg-black/20 backdrop-blur-xl px-6 py-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-4 group-hover:translate-y-0 border border-white/5">
+                <div className="absolute bottom-10 right-12 z-50 flex items-center gap-4 bg-black/40 backdrop-blur-3xl px-8 py-4 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-4 group-hover:translate-y-0 border border-white/10 shadow-2xl pointer-events-auto">
                     {visibleBanners.map((_, i) => (
                         <button
                             key={i}
                             onClick={(e) => { e.stopPropagation(); setCurrentBanner(i); }}
-                            className={`h-[3px] rounded-full transition-all duration-700 ${currentBanner === i ? 'bg-white w-12 shadow-[0_0_15px_rgba(255,255,255,0.5)]' : 'bg-white/20 w-4 hover:bg-white/40'}`}
+                            className={`h-[4px] rounded-full transition-all duration-500 cursor-pointer ${currentBanner === i ? 'bg-white w-14 shadow-lg' : 'bg-white/30 w-5 hover:bg-white hover:w-8'}`}
+                            title={`Switch to slide ${i + 1}`}
                         />
                     ))}
                     <div className="w-px h-4 bg-white/10 mx-2" />
