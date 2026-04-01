@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     LayoutDashboard, Package, ShoppingCart, BarChart3, 
@@ -40,6 +41,7 @@ if (resolvedUrl && !resolvedUrl.startsWith('http')) {
 const FINAL_API_URL = (resolvedUrl || (IS_PROD ? '' : FALLBACK_URL))?.replace(/\/$/, "");
 
 const AdminDashboard = () => {
+    const navigate = useNavigate();
     const { 
         products, banners, media, loading: shopLoading, 
         addProduct, deleteProduct, updateProduct, updateBanners, uploadMedia 
@@ -194,7 +196,13 @@ const AdminDashboard = () => {
                     <SidebarItem id="orders" icon={ShoppingCart} label="Orders" />
                     <SidebarItem id="settings" icon={Settings} label="Universal Settings" />
                 </div>
-                <button className="flex items-center space-x-4 p-4 text-red-500 hover:bg-red-50 transition-all rounded-sm">
+                <button 
+                    onClick={() => {
+                        sessionStorage.removeItem('isAdminAuthenticated');
+                        navigate('/admin/login');
+                    }}
+                    className="flex items-center space-x-4 p-4 text-red-500 hover:bg-red-50 transition-all rounded-sm"
+                >
                     <LogOut size={20} />
                     <span className="text-[11px] font-medium">Logout</span>
                 </button>
@@ -478,9 +486,9 @@ const AdminDashboard = () => {
                                                     <div key={idx} className={`group relative aspect-[3/4] bg-[#F4F1EA] rounded-sm overflow-hidden border ${idx === 0 ? 'border-[#CD664D] border-2 shadow-xl' : 'border-[#CD664D]/10'}`}>
                                                         <img src={getProductImage(img.url, media)} className="w-full h-full object-cover" />
                                                         {idx === 0 && (
-                                                            <div className="absolute top-2 right-2 bg-[#CD664D] text-white text-[7px] font-bold px-2 py-0.5 rounded-full shadow-lg z-10 animate-pulse">MAIN IMAGE</div>
+                                                            <div className="absolute top-2 right-2 bg-brand-charcoal text-white text-[7px] font-medium px-2 py-0.5 rounded-full shadow-lg z-10">MAIN IMAGE</div>
                                                         )}
-                                                        <div className="absolute top-2 left-2 bg-[#CD664D] text-white text-[8px] font-bold px-2 py-1 rounded-full shadow-lg">#{img.sequence}</div>
+                                                        <div className="absolute top-2 left-2 bg-brand-charcoal text-white text-[8px] font-medium px-2 py-1 rounded-full shadow-lg">#{img.sequence}</div>
                                                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-3">
                                                             <div className="flex justify-between">
                                                                 <button onClick={() => {

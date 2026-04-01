@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminRoute from './components/AdminRoute';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Blogs from './pages/Blogs';
@@ -30,7 +31,14 @@ function App() {
                     <Route path="/policy/:section" element={<Layout><Policy /></Layout>} />
                     <Route path="/moments" element={<Layout><Moments /></Layout>} />
                     <Route path="/admin/login" element={<AdminLogin />} />
-                    <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                    <Route 
+                        path="/admin/dashboard" 
+                        element={
+                            <AdminRoute>
+                                <AdminDashboard />
+                            </AdminRoute>
+                        } 
+                    />
                 </Routes>
             </Router>
         </ShopProvider>

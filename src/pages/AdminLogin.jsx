@@ -16,6 +16,7 @@ const AdminLogin = () => {
         e.preventDefault();
         // Updated mock credentials
         if (username === 'sneha@tutuandco.in' && password === 'Black@5353') {
+            sessionStorage.setItem('isAdminAuthenticated', 'true');
             navigate('/admin/dashboard');
         } else {
             setError('Invalid credentials. Please try again.');
