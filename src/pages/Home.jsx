@@ -51,6 +51,16 @@ const Home = () => {
         return (banners || []).filter(b => b.isVisible !== false);
     }, [banners]);
 
+    // Banner Auto-Play (7s)
+    // Dependencies on currentBanner ensure the timer resets if you manually navigate
+    useEffect(() => {
+        if (visibleBanners.length <= 1) return;
+        const timer = setInterval(() => {
+            setCurrentBanner(prev => (prev + 1) % visibleBanners.length);
+        }, 7000);
+        return () => clearInterval(timer);
+    }, [visibleBanners, currentBanner]);
+
     // Ensure current banner index stays in bounds when visibility changes
     useEffect(() => {
         if (currentBanner >= visibleBanners.length && visibleBanners.length > 0) {
