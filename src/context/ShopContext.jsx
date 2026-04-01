@@ -96,6 +96,7 @@ export const ShopProvider = ({ children }) => {
     });
     const [loading, setLoading] = useState(true);
     const [coupon, setCoupon] = useState(null);
+    const [orders, setOrders] = useState([]);
 
     useEffect(() => {
         loadData();
@@ -123,11 +124,12 @@ export const ShopProvider = ({ children }) => {
         }
 
         try {
-            const [productRes, bannerRes, mediaRes, settingsRes] = await Promise.all([
+            const [productRes, bannerRes, mediaRes, settingsRes, orderRes] = await Promise.all([
                 fetch(`${FINAL_API_URL}/api/products`),
                 fetch(`${FINAL_API_URL}/api/banners`),
                 fetch(`${FINAL_API_URL}/api/media`),
-                fetch(`${FINAL_API_URL}/api/settings`)
+                fetch(`${FINAL_API_URL}/api/settings`),
+                fetch(`${FINAL_API_URL}/api/orders`)
             ]);
             
             const rawProducts = productRes.ok ? await productRes.json() : [];
@@ -139,6 +141,7 @@ export const ShopProvider = ({ children }) => {
             }));
             const b = bannerRes.ok ? await bannerRes.json() : [];
             const m = mediaRes.ok ? await mediaRes.json() : [];
+            const o = orderRes.ok ? await orderRes.json() : [];
             const s = settingsRes.ok ? await settingsRes.json() : {
                 currency: { code: 'USD', symbol: '$', rate: 1 },
                 globalDiscount: 0,
@@ -148,6 +151,7 @@ export const ShopProvider = ({ children }) => {
             setProducts(p || []);
             setBanners(b || []);
             setMedia(m || []);
+            setOrders(Array.isArray(o) ? o : []);
             setSettings(s || {
                 currency: { code: 'USD', symbol: '$', rate: 1 },
                 globalDiscount: 0,
@@ -379,6 +383,7 @@ export const ShopProvider = ({ children }) => {
         products,
         banners,
         media,
+        orders,
         loading,
         cart,
         addToCart,
