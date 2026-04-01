@@ -28,18 +28,21 @@ const ProductDetail = () => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [reviews, setReviews] = useState([]);
     
-    const product = products.find(p => String(p.id) === String(id)) || products[0];
+    const product = (Array.isArray(products) ? products : []).find(p => String(p.id) === String(id)) || products[0];
 
     useEffect(() => {
         if (product) {
-            const mainImg = product.images?.sort((a,b) => a.sequence - b.sequence)[0]?.url || product.imageName;
+            const safeImages = Array.isArray(product.images) ? product.images : [];
+            const mainImg = safeImages.length > 0 ? safeImages.sort((a,b) => a.sequence - b.sequence)[0]?.url : product.imageName;
             setSelectedImage(getProductImage(mainImg, media));
             
             // Load reviews from real API
-            fetch(`${FINAL_API_URL}/api/reviews/${product.id}`)
-                .then(res => res.json())
-                .then(data => setReviews(data || []))
-                .catch(err => console.error("Error loading reviews:", err));
+            if (FINAL_API_URL && product.id) {
+                fetch(`${FINAL_API_URL}/api/reviews/${product.id}`)
+                    .then(res => res.json())
+                    .then(data => setReviews(Array.isArray(data) ? data : []))
+                    .catch(err => console.error("Error loading reviews:", err));
+            }
         }
         window.scrollTo(0, 0);
     }, [product, FINAL_API_URL, media]);
@@ -77,8 +80,8 @@ const ProductDetail = () => {
                         </motion.div>
                         
                         <div className="grid grid-cols-5 gap-4">
-                            {(product.images?.length > 0 ? product.images.sort((a,b) => a.sequence - b.sequence) : [{url: product.imageName}]).map((imgObj, index) => {
-                                const imgUrl = getProductImage(imgObj.url, media);
+                            {((Array.isArray(product.images) && product.images.length > 0) ? [...product.images].sort((a,b) => a.sequence - b.sequence) : [{url: product.imageName}]).map((imgObj, index) => {
+                                const imgUrl = getProductImage(imgObj?.url, media);
                                 return (
                                     <button
                                         key={index}
@@ -104,10 +107,10 @@ const ProductDetail = () => {
                         <div className="flex items-center mb-10">
                             <div className="flex mr-4">
                                 {[...Array(5)].map((_, i) => (
-                                    <Star key={i} size={14} fill={i < product.rating ? "#2f2f2f" : "none"} className="text-brand-charcoal" />
+                                    <Star key={i} size={14} fill={i < (Number(product.rating) || 5) ? "#2f2f2f" : "none"} className="text-brand-charcoal" />
                                 ))}
                             </div>
-                            <span className="text-brand-charcoal/40 text-[10px] items-center font-medium">({reviews.length} reviews)</span>
+                            <span className="text-brand-charcoal/40 text-[10px] items-center font-medium">({(Array.isArray(reviews) ? reviews : []).length} reviews)</span>
                         </div>
 
                         <div className="flex items-center space-x-6 mb-12">
@@ -130,14 +133,14 @@ const ProductDetail = () => {
                         </div>
 
                         <div className="space-y-5 mb-12">
-                            {(product.details?.length > 0 ? product.details : DEFAULT_DETAILS).map((detail, i) => (
+                            {((Array.isArray(product.details) && product.details.length > 0) ? product.details : DEFAULT_DETAILS).map((detail, i) => (
                                 <div key={i} className="flex items-start text-[18px] text-brand-charcoal/80 font-medium">
                                     <Heart size={16} className="text-brand-rose mr-4 mt-1.5 flex-shrink-0" fill="currentColor" />
                                     <span>
-                                        {detail.includes(':') ? (
+                                        {String(detail).includes(':') ? (
                                             <>
-                                                <span className="font-medium">{detail.split(':')[0]}:</span>
-                                                {detail.split(':')[1]}
+                                                <span className="font-medium">{String(detail).split(':')[0]}:</span>
+                                                {String(detail).split(':')[1]}
                                             </>
                                         ) : detail}
                                     </span>
@@ -368,19 +371,21 @@ const ProductDetail = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
                         {/* Review List */}
                         <div className="space-y-12">
-                            {reviews.length > 0 ? reviews.map((review, i) => (
+                            {(Array.isArray(reviews) && reviews.length > 0) ? reviews.map((review, i) => (
                                 <div key={i} className="pb-8 border-b border-[#F8F4F0]">
                                     <div className="flex items-center mb-4">
                                         <div className="flex mr-4">
                                             {[...Array(5)].map((_, j) => (
-                                                <Star key={j} size={12} fill={j < review.rating ? "#2f2f2f" : "none"} className="text-brand-charcoal" />
+                                                <Star key={j} size={12} fill={j < (Number(review.rating) || 5) ? "#2f2f2f" : "none"} className="text-brand-charcoal" />
                                             ))}
                                         </div>
-                                        <span className="text-xs font-medium text-brand-charcoal/80 tracking-wide">{review.userName}</span>
+                                        <span className="text-xs font-medium text-brand-charcoal/80 tracking-wide">{review.userName || 'Anonymous'}</span>
                                     </div>
                                     <h4 className="font-medium text-brand-charcoal mb-2">{review.title}</h4>
                                     <p className="text-brand-charcoal/70 text-sm leading-relaxed mb-4">{review.comment}</p>
-                                    <span className="text-[10px] text-brand-charcoal/30 font-medium tracking-wide">{new Date(review.createdAt).toLocaleDateString()}</span>
+                                    <span className="text-[10px] text-brand-charcoal/30 font-medium tracking-wide">
+                                        {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : 'Recently'}
+                                    </span>
                                 </div>
                             )) : (
                                 <p className="text-brand-charcoal/40 italic">No reviews yet. Be the first to share your experience!</p>
@@ -448,13 +453,13 @@ const ProductDetail = () => {
                         <p className="text-brand-charcoal/40">Every angle of the craftsmanship.</p>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {(product.images?.length > 0 ? product.images : [{url: product.imageName}]).map((imgObj, index) => (
+                        {((Array.isArray(product.images) && product.images.length > 0) ? product.images : [{url: product.imageName}]).map((imgObj, index) => (
                             <motion.div 
                                 key={index}
                                 whileHover={{ y: -10 }}
                                 className="aspect-[3/4] bg-brand-cream rounded-sm overflow-hidden cursor-zoom-in shadow-sm"
                             >
-                                <img src={getProductImage(imgObj.url, media)} alt={`Showcase ${index}`} className="w-full h-full object-cover" />
+                                <img src={getProductImage(imgObj?.url, media)} alt={`Showcase ${index}`} className="w-full h-full object-cover" />
                             </motion.div>
                         ))}
                     </div>

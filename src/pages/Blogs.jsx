@@ -43,7 +43,7 @@ const Blogs = () => {
                 </header>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                    {posts.map((post, index) => (
+                    {(Array.isArray(posts) ? posts : []).map((post, index) => (
                         <motion.div 
                             key={post.id}
                             initial={{ opacity: 0, y: 20 }}
@@ -54,14 +54,14 @@ const Blogs = () => {
                         >
                             <Link to={`/blogs/${post.id}`} className="block overflow-hidden rounded-sm bg-brand-cream mb-8 aspect-[16/9] shadow-sm">
                                 <img 
-                                    src={getProductImage(post.imageName)} 
+                                    src={getProductImage(post.imageName, [])} 
                                     alt={post.title} 
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
                                 />
                             </Link>
                             <div className="flex items-center space-x-6 text-[11px] text-brand-charcoal opacity-40 font-medium mb-4">
-                                <span className="flex items-center"><Calendar size={12} className="mr-2" /> {post.date}</span>
-                                <span className="flex items-center"><User size={12} className="mr-2" /> {post.author}</span>
+                                <span className="flex items-center"><Calendar size={12} className="mr-2" /> {post.date || 'Tutu & Co'}</span>
+                                <span className="flex items-center"><User size={12} className="mr-2" /> {post.author || 'Team'}</span>
                             </div>
                             <h2 className="text-3xl font-medium text-brand-charcoal mb-6 group-hover:opacity-60 transition-opacity">{post.title}</h2>
                             <p className="text-brand-charcoal/70 leading-relaxed mb-8 flex-grow">

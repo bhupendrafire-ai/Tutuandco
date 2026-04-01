@@ -45,13 +45,15 @@ if (IS_PROD) {
 const imageModules = import.meta.glob('../assets/heroshots/*.{jpg,png,jpeg}', { eager: true });
 // Helper to find image by part of name
 export const getProductImage = (namePart, customMedia = []) => {
-    if (!namePart) return '';
+    const segment = String(namePart || '');
+    if (!segment) return '';
     
     // Check if it's already a full URL (Vercel Blob)
-    if (namePart.startsWith('http')) return namePart;
+    if (segment.startsWith('http')) return segment;
 
     // Check custom media first (uploaded via CMS)
-    const uploaded = customMedia.find(m => m.name === namePart || m.url === namePart);
+    const safeMedia = Array.isArray(customMedia) ? customMedia : [];
+    const uploaded = safeMedia.find(m => m.name === segment || m.url === segment);
     if (uploaded) return uploaded.url;
 
     // Build resolution pool from local assets
@@ -59,18 +61,26 @@ export const getProductImage = (namePart, customMedia = []) => {
         .map(m => m.default)
         .filter(img => typeof img === 'string');
 
-    const found = images.find(img => img.includes(namePart));
+    if (images.length === 0) return '';
+
+    const found = images.find(img => img.includes(segment));
     if (found) return found;
 
     // Last resort fallback: Stable fallback based on name hash
-    const index = Math.abs(namePart.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a; }, 0)) % images.length;
-    return images[index] || images[0];
+    try {
+        const index = Math.abs(segment.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a; }, 0)) % images.length;
+        return images[index] || images[0];
+    } catch (e) {
+        return images[0] || '';
+    }
 };
 
 export const formatPrice = (amount, settings) => {
-    if (!settings || !settings.currency) return `$${amount}`;
+    const val = Number(amount) || 0;
+    if (!settings || !settings.currency) return `$${val.toFixed(2)}`;
     const { symbol, rate } = settings.currency;
-    return `${symbol}${(amount * rate).toFixed(2)}`;
+    const safeRate = Number(rate) || 1;
+    return `${symbol || '$'}${(val * safeRate).toFixed(2)}`;
 };
 
 export const ShopProvider = ({ children }) => {
@@ -152,14 +162,18 @@ export const ShopProvider = ({ children }) => {
 
     const updateSettings = async (newSettings) => {
         if (!FINAL_API_URL) return;
-        const res = await fetch(`${FINAL_API_URL}/api/settings`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newSettings)
-        });
-        const data = await res.json();
-        setSettings(data);
-        return data;
+        try {
+            const res = await fetch(`${FINAL_API_URL}/api/settings`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newSettings)
+            });
+            const data = await res.json();
+            if (data && typeof data === 'object') setSettings(data);
+            return data;
+        } catch (err) {
+            console.error("Settings update failed", err);
+        }
     };
 
     const addProduct = async (product) => {
@@ -189,18 +203,26 @@ export const ShopProvider = ({ children }) => {
 
     const deleteProduct = async (id) => {
         if (!FINAL_API_URL) return;
-        await fetch(`${FINAL_API_URL}/api/products/${id}`, { method: 'DELETE' });
-        await loadData();
+        try {
+            await fetch(`${FINAL_API_URL}/api/products/${id}`, { method: 'DELETE' });
+            await loadData();
+        } catch (err) {
+            console.error("Delete product failed", err);
+        }
     };
 
     const updateProduct = async (id, updates) => {
         if (!FINAL_API_URL) return;
-        await fetch(`${FINAL_API_URL}/api/products/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updates)
-        });
-        await loadData();
+        try {
+            await fetch(`${FINAL_API_URL}/api/products/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates)
+            });
+            await loadData();
+        } catch (err) {
+            console.error("Update product failed", err);
+        }
     };
 
     const updateBanners = async (newBanners) => {
@@ -230,14 +252,18 @@ export const ShopProvider = ({ children }) => {
 
     const uploadMedia = async (url, name) => {
         if (!FINAL_API_URL) return;
-        const res = await fetch(`${FINAL_API_URL}/api/media`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url, name })
-        });
-        const newMedia = await res.json();
-        await loadData();
-        return newMedia;
+        try {
+            const res = await fetch(`${FINAL_API_URL}/api/media`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url, name })
+            });
+            const newMedia = await res.json();
+            await loadData();
+            return newMedia;
+        } catch (err) {
+            console.error("Media upload reference failed", err);
+        }
     };
 
     const addToCart = (product, quantity = 1) => {
@@ -266,9 +292,11 @@ export const ShopProvider = ({ children }) => {
     const clearCart = () => setCart([]);
 
     const getCartTotal = () => {
-        const subtotal = cart.reduce((sum, item) => sum + ((item.discountPrice || item.price) * item.quantity), 0);
-        const globalDiscountAmount = settings.globalDiscount ? subtotal * (settings.globalDiscount / 100) : 0;
-        const couponDiscountAmount = coupon ? (subtotal - globalDiscountAmount) * coupon.discount : 0;
+        const safeCart = Array.isArray(cart) ? cart : [];
+        const subtotal = safeCart.reduce((sum, item) => sum + ((Number(item.discountPrice || item.price) || 0) * (item.quantity || 0)), 0);
+        const safeSettings = settings || {};
+        const globalDiscountAmount = safeSettings.globalDiscount ? subtotal * (safeSettings.globalDiscount / 100) : 0;
+        const couponDiscountAmount = coupon ? (subtotal - globalDiscountAmount) * (Number(coupon.discount) || 0) : 0;
         const totalDiscount = globalDiscountAmount + couponDiscountAmount;
         const total = subtotal - totalDiscount;
         const shipping = total >= 999 ? 0 : 89;
@@ -290,25 +318,30 @@ export const ShopProvider = ({ children }) => {
 
     const checkout = async (details) => {
         if (!FINAL_API_URL) return { success: false, message: 'Service temporarily unavailable' };
-        const { subtotal, discountAmount, shipping, total } = getCartTotal();
-        const order = {
-            items: cart,
-            ...details,
-            subtotal,
-            discountAmount,
-            shipping,
-            total,
-            couponCode: coupon?.code
-        };
-        const res = await fetch(`${FINAL_API_URL}/api/orders`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(order)
-        });
-        const result = await res.json();
-        clearCart();
-        setCoupon(null);
-        return result;
+        try {
+            const { subtotal, discountAmount, shipping, total } = getCartTotal();
+            const order = {
+                items: cart,
+                ...details,
+                subtotal,
+                discountAmount,
+                shipping,
+                total,
+                couponCode: coupon?.code
+            };
+            const res = await fetch(`${FINAL_API_URL}/api/orders`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(order)
+            });
+            const result = await res.json();
+            clearCart();
+            setCoupon(null);
+            return result || { success: true };
+        } catch (err) {
+            console.error("Checkout submission failed", err);
+            return { success: false, message: "Order submission failed. Please check your connection." };
+        }
     };
 
     const value = {

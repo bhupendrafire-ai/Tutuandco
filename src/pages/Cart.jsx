@@ -35,7 +35,7 @@ const Cart = () => {
                     {/* Cart Items */}
                     <div className="lg:col-span-8 space-y-8">
                         <AnimatePresence>
-                            {cart.map((item) => (
+                            {(Array.isArray(cart) ? cart : []).map((item) => (
                                 <motion.div 
                                     key={item.id}
                                     layout
@@ -44,7 +44,7 @@ const Cart = () => {
                                 >
                                     <div className="w-32 h-40 bg-brand-cream rounded-sm overflow-hidden flex-shrink-0 shadow-sm">
                                         <img 
-                                            src={getProductImage(item.images?.[0]?.url || item.imageName)} 
+                                            src={getProductImage(Array.isArray(item.images) ? item.images[0]?.url : item.imageName, media)} 
                                             alt={item.name} 
                                             className="w-full h-full object-cover"
                                         />
@@ -118,7 +118,7 @@ const Cart = () => {
                             </div>
 
                                 <p className="text-[11px] text-brand-charcoal/60 italic font-medium">
-                                    Spend {formatPrice(999 - total + shipping)} more for FREE shipping.
+                                    Spend {formatPrice(Math.max(0, 999 - (Number(total) || 0) + (Number(shipping) || 0)))} more for FREE shipping.
                                 </p>
 
                             <div className="pt-6 border-t border-brand-charcoal/10 flex justify-between items-end">

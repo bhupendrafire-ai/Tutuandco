@@ -56,22 +56,22 @@ const Moments = () => {
                 </header>
 
                 <div className="columns-1 sm:columns-2 lg:columns-3 gap-8 space-y-8">
-                    {moments.map((moment, i) => (
+                    {(Array.isArray(moments) ? moments : []).map((moment, i) => (
                         <motion.div 
-                            key={moment.id}
+                            key={moment.id || i}
                             initial={{ opacity: 0, scale: 0.9 }}
                             whileInView={{ opacity: 1, scale: 1 }}
                             className="relative group rounded-sm overflow-hidden bg-brand-cream break-inside-avoid shadow-sm hover:shadow-2xl transition-all duration-500"
                         >
                             <img 
-                                src={getProductImage(moment.imageUrl)} 
-                                alt={moment.petName} 
+                                src={getProductImage(moment.imageUrl || moment.imageName, [])} 
+                                alt={moment.petName || 'Our community'} 
                                 className="w-full object-cover"
                             />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8 text-white">
                                 <div className="flex justify-between items-center translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                                     <div className="flex flex-col">
-                                        <p className="font-medium text-xl">{moment.petName}</p>
+                                        <p className="font-medium text-xl">{moment.petName || 'Family member'}</p>
                                         <div className="flex items-center space-x-2">
                                             <span className="text-[10px] opacity-40 font-medium tracking-wide">Family photo</span>
                                         </div>

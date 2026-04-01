@@ -36,15 +36,17 @@ const Home = () => {
     // Shuffling Logic for Gallery - Strictly 10 unique images
     useEffect(() => {
         const shuffleGallery = () => {
-            if (!products.length) return;
+            const safeProducts = Array.isArray(products) ? products : [];
+            const safeMedia = Array.isArray(media) ? media : [];
+            if (safeProducts.length === 0 && safeMedia.length === 0) return;
 
-            const productPool = products.map(p => p.imageName);
-            const mediaPool = media.map(m => m.name);
+            const productPool = safeProducts.map(p => p.imageName);
+            const mediaPool = safeMedia.map(m => m.name);
             const staticPool = ['IMG_6135', 'IMG_6137', 'IMG_6144', 'IMG_6154', 'IMG_6169', 'IMG_6176', 'IMG_6186', 'IMG_6190', 'IMG_6197', 'IMG_6214'];
             
             const combinedPool = Array.from(new Set([...productPool, ...mediaPool, ...staticPool])).filter(Boolean);
             const shuffled = combinedPool.sort(() => 0.5 - Math.random());
-            const resolvedUrls = shuffled.map(name => getProductImage(name, media));
+            const resolvedUrls = shuffled.map(name => getProductImage(name, safeMedia));
             
             // Deduplicate resolved URLs (handles same fallback for multiple names)
             const uniqueUrls = Array.from(new Set(resolvedUrls));
@@ -53,7 +55,7 @@ const Home = () => {
             // Backfill if needed
             if (finalSelection.length < 10) {
                 const backfill = staticPool
-                    .map(name => getProductImage(name, media))
+                    .map(name => getProductImage(name, safeMedia))
                     .filter(url => !finalSelection.includes(url));
                 finalSelection = [...finalSelection, ...backfill].slice(0, 10);
             }
@@ -219,7 +221,7 @@ const Home = () => {
 
                 {/* Progress Indicators */}
                 <div className="absolute bottom-10 right-12 z-50 flex items-center gap-4 bg-black/40 backdrop-blur-3xl px-8 py-4 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-4 group-hover:translate-y-0 border border-white/10 shadow-2xl pointer-events-auto">
-                    {visibleBanners.map((_, i) => (
+                    {(Array.isArray(visibleBanners) ? visibleBanners : []).map((_, i) => (
                         <button
                             key={i}
                             onClick={(e) => { e.stopPropagation(); setCurrentBanner(i); }}
@@ -228,7 +230,7 @@ const Home = () => {
                         />
                     ))}
                     <div className="w-px h-4 bg-white/10 mx-2" />
-                    <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{currentBanner + 1} / {visibleBanners.length}</span>
+                    <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{currentBanner + 1} / {visibleBanners.length || 1}</span>
                 </div>
             </section>
 
@@ -244,7 +246,7 @@ const Home = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
-                    {products?.map((product) => (
+                    {(Array.isArray(products) ? products : []).map((product) => (
                         <Link 
                             to={`/product/${product.id}`}
                             key={product.id}
@@ -252,7 +254,7 @@ const Home = () => {
                         >
                             <div className="aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm relative mb-6 shadow-sm hover:shadow-xl transition-shadow duration-500">
                                 <motion.img
-                                    src={getProductImage(product.images?.sort((a,b) => a.sequence - b.sequence)[0]?.url || product.imageName)}
+                                    src={getProductImage(Array.isArray(product.images) ? product.images.sort((a,b) => a.sequence - b.sequence)[0]?.url : product.imageName, media)}
                                     alt={product.name}
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                                 />
@@ -275,7 +277,7 @@ const Home = () => {
                                 </div>
                                 <div className="flex items-center mt-4">
                                     {[...Array(5)].map((_, i) => (
-                                        <Star key={i} size={11} fill={i < product.rating ? "#95714F" : "none"} className="text-[#95714F] mr-1" />
+                                        <Star key={i} size={11} fill={i < (Number(product.rating) || 5) ? "#95714F" : "none"} className="text-[#95714F] mr-1" />
                                     ))}
                                     <span className="text-[10px] text-[#95714F]/60 ml-2 font-medium tracking-wider">Top rated</span>
                                 </div>
@@ -292,7 +294,7 @@ const Home = () => {
                 
                 <div className="grid grid-cols-2 md:grid-cols-5 auto-rows-[250px] gap-6">
                     <AnimatePresence mode="popLayout">
-                        {galleryImages.map((img, index) => (
+                        {(Array.isArray(galleryImages) ? galleryImages : []).map((img, index) => (
                             <motion.div 
                                 layout
                                 key={img}

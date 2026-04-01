@@ -35,10 +35,16 @@ const Checkout = () => {
         }
     };
 
-    if (cart.length === 0 && step !== 3) {
+    if ((!Array.isArray(cart) || cart.length === 0) && step !== 3) {
         navigate('/cart');
         return null;
     }
+    
+    // Safety check for totals
+    const safeTotal = Number(total) || 0;
+    const safeShipping = Number(shipping) || 0;
+    const safeSubtotal = Number(subtotal) || 0;
+    const safeDiscount = Number(discountAmount) || 0;
 
     return (
         <div className="bg-brand-sage min-h-screen pt-24 pb-32">
@@ -159,7 +165,7 @@ const Checkout = () => {
                                         <CheckCircle size={40} />
                                     </div>
                                     <h2 className="text-3xl font-medium text-brand-charcoal mb-4">Order confirmed!</h2>
-                                    <p className="text-brand-charcoal/60 mb-12">Thank you, {orderDetails.firstName}. Your order <strong>{orderResult.id}</strong> is being processed.</p>
+                                    <p className="text-brand-charcoal/60 mb-12">Thank you, {orderDetails.firstName || 'Customer'}. Your order <strong>{orderResult?.id || 'NEW'}</strong> is being processed.</p>
                                     
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
                                         <button className="flex items-center justify-center space-x-2 border border-brand-charcoal/10 p-5 text-[11px] font-medium text-brand-charcoal/60 hover:bg-white">
@@ -186,16 +192,16 @@ const Checkout = () => {
                              <h4 className="font-medium text-brand-charcoal text-lg">Order summary</h4>
                          </div>
                          <div className="p-8 space-y-6">
-                            {cart.map(item => (
+                            {(Array.isArray(cart) ? cart : []).map(item => (
                                 <div key={item.id} className="flex items-start gap-4 text-sm pb-6 border-b border-brand-charcoal/5 last:border-0 last:pb-0">
                                     <div className="w-12 h-16 bg-white rounded-sm overflow-hidden flex-shrink-0 shadow-sm">
-                                        <img src={getProductImage(item.images?.[0]?.url || item.imageName, media)} className="w-full h-full object-cover" alt="" />
+                                        <img src={getProductImage(Array.isArray(item.images) ? item.images[0]?.url : item.imageName, media)} className="w-full h-full object-cover" alt="" />
                                     </div>
                                     <div className="flex-grow">
                                         <h4 className="text-sm font-medium text-brand-charcoal truncate">{item.name}</h4>
-                                        <p className="text-[10px] text-brand-charcoal/40 font-medium">{item.category} • Qty {item.quantity}</p>
+                                        <p className="text-[10px] text-brand-charcoal/40 font-medium">{item.category} • Qty {Number(item.quantity) || 1}</p>
                                         <div className="flex items-center space-x-3 mt-1">
-                                            <span className="text-[11px] font-medium text-brand-charcoal">{formatPrice((item.discountPrice || item.price) * item.quantity)}</span>
+                                            <span className="text-[11px] font-medium text-brand-charcoal">{formatPrice((Number(item.discountPrice) || Number(item.price) || 0) * (Number(item.quantity) || 1))}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -203,21 +209,21 @@ const Checkout = () => {
                             <div className="pt-6 border-t border-brand-charcoal/10 space-y-3">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-brand-charcoal/60">Subtotal</span>
-                                    <span className="text-brand-charcoal font-medium">{formatPrice(subtotal)}</span>
+                                    <span className="text-brand-charcoal font-medium">{formatPrice(safeSubtotal)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-brand-charcoal/60">Shipping</span>
-                                    <span className="text-brand-charcoal font-medium">{shipping === 0 ? 'Free' : formatPrice(shipping)}</span>
+                                    <span className="text-brand-charcoal font-medium">{safeShipping === 0 ? 'Free' : formatPrice(safeShipping)}</span>
                                 </div>
-                                {discountAmount > 0 && (
+                                {safeDiscount > 0 && (
                                     <div className="flex justify-between text-sm text-brand-charcoal font-medium">
                                         <span>Discount</span>
-                                        <span>-{formatPrice(discountAmount)}</span>
+                                        <span>-{formatPrice(safeDiscount)}</span>
                                     </div>
                                 )}
                                 <div className="flex justify-between items-end pt-6 border-t border-brand-charcoal/20">
                                     <span className="text-sm font-medium text-brand-charcoal">Total</span>
-                                    <span className="text-2xl font-medium text-brand-charcoal">{formatPrice(total)}</span>
+                                    <span className="text-2xl font-medium text-brand-charcoal">{formatPrice(safeTotal)}</span>
                                 </div>
                             </div>
                          </div>

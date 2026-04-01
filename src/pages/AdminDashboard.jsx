@@ -206,7 +206,7 @@ const AdminDashboard = () => {
 
     const handleSelectAll = (e) => {
         if (e.target.checked) {
-            setSelectedProductIds(products.map(p => p.id));
+            setSelectedProductIds((Array.isArray(products) ? products : []).map(p => p.id));
         } else {
             setSelectedProductIds([]);
         }
@@ -290,23 +290,31 @@ const AdminDashboard = () => {
 
                 {activeTab === 'overview' && (
                     <div className="space-y-12">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {[
-                                { label: 'Total Sales', val: `$${stats.totalSales.toLocaleString()}`, trend: '+12.5%', icon: DollarSign, color: '#CD664D' },
-                                { label: 'Active Orders', val: stats.totalOrders, trend: '+4 today', icon: ShoppingCart, color: '#9FA993' },
-                                { label: 'Customers', val: stats.totalCustomers, trend: '+18%', icon: Users, color: '#DED6C4' },
-                                { label: 'Site Health', val: `${stats.health}%`, trend: 'Optimal', icon: TrendingUp, color: '#3E362E' }
-                             ].map((stat, i) => (
-                                <div key={i} className="bg-brand-cream p-8 rounded-sm shadow-sm border-b-4" style={{ borderColor: stat.color === '#CD664D' ? '#3B3B3B' : (stat.color === '#9FA993' ? '#8C916C' : stat.color) }}>
-                                    <div className="flex justify-between items-start mb-6">
-                                        <div className="p-3 bg-brand-sage/50 rounded-sm text-brand-charcoal"><stat.icon size={24} /></div>
-                                        <span className="text-[12px] font-bold text-green-700">{stat.trend}</span>
-                                    </div>
-                                    <p className="text-[13px] font-bold text-brand-charcoal/60 mb-1">{stat.label}</p>
-                                    <h3 className="text-3xl font-medium text-brand-charcoal">{stat.val}</h3>
+                        {/* Stats Logic with safety */}
+                        {(() => {
+                            const stats_grid = [
+                                { label: 'Total Sales', val: `$${(Number(stats.totalSales) || 0).toLocaleString()}`, trend: '+12.5%', icon: DollarSign, color: '#CD664D' },
+                                { label: 'Active Orders', val: Number(stats.totalOrders) || 0, trend: '+4 today', icon: ShoppingCart, color: '#9FA993' },
+                                { label: 'Customers', val: Number(stats.totalCustomers) || 0, trend: '+18%', icon: Users, color: '#DED6C4' },
+                                { label: 'Site Health', val: `${Number(stats.health) || 0}%`, trend: 'Optimal', icon: TrendingUp, color: '#3E362E' }
+                            ];
+                            return (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                    {(Array.isArray(stats_grid) ? stats_grid : []).map((stat, i) => (
+                                        <div key={i} className="bg-brand-cream p-8 rounded-sm shadow-sm border-b-4" style={{ borderColor: stat.color === '#CD664D' ? '#3B3B3B' : (stat.color === '#9FA993' ? '#8C916C' : stat.color) }}>
+                                            <div className="flex justify-between items-start mb-6">
+                                                <div className="p-3 bg-brand-sage/50 rounded-sm text-brand-charcoal">
+                                                    {stat.icon && <stat.icon size={24} />}
+                                                </div>
+                                                <span className="text-[12px] font-bold text-green-700">{stat.trend}</span>
+                                            </div>
+                                            <p className="text-[13px] font-bold text-brand-charcoal/60 mb-1">{stat.label}</p>
+                                            <h3 className="text-3xl font-medium text-brand-charcoal">{stat.val}</h3>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
+                            );
+                        })()}
 
                         <div className="bg-white p-10 rounded-sm shadow-sm border border-brand-charcoal/5">
                             <h2 className="text-xl font-medium text-brand-charcoal mb-8">Revenue trends (weekly)</h2>
@@ -360,7 +368,7 @@ const AdminDashboard = () => {
                                                 <input 
                                                     type="checkbox" 
                                                     onChange={handleSelectAll}
-                                                    checked={selectedProductIds.length === products.length && products.length > 0}
+                                                    checked={Array.isArray(products) && products.length > 0 && selectedProductIds.length === products.length}
                                                     className="w-5 h-5 accent-brand-rose rounded-sm cursor-pointer" 
                                                 />
                                             </th>
@@ -371,7 +379,7 @@ const AdminDashboard = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-[#F4F1EA]">
-                                        {products.map((item) => (
+                                        {(Array.isArray(products) ? products : []).map((item) => (
                                             <tr key={item.id} className={`hover:bg-[#F4F1EA]/50 transition-colors ${selectedProductIds.includes(item.id) ? 'bg-[#CD664D]/5' : ''}`}>
                                                 <td className="p-6 text-center">
                                                     <input 
@@ -386,11 +394,11 @@ const AdminDashboard = () => {
                                                     <span className="font-bold text-lg md:text-xl line-clamp-1">{item.name}</span>
                                                 </td>
                                                 <td className="p-6 text-sm">
-                                                    <span className={`px-4 py-1.5 text-[12px] font-bold rounded-full ${item.stock < 10 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                                                        {item.stock} units
+                                                    <span className={`px-4 py-1.5 text-[12px] font-bold rounded-full ${Number(item.stock) < 10 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                                                        {Number(item.stock) || 0} units
                                                     </span>
                                                 </td>
-                                                <td className="p-6 font-medium text-lg">₹{item.price}</td>
+                                                <td className="p-6 font-medium text-lg">₹{Number(item.price || 0).toFixed(2)}</td>
                                                 <td className="p-6 text-right space-x-3 text-[#CD664D]">
                                                     <button onClick={() => {
                                                         setProductForm(item);
@@ -547,7 +555,7 @@ const AdminDashboard = () => {
                             </button>
                         </div>
                         <div className="space-y-12">
-                            {banners.map((banner, index) => (
+                             {(Array.isArray(banners) ? banners : []).map((banner, index) => (
                                 <div key={banner.id || index} className="bg-white rounded-sm shadow-xl border border-[#CD664D]/10 overflow-hidden">
                                      <div className="flex flex-col md:flex-row">
                                         {/* Banner Preview */}
@@ -572,9 +580,9 @@ const AdminDashboard = () => {
                                                     onClick={() => {
                                                         openMediaPicker({
                                                             multi: false,
-                                                            onSelect: (items) => {
+                                                            onSelect: (item) => {
                                                                 const nb = [...banners];
-                                                                nb[index] = { ...nb[index], image: items[0].url };
+                                                                nb[index] = { ...nb[index], image: typeof item === 'string' ? item : item.url };
                                                                 updateBanners(nb);
                                                             }
                                                         });
@@ -698,13 +706,13 @@ const AdminDashboard = () => {
 
                 {activeTab === 'orders' && (
                     <div className="space-y-6">
-                        {orders.map((order) => (
+                        {(Array.isArray(orders) ? orders : []).map((order) => (
                             <div key={order.id} className="bg-white p-8 rounded-sm shadow-sm border border-brand-charcoal/5 flex justify-between items-center">
                                 <div>
                                     <h3 className="font-medium text-xl">Order #{String(order.id || '').split('-').pop()?.toUpperCase() || 'NEW'}</h3>
                                     <p className="text-xs text-brand-charcoal/40">{order.customerName}</p>
                                 </div>
-                                <p className="font-medium text-xl">₹{order.total.toFixed(2)}</p>
+                                <p className="font-medium text-xl">₹{(Number(order.total) || 0).toFixed(2)}</p>
                             </div>
                         ))}
                     </div>
