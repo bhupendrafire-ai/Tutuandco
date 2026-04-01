@@ -444,10 +444,10 @@ const AdminDashboard = () => {
                                         </div>
                                         <button 
                                             onClick={() => setIsEditingProduct(null)} 
-                                            className="absolute -top-3 -right-3 p-2 bg-brand-charcoal text-white rounded-full hover:bg-black transition-all shadow-xl z-[60]"
+                                            className="absolute top-6 right-8 p-3 bg-brand-charcoal text-white rounded-full hover:bg-black transition-all shadow-xl z-[60]"
                                             title="Close Workspace"
                                         >
-                                            <X size={16} />
+                                            <X size={20} />
                                         </button>
                                         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                                             {/* Requirements Checklist (Real-time feedback) */}
