@@ -441,7 +441,7 @@ const AdminDashboard = () => {
                                     className="bg-[#F4F1EA] w-full max-w-7xl h-[90vh] rounded-sm shadow-2xl overflow-hidden flex flex-col cursor-default relative"
                                     onClick={(e) => e.stopPropagation()}
                                 >
-                                    {/* Extreme Corner Close Button (Isolated from Save tools) */}
+                                    {/* Isolated Close Button */}
                                     <button 
                                         onClick={() => setIsEditingProduct(null)} 
                                         className="absolute top-4 right-4 p-2 bg-brand-charcoal text-white rounded-full hover:bg-black transition-all shadow-xl z-[200]"
@@ -451,68 +451,22 @@ const AdminDashboard = () => {
                                     </button>
 
                                     {/* Modal Header */}
-                                    <div 
-                                        className="bg-white border-b border-[#CD664D]/10 p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
-                                    >
+                                    <div className="bg-white border-b border-[#CD664D]/10 p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                                         <div>
                                             <h2 className="text-2xl md:text-3xl font-medium text-brand-charcoal">
                                                 {isEditingProduct === 'new' ? 'New creation' : `Refining: ${productForm.name}`}
                                             </h2>
                                             <p className="text-[10px] font-medium text-brand-charcoal/40 mt-1">Product ID: {isEditingProduct}</p>
                                         </div>
-                                        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-                                            {/* Requirements Checklist (Real-time feedback) */}
-                                            <div className="hidden lg:flex items-center gap-4 px-6 border-r border-brand-charcoal/10 mr-2 h-10">
-                                                <div className={`flex items-center gap-1.5 text-[9px] font-medium transition-all ${productForm.name?.trim() ? 'text-brand-sage' : 'text-brand-charcoal/30'}`}>
-                                                    {productForm.name?.trim() ? <Check size={12} strokeWidth={3} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/20" />} NAME
-                                                </div>
-                                                <div className={`flex items-center gap-1.5 text-[9px] font-medium transition-all ${productForm.price > 0 ? 'text-brand-sage' : 'text-brand-charcoal/30'}`}>
-                                                    {productForm.price > 0 ? <Check size={12} strokeWidth={3} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/20" />} PRICE
-                                                </div>
-                                                <div className={`flex items-center gap-1.5 text-[9px] font-medium transition-all ${(productForm.images || []).filter(img => img.url).length >= 2 ? 'text-brand-sage' : 'text-brand-charcoal/30'}`}>
-                                                    {(productForm.images || []).filter(img => img.url).length >= 2 ? <Check size={12} strokeWidth={3} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/20" />} 2+ PHOTOS
-                                                </div>
-                                            </div>
-
-                                            <button 
-                                                disabled={!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2)}
-                                                onClick={async () => {
-                                                    const sortedImages = [...(productForm.images || [])].sort((a, b) => a.sequence - b.sequence);
-                                                    const finalForm = { ...productForm, imageName: sortedImages[0]?.url || '' };
-                                                    if (isEditingProduct === 'new') await addProduct(finalForm);
-                                                    else await updateProduct(isEditingProduct, finalForm);
-                                                    setProductForm({ 
-                                                        name: '', category: '', price: 0, stock: 5, images: [], description: '',
-                                                        images: [], descriptionBlocks: [] 
-                                                    });
-                                                    setIsEditingProduct('new');
-                                                }}
-                                                className={`px-6 py-3 rounded-sm text-[11px] font-medium shadow-lg transition-all flex-grow md:flex-initial ${!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2) ? 'bg-brand-charcoal/10 text-brand-charcoal/30 cursor-not-allowed shadow-none' : 'bg-brand-rose text-brand-charcoal hover:opacity-80'}`}
-                                            >
-                                                Save & add another
-                                            </button>
-                                            <button 
-                                                disabled={!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2)}
-                                                onClick={async () => {
-                                                    const sortedImages = [...(productForm.images || [])].sort((a, b) => a.sequence - b.sequence);
-                                                    const finalForm = { 
-                                                        ...productForm, 
-                                                        imageName: sortedImages[0]?.url || '' 
-                                                    };
-                                                    if (isEditingProduct === 'new') await addProduct(finalForm);
-                                                    else await updateProduct(isEditingProduct, finalForm);
-                                                    setIsEditingProduct(null);
-                                                }}
-                                                className={`px-8 md:px-10 py-3 md:py-4 rounded-sm text-[11px] font-medium shadow-lg transition-all flex-grow md:flex-initial ${!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2) ? 'bg-brand-sage/10 text-brand-sage/40 cursor-not-allowed shadow-none' : 'bg-brand-rose text-brand-charcoal hover:opacity-80'}`}
-                                            >
-                                                Synchronize listing
-                                            </button>
+                                        <div className="invisible lg:visible opacity-10">
+                                            {/* Top-right spacing for Close (X) isolation */}
                                         </div>
                                     </div>
-                                    {/* High-Performance Workspace (One-Page, No Scroll) */}
-                                    <div className="flex-grow overflow-hidden flex flex-col md:flex-row h-full">
+
+                                    {/* Scrollable Workspace Body */}
+                                    <div className="flex-grow overflow-y-auto flex flex-col md:flex-row custom-scrollbar">
                                         
-                                        {/* Column 1: Media Hub (40% width) */}
+                                        {/* Column 1: Media Hub */}
                                         <div className="w-full md:w-[40%] bg-white/40 border-r border-brand-charcoal/5 flex flex-col p-6 md:p-10 overflow-hidden">
                                             <div className="flex justify-between items-center mb-6">
                                                 <h3 className="text-[11px] font-medium text-brand-charcoal/40 uppercase tracking-widest">Media Hub</h3>
@@ -543,7 +497,7 @@ const AdminDashboard = () => {
                                                     </button>
                                                 </div>
                                             </div>
-                                            {/* Photo Slots (2x2 Grid of 4 Equal Frames) */}
+
                                             <div className="flex-grow grid grid-cols-2 grid-rows-2 gap-4 overflow-hidden mb-6">
                                                 {[0, 1, 2, 3].map((idx) => (
                                                     <div 
@@ -569,13 +523,9 @@ const AdminDashboard = () => {
                                                                         objectPosition: `${productForm.images[idx].focalPoint?.x || 50}% ${productForm.images[idx].focalPoint?.y || 50}%`
                                                                     }}
                                                                 />
-
-                                                                {/* Persistent Status Tag (Bottom) */}
                                                                 <div className="absolute bottom-3 left-3 bg-brand-charcoal/80 text-white text-[8px] font-medium px-2.5 py-1 rounded-full shadow-lg z-10 transition-opacity group-hover:opacity-20 uppercase tracking-widest">
                                                                     {idx === 0 ? 'Primary Hero' : `Detail Asset 0${idx+1}`}
                                                                 </div>
-                                                                
-                                                                {/* Persistent Control Bar (Top) */}
                                                                 <div className="absolute top-2 right-2 flex flex-col items-end gap-1.5 z-30 opacity-0 group-hover:opacity-100 transition-opacity">
                                                                     <div className="flex items-center gap-1.5">
                                                                         <button 
@@ -584,7 +534,6 @@ const AdminDashboard = () => {
                                                                                 setAdjustingImageIdx(adjustingImageIdx === idx ? null : idx);
                                                                             }}
                                                                             className={`flex items-center gap-1.5 font-medium text-[9px] px-2 py-1.5 rounded-sm shadow-xl transition-all ${adjustingImageIdx === idx ? 'bg-brand-rose text-brand-charcoal' : 'bg-white text-brand-charcoal hover:bg-brand-cream'}`}
-                                                                            title={adjustingImageIdx === idx ? "Save Framing" : "Adjust Framing"}
                                                                         >
                                                                             <RefreshCcw size={10} className={adjustingImageIdx === idx ? 'animate-spin' : ''} /> {adjustingImageIdx === idx ? 'Done' : 'Pos'}
                                                                         </button>
@@ -596,7 +545,6 @@ const AdminDashboard = () => {
                                                                                 setProductForm({...productForm, images: newer});
                                                                             }}
                                                                             className="bg-white text-brand-charcoal hover:bg-brand-cream shadow-xl font-medium text-[9px] px-2 py-1.5 rounded-sm transition-all flex items-center gap-1"
-                                                                            title={productForm.images[idx].fitMode === 'contain' ? "Fill Frame" : "Fit Whole"}
                                                                         >
                                                                             {productForm.images[idx].fitMode === 'contain' ? <Maximize size={10}/> : <Minimize size={10}/>}
                                                                         </button>
@@ -608,14 +556,11 @@ const AdminDashboard = () => {
                                                                                 setAdjustingImageIdx(null); 
                                                                             }} 
                                                                             className="bg-white hover:bg-red-50 text-red-500 p-1.5 rounded-sm shadow-xl transition-all"
-                                                                            title="Remove Asset"
                                                                         >
                                                                             <Trash2 size={12} />
                                                                         </button>
                                                                     </div>
                                                                 </div>
-
-                                                                {/* Draggable Focal Point Overlay */}
                                                                 {adjustingImageIdx === idx && productForm.images[idx].fitMode !== 'contain' && (
                                                                     <div 
                                                                         onClick={(e) => e.stopPropagation()}
@@ -630,60 +575,42 @@ const AdminDashboard = () => {
                                                                         }}
                                                                         className="absolute inset-0 z-20 cursor-move bg-brand-rose/5 border border-brand-rose border-dashed"
                                                                     >
-                                                                        <div 
-                                                                            className="absolute w-6 h-6 -ml-3 -mt-3 border border-brand-rose rounded-full pointer-events-none shadow-2xl flex items-center justify-center animate-pulse bg-brand-rose/20"
-                                                                            style={{ left: `${productForm.images[idx].focalPoint?.x || 50}%`, top: `${productForm.images[idx].focalPoint?.y || 50}%` }}
-                                                                        >
+                                                                        <div className="absolute w-6 h-6 -ml-3 -mt-3 border border-brand-rose rounded-full pointer-events-none shadow-2xl flex items-center justify-center animate-pulse bg-brand-rose/20" style={{ left: `${productForm.images[idx].focalPoint?.x || 50}%`, top: `${productForm.images[idx].focalPoint?.y || 50}%` }}>
                                                                             <div className="w-1 h-1 bg-brand-rose rounded-full"></div>
                                                                         </div>
                                                                     </div>
                                                                 )}
                                                             </>
                                                         ) : (
-                                                        <div className="w-full h-full relative group">
-                                                            <div className="w-full h-full flex flex-col items-center justify-center text-brand-charcoal/10 group-hover:text-brand-rose/30 transition-all bg-white/40">
-                                                                <ImageIcon size={idx === 0 ? 32 : 24} strokeWidth={1} />
-                                                                <span className="text-[8px] font-medium mt-3 uppercase tracking-widest text-center px-4 opacity-40">
-                                                                    {idx === 0 ? 'Primary Slot' : `Slot 0${idx+1}`}
-                                                                </span>
+                                                            <div className="w-full h-full relative group">
+                                                                <div className="w-full h-full flex flex-col items-center justify-center text-brand-charcoal/10 group-hover:text-brand-rose/30 transition-all bg-white/40">
+                                                                    <ImageIcon size={idx === 0 ? 32 : 24} strokeWidth={1} />
+                                                                    <span className="text-[8px] font-medium mt-3 uppercase tracking-widest text-center px-4 opacity-40">
+                                                                        {idx === 0 ? 'Primary Slot' : `Slot 0${idx+1}`}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="absolute inset-0 flex items-center justify-center gap-4 bg-white/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                    <button onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); window._uploadTargetIdx = idx; }} className="p-3 bg-white text-brand-charcoal hover:text-brand-rose rounded-full shadow-xl transition-all">
+                                                                        <Upload size={18} />
+                                                                    </button>
+                                                                    <button onClick={(e) => { e.stopPropagation(); alert('Connecting to Google Drive... Please provide a Client ID to activate this link.'); }} className="p-3 bg-white text-brand-charcoal hover:text-blue-500 rounded-full shadow-xl transition-all">
+                                                                        <Cloud size={18} />
+                                                                    </button>
+                                                                </div>
                                                             </div>
-                                                            
-                                                            {/* Direct Access Overlay (Visible on Hover/Always for Empty) */}
-                                                            <div className="absolute inset-0 flex items-center justify-center gap-4 bg-white/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <button 
-                                                                    onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); window._uploadTargetIdx = idx; }} 
-                                                                    className="p-3 bg-white text-brand-charcoal hover:text-brand-rose rounded-full shadow-xl transition-all"
-                                                                    title="Upload from computer"
-                                                                >
-                                                                    <Upload size={18} />
-                                                                </button>
-                                                                <button 
-                                                                    onClick={(e) => { e.stopPropagation(); alert('Connecting to Google Drive... Please provide a Client ID to activate this link.'); }}
-                                                                    className="p-3 bg-white text-brand-charcoal hover:text-blue-500 rounded-full shadow-xl transition-all"
-                                                                    title="Select from Google Drive"
-                                                                >
-                                                                    <Cloud size={18} />
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))}
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
 
-                                        {/* Column 2: Product Intel (60% width) */}
-                                        <div className="w-full md:w-[60%] flex flex-col p-6 md:p-10 space-y-8 overflow-hidden">
-                                            {/* Section 1: Main Identity */}
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 flex-shrink-0">
+                                        {/* Column 2: Product Intel */}
+                                        <div className="w-full md:w-[60%] flex flex-col p-6 md:p-10 space-y-8">
+                                            {/* Identity Section */}
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                                 <div className="md:col-span-2">
                                                     <label className="text-[11px] font-medium text-brand-charcoal/40 mb-2 block uppercase tracking-wide">Product Name</label>
-                                                    <input 
-                                                        value={productForm.name} 
-                                                        onChange={e => setProductForm({...productForm, name: e.target.value})} 
-                                                        className="w-full bg-brand-cream/50 p-4 font-medium text-2xl border-none focus:ring-1 focus:ring-brand-sage rounded-sm outline-none" 
-                                                        placeholder="Vogue..." 
-                                                    />
+                                                    <input value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="w-full bg-brand-cream/50 p-4 font-medium text-2xl border-none focus:ring-1 focus:ring-brand-sage rounded-sm outline-none" placeholder="Vogue..." />
                                                 </div>
                                                 <div>
                                                     <div className="flex justify-between items-center mb-2">
@@ -692,54 +619,22 @@ const AdminDashboard = () => {
                                                             {showNewCategoryInput ? 'Existing' : '+ New'}
                                                         </button>
                                                     </div>
-                                                    
                                                     {showNewCategoryInput ? (
                                                         <div className="flex items-center space-x-2 bg-brand-cream/50 rounded-sm pr-2">
-                                                            <input 
-                                                                value={newCatTemp} 
-                                                                onChange={e => setNewCatTemp(e.target.value)} 
-                                                                className="flex-grow bg-transparent p-4 font-medium border-none focus:outline-none focus:ring-0 text-sm" 
-                                                                placeholder="Add..." 
-                                                                autoFocus
-                                                                onKeyDown={(e) => {
-                                                                    if(e.key === 'Enter') {
-                                                                        e.preventDefault();
-                                                                        if(newCatTemp.trim()) {
-                                                                            setSessionCategories(prev => [...new Set([...prev, newCatTemp.trim()])]);
-                                                                            setProductForm({...productForm, category: newCatTemp.trim()});
-                                                                            setShowNewCategoryInput(false);
-                                                                            setNewCatTemp('');
-                                                                        }
-                                                                    }
-                                                                }}
-                                                            />
-                                                            <button onClick={() => {
-                                                                if(newCatTemp.trim()) {
-                                                                    setSessionCategories(prev => [...new Set([...prev, newCatTemp.trim()])]);
-                                                                    setProductForm({...productForm, category: newCatTemp.trim()});
-                                                                    setShowNewCategoryInput(false);
-                                                                    setNewCatTemp('');
-                                                                }
-                                                            }} className="bg-brand-charcoal text-white p-1.5 rounded-full hover:bg-brand-rose transition-all shadow-md">
-                                                                <Check size={14} />
-                                                            </button>
+                                                            <input value={newCatTemp} onChange={e => setNewCatTemp(e.target.value)} className="flex-grow bg-transparent p-4 font-medium border-none focus:outline-none focus:ring-0 text-sm" placeholder="Add..." autoFocus onKeyDown={(e) => { if(e.key === 'Enter') { if(newCatTemp.trim()){ setSessionCategories(prev => [...new Set([...prev, newCatTemp.trim()])]); setProductForm({...productForm, category: newCatTemp.trim()}); setShowNewCategoryInput(false); setNewCatTemp(''); }}} } />
+                                                            <button onClick={() => { if(newCatTemp.trim()){ setSessionCategories(prev => [...new Set([...prev, newCatTemp.trim()])]); setProductForm({...productForm, category: newCatTemp.trim()}); setShowNewCategoryInput(false); setNewCatTemp(''); }}} className="bg-brand-charcoal text-white p-1.5 rounded-full hover:bg-brand-rose transition-all shadow-md"><Check size={14}/></button>
                                                         </div>
                                                     ) : (
                                                         <div className="relative" ref={dropdownRef}>
-                                                            <div 
-                                                                onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
-                                                                className="w-full bg-brand-cream/50 p-4 font-medium rounded-sm border border-transparent hover:border-brand-charcoal/10 transition-all cursor-pointer flex justify-between items-center text-sm h-[60px]"
-                                                            >
-                                                                <span className={productForm.category ? 'text-brand-charcoal' : 'text-brand-charcoal/30'}>
-                                                                    {productForm.category || 'Select...'}
-                                                                </span>
+                                                            <div onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)} className="w-full bg-brand-cream/50 p-4 font-medium rounded-sm border border-transparent hover:border-brand-charcoal/10 transition-all cursor-pointer flex justify-between items-center text-sm h-[60px]">
+                                                                <span className={productForm.category ? 'text-brand-charcoal' : 'text-brand-charcoal/30'}>{productForm.category || 'Select...'}</span>
                                                                 <ChevronDown className={`transition-transform duration-300 ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} size={16} />
                                                             </div>
                                                             <AnimatePresence>
                                                                 {isCategoryDropdownOpen && (
                                                                     <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute left-0 right-0 mt-2 bg-white border border-brand-charcoal/5 shadow-2xl rounded-sm z-[110] overflow-hidden">
                                                                         <div className="max-h-60 overflow-y-auto">
-                                                                            {[...(settings.categories || ['Accessories', 'Toys', 'Beds']), ...sessionCategories].map((cat, i) => (
+                                                                            {[...(settings.categories || []), ...sessionCategories].map((cat, i) => (
                                                                                 <div key={i} className={`flex items-center justify-between p-4 cursor-pointer transition-all ${productForm.category === cat ? 'bg-brand-rose' : 'hover:bg-brand-cream/40'}`} onClick={() => { setProductForm({...productForm, category: cat}); setIsCategoryDropdownOpen(false); }}>
                                                                                     <span className="text-sm font-medium">{cat}</span>
                                                                                     {productForm.category === cat && <Check size={14} />}
@@ -754,69 +649,78 @@ const AdminDashboard = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Section 2: Narrative Centerpiece */}
-                                            <div className="flex-grow flex flex-col space-y-4 overflow-hidden bg-white p-8 rounded-sm border border-brand-charcoal/5 shadow-sm">
-                                                <div className="flex justify-between items-end">
-                                                    <label className="text-[11px] font-medium text-brand-charcoal/40 uppercase tracking-wide">Brief hook (SEO summary)</label>
-                                                    <span className="text-[9px] font-medium text-brand-charcoal/20">Storytelling mode active</span>
-                                                </div>
-                                                <textarea 
-                                                    value={productForm.description} 
-                                                    onChange={e => setProductForm({...productForm, description: e.target.value})} 
-                                                    className="flex-grow w-full bg-brand-cream/20 p-6 text-xl font-medium border-none resize-none outline-none focus:ring-1 focus:ring-brand-sage rounded-sm leading-relaxed italic" 
-                                                    placeholder="The philosophy behind this creation..." 
-                                                />
+                                            {/* Narrative Section */}
+                                            <div className="flex-grow flex flex-col space-y-4 bg-white p-8 rounded-sm border border-brand-charcoal/5 shadow-sm">
+                                                <label className="text-[11px] font-medium text-brand-charcoal/40 uppercase tracking-wide">Brief hook (SEO summary)</label>
+                                                <textarea value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} className="flex-grow w-full bg-brand-cream/20 p-6 text-xl font-medium border-none resize-none outline-none focus:ring-1 focus:ring-brand-sage rounded-sm leading-relaxed italic" placeholder="The philosophy behind this creation..." />
                                             </div>
 
-                                            {/* Section 3: Financial Bar (Compact) */}
-                                            <div className="grid grid-cols-3 gap-8 flex-shrink-0 text-brand-charcoal">
+                                            {/* Financial Bar */}
+                                            <div className="grid grid-cols-3 gap-8 text-brand-charcoal">
                                                 <div className="bg-brand-charcoal p-6 rounded-sm text-white shadow-lg">
                                                     <label className="text-[9px] font-medium opacity-40 block mb-2 uppercase tracking-widest">Base Price (₹)</label>
-                                                    <input 
-                                                        type="number" 
-                                                        value={productForm.price} 
-                                                        onChange={e => setProductForm({...productForm, price: parseInt(e.target.value)})} 
-                                                        className="w-full bg-transparent text-2xl font-medium outline-none border-none p-0" 
-                                                    />
+                                                    <input type="number" value={productForm.price} onChange={e => setProductForm({...productForm, price: parseInt(e.target.value)})} className="w-full bg-transparent text-2xl font-medium outline-none border-none p-0" />
                                                 </div>
                                                 <div className="bg-brand-rose p-6 rounded-sm text-brand-charcoal shadow-lg">
                                                     <label className="text-[9px] font-medium opacity-40 block mb-2 uppercase tracking-widest">Discount Price</label>
                                                     <div className="flex items-center space-x-2">
                                                         <span className="text-lg opacity-40">₹</span>
-                                                        <input 
-                                                            type="number" 
-                                                            placeholder="None"
-                                                            value={productForm.discountPrice || ''} 
-                                                            onChange={e => setProductForm({...productForm, discountPrice: e.target.value ? parseInt(e.target.value) : null})} 
-                                                            className="w-full bg-transparent text-2xl font-medium outline-none border-none p-0 placeholder:text-brand-charcoal/20" 
-                                                        />
+                                                        <input type="number" placeholder="None" value={productForm.discountPrice || ''} onChange={e => setProductForm({...productForm, discountPrice: e.target.value ? parseInt(e.target.value) : null})} className="w-full bg-transparent text-2xl font-medium outline-none border-none p-0 placeholder:text-brand-charcoal/20" />
                                                     </div>
                                                 </div>
-                                                <div className="bg-white/60 p-6 rounded-sm border border-brand-charcoal/5 flex flex-col gap-2 relative">
-                                                    <div className="flex justify-between items-center px-1">
-                                                        <label className="text-[10px] font-medium text-brand-charcoal/40 uppercase tracking-widest">Category</label>
-                                                        <button 
-                                                            onClick={() => setShowCategoryManager(true)}
-                                                            className="p-1.5 hover:bg-brand-rose/20 rounded-full transition-colors text-brand-charcoal/30 hover:text-brand-rose"
-                                                            title="Manage Master Categories"
-                                                        >
-                                                            <Settings size={14} />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div className="bg-white p-6 rounded-sm border border-brand-charcoal/10 shadow-sm">
-                                                    <label className="text-[9px] font-medium text-brand-charcoal/40 block mb-2 uppercase tracking-widest">Available Stock</label>
-                                                    <div className="flex items-end space-x-2">
-                                                        <input 
-                                                            type="number" 
-                                                            value={productForm.stock} 
-                                                            onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} 
-                                                            className="w-full bg-transparent text-2xl font-medium p-0 border-none outline-none" 
-                                                        />
-                                                        <span className="text-[10px] font-medium opacity-20 mb-1">Units</span>
-                                                    </div>
+                                                <div className="bg-white p-6 rounded-sm border border-brand-charcoal/10 shadow-sm flex flex-col">
+                                                    <label className="text-[9px] font-medium text-brand-charcoal/40 block mb-2 uppercase tracking-widest">Stock Units</label>
+                                                    <input type="number" value={productForm.stock} onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} className="w-full bg-transparent text-2xl font-medium p-0 border-none outline-none" />
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Safe Action Hub (Sticky Footer) */}
+                                    <div className="bg-white border-t border-brand-charcoal/10 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 sticky bottom-0 z-[100] shadow-[0_-10px_30px_rgba(0,0,0,0.02)]">
+                                        {/* Audit Checklist (Left) */}
+                                        <div className="flex items-center gap-6 px-6 py-3 bg-brand-cream/30 rounded-full border border-brand-charcoal/5">
+                                            <div className="text-[10px] font-medium text-brand-charcoal/40 uppercase tracking-widest mr-2">Audit</div>
+                                            <div className={`flex items-center gap-1.5 text-[9px] font-medium transition-all ${productForm.name?.trim() ? 'text-brand-sage' : 'text-brand-charcoal/30'}`}>
+                                                {productForm.name?.trim() ? <CheckCircle2 size={12} strokeWidth={2} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/20" />} NAME
+                                            </div>
+                                            <div className={`flex items-center gap-1.5 text-[9px] font-medium transition-all ${productForm.price > 0 ? 'text-brand-sage' : 'text-brand-charcoal/30'}`}>
+                                                {productForm.price > 0 ? <CheckCircle2 size={12} strokeWidth={2} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/20" />} PRICE
+                                            </div>
+                                            <div className={`flex items-center gap-1.5 text-[9px] font-medium transition-all ${(productForm.images || []).filter(img => img.url).length >= 2 ? 'text-brand-sage' : 'text-brand-charcoal/30'}`}>
+                                                {(productForm.images || []).filter(img => img.url).length >= 2 ? <CheckCircle2 size={12} strokeWidth={2} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/20" />} 2+ PHOTOS
+                                            </div>
+                                        </div>
+
+                                        {/* Final Action Hub (Right) */}
+                                        <div className="flex items-center gap-4 w-full md:w-auto">
+                                            <button 
+                                                disabled={!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2)}
+                                                onClick={async () => {
+                                                    const sortedImages = [...(productForm.images || [])].sort((a, b) => a.sequence - b.sequence);
+                                                    const finalForm = { ...productForm, imageName: sortedImages[0]?.url || '' };
+                                                    if (isEditingProduct === 'new') await addProduct(finalForm);
+                                                    else await updateProduct(isEditingProduct, finalForm);
+                                                    setProductForm({ name: '', category: '', price: 0, stock: 5, images: [], description: '', images: [], descriptionBlocks: [] });
+                                                    setIsEditingProduct('new');
+                                                }}
+                                                className={`px-8 py-4 rounded-sm text-[11px] font-medium transition-all flex-grow md:flex-initial shadow-lg ${!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2) ? 'bg-brand-charcoal/10 text-brand-charcoal/30 cursor-not-allowed shadow-none' : 'bg-white text-brand-charcoal border border-brand-charcoal hover:bg-brand-cream'}`}
+                                            >
+                                                Save & add another
+                                            </button>
+                                            <button 
+                                                disabled={!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2)}
+                                                onClick={async () => {
+                                                    const sortedImages = [...(productForm.images || [])].sort((a, b) => a.sequence - b.sequence);
+                                                    const finalForm = { ...productForm, imageName: sortedImages[0]?.url || '' };
+                                                    if (isEditingProduct === 'new') await addProduct(finalForm);
+                                                    else await updateProduct(isEditingProduct, finalForm);
+                                                    setIsEditingProduct(null);
+                                                }}
+                                                className={`px-12 py-4 rounded-sm text-[11px] font-medium shadow-2xl transition-all flex-grow md:flex-initial ${!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2) ? 'bg-brand-sage/10 text-brand-sage/40 cursor-not-allowed' : 'bg-brand-rose text-brand-charcoal hover:opacity-80'}`}
+                                            >
+                                                Synchronize listing
+                                            </button>
                                         </div>
                                     </div>
                                 </motion.div>
