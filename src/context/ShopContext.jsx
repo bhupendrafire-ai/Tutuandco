@@ -204,12 +204,15 @@ export const ShopProvider = ({ children }) => {
     };
 
     const updateBanners = async (newBanners) => {
+        setBanners(newBanners); // Optimistic Update for instant UI feedback
         if (!FINAL_API_URL) return;
         await fetch(`${FINAL_API_URL}/api/banners`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newBanners)
         });
+        // We don't necessarily need to reload data if the optimistic update is safe
+        // but loadData() ensures the server's truth is eventually synced.
         await loadData();
     };
 

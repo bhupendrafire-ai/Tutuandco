@@ -6,7 +6,7 @@ import {
     Settings, LogOut, Search, Filter, Download, 
     TrendingUp, Users, DollarSign, AlertCircle, Eye, Printer, 
     FileText, CheckCircle, Image as ImageIcon, Plus, Trash2, Upload, Edit3, Menu, X, Layout, RefreshCcw, ChevronDown, Check, CheckCircle2,
-    Maximize, Minimize, Cloud, AlignLeft, AlignCenter, AlignRight, EyeOff, ChevronUp
+    Maximize, Minimize, Cloud, AlignLeft, AlignCenter, AlignRight, EyeOff, ChevronUp, Crosshair
 } from 'lucide-react';
 import { 
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, 
@@ -881,7 +881,21 @@ const AdminDashboard = () => {
                         
                         <div className="space-y-12">
                             {banners.map((banner, index) => (
-                                <div key={banner.id || index} className={`bg-white rounded-sm shadow-xl border overflow-hidden flex flex-col lg:flex-row min-h-[450px] transition-all ${banner.isVisible === false ? 'opacity-50 grayscale-[0.5]' : 'border-[#CD664D]/10'}`}>
+                                <div key={banner.id || index} className={`group/card bg-white rounded-sm shadow-xl border overflow-hidden flex flex-col lg:flex-row min-h-[450px] transition-all relative ${banner.isVisible === false ? 'opacity-50 grayscale-[0.5]' : 'border-[#CD664D]/10'}`}>
+                                    
+                                    {/* Universal Delete Action */}
+                                    <button 
+                                        onClick={() => {
+                                            if (window.confirm('Dissolve this front-page identity permanently?')) {
+                                                const nb = banners.filter((_, i) => i !== index);
+                                                updateBanners(nb);
+                                            }
+                                        }}
+                                        className="absolute top-4 right-4 z-[200] p-3 bg-white/80 backdrop-blur-sm text-red-400 hover:text-red-600 rounded-full shadow-lg border border-brand-charcoal/5 opacity-0 group-hover/card:opacity-100 transition-all hover:scale-110"
+                                        title="Permanently remove"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
                                     
                                     {/* Left Panel: Configuration & Controls */}
                                     <div className="w-full lg:w-[40%] p-8 bg-[#F4F1EA]/30 border-r border-brand-charcoal/5 flex flex-col">
@@ -928,18 +942,6 @@ const AdminDashboard = () => {
                                                     title={banner.isVisible === false ? "Restore to store" : "Hide from store"}
                                                 >
                                                     {banner.isVisible === false ? <Eye size={16} /> : <EyeOff size={16} />}
-                                                </button>
-                                                <button 
-                                                    onClick={() => {
-                                                        if (window.confirm('Dissolve this front-page identity permanently?')) {
-                                                            const nb = banners.filter((_, i) => i !== index);
-                                                            updateBanners(nb);
-                                                        }
-                                                    }}
-                                                    className="p-2 bg-white text-red-400 hover:text-red-600 rounded-sm shadow-sm border border-brand-charcoal/5 hover:border-red-500 transition-all"
-                                                    title="Permanently remove"
-                                                >
-                                                    <Trash2 size={16} />
                                                 </button>
                                             </div>
                                         </div>
@@ -1009,10 +1011,10 @@ const AdminDashboard = () => {
                                                     </button>
                                                     <button 
                                                         onClick={() => setAdjustingBannerIdx(adjustingBannerIdx === index ? null : index)}
-                                                        className={`px-6 py-4 rounded-sm border transition-all ${adjustingBannerIdx === index ? 'bg-brand-rose border-brand-charcoal text-brand-charcoal' : 'bg-white border-brand-charcoal/10 text-brand-charcoal/40 hover:text-brand-charcoal'}`}
-                                                        title="Calibrate focal point"
+                                                        className={`flex items-center gap-3 px-6 py-4 rounded-sm border transition-all font-bold text-[11px] uppercase tracking-widest ${adjustingBannerIdx === index ? 'bg-brand-rose border-brand-charcoal text-brand-charcoal shadow-inner' : 'bg-white border-brand-charcoal/10 text-brand-charcoal/60 hover:text-brand-charcoal hover:border-brand-rose'}`}
                                                     >
-                                                        <RefreshCcw size={16} className={adjustingBannerIdx === index ? 'animate-spin' : ''} />
+                                                        <Crosshair size={16} className={adjustingBannerIdx === index ? 'animate-pulse' : ''} />
+                                                        {adjustingBannerIdx === index ? 'Finish Positioning' : 'Reposition Center'}
                                                     </button>
                                                 </div>
                                             </div>
@@ -1023,20 +1025,19 @@ const AdminDashboard = () => {
                                     <div className="w-full lg:w-[60%] relative overflow-hidden bg-brand-charcoal/5 flex flex-col">
                                         {/* Status Header for Adjustment */}
                                         <div className="absolute top-6 left-6 z-40 flex items-center gap-2">
-                                            <div className="text-[10px] font-bold text-white bg-brand-charcoal/80 px-4 py-2 rounded-full shadow-2xl backdrop-blur-md uppercase tracking-[0.2em] border border-white/10">
-                                                Live Identity Preview
+                                            <div className="text-[10px] font-bold text-white bg-black/40 px-4 py-2 rounded-full shadow-2xl backdrop-blur-md uppercase tracking-[0.2em] border border-white/10">
+                                                Identity Preview (450px Height)
                                             </div>
                                             {adjustingBannerIdx === index && (
-                                                <div className="text-[10px] font-bold text-brand-charcoal bg-brand-rose px-4 py-2 rounded-full shadow-2xl uppercase tracking-[0.2em] animate-pulse">
-                                                    Calibrating positioning...
+                                                <div className="text-[10px] font-bold text-brand-charcoal bg-brand-rose px-6 py-2 rounded-full shadow-2xl uppercase tracking-[0.2em] animate-bounce">
+                                                    Click on the image to set the focal point
                                                 </div>
                                             )}
                                         </div>
 
 
-                                        {/* The Living Preview Section */}
                                         <div 
-                                            className={`relative flex-grow overflow-hidden ${adjustingBannerIdx === index ? 'cursor-crosshair' : ''}`}
+                                            className={`relative h-[450px] w-full overflow-hidden bg-brand-cream/10 ${adjustingBannerIdx === index ? 'cursor-crosshair' : ''}`}
                                             onClick={(e) => {
                                                 if (adjustingBannerIdx === index) {
                                                     const rect = e.currentTarget.getBoundingClientRect();
@@ -1051,7 +1052,7 @@ const AdminDashboard = () => {
                                             {/* Homepage-style Backdrop */}
                                             <img 
                                                 src={getProductImage(banner.image, media)} 
-                                                className="w-full h-full"
+                                                className="w-full h-full transition-all duration-500"
                                                 style={{ 
                                                     objectFit: banner.fitMode || 'cover',
                                                     objectPosition: `${banner.focalPoint?.x || 50}% ${banner.focalPoint?.y || 50}%`
@@ -1073,8 +1074,7 @@ const AdminDashboard = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Professional Calibration Suite - SIMPLIFIED */}
-                                            <div className="absolute top-8 right-8 z-[100]">
+                                            <div className="absolute top-8 right-8 z-[100] flex gap-2">
                                                 <button 
                                                     onClick={(e) => {
                                                         e.stopPropagation();
@@ -1084,7 +1084,8 @@ const AdminDashboard = () => {
                                                     }}
                                                     className="bg-brand-charcoal/80 backdrop-blur-md text-white hover:bg-black border border-white/10 shadow-2xl font-bold text-[10px] px-6 py-3 rounded-full transition-all flex items-center gap-2 uppercase tracking-widest"
                                                 >
-                                                    {banner.fitMode === 'contain' ? <Maximize size={12}/> : <Minimize size={12}/>} {banner.fitMode === 'contain' ? 'Fill Hero' : 'Full Image'}
+                                                    {banner.fitMode === 'contain' ? <Maximize size={12}/> : <Minimize size={12}/>} 
+                                                    {banner.fitMode === 'contain' ? 'Fill Banner' : 'Show Full Image'}
                                                 </button>
                                             </div>
 
