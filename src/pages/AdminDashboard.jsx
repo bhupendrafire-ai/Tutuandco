@@ -1037,22 +1037,54 @@ const AdminDashboard = () => {
 
 
                                         <div 
-                                            className={`relative h-[450px] w-full overflow-hidden bg-brand-cream/10 ${adjustingBannerIdx === index ? 'cursor-crosshair' : ''}`}
-                                            onClick={(e) => {
-                                                if (adjustingBannerIdx === index) {
-                                                    const rect = e.currentTarget.getBoundingClientRect();
-                                                    const x = ((e.clientX - rect.left) / rect.width) * 100;
-                                                    const y = ((e.clientY - rect.top) / rect.height) * 100;
-                                                    const nb = [...banners];
-                                                    nb[index].focalPoint = { x, y };
-                                                    updateBanners(nb);
-                                                }
-                                            }}
+                                            className={`relative h-[80vh] w-full overflow-hidden bg-brand-cream/10`}
                                         >
+                                            {/* Draggable Focal Point Handle Layer */}
+                                            <div className="absolute inset-0 z-[110] pointer-events-none">
+                                                {adjustingBannerIdx === index && (
+                                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                        <div className="w-full h-px bg-white/20 absolute top-1/2 -translate-y-1/2" />
+                                                        <div className="h-full w-px bg-white/20 absolute left-1/2 -translate-x-1/2" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            {/* The actual draggable constraint area */}
+                                            <div className="absolute inset-0 z-[120]">
+                                                {adjustingBannerIdx === index && (
+                                                    <motion.div
+                                                        drag
+                                                        dragMomentum={false}
+                                                        dragElastic={0}
+                                                        onDragEnd={(e, info) => {
+                                                            const rect = e.target.parentElement.getBoundingClientRect();
+                                                            // We use the mouse/touch position relative to the container
+                                                            const x = Math.min(100, Math.max(0, ((info.point.x - rect.left) / rect.width) * 100));
+                                                            const y = Math.min(100, Math.max(0, ((info.point.y - rect.top) / rect.height) * 100));
+                                                            const nb = [...banners];
+                                                            nb[index].focalPoint = { x, y };
+                                                            updateBanners(nb);
+                                                        }}
+                                                        style={{ 
+                                                            position: 'absolute',
+                                                            left: `${banner.focalPoint?.x || 50}%`,
+                                                            top: `${banner.focalPoint?.y || 50}%`,
+                                                            x: "-50%",
+                                                            y: "-50%"
+                                                        }}
+                                                        className="w-16 h-16 border-4 border-white rounded-full bg-brand-rose/20 backdrop-blur-md cursor-move flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.4)] group/handle"
+                                                    >
+                                                        <div className="w-3 h-3 bg-white rounded-full animate-ping absolute" />
+                                                        <div className="w-2 h-2 bg-white rounded-full z-10" />
+                                                        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/60 text-white text-[10px] px-2 py-1 rounded-sm opacity-0 group-hover/handle:opacity-100 transition-opacity uppercase tracking-widest font-bold">Drag to move focus</div>
+                                                    </motion.div>
+                                                )}
+                                            </div>
+
                                             {/* Homepage-style Backdrop */}
                                             <img 
                                                 src={getProductImage(banner.image, media)} 
-                                                className="w-full h-full transition-all duration-500"
+                                                className="w-full h-full transition-all duration-300"
                                                 style={{ 
                                                     objectFit: banner.fitMode || 'cover',
                                                     objectPosition: `${banner.focalPoint?.x || 50}% ${banner.focalPoint?.y || 50}%`

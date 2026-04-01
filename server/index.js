@@ -81,7 +81,13 @@ app.delete('/api/products/:id', async (req, res) => {
 app.get('/api/banners', async (req, res) => {
     try {
         const result = await db.query('SELECT * FROM banners ORDER BY id ASC');
-        res.json(result.rows);
+        const formatted = result.rows.map(b => ({
+            ...b,
+            contentPosition: b.content_position || 'center',
+            focalPoint: b.focal_point || { x: 50, y: 50 },
+            fitMode: b.fit_mode || 'cover'
+        }));
+        res.json(formatted);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -89,16 +95,21 @@ app.get('/api/banners', async (req, res) => {
 
 app.put('/api/banners', async (req, res) => {
     try {
-        // Simple full replacement for banners
         await db.query('DELETE FROM banners');
         for (const b of req.body) {
             await db.query(
-                'INSERT INTO banners (title, subtitle, cta, image) VALUES ($1, $2, $3, $4)',
-                [b.title, b.subtitle, b.cta, b.image]
+                'INSERT INTO banners (title, subtitle, cta, image, content_position, focal_point, fit_mode) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+                [b.title, b.subtitle, b.cta, b.image, b.contentPosition || 'center', JSON.stringify(b.focalPoint || {x: 50, y: 50}), b.fitMode || 'cover']
             );
         }
         const result = await db.query('SELECT * FROM banners ORDER BY id ASC');
-        res.json(result.rows);
+        const formatted = result.rows.map(b => ({
+            ...b,
+            contentPosition: b.content_position || 'center',
+            focalPoint: b.focal_point || { x: 50, y: 50 },
+            fitMode: b.fit_mode || 'cover'
+        }));
+        res.json(formatted);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

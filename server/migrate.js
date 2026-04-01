@@ -31,7 +31,10 @@ const migrate = async () => {
                 title TEXT,
                 subtitle TEXT,
                 cta TEXT,
-                image TEXT
+                image TEXT,
+                content_position TEXT DEFAULT 'center',
+                focal_point JSONB DEFAULT '{"x": 50, "y": 50}',
+                fit_mode TEXT DEFAULT 'cover'
             );
 
             CREATE TABLE IF NOT EXISTS settings (
@@ -52,6 +55,11 @@ const migrate = async () => {
                 data JSONB NOT NULL,
                 date DATE DEFAULT CURRENT_DATE
             );
+
+            -- Ensure banner columns exist for existing tables
+            ALTER TABLE banners ADD COLUMN IF NOT EXISTS content_position TEXT DEFAULT 'center';
+            ALTER TABLE banners ADD COLUMN IF NOT EXISTS focal_point JSONB DEFAULT '{"x": 50, "y": 50}';
+            ALTER TABLE banners ADD COLUMN IF NOT EXISTS fit_mode TEXT DEFAULT 'cover';
         `);
         console.log('✅ Tables created or already exist.');
 
