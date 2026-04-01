@@ -1080,8 +1080,7 @@ const AdminDashboard = () => {
                                             onPanStart={() => {
                                                 if (adjustingBannerIdx === index) {
                                                     const startFocal = banner.focalPoint || { x: 50, y: 50 };
-                                                    // Lock starting anchor point to avoid jitter
-                                                    startingFocalRef.current = startFocal;
+                                                    setPanningPoint(startFocal);
                                                     localFocal.current = startFocal;
                                                 }
                                             }}
@@ -1091,23 +1090,18 @@ const AdminDashboard = () => {
                                                     if (!container || !activeImageRef.current) return;
                                                     
                                                     const rect = container.getBoundingClientRect();
-                                                    const zoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
                                                     
-                                                    // Sticky Drag Formula (1:1 Movement Offset)
-                                                    const scrollableFactor = Math.max(0.01, zoom - 1);
+                                                    // Absolute Mapping (Point-at-what-you-want-to-see)
+                                                    // This was the logic that worked perfectly before 
+                                                    const xPercent = ((info.point.x - rect.left) / rect.width) * 100;
+                                                    const yPercent = ((info.point.y - rect.top) / rect.height) * 100;
                                                     
-                                                    // Calculate TOTAL percent change since original click (info.offset)
-                                                    // Negative sign (-) is the natural "Pull" direction for object-position
-                                                    const offsetXPercent = (info.offset.x / (rect.width * scrollableFactor)) * 100;
-                                                    const offsetYPercent = (info.offset.y / (rect.height * scrollableFactor)) * 100;
-                                                    
-                                                    // Derive new position from the original anchor point (Zero cumulative error)
+                                                    // Update local ref (Direct DOM injection for 60fps)
                                                     localFocal.current = {
-                                                        x: Math.min(100, Math.max(0, startingFocalRef.current.x - offsetXPercent)),
-                                                        y: Math.min(100, Math.max(0, startingFocalRef.current.y - offsetYPercent))
+                                                        x: Math.min(100, Math.max(0, xPercent)),
+                                                        y: Math.min(100, Math.max(0, yPercent))
                                                     };
 
-                                                    // Direct DOM update (60fps)
                                                     activeImageRef.current.style.objectPosition = `${localFocal.current.x}% ${localFocal.current.y}%`;
                                                 }
                                             }}
@@ -1116,7 +1110,7 @@ const AdminDashboard = () => {
                                                     const nb = [...banners];
                                                     nb[index] = { ...nb[index], focalPoint: localFocal.current };
                                                     updateBanners(nb);
-                                                    setPanningPoint(localFocal.current); // Sync visual state back to React on release
+                                                    setPanningPoint(localFocal.current); // Sync final state back to React on release
                                                 }
                                             }}
                                         >
