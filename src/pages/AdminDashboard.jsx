@@ -233,6 +233,52 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleSaveProduct = async () => {
+        if (!productForm.name) return alert("Product needs a title!");
+        try {
+            if (isEditingProduct === 'new') {
+                await addProduct(productForm);
+                alert("New creation birthed into inventory!");
+            } else {
+                await updateProduct(isEditingProduct, productForm);
+                alert("Creation refined successfully!");
+            }
+            setIsEditingProduct(null);
+        } catch (err) {
+            console.error("Save failed:", err);
+            alert("Sync error. Check connection.");
+        }
+    };
+
+    const handlePanning = (e) => {
+        if (!panningPoint || adjustingBannerIdx === null) return;
+        const b = banners[adjustingBannerIdx];
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const tx = (x / rect.width) * 1920 - 960;
+        const ty = (y / rect.height) * 1080 - 540;
+        const nb = [...banners];
+        nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], translateX: tx, translateY: ty };
+        updateBanners(nb);
+    };
+
+    const handleFocalPointChange = (e) => {
+        if (adjustingImageIdx === null) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        const nb = [...(productForm.images || [])];
+        nb[adjustingImageIdx] = { ...nb[adjustingImageIdx], focalPoint: { x, y } };
+        setProductForm({ ...productForm, images: nb });
+    };
+
+    const saveCalibration = async () => {
+        await updateBanners(banners);
+        setAdjustingBannerIdx(null);
+        alert("Universal focal state synchronized!");
+    };
+
     return (
         <div className="min-h-screen bg-brand-sage flex text-brand-charcoal relative">
             <div className="lg:hidden fixed top-0 left-0 right-0 h-20 bg-brand-cream border-b border-brand-charcoal/10 z-50 flex items-center justify-between px-6">
@@ -495,35 +541,113 @@ const AdminDashboard = () => {
                                         </div>
                                     </div>
                                     <div className="flex-grow overflow-y-auto flex flex-col md:flex-row custom-scrollbar">
-                                        <div className="w-full md:w-[40%] bg-[#F4F1EA]/60 border-r border-brand-charcoal/5 flex flex-col p-6 md:p-10 overflow-hidden">
+                                        <div className="w-full md:w-[45%] bg-[#F4F1EA]/60 border-r border-brand-charcoal/5 flex flex-col p-6 md:p-10">
                                             <h3 className="text-[12px] font-bold text-brand-charcoal/70 uppercase tracking-widest mb-6">Media Hub</h3>
-                                            <div className="flex-grow grid grid-cols-2 grid-rows-2 gap-1 overflow-hidden mb-6">
+                                            <div className="grid grid-cols-2 gap-4 mb-8">
                                                 {[0, 1, 2, 3].map((idx) => (
-                                                    <div key={idx} className="relative rounded-sm border border-brand-charcoal/10 overflow-hidden group shadow-sm bg-white/50">
-                                                        {productForm.images?.[idx] ? (
-                                                            <img src={getProductImage(productForm.images[idx].url, media)} className="w-full h-full object-cover" />
+                                                    <div key={idx} className="relative aspect-[4/5] rounded-sm border border-brand-charcoal/10 overflow-hidden group shadow-sm bg-white/50">
+                                                        {productForm.images?.[idx]?.url ? (
+                                                            <>
+                                                                <img src={getProductImage(productForm.images[idx].url, media)} className="w-full h-full object-cover" />
+                                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col p-2 space-y-2">
+                                                                    <button onClick={() => setAdjustingImageIdx(idx)} className="bg-white text-brand-charcoal p-2 rounded-sm text-[10px] font-bold uppercase"><Crosshair size={14} className="inline mr-2" /> Calibration</button>
+                                                                    <button onClick={() => {
+                                                                        const ni = productForm.images.filter((_, i) => i !== idx);
+                                                                        setProductForm({...productForm, images: ni});
+                                                                    }} className="bg-red-500 text-white p-2 rounded-sm text-[10px] font-bold uppercase">Purge</button>
+                                                                </div>
+                                                            </>
                                                         ) : (
-                                                            <div className="w-full h-full flex flex-col items-center justify-center cursor-pointer" onClick={() => triggerUpload(idx)}>
-                                                                <ImageIcon size={24} />
-                                                            </div>
+                                                            <button onClick={() => triggerUpload(idx)} className="w-full h-full flex flex-col items-center justify-center text-brand-charcoal/20 hover:text-brand-charcoal transition-colors">
+                                                                <ImageIcon size={32} />
+                                                                <span className="text-[10px] font-bold mt-2 uppercase">Slot {idx + 1}</span>
+                                                            </button>
                                                         )}
                                                     </div>
                                                 ))}
                                             </div>
-                                            <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => handleFileUpload(e, 'product_image')} />
+                                            
+                                            <div className="space-y-6">
+                                                <h3 className="text-[12px] font-bold text-brand-charcoal/70 uppercase tracking-widest mb-4">Narrative Blocks</h3>
+                                                <div className="space-y-4">
+                                                    {(productForm.descriptionBlocks || []).map((block, idx) => (
+                                                        <div key={idx} className="bg-white p-4 rounded-sm border border-brand-charcoal/5 group">
+                                                            <div className="flex justify-between items-start mb-2">
+                                                                <span className="text-[10px] font-bold uppercase opacity-30">Block {idx + 1}</span>
+                                                                <button onClick={() => {
+                                                                    const nb = productForm.descriptionBlocks.filter((_, i) => i !== idx);
+                                                                    setProductForm({...productForm, descriptionBlocks: nb});
+                                                                }} className="text-red-400 opacity-0 group-hover:opacity-100 transition-all"><X size={14} /></button>
+                                                            </div>
+                                                            <input value={block.title} onChange={e => {
+                                                                const nb = [...productForm.descriptionBlocks];
+                                                                nb[idx] = {...nb[idx], title: e.target.value};
+                                                                setProductForm({...productForm, descriptionBlocks: nb});
+                                                            }} className="w-full font-bold text-sm mb-2 outline-none border-none p-0" placeholder="Block Title" />
+                                                            <textarea value={block.content} onChange={e => {
+                                                                const nb = [...productForm.descriptionBlocks];
+                                                                nb[idx] = {...nb[idx], content: e.target.value};
+                                                                setProductForm({...productForm, descriptionBlocks: nb});
+                                                            }} className="w-full text-xs opacity-60 outline-none border-none p-0 resize-none h-20" placeholder="Narrative content..." />
+                                                        </div>
+                                                    ))}
+                                                    <button onClick={() => setProductForm({...productForm, descriptionBlocks: [...(productForm.descriptionBlocks || []), { title: '', content: '' }]})} className="w-full py-4 border-2 border-dashed border-brand-charcoal/10 rounded-sm text-[11px] font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-all">+ Add Block</button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="w-full md:w-[60%] flex flex-col p-6 md:p-10 space-y-8">
-                                            <input value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="w-full bg-brand-cream/50 p-4 font-medium text-2xl border-none rounded-sm outline-none" placeholder="Product Name" />
-                                            <textarea value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} rows="4" className="w-full bg-white p-6 text-lg font-medium border-none rounded-sm" placeholder="Description" />
-                                            <div className="grid grid-cols-3 gap-8">
-                                                <input type="number" value={productForm.price} onChange={e => setProductForm({...productForm, price: parseInt(e.target.value)})} className="bg-brand-charcoal text-white p-6 rounded-sm text-2xl font-medium" />
-                                                <input type="number" value={productForm.stock} onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} className="bg-[#F4F1EA]/60 p-6 rounded-sm text-2xl font-medium" />
+
+                                        <div className="w-full md:w-[55%] flex flex-col p-6 md:p-10 space-y-10">
+                                            <div className="space-y-2">
+                                                <label className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Base Identity</label>
+                                                <input value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="w-full bg-brand-cream/50 p-6 font-medium text-3xl border-none rounded-sm outline-none" placeholder="Master Title" />
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-8">
+                                                <div className="space-y-4">
+                                                    <label className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Inventory Status</label>
+                                                    <div className="flex items-center space-x-6">
+                                                        <div className="flex-grow">
+                                                            <span className="text-xs opacity-40 block mb-1">Units In stock</span>
+                                                            <input type="number" value={productForm.stock} onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} className="w-full bg-brand-cream/20 p-4 rounded-sm text-2xl font-medium outline-none" />
+                                                        </div>
+                                                        <div className="flex-grow">
+                                                            <span className="text-xs opacity-40 block mb-1">Price (₹)</span>
+                                                            <input type="number" value={productForm.price} onChange={e => setProductForm({...productForm, price: parseInt(e.target.value)})} className="w-full bg-brand-charcoal text-white p-4 rounded-sm text-2xl font-medium outline-none" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    <label className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Store Taxonomy</label>
+                                                    <div className="relative">
+                                                        <select 
+                                                            value={productForm.category} 
+                                                            onChange={e => setProductForm({...productForm, category: e.target.value})}
+                                                            className="w-full bg-brand-cream/50 p-4 rounded-sm font-bold text-sm appearance-none border-none outline-none"
+                                                        >
+                                                            <option value="">Select Category</option>
+                                                            {(settings.categories || []).map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                                                        </select>
+                                                        <button onClick={() => setShowCategoryManager(true)} className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-rose hover:scale-110 transition-all"><Settings size={18} /></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-4">
+                                                <label className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Core Narrative</label>
+                                                <textarea value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} rows="6" className="w-full bg-white p-8 text-lg font-medium border-none rounded-sm shadow-sm outline-none resize-none" placeholder="The story of this product..." />
+                                            </div>
+
+                                            <div className="pt-10 border-t border-brand-charcoal/5">
+                                                <button 
+                                                    onClick={handleSaveProduct}
+                                                    className="w-full bg-brand-rose text-brand-charcoal py-6 rounded-sm text-[13px] font-bold uppercase tracking-[0.2em] shadow-xl hover:bg-white transition-all transform active:scale-95"
+                                                >
+                                                    {isEditingProduct === 'new' ? 'Initialize Inventory' : 'Synchronize Product Changes'}
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="bg-[#F4F1EA] border-t border-brand-charcoal/10 p-8 flex justify-end gap-4">
-                                        <button onClick={() => setIsEditingProduct(null)} className="px-8 py-4 bg-brand-rose text-brand-charcoal font-bold rounded-sm">Save Listing</button>
-                                    </div>
+                                    <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => handleFileUpload(e, 'product_image')} />
                                 </motion.div>
                             </div>
                         )}
@@ -788,9 +912,16 @@ const AdminDashboard = () => {
                 {activeTab === 'settings' && (
                     <div className="max-w-4xl space-y-12">
                         <div className="bg-white p-10 rounded-sm shadow-sm border border-brand-charcoal/5">
-                            <h3 className="text-[11px] font-medium text-brand-charcoal/40 mb-8">Base configuration</h3>
+                            <h3 className="text-[11px] font-medium text-brand-charcoal/40 mb-8 uppercase tracking-widest">Store Taxonomy & Logistics</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <input value={localSettings.shopName} onChange={e => setLocalSettings({...localSettings, shopName: e.target.value})} className="w-full bg-brand-cream p-4 font-medium text-xl border-none" />
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Master Shop Name</label>
+                                    <input value={localSettings.shopName} onChange={e => setLocalSettings({...localSettings, shopName: e.target.value})} className="w-full bg-brand-cream p-4 font-medium text-xl border-none outline-none focus:ring-1 focus:ring-brand-rose" />
+                                </div>
+                                <div className="flex gap-4 items-end">
+                                    <button onClick={() => setShowCategoryManager(true)} className="flex-grow bg-brand-charcoal text-white p-5 rounded-sm font-bold uppercase tracking-widest text-[11px] hover:bg-black transition-all">Manage Categories</button>
+                                    <button onClick={saveSettings} className="px-10 py-5 bg-brand-rose text-brand-charcoal font-bold uppercase tracking-widest text-[11px] hover:bg-white transition-all shadow-lg">Save Settings</button>
+                                </div>
                             </div>
                         </div>
                         <div className="flex justify-start pt-4 border-t border-brand-charcoal/5">
@@ -888,6 +1019,142 @@ const AdminDashboard = () => {
                     </div>
                 )}
             </AnimatePresence>
+            <AnimatePresence>
+                {adjustingBannerIdx !== null && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-12">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setAdjustingBannerIdx(null)} className="absolute inset-0 bg-brand-charcoal/95 backdrop-blur-xl" />
+                        <motion.div 
+                            initial={{ scale: 0.9, opacity: 0 }} 
+                            animate={{ scale: 1, opacity: 1 }} 
+                            exit={{ scale: 0.9, opacity: 0 }} 
+                            className="relative w-full max-w-7xl h-[85vh] bg-white rounded-sm overflow-hidden shadow-2xl flex flex-col"
+                        >
+                            <div className="p-8 border-b border-brand-charcoal/10 flex justify-between items-center bg-brand-cream/30">
+                                <div>
+                                    <h3 className="text-3xl font-medium text-brand-charcoal">Identity Panning Hub</h3>
+                                    <p className="text-[10px] font-bold text-brand-charcoal/40 uppercase tracking-widest mt-1">Universal Coordinate Mapping • 1920x1080 Reference</p>
+                                </div>
+                                <div className="flex items-center space-x-6">
+                                    <div className="flex items-center space-x-4 bg-brand-charcoal text-white px-6 py-3 rounded-full shadow-lg">
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-[11px] font-bold uppercase opacity-40">Precision</span>
+                                            <span className="text-xl font-medium">{Math.round((banners[adjustingBannerIdx].zoom || 1) * 100)}%</span>
+                                        </div>
+                                        <div className="h-8 w-px bg-white/20" />
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-[11px] font-bold uppercase opacity-40">Coordinates</span>
+                                            <span className="text-sm font-bold font-mono">{Math.round(banners[adjustingBannerIdx].translateX || 0)}X, {Math.round(banners[adjustingBannerIdx].translateY || 0)}Y</span>
+                                        </div>
+                                    </div>
+                                    <button onClick={saveCalibration} className="px-10 py-4 bg-green-600 text-white font-bold uppercase tracking-widest text-[11px] rounded-full hover:bg-green-700 transition-all shadow-xl">Apply Universal Calibration</button>
+                                    <button onClick={() => setAdjustingBannerIdx(null)} className="p-4 bg-brand-charcoal text-white rounded-full hover:scale-110 transition-all"><X size={24} /></button>
+                                </div>
+                            </div>
+
+                            <div className="flex-grow flex flex-col items-center justify-center bg-brand-charcoal/10 relative overflow-hidden group">
+                                <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
+                                    <div className="w-[1920px] h-[1080px] border border-brand-charcoal/20" />
+                                </div>
+                                <div 
+                                    className="relative w-[1920px] h-[1080px] origin-center shadow-[0_0_100px_rgba(0,0,0,0.5)] cursor-move select-none"
+                                    style={{ transform: `scale(${interactingZoom || 0.4})` }}
+                                    onMouseDown={(e) => setPanningPoint({ x: e.clientX, y: e.clientY })}
+                                    onMouseMove={handlePanning}
+                                    onMouseUp={() => setPanningPoint(null)}
+                                    onMouseLeave={() => setPanningPoint(null)}
+                                >
+                                    <img 
+                                        src={getProductImage(banners[adjustingBannerIdx].image, media)} 
+                                        className="w-full h-full object-cover pointer-events-none" 
+                                        draggable={false}
+                                        style={{ 
+                                            transform: `translate(${banners[adjustingBannerIdx].translateX || 0}px, ${banners[adjustingBannerIdx].translateY || 0}px) scale(${banners[adjustingBannerIdx].zoom || 1})`,
+                                            objectFit: banners[adjustingBannerIdx].fitMode || 'cover'
+                                        }}
+                                    />
+                                    {/* Crosshair Overlay */}
+                                    <div className="absolute inset-0 pointer-events-none border-2 border-white/20" />
+                                    <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/40" />
+                                    <div className="absolute top-1/2 left-0 right-0 h-px bg-white/40" />
+                                </div>
+
+                                {/* Floating Controls */}
+                                <div className="absolute bottom-12 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md p-6 rounded-full shadow-2xl flex items-center gap-8 border border-brand-charcoal/5">
+                                    <div className="flex items-center gap-4">
+                                        <button onClick={() => {
+                                            const nb = [...banners];
+                                            nb[adjustingBannerIdx].zoom = Math.max(1, (nb[adjustingBannerIdx].zoom || 1) - 0.1);
+                                            updateBanners(nb);
+                                        }} className="p-3 bg-brand-charcoal text-white rounded-full hover:bg-black transition-all shadow-md"><Minimize size={20} /></button>
+                                        <div className="px-6 py-2 bg-brand-cream/50 rounded-full font-bold text-lg min-w-[100px] text-center">Zoom: {Math.round((banners[adjustingBannerIdx].zoom || 1) * 100)}%</div>
+                                        <button onClick={() => {
+                                            const nb = [...banners];
+                                            nb[adjustingBannerIdx].zoom = Math.min(5, (nb[adjustingBannerIdx].zoom || 1) + 0.1);
+                                            updateBanners(nb);
+                                        }} className="p-3 bg-brand-charcoal text-white rounded-full hover:bg-black transition-all shadow-md"><Maximize size={20} /></button>
+                                    </div>
+                                    <div className="h-10 w-px bg-brand-charcoal/10" />
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-[10px] font-bold uppercase opacity-40">Aspect Lock: 16:9</span>
+                                        <select 
+                                            value={banners[adjustingBannerIdx].fitMode || 'cover'} 
+                                            onChange={e => {
+                                                const nb = [...banners];
+                                                nb[adjustingBannerIdx].fitMode = e.target.value;
+                                                updateBanners(nb);
+                                            }}
+                                            className="bg-transparent font-bold text-sm outline-none cursor-pointer border-b-2 border-brand-rose pb-1"
+                                        >
+                                            <option value="cover">Mode: Crop to Fit</option>
+                                            <option value="contain">Mode: Original Ratio</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {adjustingImageIdx !== null && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setAdjustingImageIdx(null)} className="absolute inset-0 bg-brand-charcoal/90 backdrop-blur-md" />
+                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative bg-white w-full max-w-xl rounded-sm overflow-hidden shadow-2xl">
+                            <div className="p-8 border-b flex justify-between items-center bg-brand-cream/30">
+                                <h3 className="text-xl font-medium">Fine-Tune Focal Point</h3>
+                                <button onClick={() => setAdjustingImageIdx(null)} className="p-2 hover:bg-white rounded-full transition-all"><X size={20} /></button>
+                            </div>
+                            <div 
+                                className="relative aspect-square cursor-crosshair group overflow-hidden bg-brand-cream"
+                                onClick={handleFocalPointChange}
+                            >
+                                <img 
+                                    src={getProductImage(productForm.images[adjustingImageIdx].url, media)} 
+                                    className="w-full h-full object-cover transition-all duration-500" 
+                                    style={{ objectPosition: `${productForm.images[adjustingImageIdx].focalPoint?.x || 50}% ${productForm.images[adjustingImageIdx].focalPoint?.y || 50}%` }}
+                                />
+                                <div className="absolute inset-0 pointer-events-none bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <div className="w-16 h-16 border-2 border-white rounded-full flex items-center justify-center bg-white/20">
+                                        <div className="w-2 h-2 bg-white rounded-full" />
+                                    </div>
+                                </div>
+                                <div 
+                                    className="absolute w-8 h-8 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+                                    style={{ left: `${productForm.images[adjustingImageIdx].focalPoint?.x || 50}%`, top: `${productForm.images[adjustingImageIdx].focalPoint?.y || 50}%` }}
+                                >
+                                    <div className="w-full h-full border-4 border-brand-rose rounded-full shadow-[0_0_20px_rgba(205,102,77,0.5)] animate-pulse" />
+                                </div>
+                            </div>
+                            <div className="p-8 bg-brand-cream/10 border-t flex justify-between items-center">
+                                <p className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Universal focal offset synchronized</p>
+                                <button onClick={() => setAdjustingImageIdx(null)} className="bg-brand-charcoal text-white px-10 py-3 rounded-sm font-bold uppercase tracking-widest text-[11px] shadow-xl hover:bg-black transition-all">Dismiss</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
             <AnimatePresence>
                 {selectedOrder && (
                     <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 md:p-12 overflow-hidden">
