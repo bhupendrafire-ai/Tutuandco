@@ -1102,7 +1102,15 @@ const AdminDashboard = () => {
                                                         y: Math.min(100, Math.max(0, yPercent))
                                                     };
 
+                                                    // Update image alignment
                                                     activeImageRef.current.style.objectPosition = `${localFocal.current.x}% ${localFocal.current.y}%`;
+                                                    
+                                                    // Update visual target (if it exists)
+                                                    const target = container.querySelector('.focal-target');
+                                                    if (target) {
+                                                        target.style.left = `${localFocal.current.x}%`;
+                                                        target.style.top = `${localFocal.current.y}%`;
+                                                    }
                                                 }
                                             }}
                                             onPanEnd={() => {
@@ -1114,6 +1122,21 @@ const AdminDashboard = () => {
                                                 }
                                             }}
                                         >
+                                            {/* Visual Focal Point Target (Proves vertical/horizontal tracking) */}
+                                            {adjustingBannerIdx === index && (
+                                                <div 
+                                                    className="focal-target absolute w-20 h-20 -ml-10 -mt-10 border-2 border-brand-rose rounded-full flex items-center justify-center pointer-events-none z-[100] shadow-[0_0_20px_rgba(255,51,102,0.5)] transition-none"
+                                                    style={{
+                                                        left: `${panningPoint?.x || (banner.focalPoint?.x || 50)}%`,
+                                                        top: `${panningPoint?.y || (banner.focalPoint?.y || 50)}%`
+                                                    }}
+                                                >
+                                                    <div className="w-1.5 h-1.5 bg-brand-rose rounded-full" />
+                                                    <div className="absolute w-8 h-[1px] bg-brand-rose/50" />
+                                                    <div className="absolute h-8 w-[1px] bg-brand-rose/50" />
+                                                </div>
+                                            )}
+
                                             {/* Isolated Calibration Hub */}
                                             {adjustingBannerIdx === index && (
                                                 <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[200] flex items-center bg-brand-charcoal/90 backdrop-blur-2xl border border-white/20 px-8 py-5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] gap-8 pointer-events-auto">
