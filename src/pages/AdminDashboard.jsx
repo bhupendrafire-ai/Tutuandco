@@ -47,6 +47,7 @@ const AdminDashboard = () => {
     const [sessionCategories, setSessionCategories] = useState([]);
     const [showCategoryManager, setShowCategoryManager] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
+    const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
     const fileInputRef = useRef(null);
     const [adjustingImageIdx, setAdjustingImageIdx] = useState(null);
