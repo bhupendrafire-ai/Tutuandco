@@ -11,6 +11,23 @@ const Home = () => {
     const { products, banners, media, loading, formatPrice, settings } = useShop();
     const [currentBanner, setCurrentBanner] = useState(0);
     const [galleryImages, setGalleryImages] = useState([]);
+    const heroRef = useRef(null);
+    const [heroSize, setHeroSize] = useState({ w: 0, h: 0 });
+
+    // Handle Hero Resizing for Calibration Parity
+    useEffect(() => {
+        const handleResize = () => {
+            if (heroRef.current) {
+                setHeroSize({
+                    w: heroRef.current.clientWidth,
+                    h: heroRef.current.clientHeight
+                });
+            }
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Shuffling Logic for Gallery - Strictly 10 unique images
     useEffect(() => {
@@ -79,7 +96,7 @@ const Home = () => {
     return (
         <div className="pb-20 bg-brand-sage">
             {/* Dynamic Hero Banner with Calibration Sync */}
-            <section className="relative h-auto md:h-[75vh] overflow-hidden group flex flex-col md:flex-row">
+            <section ref={heroRef} className="relative h-auto md:h-[75vh] overflow-hidden group flex flex-col md:flex-row">
                 <AnimatePresence mode="wait">
                     {visibleBanners[currentBanner] && (
                         <motion.div
@@ -104,12 +121,10 @@ const Home = () => {
                                             const b = visibleBanners[currentBanner];
                                             if (!b.refWidth) return `scale(${b.zoom || 1})`;
                                             
-                                            // Recalculate based on current rendered container width
-                                            // Desktop: 65% of viewport | Mobile: 100% of viewport
-                                            const currentW = window.innerWidth >= 768 ? window.innerWidth * 0.65 : window.innerWidth;
-                                            
-                                            // Desktop: 75vh | Mobile: 50vh (as defined in Link h-[50vh])
-                                            const currentH = window.innerWidth >= 768 ? window.innerHeight * 0.75 : window.innerHeight * 0.5; 
+                                            // Parity: Use actual rendered dimensions of container
+                                            const isDesktop = window.innerWidth >= 768;
+                                            const currentW = heroSize.w ? (isDesktop ? heroSize.w * 0.65 : heroSize.w) : (isDesktop ? window.innerWidth * 0.65 : window.innerWidth);
+                                            const currentH = heroSize.h || (isDesktop ? window.innerHeight * 0.75 : window.innerHeight * 0.5);
                                             
                                             const ratioX = currentW / b.refWidth;
                                             const ratioY = currentH / b.refHeight;
@@ -117,7 +132,7 @@ const Home = () => {
                                             const tx = (b.translateX || 0) * ratioX;
                                             const ty = (b.translateY || 0) * ratioY;
                                             
-                                    return `translate3d(${tx}px, ${ty}px, 0) scale(${b.zoom || 1})`;
+                                            return `translate3d(${tx}px, ${ty}px, 0) scale(${b.zoom || 1})`;
                                         })()
                                     }}
                                 />
