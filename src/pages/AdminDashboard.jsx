@@ -393,9 +393,9 @@ const AdminDashboard = () => {
                                     <tbody className="divide-y divide-[#F4F1EA]">
                                         {products.map((item) => (
                                             <tr key={item.id} className="hover:bg-[#F4F1EA]/50 transition-colors">
-                                                <td className="p-6 flex items-center space-x-4">
-                                                    <img src={getProductImage(item.images?.[0]?.url || item.imageName, media)} className="w-12 h-12 object-cover rounded-sm border border-brand-charcoal/10" />
-                                                    <span className="font-medium text-sm md:text-base line-clamp-1">{item.name}</span>
+                                                <td className="p-6 flex items-center space-x-6">
+                                                    <img src={getProductImage(item.images?.[0]?.url || item.imageName, media)} className="w-24 h-24 object-cover rounded-sm border border-brand-charcoal/10 shadow-sm" />
+                                                    <span className="font-bold text-lg md:text-xl line-clamp-1">{item.name}</span>
                                                 </td>
                                                 <td className="p-6 text-sm">
                                                     <span className={`px-4 py-1.5 text-[12px] font-bold rounded-full ${item.stock < 10 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
@@ -498,7 +498,7 @@ const AdminDashboard = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="flex-grow grid grid-cols-2 grid-rows-2 gap-4 overflow-hidden mb-6">
+                                            <div className="flex-grow grid grid-cols-2 grid-rows-2 gap-1 overflow-hidden mb-6">
                                                 {[0, 1, 2, 3].map((idx) => (
                                                     <div 
                                                         key={idx}
