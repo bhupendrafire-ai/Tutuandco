@@ -1081,13 +1081,17 @@ const AdminDashboard = () => {
                                             }}
                                             onPan={(e, info) => {
                                                 if (adjustingBannerIdx === index && panningPoint) {
-                                                    const rect = e.target.parentElement.getBoundingClientRect();
-                                                    const deltaX = (info.delta.x / rect.width) * 100;
-                                                    const deltaY = (info.delta.y / rect.height) * 100;
+                                                    const rect = e.currentTarget.getBoundingClientRect();
+                                                    const zoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
+                                                    
+                                                    // Scaling by zoom ensures 1:1 "stickiness" under the cursor
+                                                    // Dividing 100 by zoom because we are calculating percentage of container
+                                                    const deltaX = (info.delta.x / rect.width) * (100 / zoom);
+                                                    const deltaY = (info.delta.y / rect.height) * (100 / zoom);
                                                     
                                                     setPanningPoint(prev => ({
-                                                        x: Math.min(100, Math.max(0, prev.x - deltaX)),
-                                                        y: Math.min(100, Math.max(0, prev.y - deltaY))
+                                                        x: Math.min(100, Math.max(0, prev.x + deltaX)),
+                                                        y: Math.min(100, Math.max(0, prev.y + deltaY))
                                                     }));
                                                 }
                                             }}
