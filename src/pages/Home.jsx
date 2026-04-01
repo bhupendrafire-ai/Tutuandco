@@ -208,7 +208,7 @@ const Home = () => {
                                     >
                                         <Link 
                                             to={activeBanner.link || "/"}
-                                            className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-lg hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-[0.2em] active:scale-95 inline-block text-center mr-auto"
+                                            className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-lg hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-[0.2em] active:scale-95 inline-block text-center mr-auto cursor-pointer"
                                         >
                                             {activeBanner.cta || "Explore collection"}
                                         </Link>

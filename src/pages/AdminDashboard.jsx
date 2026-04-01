@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     LayoutDashboard, Package, ShoppingCart, Settings, 
@@ -838,6 +838,7 @@ const AdminDashboard = () => {
                                                     <div>
                                                         <label className="text-[10px] font-bold text-brand-charcoal/40 uppercase tracking-widest block mb-2">Internal Pathway</label>
                                                         <input 
+                                                            list="product-paths"
                                                             value={banner.link || ''}
                                                             onChange={e => {
                                                                 const nb = [...banners];
@@ -847,6 +848,16 @@ const AdminDashboard = () => {
                                                             placeholder="/product/..."
                                                             className="w-full bg-brand-cream/50 p-3 text-xs font-bold rounded-sm border-none"
                                                         />
+                                                        <datalist id="product-paths">
+                                                            <option value="/" />
+                                                            <option value="/blogs" />
+                                                            <option value="/collab" />
+                                                            <option value="/sizing" />
+                                                            <option value="/moments" />
+                                                            {(Array.isArray(products) ? products : []).map(p => (
+                                                                <option key={p.id} value={`/product/${p.id}`}>{p.name} (₹{p.price})</option>
+                                                            ))}
+                                                        </datalist>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1149,14 +1160,80 @@ const AdminDashboard = () => {
                                 {/* Right Side: 35% Content Panel (Home.jsx parity) */}
                                 <div className="w-[35%] bg-[#7C846C] p-20 flex flex-col justify-center text-white relative shadow-[-20px_0_40px_rgba(0,0,0,0.1)]">
                                     <div className="max-w-md w-full mx-auto md:mx-0 flex flex-col gap-y-8">
-                                        <h1 className="text-5xl md:text-6xl font-medium leading-[1.1] tracking-tight">
-                                            {banners[adjustingBannerIdx].title || "Narrative Title"}
-                                        </h1>
-                                        <p className="text-white/80 text-xl italic font-medium leading-relaxed">
-                                            {banners[adjustingBannerIdx].subtitle || "Your supporting narrative goes here."}
-                                        </p>
-                                        <div className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-2xl uppercase tracking-[0.2em] inline-block text-center mr-auto active:scale-95 transition-transform">
-                                            {banners[adjustingBannerIdx].cta || "Explore collection"}
+                                        <div className="space-y-4">
+                                            <input 
+                                                value={banners[adjustingBannerIdx].title || ""}
+                                                onChange={e => {
+                                                    const nb = [...banners];
+                                                    nb[adjustingBannerIdx].title = e.target.value;
+                                                    updateBanners(nb);
+                                                }}
+                                                placeholder="Narrative Title"
+                                                className="w-full bg-transparent text-5xl md:text-6xl font-medium leading-[1.1] tracking-tight outline-none border-none placeholder:opacity-20"
+                                            />
+                                        </div>
+                                        
+                                        <div className="space-y-4">
+                                            <textarea 
+                                                value={banners[adjustingBannerIdx].subtitle || ""}
+                                                onChange={e => {
+                                                    const nb = [...banners];
+                                                    nb[adjustingBannerIdx].subtitle = e.target.value;
+                                                    updateBanners(nb);
+                                                }}
+                                                placeholder="Supporting narrative..."
+                                                className="w-full bg-transparent text-white/80 text-xl italic font-medium leading-relaxed outline-none border-none resize-none h-24 placeholder:opacity-20"
+                                            />
+                                        </div>
+
+                                        <div className="flex flex-col gap-y-8">
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <div className="space-y-3">
+                                                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">CTA Label</label>
+                                                    <input 
+                                                        value={banners[adjustingBannerIdx].cta || ""}
+                                                        onChange={e => {
+                                                            const nb = [...banners];
+                                                            nb[adjustingBannerIdx].cta = e.target.value;
+                                                            updateBanners(nb);
+                                                        }}
+                                                        placeholder="Explore Collection"
+                                                        className="w-full bg-white/5 border border-white/10 p-4 text-xs font-bold rounded-sm outline-none focus:border-brand-rose transition-colors"
+                                                    />
+                                                </div>
+                                                <div className="space-y-3">
+                                                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Pathway Hub</label>
+                                                    <input 
+                                                        list="product-paths"
+                                                        value={banners[adjustingBannerIdx].link || ""}
+                                                        onChange={e => {
+                                                            const nb = [...banners];
+                                                            nb[adjustingBannerIdx].link = e.target.value;
+                                                            updateBanners(nb);
+                                                        }}
+                                                        placeholder="/product/..."
+                                                        className="w-full bg-white/5 border border-white/10 p-4 text-xs font-bold rounded-sm outline-none focus:border-brand-rose transition-colors"
+                                                    />
+                                                    <datalist id="product-paths">
+                                                        <option value="/" />
+                                                        <option value="/blogs" />
+                                                        <option value="/collab" />
+                                                        <option value="/sizing" />
+                                                        <option value="/moments" />
+                                                        {(Array.isArray(products) ? products : []).map(p => (
+                                                            <option key={p.id} value={`/product/${p.id}`}>{p.name} (₹{p.price})</option>
+                                                        ))}
+                                                    </datalist>
+                                                </div>
+                                            </div>
+
+                                            <Link 
+                                                to={banners[adjustingBannerIdx].link || "#"}
+                                                target="_blank"
+                                                className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-2xl uppercase tracking-[0.2em] inline-block text-center mr-auto active:scale-95 transition-all hover:bg-white hover:text-brand-charcoal cursor-pointer"
+                                            >
+                                                {banners[adjustingBannerIdx].cta || "Explore collection"}
+                                            </Link>
                                         </div>
                                     </div>
 
