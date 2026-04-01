@@ -456,7 +456,7 @@ const AdminDashboard = () => {
                                             <h2 className="text-2xl md:text-3xl font-medium text-brand-charcoal">
                                                 {isEditingProduct === 'new' ? 'New creation' : `Refining: ${productForm.name}`}
                                             </h2>
-                                            <p className="text-[10px] font-medium text-brand-charcoal/40 mt-1">Product ID: {isEditingProduct}</p>
+                                            <p className="text-[12px] font-bold text-brand-charcoal/60 mt-1">Product ID: {isEditingProduct}</p>
                                         </div>
                                         <div className="invisible lg:visible opacity-10">
                                             {/* Top-right spacing for Close (X) isolation */}
@@ -469,7 +469,7 @@ const AdminDashboard = () => {
                                         {/* Column 1: Media Hub */}
                                         <div className="w-full md:w-[40%] bg-white/40 border-r border-brand-charcoal/5 flex flex-col p-6 md:p-10 overflow-hidden">
                                             <div className="flex justify-between items-center mb-6">
-                                                <h3 className="text-[11px] font-medium text-brand-charcoal/40 uppercase tracking-widest">Media Hub</h3>
+                                                <h3 className="text-[12px] font-bold text-brand-charcoal/70 uppercase tracking-widest">Media Hub</h3>
                                                 <div className="flex gap-4">
                                                     <button onClick={() => openMediaPicker({
                                                         multi: true,
@@ -609,12 +609,12 @@ const AdminDashboard = () => {
                                             {/* Identity Section */}
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                                 <div className="md:col-span-2">
-                                                    <label className="text-[11px] font-medium text-brand-charcoal/40 mb-2 block uppercase tracking-wide">Product Name</label>
+                                                    <label className="text-[12px] font-bold text-brand-charcoal/70 mb-2 block uppercase tracking-wide">Product Name</label>
                                                     <input value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="w-full bg-brand-cream/50 p-4 font-medium text-2xl border-none focus:ring-1 focus:ring-brand-sage rounded-sm outline-none" placeholder="Vogue..." />
                                                 </div>
                                                 <div>
                                                     <div className="flex justify-between items-center mb-2">
-                                                        <label className="text-[11px] font-medium text-brand-charcoal/40 uppercase tracking-wide">Category</label>
+                                                        <label className="text-[12px] font-bold text-brand-charcoal/70 uppercase tracking-wide">Category</label>
                                                         <button onClick={() => setShowNewCategoryInput(!showNewCategoryInput)} className="text-[9px] font-medium text-brand-rose hover:text-brand-charcoal transition-colors">
                                                             {showNewCategoryInput ? 'Existing' : '+ New'}
                                                         </button>
@@ -651,25 +651,25 @@ const AdminDashboard = () => {
 
                                             {/* Narrative Section */}
                                             <div className="flex-grow flex flex-col space-y-4 bg-white p-8 rounded-sm border border-brand-charcoal/5 shadow-sm">
-                                                <label className="text-[11px] font-medium text-brand-charcoal/40 uppercase tracking-wide">Brief hook (SEO summary)</label>
+                                                <label className="text-[12px] font-bold text-brand-charcoal/70 uppercase tracking-wide">Brief hook (SEO summary)</label>
                                                 <textarea value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} className="flex-grow w-full bg-brand-cream/20 p-6 text-xl font-medium border-none resize-none outline-none focus:ring-1 focus:ring-brand-sage rounded-sm leading-relaxed italic" placeholder="The philosophy behind this creation..." />
                                             </div>
 
                                             {/* Financial Bar */}
                                             <div className="grid grid-cols-3 gap-8 text-brand-charcoal">
                                                 <div className="bg-brand-charcoal p-6 rounded-sm text-white shadow-lg">
-                                                    <label className="text-[9px] font-medium opacity-40 block mb-2 uppercase tracking-widest">Base Price (₹)</label>
+                                                    <label className="text-[11px] font-bold text-white/70 block mb-2 uppercase tracking-widest">Base Price (₹)</label>
                                                     <input type="number" value={productForm.price} onChange={e => setProductForm({...productForm, price: parseInt(e.target.value)})} className="w-full bg-transparent text-2xl font-medium outline-none border-none p-0" />
                                                 </div>
                                                 <div className="bg-brand-rose p-6 rounded-sm text-brand-charcoal shadow-lg">
-                                                    <label className="text-[9px] font-medium opacity-40 block mb-2 uppercase tracking-widest">Discount Price</label>
+                                                    <label className="text-[11px] font-bold text-brand-charcoal/70 block mb-2 uppercase tracking-widest">Discount Price</label>
                                                     <div className="flex items-center space-x-2">
                                                         <span className="text-lg opacity-40">₹</span>
                                                         <input type="number" placeholder="None" value={productForm.discountPrice || ''} onChange={e => setProductForm({...productForm, discountPrice: e.target.value ? parseInt(e.target.value) : null})} className="w-full bg-transparent text-2xl font-medium outline-none border-none p-0 placeholder:text-brand-charcoal/20" />
                                                     </div>
                                                 </div>
                                                 <div className="bg-white p-6 rounded-sm border border-brand-charcoal/10 shadow-sm flex flex-col">
-                                                    <label className="text-[9px] font-medium text-brand-charcoal/40 block mb-2 uppercase tracking-widest">Stock Units</label>
+                                                    <label className="text-[11px] font-bold text-brand-charcoal/70 block mb-2 uppercase tracking-widest">Stock Units</label>
                                                     <input type="number" value={productForm.stock} onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} className="w-full bg-transparent text-2xl font-medium p-0 border-none outline-none" />
                                                 </div>
                                             </div>
@@ -680,15 +680,15 @@ const AdminDashboard = () => {
                                     <div className="bg-white border-t border-brand-charcoal/10 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 sticky bottom-0 z-[100] shadow-[0_-10px_30px_rgba(0,0,0,0.02)]">
                                         {/* Audit Checklist (Left) */}
                                         <div className="flex items-center gap-6 px-6 py-3 bg-brand-cream/30 rounded-full border border-brand-charcoal/5">
-                                            <div className="text-[10px] font-medium text-brand-charcoal/40 uppercase tracking-widest mr-2">Audit</div>
-                                            <div className={`flex items-center gap-1.5 text-[9px] font-medium transition-all ${productForm.name?.trim() ? 'text-brand-sage' : 'text-brand-charcoal/30'}`}>
-                                                {productForm.name?.trim() ? <CheckCircle2 size={12} strokeWidth={2} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/20" />} NAME
+                                            <div className="text-[11px] font-bold text-brand-charcoal/60 uppercase tracking-widest mr-2">Audit</div>
+                                            <div className={`flex items-center gap-1.5 text-[10px] font-bold transition-all ${productForm.name?.trim() ? 'text-green-600' : 'text-brand-charcoal/40'}`}>
+                                                {productForm.name?.trim() ? <CheckCircle2 size={14} strokeWidth={3} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/30" />} NAME
                                             </div>
-                                            <div className={`flex items-center gap-1.5 text-[9px] font-medium transition-all ${productForm.price > 0 ? 'text-brand-sage' : 'text-brand-charcoal/30'}`}>
-                                                {productForm.price > 0 ? <CheckCircle2 size={12} strokeWidth={2} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/20" />} PRICE
+                                            <div className={`flex items-center gap-1.5 text-[10px] font-bold transition-all ${productForm.price > 0 ? 'text-green-600' : 'text-brand-charcoal/40'}`}>
+                                                {productForm.price > 0 ? <CheckCircle2 size={14} strokeWidth={3} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/30" />} PRICE
                                             </div>
-                                            <div className={`flex items-center gap-1.5 text-[9px] font-medium transition-all ${(productForm.images || []).filter(img => img.url).length >= 2 ? 'text-brand-sage' : 'text-brand-charcoal/30'}`}>
-                                                {(productForm.images || []).filter(img => img.url).length >= 2 ? <CheckCircle2 size={12} strokeWidth={2} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/20" />} 2+ PHOTOS
+                                            <div className={`flex items-center gap-1.5 text-[10px] font-bold transition-all ${(productForm.images || []).filter(img => img.url).length >= 2 ? 'text-green-600' : 'text-brand-charcoal/40'}`}>
+                                                {(productForm.images || []).filter(img => img.url).length >= 2 ? <CheckCircle2 size={14} strokeWidth={3} /> : <div className="w-1.5 h-1.5 rounded-full bg-brand-charcoal/30" />} 2+ PHOTOS
                                             </div>
                                         </div>
 
@@ -701,7 +701,7 @@ const AdminDashboard = () => {
                                                     const finalForm = { ...productForm, imageName: sortedImages[0]?.url || '' };
                                                     if (isEditingProduct === 'new') await addProduct(finalForm);
                                                     else await updateProduct(isEditingProduct, finalForm);
-                                                    setProductForm({ name: '', category: '', price: 0, stock: 5, images: [], description: '', images: [], descriptionBlocks: [] });
+                                                    setProductForm({ name: '', category: '', price: 0, stock: 5, images: [], description: '', descriptionBlocks: [] });
                                                     setIsEditingProduct('new');
                                                 }}
                                                 className={`px-8 py-4 rounded-sm text-[11px] font-medium transition-all flex-grow md:flex-initial shadow-lg ${!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2) ? 'bg-brand-charcoal/10 text-brand-charcoal/30 cursor-not-allowed shadow-none' : 'bg-white text-brand-charcoal border border-brand-charcoal hover:bg-brand-cream'}`}
