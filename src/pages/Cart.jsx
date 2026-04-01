@@ -6,7 +6,7 @@ import { useShop, getProductImage } from '../context/ShopContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Cart = () => {
-    const { cart, removeFromCart, updateCartQuantity, getCartTotal, applyCoupon, coupon, formatPrice, settings } = useShop();
+    const { cart, removeFromCart, updateCartQuantity, getCartTotal, applyCoupon, coupon, formatPrice, settings, media } = useShop();
     const { subtotal, discountAmount, shipping, total } = getCartTotal();
 
     if (cart.length === 0) {
