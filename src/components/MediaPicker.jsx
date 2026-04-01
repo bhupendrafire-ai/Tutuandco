@@ -43,10 +43,30 @@ const MediaPicker = ({ isOpen, onClose, onSelect, multi = false, selectedItems =
     };
 
     const handleFileUpload = async (e) => {
-        const file = e.target.files[0];
+        let file = e.target.files[0];
         if (!file) return;
-        
+
         setIsUploading(true);
+
+        // HEIC Support: Convert to JPEG on the fly
+        const isHEIC = file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic';
+        if (isHEIC) {
+            try {
+                const heic2any = (await import('https://esm.sh/heic2any')).default;
+                const convertedBlob = await heic2any({
+                    blob: file,
+                    toType: 'image/jpeg',
+                    quality: 0.8
+                });
+                file = new File([convertedBlob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: 'image/jpeg' });
+            } catch (err) {
+                console.error("HEIC conversion failed", err);
+                alert("Could not process this iPhone photo. Please try a different format.");
+                setIsUploading(false);
+                return;
+            }
+        }
+        
         try {
             const newBlob = await upload(file.name, file, {
                 access: 'public',

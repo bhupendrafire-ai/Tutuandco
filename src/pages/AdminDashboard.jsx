@@ -146,8 +146,28 @@ const AdminDashboard = () => {
     if (loading || shopLoading) return <div className="min-h-screen flex items-center justify-center font-medium bg-brand-sage text-brand-charcoal">Accessing secured dashboard...</div>;
 
     const handleFileUpload = async (e, type = 'media') => {
-        const file = e.target.files[0];
+        let file = e.target.files[0];
         if (!file) return;
+
+        // HEIC Support: Convert to JPEG on the fly
+        const isHEIC = file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic';
+        if (isHEIC) {
+            try {
+                // Dynamically load conversion library from CDN
+                const heic2any = (await import('https://esm.sh/heic2any')).default;
+                const convertedBlob = await heic2any({
+                    blob: file,
+                    toType: 'image/jpeg',
+                    quality: 0.8
+                });
+                // Create a new File object from the blob
+                file = new File([convertedBlob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: 'image/jpeg' });
+            } catch (err) {
+                console.error("HEIC conversion failed", err);
+                alert("Could not process this iPhone photo. Please try a different format.");
+                return;
+            }
+        }
         
         try {
             const newBlob = await upload(file.name, file, {
