@@ -515,19 +515,29 @@ const AdminDashboard = () => {
                                             {/* Photo Slots (1 Hero + 4 Gallery) */}
                                             <div className="flex-grow flex flex-col gap-6 overflow-hidden">
                                                 {/* Hero Slot */}
-                                                <div className="relative flex-grow bg-white rounded-sm border border-brand-charcoal/10 overflow-hidden group shadow-sm">
+                                                <div 
+                                                    onClick={() => !productForm.images?.[0] && openMediaPicker({
+                                                        multi: false,
+                                                        onSelect: (url) => {
+                                                            const newer = [...(productForm.images || [])];
+                                                            newer[0] = { url, name: 'Hero Asset', isInternal: false, sequence: 0 };
+                                                            setProductForm({...productForm, images: newer});
+                                                        }
+                                                    })}
+                                                    className={`relative flex-grow rounded-sm border border-brand-charcoal/10 overflow-hidden group shadow-sm transition-all duration-300 ${!productForm.images?.[0] ? 'cursor-pointer hover:border-brand-rose/40 hover:bg-white bg-white/50' : 'bg-white'}`}
+                                                >
                                                     {productForm.images?.[0] ? (
                                                         <>
                                                             <img src={getProductImage(productForm.images[0].url, media)} className="w-full h-full object-cover" />
                                                             <div className="absolute top-4 left-4 bg-brand-charcoal text-white text-[8px] font-medium px-3 py-1 rounded-full shadow-lg">HERO ASSET</div>
                                                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                                <button onClick={() => setProductForm({...productForm, images: productForm.images.slice(1)})} className="text-white hover:text-brand-rose"><Trash2 size={24} /></button>
+                                                                <button onClick={(e) => { e.stopPropagation(); setProductForm({...productForm, images: productForm.images.slice(1)}) }} className="text-white hover:text-brand-rose"><Trash2 size={24} /></button>
                                                             </div>
                                                         </>
                                                     ) : (
-                                                        <div className="w-full h-full flex flex-col items-center justify-center text-brand-charcoal/20">
+                                                        <div className="w-full h-full flex flex-col items-center justify-center text-brand-charcoal/20 group-hover:text-brand-rose/40 transition-colors">
                                                             <ImageIcon size={48} strokeWidth={1} />
-                                                            <span className="text-[10px] font-medium mt-4">Drop primary visual here</span>
+                                                            <span className="text-[10px] font-medium mt-4 uppercase tracking-widest">Assign hero asset</span>
                                                         </div>
                                                     )}
                                                 </div>
@@ -535,12 +545,26 @@ const AdminDashboard = () => {
                                                 {/* Gallery Row */}
                                                 <div className="grid grid-cols-4 gap-4 h-32 flex-shrink-0">
                                                     {[1, 2, 3, 4].map((idx) => (
-                                                        <div key={idx} className="relative bg-white rounded-sm border border-brand-charcoal/10 overflow-hidden group">
+                                                        <div 
+                                                            key={idx} 
+                                                            onClick={() => !productForm.images?.[idx] && openMediaPicker({
+                                                                multi: false,
+                                                                onSelect: (url) => {
+                                                                    const newer = [...(productForm.images || [])];
+                                                                    // Ensure preceding slots aren't completely undefined holes if possible
+                                                                    for(let i=0; i<idx; i++) if(!newer[i]) newer[i] = null; 
+                                                                    newer[idx] = { url, name: `Gallery ${idx}`, isInternal: false, sequence: idx };
+                                                                    setProductForm({...productForm, images: newer.filter(img => img !== null)});
+                                                                }
+                                                            })}
+                                                            className={`relative rounded-sm border border-brand-charcoal/10 overflow-hidden group transition-all duration-300 ${!productForm.images?.[idx] ? 'cursor-pointer hover:border-brand-rose/40 hover:bg-white bg-white/50' : 'bg-white'}`}
+                                                        >
                                                             {productForm.images?.[idx] ? (
                                                                 <>
                                                                     <img src={getProductImage(productForm.images[idx].url, media)} className="w-full h-full object-cover" />
                                                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                                        <button onClick={() => {
+                                                                        <button onClick={(e) => {
+                                                                            e.stopPropagation();
                                                                             const newer = [...productForm.images];
                                                                             newer.splice(idx, 1);
                                                                             setProductForm({...productForm, images: newer});
@@ -548,7 +572,7 @@ const AdminDashboard = () => {
                                                                     </div>
                                                                 </>
                                                             ) : (
-                                                                <div className="w-full h-full flex items-center justify-center text-brand-charcoal/10">
+                                                                <div className="w-full h-full flex items-center justify-center text-brand-charcoal/10 group-hover:text-brand-rose/40 transition-colors">
                                                                     <Plus size={16} />
                                                                 </div>
                                                             )}
