@@ -45,6 +45,8 @@ const AdminDashboard = () => {
     const [isBulkDiscountModalOpen, setIsBulkDiscountModalOpen] = useState(false);
     const [bulkDiscountValue, setBulkDiscountValue] = useState(10);
     const [adjustingBannerIdx, setAdjustingBannerIdx] = useState(null);
+    const [panningPoint, setPanningPoint] = useState(null); // Local buffer for lag-free dragging
+
     const [mediaPickerConfig, setMediaPickerConfig] = useState({ isOpen: false, multi: false, onSelect: () => {}, selectedItems: [] });
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
     const [newCatTemp, setNewCatTemp] = useState('');
@@ -881,7 +883,7 @@ const AdminDashboard = () => {
                         
                         <div className="space-y-12">
                             {banners.map((banner, index) => (
-                                <div key={banner.id || index} className={`group/card bg-white rounded-sm shadow-xl border overflow-hidden flex flex-col lg:flex-row min-h-[450px] transition-all relative ${banner.isVisible === false ? 'opacity-50 grayscale-[0.5]' : 'border-[#CD664D]/10'}`}>
+                                <div key={banner.id || index} className={`group/card bg-white rounded-sm shadow-xl border overflow-hidden flex flex-col min-h-[600px] transition-all relative ${banner.isVisible === false ? 'opacity-50 grayscale-[0.5]' : 'border-[#CD664D]/10'}`}>
                                     
                                     {/* Universal Delete Action */}
                                     <button 
@@ -897,8 +899,8 @@ const AdminDashboard = () => {
                                         <Trash2 size={18} />
                                     </button>
                                     
-                                    {/* Left Panel: Configuration & Controls */}
-                                    <div className="w-full lg:w-[40%] p-8 bg-[#F4F1EA]/30 border-r border-brand-charcoal/5 flex flex-col">
+                                    {/* Top Panel: Configuration & Controls */}
+                                    <div className="w-full bg-[#F4F1EA]/30 border-b border-brand-charcoal/5 flex flex-col p-12">
                                         <div className="flex justify-between items-start mb-8">
                                             <div className="flex flex-col gap-1">
                                                 <div className="flex items-center gap-3">
@@ -908,188 +910,212 @@ const AdminDashboard = () => {
                                                     <span className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Priority #{index + 1}</span>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-2">
-                                                <button 
-                                                    disabled={index === 0}
-                                                    onClick={() => {
-                                                        const nb = [...banners];
-                                                        [nb[index-1], nb[index]] = [nb[index], nb[index-1]];
-                                                        updateBanners(nb);
-                                                    }}
-                                                    className="p-2 bg-white text-brand-charcoal rounded-sm shadow-sm border border-brand-charcoal/5 hover:border-brand-rose disabled:opacity-20 transition-all"
-                                                >
-                                                    <ChevronUp size={16} />
-                                                </button>
-                                                <button 
-                                                    disabled={index === banners.length - 1}
-                                                    onClick={() => {
-                                                        const nb = [...banners];
-                                                        [nb[index+1], nb[index]] = [nb[index], nb[index+1]];
-                                                        updateBanners(nb);
-                                                    }}
-                                                    className="p-2 bg-white text-brand-charcoal rounded-sm shadow-sm border border-brand-charcoal/5 hover:border-brand-rose disabled:opacity-20 transition-all"
-                                                >
-                                                    <ChevronDown size={16} />
-                                                </button>
-                                                <div className="w-px h-6 bg-brand-charcoal/10 mx-1" />
+                                            <div className="flex items-center gap-4">
                                                 <button 
                                                     onClick={() => {
                                                         const nb = [...banners];
-                                                        nb[index].isVisible = banner.isVisible === false ? true : false;
+                                                        nb[index].isVisible = banner.isVisible === false;
                                                         updateBanners(nb);
                                                     }}
-                                                    className={`p-2 rounded-sm shadow-sm border transition-all ${banner.isVisible === false ? 'bg-brand-rose text-brand-charcoal border-brand-charcoal' : 'bg-white text-brand-charcoal/40 border-brand-charcoal/5 hover:text-brand-charcoal'}`}
-                                                    title={banner.isVisible === false ? "Restore to store" : "Hide from store"}
+                                                    className="p-3 bg-white rounded-sm border border-brand-charcoal/5 text-brand-charcoal/60 hover:text-brand-charcoal shadow-sm transition-all"
+                                                    title={banner.isVisible === false ? "Show on storefront" : "Hide from storefront"}
                                                 >
-                                                    {banner.isVisible === false ? <Eye size={16} /> : <EyeOff size={16} />}
+                                                    {banner.isVisible === false ? <Eye size={18} /> : <EyeOff size={18} />}
                                                 </button>
+                                                <div className="flex bg-white rounded-sm border border-brand-charcoal/5 shadow-sm overflow-hidden">
+                                                    <button 
+                                                        disabled={index === 0}
+                                                        onClick={() => {
+                                                            const nb = [...banners];
+                                                            [nb[index-1], nb[index]] = [nb[index], nb[index-1]];
+                                                            updateBanners(nb);
+                                                        }}
+                                                        className="p-3 text-brand-charcoal/40 hover:text-brand-charcoal hover:bg-brand-rose/10 disabled:opacity-20 transition-all"
+                                                    >
+                                                        <ChevronUp size={18} />
+                                                    </button>
+                                                    <button 
+                                                        disabled={index === banners.length - 1}
+                                                        onClick={() => {
+                                                            const nb = [...banners];
+                                                            [nb[index+1], nb[index]] = [nb[index], nb[index+1]];
+                                                            updateBanners(nb);
+                                                        }}
+                                                        className="p-3 text-brand-charcoal/40 hover:text-brand-charcoal hover:bg-brand-rose/10 disabled:opacity-20 transition-all border-l border-brand-charcoal/5"
+                                                    >
+                                                        <ChevronDown size={18} />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <div className="flex-grow space-y-6">
-                                            <div className="space-y-1">
-                                                <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">Main title</label>
-                                                <input 
-                                                    defaultValue={banner.title} 
-                                                    onBlur={e => { const nb = [...banners]; nb[index].title = e.target.value; updateBanners(nb); }} 
-                                                    className="w-full bg-white p-4 font-medium text-lg border border-transparent focus:border-brand-rose outline-none rounded-sm shadow-sm"
-                                                />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">Sub-narrative</label>
-                                                <textarea 
-                                                    defaultValue={banner.subtitle} 
-                                                    onBlur={e => { const nb = [...banners]; nb[index].subtitle = e.target.value; updateBanners(nb); }} 
-                                                    className="w-full bg-white p-4 font-medium text-sm border border-transparent focus:border-brand-rose outline-none rounded-sm shadow-sm h-24 resize-none leading-relaxed italic"
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="space-y-1">
-                                                    <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">CTA label</label>
-                                                    <input 
-                                                        defaultValue={banner.cta} 
-                                                        onBlur={e => { const nb = [...banners]; nb[index].cta = e.target.value; updateBanners(nb); }} 
-                                                        className="w-full bg-white p-4 font-medium text-sm border border-transparent focus:border-brand-rose outline-none rounded-sm shadow-sm"
-                                                    />
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">Content alignment</label>
-                                                    <div className="flex gap-1 bg-white p-1 rounded-sm border border-brand-charcoal/5 h-[54px] items-center justify-around">
-                                                        {[
-                                                            { id: 'left', icon: AlignLeft },
-                                                            { id: 'center', icon: AlignCenter },
-                                                            { id: 'right', icon: AlignRight }
-                                                        ].map((pos) => (
-                                                            <button
-                                                                key={pos.id}
-                                                                onClick={() => {
-                                                                    const nb = [...banners];
-                                                                    nb[index].contentPosition = pos.id;
-                                                                    updateBanners(nb);
-                                                                }}
-                                                                className={`p-2 rounded-sm transition-all ${banner.contentPosition === pos.id || (!banner.contentPosition && pos.id === 'center') ? 'bg-brand-rose text-brand-charcoal shadow-sm' : 'text-brand-charcoal/30 hover:text-brand-charcoal'}`}
-                                                                title={`Align ${pos.id}`}
-                                                            >
-                                                                <pos.icon size={18} />
-                                                            </button>
-                                                        ))}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                            <div className="space-y-10">
+                                                <div className="space-y-4">
+                                                    <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">Identity narrative</label>
+                                                    <div className="space-y-4">
+                                                        <input 
+                                                            value={banner.title} 
+                                                            onChange={e => {
+                                                                const nb = [...banners];
+                                                                nb[index].title = e.target.value;
+                                                                updateBanners(nb);
+                                                            }}
+                                                            placeholder="Master Title (e.g. Sunset Sage Collection)"
+                                                            className="w-full bg-white p-5 font-medium text-2xl border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm"
+                                                        />
+                                                        <textarea 
+                                                            value={banner.subtitle} 
+                                                            onChange={e => {
+                                                                const nb = [...banners];
+                                                                nb[index].subtitle = e.target.value;
+                                                                updateBanners(nb);
+                                                            }}
+                                                            placeholder="Sub-narrative brief..."
+                                                            className="w-full bg-white p-5 italic text-lg border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm h-32"
+                                                        />
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <div className="space-y-1">
-                                                <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">Asset identifier</label>
-                                                <div className="flex gap-4">
-                                                    <button 
-                                                        onClick={() => openMediaPicker({
-                                                            multi: false,
-                                                            onSelect: (url) => { const nb = [...banners]; nb[index].image = url; updateBanners(nb); }
-                                                        })}
-                                                        className="flex-grow bg-white p-4 font-bold text-[11px] text-brand-rose border border-brand-rose/20 hover:bg-brand-rose hover:text-white outline-none rounded-sm shadow-sm transition-all flex items-center justify-center gap-2 uppercase tracking-widest"
-                                                    >
-                                                        <Layout size={14} /> Update Identity Image
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => setAdjustingBannerIdx(adjustingBannerIdx === index ? null : index)}
-                                                        className={`flex items-center gap-3 px-6 py-4 rounded-sm border transition-all font-bold text-[11px] uppercase tracking-widest ${adjustingBannerIdx === index ? 'bg-brand-rose border-brand-charcoal text-brand-charcoal shadow-inner' : 'bg-white border-brand-charcoal/10 text-brand-charcoal/60 hover:text-brand-charcoal hover:border-brand-rose'}`}
-                                                    >
-                                                        <Crosshair size={16} className={adjustingBannerIdx === index ? 'animate-pulse' : ''} />
-                                                        {adjustingBannerIdx === index ? 'Finish Positioning' : 'Reposition Center'}
-                                                    </button>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                                    <div className="space-y-4">
+                                                        <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">CTA label</label>
+                                                        <input 
+                                                            value={banner.cta} 
+                                                            onChange={e => {
+                                                                const nb = [...banners];
+                                                                nb[index].cta = e.target.value;
+                                                                updateBanners(nb);
+                                                            }}
+                                                            className="w-full bg-white p-5 font-bold text-sm border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm uppercase tracking-widest"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-4">
+                                                        <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">Content alignment</label>
+                                                        <div className="flex bg-white p-2 rounded-sm border border-brand-charcoal/5 shadow-sm w-fit gap-2">
+                                                            {[
+                                                                { id: 'left', icon: AlignLeft },
+                                                                { id: 'center', icon: AlignCenter },
+                                                                { id: 'right', icon: AlignRight }
+                                                            ].map((pos) => (
+                                                                <button
+                                                                    key={pos.id}
+                                                                    onClick={() => {
+                                                                        const nb = [...banners];
+                                                                        nb[index].contentPosition = pos.id;
+                                                                        updateBanners(nb);
+                                                                    }}
+                                                                    className={`p-2 rounded-sm transition-all ${banner.contentPosition === pos.id || (!banner.contentPosition && pos.id === 'center') ? 'bg-brand-rose text-brand-charcoal shadow-sm' : 'text-brand-charcoal/30 hover:text-brand-charcoal'}`}
+                                                                    title={`Align ${pos.id}`}
+                                                                >
+                                                                    <pos.icon size={18} />
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-1">
+                                                    <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">Asset identifier</label>
+                                                    <div className="flex gap-4">
+                                                        <button 
+                                                            onClick={() => openMediaPicker({
+                                                                multi: false,
+                                                                onSelect: (url) => { const nb = [...banners]; nb[index].image = url; updateBanners(nb); }
+                                                            })}
+                                                            className="flex-grow bg-white p-4 font-bold text-[11px] text-brand-rose border border-brand-rose/20 hover:bg-brand-rose hover:text-white outline-none rounded-sm shadow-sm transition-all flex items-center justify-center gap-2 uppercase tracking-widest"
+                                                        >
+                                                            <Layout size={14} /> Update Identity Image
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => setAdjustingBannerIdx(adjustingBannerIdx === index ? null : index)}
+                                                            className={`flex items-center gap-3 px-6 py-4 rounded-sm border transition-all font-bold text-[11px] uppercase tracking-widest ${adjustingBannerIdx === index ? 'bg-brand-rose border-brand-charcoal text-brand-charcoal shadow-inner' : 'bg-white border-brand-charcoal/10 text-brand-charcoal/60 hover:text-brand-charcoal hover:border-brand-rose'}`}
+                                                        >
+                                                            <Crosshair size={16} className={adjustingBannerIdx === index ? 'animate-pulse' : ''} />
+                                                            {adjustingBannerIdx === index ? 'Finish Positioning' : 'Reposition Center'}
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Right Panel: Live Identity Preview & Calibration */}
-                                    <div className="w-full lg:w-[60%] relative overflow-hidden bg-brand-charcoal/5 flex flex-col">
-                                        {/* Status Header for Adjustment */}
-                                        <div className="absolute top-6 left-6 z-40 flex items-center gap-2">
-                                            <div className="text-[10px] font-bold text-white bg-black/40 px-4 py-2 rounded-full shadow-2xl backdrop-blur-md uppercase tracking-[0.2em] border border-white/10">
-                                                Identity Preview (450px Height)
+                                    {/* Bottom Panel: Full Width Actual-Scale Preview */}
+                                    <div className="w-full relative overflow-hidden bg-brand-charcoal flex flex-col">
+                                        <div className="absolute top-8 left-8 z-40 flex items-center gap-4">
+                                            <div className="text-[11px] font-bold text-white bg-black/60 px-6 py-3 rounded-full shadow-2xl backdrop-blur-md uppercase tracking-[0.2em] border border-white/20">
+                                                Active Backdrop (75vh Exact Match)
                                             </div>
                                             {adjustingBannerIdx === index && (
-                                                <div className="text-[10px] font-bold text-brand-charcoal bg-brand-rose px-6 py-2 rounded-full shadow-2xl uppercase tracking-[0.2em] animate-bounce">
-                                                    Click on the image to set the focal point
+                                                <div className="text-[11px] font-bold text-brand-charcoal bg-brand-rose px-8 py-3 rounded-full shadow-2xl uppercase tracking-[0.2em] animate-pulse flex items-center gap-2">
+                                                    <Menu size={14} className="rotate-90" />
+                                                    Hand-to-Image Panning Active
                                                 </div>
                                             )}
                                         </div>
 
-
-                                        <div 
-                                            className={`relative h-[80vh] w-full overflow-hidden bg-brand-cream/10`}
+                                        <motion.div 
+                                            className={`relative h-[75vh] w-full overflow-hidden select-none ${adjustingBannerIdx === index ? 'cursor-grab active:cursor-grabbing' : ''}`}
+                                            onPanStart={() => {
+                                                if (adjustingBannerIdx === index) {
+                                                    setPanningPoint(banner.focalPoint || { x: 50, y: 50 });
+                                                }
+                                            }}
+                                            onPan={(e, info) => {
+                                                if (adjustingBannerIdx === index && panningPoint) {
+                                                    const rect = e.target.parentElement.getBoundingClientRect();
+                                                    const deltaX = (info.delta.x / rect.width) * 100;
+                                                    const deltaY = (info.delta.y / rect.height) * 100;
+                                                    
+                                                    setPanningPoint(prev => ({
+                                                        x: Math.min(100, Math.max(0, prev.x - deltaX)),
+                                                        y: Math.min(100, Math.max(0, prev.y - deltaY))
+                                                    }));
+                                                }
+                                            }}
+                                            onPanEnd={() => {
+                                                if (adjustingBannerIdx === index && panningPoint) {
+                                                    const nb = [...banners];
+                                                    nb[index].focalPoint = panningPoint;
+                                                    updateBanners(nb);
+                                                    setPanningPoint(null);
+                                                }
+                                            }}
                                         >
-                                            {/* Draggable Focal Point Handle Layer */}
-                                            <div className="absolute inset-0 z-[110] pointer-events-none">
-                                                {adjustingBannerIdx === index && (
-                                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                        <div className="w-full h-px bg-white/20 absolute top-1/2 -translate-y-1/2" />
-                                                        <div className="h-full w-px bg-white/20 absolute left-1/2 -translate-x-1/2" />
-                                                    </div>
-                                                )}
-                                            </div>
-                                            
-                                            {/* The actual draggable constraint area */}
-                                            <div className="absolute inset-0 z-[120]">
-                                                {adjustingBannerIdx === index && (
-                                                    <motion.div
-                                                        drag
-                                                        dragMomentum={false}
-                                                        dragElastic={0}
-                                                        onDragEnd={(e, info) => {
-                                                            const rect = e.target.parentElement.getBoundingClientRect();
-                                                            // We use the mouse/touch position relative to the container
-                                                            const x = Math.min(100, Math.max(0, ((info.point.x - rect.left) / rect.width) * 100));
-                                                            const y = Math.min(100, Math.max(0, ((info.point.y - rect.top) / rect.height) * 100));
-                                                            const nb = [...banners];
-                                                            nb[index].focalPoint = { x, y };
-                                                            updateBanners(nb);
-                                                        }}
-                                                        style={{ 
-                                                            position: 'absolute',
-                                                            left: `${banner.focalPoint?.x || 50}%`,
-                                                            top: `${banner.focalPoint?.y || 50}%`,
-                                                            x: "-50%",
-                                                            y: "-50%"
-                                                        }}
-                                                        className="w-16 h-16 border-4 border-white rounded-full bg-brand-rose/20 backdrop-blur-md cursor-move flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.4)] group/handle"
-                                                    >
-                                                        <div className="w-3 h-3 bg-white rounded-full animate-ping absolute" />
-                                                        <div className="w-2 h-2 bg-white rounded-full z-10" />
-                                                        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/60 text-white text-[10px] px-2 py-1 rounded-sm opacity-0 group-hover/handle:opacity-100 transition-opacity uppercase tracking-widest font-bold">Drag to move focus</div>
-                                                    </motion.div>
-                                                )}
-                                            </div>
-
                                             {/* Homepage-style Backdrop */}
                                             <img 
                                                 src={getProductImage(banner.image, media)} 
-                                                className="w-full h-full transition-all duration-300"
+                                                className="w-full h-full pointer-events-none"
+                                                draggable={false}
                                                 style={{ 
                                                     objectFit: banner.fitMode || 'cover',
-                                                    objectPosition: `${banner.focalPoint?.x || 50}% ${banner.focalPoint?.y || 50}%`
+                                                    objectPosition: `${(panningPoint && adjustingBannerIdx === index ? panningPoint : (banner.focalPoint || {x:50,y:50})).x}% ${(panningPoint && adjustingBannerIdx === index ? panningPoint : (banner.focalPoint || {x:50,y:50})).y}%`
                                                 }}
                                             />
+                                            
+                                            {/* Visual Focal Indicator (Subtle Center Marker) */}
+                                            {adjustingBannerIdx === index && (
+                                                <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
+                                                    <div className="w-1 h-20 bg-white/50" />
+                                                    <div className="h-1 w-20 bg-white/50 absolute" />
+                                                </div>
+                                            )}
+
+                                            {/* Calibration Suite Controls */}
+                                            <div className="absolute top-8 right-8 z-[100] flex gap-2">
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        const nb = [...banners];
+                                                        nb[index].fitMode = banner.fitMode === 'contain' ? 'cover' : 'contain';
+                                                        updateBanners(nb);
+                                                    }}
+                                                    className="bg-brand-charcoal/80 backdrop-blur-md text-white hover:bg-black border border-white/10 shadow-2xl font-bold text-[10px] px-6 py-3 rounded-full transition-all flex items-center gap-2 uppercase tracking-widest"
+                                                >
+                                                    {banner.fitMode === 'contain' ? <Maximize size={12}/> : <Minimize size={12}/>} 
+                                                    {banner.fitMode === 'contain' ? 'Fill Banner' : 'Show Full Image'}
+                                                </button>
+                                            </div>
                                             
                                             {/* Homepage-style Gradient and UI Overlay */}
                                             <div className={`absolute inset-0 flex items-center p-12 md:p-32 pointer-events-none transition-all duration-700
@@ -1105,31 +1131,7 @@ const AdminDashboard = () => {
                                                     <div className="bg-[#4A5D4E] text-[#EADED0] px-12 py-6 text-sm font-bold shadow-2xl border border-white/10 uppercase tracking-[0.2em]">{banner.cta}</div>
                                                 </div>
                                             </div>
-
-                                            <div className="absolute top-8 right-8 z-[100] flex gap-2">
-                                                <button 
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        const nb = [...banners];
-                                                        nb[index].fitMode = banner.fitMode === 'contain' ? 'cover' : 'contain';
-                                                        updateBanners(nb);
-                                                    }}
-                                                    className="bg-brand-charcoal/80 backdrop-blur-md text-white hover:bg-black border border-white/10 shadow-2xl font-bold text-[10px] px-6 py-3 rounded-full transition-all flex items-center gap-2 uppercase tracking-widest"
-                                                >
-                                                    {banner.fitMode === 'contain' ? <Maximize size={12}/> : <Minimize size={12}/>} 
-                                                    {banner.fitMode === 'contain' ? 'Fill Banner' : 'Show Full Image'}
-                                                </button>
-                                            </div>
-
-                                            {/* Focal Point Crosshair Indicator */}
-                                            {adjustingBannerIdx === index && (
-                                                <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
-                                                    <div className="w-10 h-10 border-2 border-brand-rose rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(205,102,77,0.5)]">
-                                                        <div className="w-1.5 h-1.5 bg-brand-rose rounded-full" />
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
+                                        </motion.div>
                                     </div>
                                 </div>
                             ))}
@@ -1139,7 +1141,6 @@ const AdminDashboard = () => {
                             <button 
                                 onClick={async () => {
                                     if(window.confirm("Synchronize these identity calibrations with the live storefront?")) {
-                                        // Standard synchronization trigger
                                         alert("Front-page identities synchronized successfully!");
                                     }
                                 }}

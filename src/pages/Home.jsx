@@ -69,7 +69,7 @@ const Home = () => {
     return (
         <div className="pb-20 bg-brand-sage">
             {/* Dynamic Hero Banner with Calibration Sync */}
-            <section className="relative h-[80vh] overflow-hidden group">
+            <section className="relative h-[75vh] overflow-hidden group">
                 <AnimatePresence mode="wait">
                     {visibleBanners[currentBanner] && (
                         <motion.div
