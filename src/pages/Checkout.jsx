@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useShop, getProductImage } from '../context/ShopContext';
 import { CheckCircle, Truck, FileText, CreditCard, ChevronRight, ArrowLeft, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
