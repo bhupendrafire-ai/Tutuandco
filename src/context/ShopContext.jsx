@@ -213,11 +213,13 @@ export const ShopProvider = ({ children }) => {
         // Schedule new persistence
         window._bannerDebounce = setTimeout(async () => {
             try {
-                await fetch(`${FINAL_API_URL}/api/banners`, {
+                const res = await fetch(`${FINAL_API_URL}/api/banners`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(newBanners)
                 });
+                const result = await res.json();
+                console.log("SAVED BANNERS (DB SUCCESS):", result);
             } catch (err) {
                 console.error("Banner synchronization failed", err);
             } finally {

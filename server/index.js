@@ -85,7 +85,12 @@ app.get('/api/banners', async (req, res) => {
             ...b,
             contentPosition: b.content_position || 'center',
             focalPoint: b.focal_point || { x: 50, y: 50 },
-            fitMode: b.fit_mode || 'cover'
+            fitMode: b.fit_mode || 'cover',
+            translateX: parseFloat(b.translate_x || 0),
+            translateY: parseFloat(b.translate_y || 0),
+            zoom: parseFloat(b.zoom || 1),
+            refWidth: b.ref_width,
+            refHeight: b.ref_height
         }));
         res.json(formatted);
     } catch (err) {
@@ -98,8 +103,13 @@ app.put('/api/banners', async (req, res) => {
         await db.query('DELETE FROM banners');
         for (const b of req.body) {
             await db.query(
-                'INSERT INTO banners (title, subtitle, cta, image, content_position, focal_point, fit_mode) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-                [b.title, b.subtitle, b.cta, b.image, b.contentPosition || 'center', JSON.stringify(b.focalPoint || {x: 50, y: 50}), b.fitMode || 'cover']
+                `INSERT INTO banners (title, subtitle, cta, image, content_position, focal_point, fit_mode, translate_x, translate_y, zoom, ref_width, ref_height) 
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+                [
+                    b.title, b.subtitle, b.cta, b.image, b.contentPosition || 'center', 
+                    JSON.stringify(b.focalPoint || {x: 50, y: 50}), b.fitMode || 'cover',
+                    b.translateX || 0, b.translateY || 0, b.zoom || 1, b.refWidth || null, b.refHeight || null
+                ]
             );
         }
         const result = await db.query('SELECT * FROM banners ORDER BY id ASC');
@@ -107,7 +117,12 @@ app.put('/api/banners', async (req, res) => {
             ...b,
             contentPosition: b.content_position || 'center',
             focalPoint: b.focal_point || { x: 50, y: 50 },
-            fitMode: b.fit_mode || 'cover'
+            fitMode: b.fit_mode || 'cover',
+            translateX: parseFloat(b.translate_x || 0),
+            translateY: parseFloat(b.translate_y || 0),
+            zoom: parseFloat(b.zoom || 1),
+            refWidth: b.ref_width,
+            refHeight: b.ref_height
         }));
         res.json(formatted);
     } catch (err) {

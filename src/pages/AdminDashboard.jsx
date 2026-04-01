@@ -1295,6 +1295,8 @@ const AdminDashboard = () => {
                                                     
                                                     <button 
                                                         onClick={() => {
+                                                            // Explicitly trigger persistence when closing the editor
+                                                            updateBanners(banners);
                                                             setAdjustingBannerIdx(null);
                                                             setInteractingZoom(null);
                                                             setPanningPoint(null);

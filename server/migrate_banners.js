@@ -7,6 +7,11 @@ const migrateBanners = async () => {
             ALTER TABLE banners ADD COLUMN IF NOT EXISTS content_position TEXT DEFAULT 'center';
             ALTER TABLE banners ADD COLUMN IF NOT EXISTS focal_point JSONB DEFAULT '{"x": 50, "y": 50}';
             ALTER TABLE banners ADD COLUMN IF NOT EXISTS fit_mode TEXT DEFAULT 'cover';
+            ALTER TABLE banners ADD COLUMN IF NOT EXISTS translate_x FLOAT DEFAULT 0;
+            ALTER TABLE banners ADD COLUMN IF NOT EXISTS translate_y FLOAT DEFAULT 0;
+            ALTER TABLE banners ADD COLUMN IF NOT EXISTS zoom FLOAT DEFAULT 1;
+            ALTER TABLE banners ADD COLUMN IF NOT EXISTS ref_width INT;
+            ALTER TABLE banners ADD COLUMN IF NOT EXISTS ref_height INT;
         `);
         console.log('✅ Banners table updated successfully.');
     } catch (err) {
