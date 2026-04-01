@@ -87,17 +87,25 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         const loadOrders = async () => {
-            const res = await fetch(`${FINAL_API_URL}/api/orders`);
-            const o = await res.json();
-            setOrders(o || []);
-            const total = (o || []).reduce((sum, order) => sum + order.total, 0);
-            setStats(prev => ({
-                ...prev,
-                totalSales: total,
-                totalOrders: (o || []).length,
-                totalCustomers: 142
-            }));
-            setLoading(false);
+            console.log("🛡️ AdminDashboard Version: 2026-04-01-V2-STABILITY");
+            try {
+                const res = await fetch(`${FINAL_API_URL}/api/orders`);
+                const o = await res.json();
+                const safeOrders = Array.isArray(o) ? o : [];
+                setOrders(safeOrders);
+                const total = safeOrders.reduce((sum, order) => sum + (Number(order.total) || 0), 0);
+                setStats(prev => ({
+                    ...prev,
+                    totalSales: total,
+                    totalOrders: safeOrders.length,
+                    totalCustomers: 142
+                }));
+            } catch (err) {
+                console.error("Orders sync failed:", err);
+                setOrders([]);
+            } finally {
+                setLoading(false);
+            }
         };
         loadOrders();
     }, []);
