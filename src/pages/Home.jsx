@@ -122,11 +122,11 @@ const Home = () => {
                                         })()
                                     }}
                                 />
-                                {/* Soft & Subtle Gradient Divider Overlay */}
+                                {/* Refined Natural Image Fade Divider */}
                                 <div 
-                                    className="absolute top-0 right-0 bottom-0 w-[6%] pointer-events-none z-10"
+                                    className="absolute top-0 right-0 bottom-0 w-[8%] pointer-events-none z-10"
                                     style={{
-                                        background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.15) 40%, rgba(0, 0, 0, 0.35) 100%)'
+                                        background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.08) 30%, rgba(0, 0, 0, 0.18) 55%, rgba(0, 0, 0, 0.3) 75%, rgba(0, 0, 0, 0.4) 100%)'
                                     }}
                                 />
                             </Link>
