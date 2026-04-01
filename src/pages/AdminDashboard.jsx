@@ -41,6 +41,9 @@ const AdminDashboard = () => {
         category: '', description: '', imageName: '',
         images: [], descriptionBlocks: [] 
     });
+    const [selectedProductIds, setSelectedProductIds] = useState([]);
+    const [isBulkDiscountModalOpen, setIsBulkDiscountModalOpen] = useState(false);
+    const [bulkDiscountValue, setBulkDiscountValue] = useState(10);
     const [mediaPickerConfig, setMediaPickerConfig] = useState({ isOpen: false, multi: false, onSelect: () => {}, selectedItems: [] });
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
     const [newCatTemp, setNewCatTemp] = useState('');
@@ -226,6 +229,38 @@ const AdminDashboard = () => {
         setMediaPickerConfig({ ...config, isOpen: true });
     };
 
+    const handleToggleSelect = (id) => {
+        setSelectedProductIds(prev => 
+            prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+        );
+    };
+
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            setSelectedProductIds(products.map(p => p.id));
+        } else {
+            setSelectedProductIds([]);
+        }
+    };
+
+    const applyBulkDiscount = async () => {
+        if (!selectedProductIds.length) return;
+        const confirmMsg = `Apply a ${bulkDiscountValue}% discount to ${selectedProductIds.length} items? This will recalculate the discountPrice based on the current price.`;
+        if (window.confirm(confirmMsg)) {
+            for (const id of selectedProductIds) {
+                const product = products.find(p => p.id === id);
+                if (product) {
+                    const discountAmt = (product.price * (bulkDiscountValue / 100));
+                    const newDiscountPrice = Math.round(product.price - discountAmt);
+                    await updateProduct(id, { ...product, discountPrice: newDiscountPrice });
+                }
+            }
+            setSelectedProductIds([]);
+            setIsBulkDiscountModalOpen(false);
+            alert("Bulk discount synchronized successfully!");
+        }
+    };
+
 
     return (
         <div className="min-h-screen bg-brand-sage flex text-brand-charcoal relative">
@@ -384,6 +419,14 @@ const AdminDashboard = () => {
                                 <table className="w-full text-left min-w-[600px]">
                                     <thead className="bg-brand-cream">
                                         <tr className="text-[13px] font-bold text-brand-charcoal/60">
+                                            <th className="p-6 w-12 text-center">
+                                                <input 
+                                                    type="checkbox" 
+                                                    onChange={handleSelectAll}
+                                                    checked={selectedProductIds.length === products.length && products.length > 0}
+                                                    className="w-5 h-5 accent-brand-rose rounded-sm cursor-pointer" 
+                                                />
+                                            </th>
                                             <th className="p-6">Product</th>
                                             <th className="p-6">Stock</th>
                                             <th className="p-6">Price</th>
@@ -392,7 +435,15 @@ const AdminDashboard = () => {
                                     </thead>
                                     <tbody className="divide-y divide-[#F4F1EA]">
                                         {products.map((item) => (
-                                            <tr key={item.id} className="hover:bg-[#F4F1EA]/50 transition-colors">
+                                            <tr key={item.id} className={`hover:bg-[#F4F1EA]/50 transition-colors ${selectedProductIds.includes(item.id) ? 'bg-[#CD664D]/5' : ''}`}>
+                                                <td className="p-6 text-center">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={selectedProductIds.includes(item.id)}
+                                                        onChange={() => handleToggleSelect(item.id)}
+                                                        className="w-5 h-5 accent-brand-rose rounded-sm cursor-pointer" 
+                                                    />
+                                                </td>
                                                 <td className="p-6 flex items-center space-x-6">
                                                     <img src={getProductImage(item.images?.[0]?.url || item.imageName, media)} className="w-24 h-24 object-cover rounded-sm border border-brand-charcoal/10 shadow-sm" />
                                                     <span className="font-bold text-lg md:text-xl line-clamp-1">{item.name}</span>
@@ -426,21 +477,74 @@ const AdminDashboard = () => {
                                     </tbody>
                                 </table>
                             </div>
-
                         </div>
+                    </div>
+                )}
 
-                        {/* Premium Listing Workspace Modal */}
-                        {isEditingProduct && (
-                            <div 
-                                className="fixed inset-0 bg-[#3E362E]/90 backdrop-blur-md z-[100] flex items-center justify-center p-6 md:p-12 cursor-pointer"
-                                onClick={() => setIsEditingProduct(null)}
-                            >
-                                <motion.div 
-                                    initial={{ opacity: 0, y: 50, scale: 0.95 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    className="bg-[#F4F1EA] w-full max-w-7xl h-[90vh] rounded-sm shadow-2xl overflow-hidden flex flex-col cursor-default relative"
-                                    onClick={(e) => e.stopPropagation()}
+                {/* Bulk Action Bar - Sticky Bottom */}
+                <AnimatePresence>
+                    {selectedProductIds.length > 0 && (
+                        <motion.div 
+                            initial={{ y: 100, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: 100, opacity: 0 }}
+                            className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-brand-charcoal text-white p-6 rounded-sm shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-[100] flex items-center gap-10 min-w-[600px] border border-white/10"
+                        >
+                            <div className="flex flex-col">
+                                <span className="text-[14px] font-bold text-white/90">{selectedProductIds.length} items selected</span>
+                                <button onClick={() => setSelectedProductIds([])} className="text-[12px] text-brand-rose font-bold hover:underline text-left">Clear selection</button>
+                            </div>
+                            
+                            <div className="h-10 w-px bg-white/20 mx-2" />
+                            
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2 bg-white/10 p-2 rounded-sm border border-white/5">
+                                    <span className="text-[13px] font-bold text-white/60">Discount %</span>
+                                    <input 
+                                        type="number" 
+                                        value={bulkDiscountValue} 
+                                        onChange={(e) => setBulkDiscountValue(parseInt(e.target.value))}
+                                        className="w-16 bg-transparent text-lg font-bold outline-none border-none text-brand-rose p-0" 
+                                    />
+                                </div>
+                                <button 
+                                    onClick={applyBulkDiscount}
+                                    className="bg-brand-rose text-brand-charcoal px-8 py-3 rounded-sm text-sm font-bold shadow-lg hover:opacity-90 transition-all"
                                 >
+                                    Apply Bulk Discount
+                                </button>
+                            </div>
+                            
+                            <button 
+                                onClick={async () => {
+                                    if(window.confirm(`Dissolve ${selectedProductIds.length} listings permanently?`)) {
+                                        for(const id of selectedProductIds) await deleteProduct(id);
+                                        setSelectedProductIds([]);
+                                    }
+                                }}
+                                className="flex items-center gap-2 text-white/50 hover:text-red-500 transition-colors ml-auto group"
+                            >
+                                <Trash2 size={20} className="group-hover:scale-110 transition-transform" />
+                                <span className="text-[13px] font-bold">Mass Delete</span>
+                            </button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Premium Listing Workspace Modal */}
+                <AnimatePresence>
+                    {isEditingProduct && (
+                        <div 
+                            className="fixed inset-0 bg-[#3E362E]/90 backdrop-blur-md z-[100] flex items-center justify-center p-6 md:p-12 cursor-pointer"
+                            onClick={() => setIsEditingProduct(null)}
+                        >
+                            <motion.div 
+                                initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 50, scale: 0.95 }}
+                                className="bg-[#F4F1EA] w-full max-w-7xl h-[90vh] rounded-sm shadow-2xl overflow-hidden flex flex-col cursor-default relative"
+                                onClick={(e) => e.stopPropagation()}
+                            >
                                     {/* Isolated Close Button */}
                                     <button 
                                         onClick={() => setIsEditingProduct(null)} 
