@@ -98,9 +98,8 @@ const Home = () => {
                                 <img
                                     src={getProductImage(visibleBanners[currentBanner].image, media)}
                                     alt={visibleBanners[currentBanner].title}
-                                    className="w-full h-full transition-transform duration-[2000ms] origin-center"
+                                    className="w-full h-full block object-cover transition-transform duration-[2000ms] origin-center"
                                     style={{ 
-                                        objectFit: visibleBanners[currentBanner].fitMode || 'cover',
                                         transform: (() => {
                                             const b = visibleBanners[currentBanner];
                                             if (!b.refWidth) return `scale(${b.zoom || 1})`;
