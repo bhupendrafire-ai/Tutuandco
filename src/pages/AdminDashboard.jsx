@@ -61,6 +61,7 @@ const AdminDashboard = () => {
     const [shippingForm, setShippingForm] = useState({ tracking_number: '', carrier: '' });
     const previewContainerRef = useRef(null);
     const [previewSize, setPreviewSize] = useState({ w: 0, h: 0 });
+    const [isSyncing, setIsSyncing] = useState(false);
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
     const [newCatTemp, setNewCatTemp] = useState('');
     const [sessionCategories, setSessionCategories] = useState([]);
@@ -286,9 +287,16 @@ const AdminDashboard = () => {
     };
 
     const saveCalibration = async () => {
-        await updateBanners(banners);
-        setAdjustingBannerIdx(null);
-        alert("Universal focal state synchronized!");
+        setIsSyncing(true);
+        try {
+            await updateBanners(banners, true);
+            setAdjustingBannerIdx(null);
+            alert("Universal identity state synchronized successfully!");
+        } catch (err) {
+            alert("Digital sync failed. Check connection.");
+        } finally {
+            setIsSyncing(false);
+        }
     };
 
     return (
@@ -1106,7 +1114,14 @@ const AdminDashboard = () => {
                                             <span className="text-xs font-mono">{Math.round(banners[adjustingBannerIdx].translateX || 0)}X, {Math.round(banners[adjustingBannerIdx].translateY || 0)}Y</span>
                                         </div>
                                     </div>
-                                    <button onClick={saveCalibration} className="bg-green-600 text-white px-8 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-green-500 transition-all shadow-lg active:scale-95">Apply Universal Calibration</button>
+                                    <button 
+                                        onClick={saveCalibration} 
+                                        disabled={isSyncing}
+                                        className={`bg-green-600 text-white px-8 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-green-500 transition-all shadow-lg active:scale-95 flex items-center space-x-2 ${isSyncing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    >
+                                        {isSyncing ? <RefreshCcw size={14} className="animate-spin" /> : null}
+                                        <span>{isSyncing ? 'Synchronizing...' : 'Save & Synchronize Identity'}</span>
+                                    </button>
                                     <button onClick={() => setAdjustingBannerIdx(null)} className="p-2 hover:bg-white/10 rounded-full transition-all"><X size={20} /></button>
                                 </div>
                             </div>
@@ -1230,10 +1245,21 @@ const AdminDashboard = () => {
                                             <Link 
                                                 to={banners[adjustingBannerIdx].link || "#"}
                                                 target="_blank"
-                                                className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-2xl uppercase tracking-[0.2em] inline-block text-center mr-auto active:scale-95 transition-all hover:bg-white hover:text-brand-charcoal cursor-pointer"
+                                                className="bg-white/5 text-white/40 px-16 py-10 text-[18px] font-bold border border-white/10 uppercase tracking-[0.2em] inline-block text-center mr-auto active:scale-95 transition-all hover:bg-white hover:text-brand-charcoal cursor-pointer"
                                             >
                                                 {banners[adjustingBannerIdx].cta || "Explore collection"}
                                             </Link>
+
+                                            <div className="pt-8 border-t border-white/5 mt-auto">
+                                                <button 
+                                                    onClick={saveCalibration}
+                                                    disabled={isSyncing}
+                                                    className="w-full bg-brand-rose text-brand-charcoal py-6 rounded-sm text-[13px] font-bold uppercase tracking-[0.2em] shadow-2xl hover:bg-white transition-all transform active:scale-95 flex items-center justify-center space-x-3"
+                                                >
+                                                    {isSyncing ? <RefreshCcw size={18} className="animate-spin" /> : <CheckCircle2 size={18} />}
+                                                    <span>{isSyncing ? 'Synchronizing State...' : 'SAVE ALL HUB CHANGES'}</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
 

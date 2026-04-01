@@ -225,15 +225,17 @@ export const ShopProvider = ({ children }) => {
         }
     };
 
-    const updateBanners = async (newBanners) => {
+    const updateBanners = async (newBanners, immediate = false) => {
         setBanners(newBanners); // Optimistic Update for instant UI feedback
         if (!FINAL_API_URL) return;
 
         // Clear existing debounce
-        if (window._bannerDebounce) clearTimeout(window._bannerDebounce);
+        if (window._bannerDebounce) {
+            clearTimeout(window._bannerDebounce);
+            window._bannerDebounce = null;
+        }
 
-        // Schedule new persistence
-        window._bannerDebounce = setTimeout(async () => {
+        const sync = async () => {
             try {
                 const res = await fetch(`${FINAL_API_URL}/api/banners`, {
                     method: 'PUT',
@@ -242,12 +244,25 @@ export const ShopProvider = ({ children }) => {
                 });
                 const result = await res.json();
                 console.log("SAVED BANNERS (DB SUCCESS):", result);
+                return result;
             } catch (err) {
                 console.error("Banner synchronization failed", err);
-            } finally {
-                window._bannerDebounce = null;
+                throw err;
             }
-        }, 500); // Wait 500ms before sending to server
+        };
+
+        if (immediate) {
+            return sync();
+        } else {
+            // Schedule new persistence
+            return new Promise((resolve) => {
+                window._bannerDebounce = setTimeout(async () => {
+                    const result = await sync();
+                    window._bannerDebounce = null;
+                    resolve(result);
+                }, 500); // Wait 500ms before sending to server
+            });
+        }
     };
 
     const uploadMedia = async (url, name) => {
