@@ -85,37 +85,51 @@ const Home = () => {
         }
     }, [visibleBanners, currentBanner]);
 
-    if (loading) return (
-        <div className="min-h-screen flex flex-col items-center justify-center font-medium">
-            <div className="w-12 h-12 border-4 border-brand-charcoal/10 border-t-brand-charcoal rounded-full animate-spin mb-6" />
-            <div className="text-gray-400 text-sm tracking-wide">Loading</div>
-        </div>
-    );
-
-
     // Calculate current hero transform values for parity sync
     const heroTransform = useMemo(() => {
         const b = visibleBanners[currentBanner];
-        if (!b || !b.refWidth) return `scale(${b?.zoom || 1})`;
+        // Safety check for container and banner data
+        if (!heroRef.current || !b || !b.refWidth) return `scale(${b?.zoom || 1})`;
         
         const isDesktop = window.innerWidth >= 768;
         const currentW = heroSize.w ? (isDesktop ? heroSize.w * 0.65 : heroSize.w) : (isDesktop ? window.innerWidth * 0.65 : window.innerWidth);
         const currentH = heroSize.h || (isDesktop ? window.innerHeight * 0.75 : window.innerHeight * 0.5);
         
         const ratioX = currentW / b.refWidth;
-        const ratioY = currentH / b.refHeight;
+        const ratioY = (b.refHeight && currentH) ? currentH / b.refHeight : 1;
         
         const tx = (b.translateX || 0) * ratioX;
         const ty = (b.translateY || 0) * ratioY;
         const zoom = b.zoom || 1;
 
-        // Debug check as requested - accurately reflects storefront logic
-        console.log(`Banner ${currentBanner} Calibration:`, { tx, ty, zoom, ratioX, ratioY, containerW: currentW, containerH: currentH });
-        
         return `translate(${tx}px, ${ty}px) scale(${zoom})`;
     }, [visibleBanners, currentBanner, heroSize]);
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center font-medium bg-brand-sage text-brand-charcoal">Synchronizing with Cloud Storefront...</div>;
+    // Debug check in component body (outside useMemo)
+    useEffect(() => {
+        const b = visibleBanners[currentBanner];
+        if (b && heroSize.w) {
+            const isDesktop = window.innerWidth >= 768;
+            const currentW = isDesktop ? heroSize.w * 0.65 : heroSize.w;
+            const currentH = heroSize.h;
+            const ratioX = currentW / b.refWidth;
+            const ratioY = currentH / (b.refHeight || 1);
+            console.log(`Banner ${currentBanner} Calibration:`, { 
+                tx: (b.translateX || 0) * ratioX, 
+                ty: (b.translateY || 0) * ratioY, 
+                zoom: b.zoom,
+                containerW: currentW,
+                containerH: currentH
+            });
+        }
+    }, [visibleBanners, currentBanner, heroSize]);
+
+    if (loading) return (
+        <div className="min-h-screen flex flex-col items-center justify-center font-medium">
+            <div className="w-12 h-12 border-4 border-brand-charcoal/10 border-t-brand-charcoal rounded-full animate-spin mb-6" />
+            <div className="text-gray-400 text-sm tracking-wide">Loading</div>
+        </div>
+    );
 
     return (
         <div className="pb-20 bg-brand-sage">
