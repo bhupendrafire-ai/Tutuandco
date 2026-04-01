@@ -59,6 +59,8 @@ const AdminDashboard = () => {
     const [mediaPickerConfig, setMediaPickerConfig] = useState({ isOpen: false, multi: false, onSelect: () => {}, selectedItems: [] });
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [shippingForm, setShippingForm] = useState({ tracking_number: '', carrier: '' });
+    const previewContainerRef = useRef(null);
+    const [previewSize, setPreviewSize] = useState({ w: 0, h: 0 });
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
     const [newCatTemp, setNewCatTemp] = useState('');
     const [sessionCategories, setSessionCategories] = useState([]);
@@ -251,15 +253,25 @@ const AdminDashboard = () => {
     };
 
     const handlePanning = (e) => {
-        if (!panningPoint || adjustingBannerIdx === null) return;
+        if (!panningPoint || adjustingBannerIdx === null || !previewSize.w) return;
         const b = banners[adjustingBannerIdx];
         const rect = e.currentTarget.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const tx = (x / rect.width) * 1920 - 960;
-        const ty = (y / rect.height) * 1080 - 540;
+        
+        // Use reference dimensions (1920x1080) for universal calibration
+        const refW = b.refWidth || 1920;
+        const refH = b.refHeight || 1080;
+        
+        const deltaX = (e.clientX - panningPoint.x) / (rect.width / refW);
+        const deltaY = (e.clientY - panningPoint.y) / (rect.height / refH);
+        
         const nb = [...banners];
-        nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], translateX: tx, translateY: ty };
+        nb[adjustingBannerIdx] = { 
+            ...nb[adjustingBannerIdx], 
+            translateX: (nb[adjustingBannerIdx].translateX || 0) + deltaX,
+            translateY: (nb[adjustingBannerIdx].translateY || 0) + deltaY
+        };
+        
+        setPanningPoint({ x: e.clientX, y: e.clientY });
         updateBanners(nb);
     };
 
@@ -1084,12 +1096,15 @@ const AdminDashboard = () => {
                                     <button onClick={saveCalibration} className="px-10 py-4 bg-green-600 text-white font-bold uppercase tracking-widest text-[11px] rounded-full hover:bg-green-700 transition-all shadow-xl">Apply Universal Calibration</button>
                                     <button onClick={() => setAdjustingBannerIdx(null)} className="p-4 bg-brand-charcoal text-white rounded-full hover:scale-110 transition-all"><X size={24} /></button>
                                 </div>
-                                                <div className="flex-grow flex bg-[#3E362E] relative overflow-hidden group">
-                                {/* Dashboard View Mirroring Storefront (65/35 Split) */}
-                                <div className="w-[65%] h-full relative overflow-hidden bg-brand-sage flex items-center justify-center">
+                                <div className="flex-grow flex flex-col md:flex-row bg-brand-sage relative overflow-hidden group">
+                                    {/* Left Side: Image (Mirroring Home.jsx) */}
                                     <div 
-                                        className="relative w-[1920px] h-[1080px] origin-center shadow-[0_0_100px_rgba(0,0,0,0.5)] cursor-move select-none"
-                                        style={{ transform: `scale(${interactingZoom || 0.35})` }}
+                                        ref={el => {
+                                            if (el && (previewSize.w !== el.clientWidth || previewSize.h !== el.clientHeight)) {
+                                                setPreviewSize({ w: el.clientWidth, h: el.clientHeight });
+                                            }
+                                        }}
+                                        className="relative w-full md:w-[65%] h-full overflow-hidden cursor-grab active:cursor-grabbing select-none"
                                         onMouseDown={(e) => setPanningPoint({ x: e.clientX, y: e.clientY })}
                                         onMouseMove={handlePanning}
                                         onMouseUp={() => setPanningPoint(null)}
@@ -1097,142 +1112,119 @@ const AdminDashboard = () => {
                                     >
                                         <img 
                                             src={getProductImage(banners[adjustingBannerIdx].image, media)} 
-                                            className="w-full h-full object-cover pointer-events-none" 
+                                            className="w-full h-full block origin-center pointer-events-none" 
                                             draggable={false}
                                             style={{ 
-                                                transform: `translate(${banners[adjustingBannerIdx].translateX || 0}px, ${banners[adjustingBannerIdx].translateY || 0}px) scale(${banners[adjustingBannerIdx].zoom || 1})`,
+                                                transform: (() => {
+                                                    const b = banners[adjustingBannerIdx];
+                                                    const ratioX = previewSize.w / (b.refWidth || 1920);
+                                                    const ratioY = previewSize.h / (b.refHeight || 1080);
+                                                    const tx = (b.translateX || 0) * ratioX;
+                                                    const ty = (b.translateY || 0) * ratioY;
+                                                    return `translate(${tx}px, ${ty}px) scale(${b.zoom || 1})`;
+                                                })(),
                                                 objectFit: banners[adjustingBannerIdx].fitMode || 'cover'
                                             }}
                                         />
-                                        {/* Precision Crosshair */}
-                                        <div className="absolute inset-0 pointer-events-none border-4 border-white/10" />
-                                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/30" />
-                                        <div className="absolute top-1/2 left-0 right-0 h-px bg-white/30" />
-                                    </div>
-                                    
-                                    {/* Natural Divider Mirror (from Home.jsx) */}
-                                    <div 
-                                        className="absolute top-0 right-0 bottom-0 w-[8%] pointer-events-none z-10"
-                                        style={{
-                                            background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.08) 30%, rgba(0, 0, 0, 0.18) 55%, rgba(0, 0, 0, 0.3) 75%, rgba(0, 0, 0, 0.4) 100%)'
-                                        }}
-                                    />
-                                </div>
-
-                                {/* Precision Sidebar (The missing sliders) */}
-                                <div className="w-[35%] h-full bg-brand-charcoal p-10 text-white flex flex-col justify-between border-l border-white/5">
-                                    <div className="space-y-10">
-                                        <div className="pb-8 border-b border-white/10">
-                                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-rose mb-4">Precision Tuning</h4>
-                                            <button 
-                                                onClick={() => {
-                                                    openMediaPicker({
-                                                        multi: false,
-                                                        onSelect: (item) => {
-                                                            const url = typeof item === 'string' ? item : item.url;
-                                                            const nb = [...banners];
-                                                            nb[adjustingBannerIdx].image = url;
-                                                            updateBanners(nb);
-                                                        }
-                                                    });
-                                                }}
-                                                className="w-full py-4 bg-white/10 border border-white/20 rounded-sm text-[11px] font-bold uppercase tracking-widest hover:bg-brand-rose hover:text-brand-charcoal transition-all mb-4"
-                                            >
-                                                Change Identity Asset
-                                            </button>
-                                        </div>
-
-                                        <div className="space-y-8">
-                                            {/* Zoom Slider */}
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between items-center">
-                                                    <label className="text-[11px] font-bold uppercase tracking-widest opacity-60">Magnification</label>
-                                                    <span className="font-mono text-brand-rose font-bold">{Math.round((banners[adjustingBannerIdx].zoom || 1) * 100)}%</span>
-                                                </div>
-                                                <input 
-                                                    type="range" min="1" max="5" step="0.01"
-                                                    value={banners[adjustingBannerIdx].zoom || 1}
-                                                    onChange={e => {
-                                                        const nb = [...banners];
-                                                        nb[adjustingBannerIdx].zoom = parseFloat(e.target.value);
-                                                        updateBanners(nb);
-                                                    }}
-                                                    className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
-                                                />
-                                            </div>
-
-                                            {/* X-Offset Slider */}
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between items-center">
-                                                    <label className="text-[11px] font-bold uppercase tracking-widest opacity-60">Lateral Sync (X)</label>
-                                                    <span className="font-mono text-brand-rose font-bold">{Math.round(banners[adjustingBannerIdx].translateX || 0)}px</span>
-                                                </div>
-                                                <input 
-                                                    type="range" min="-1000" max="1000" step="1"
-                                                    value={banners[adjustingBannerIdx].translateX || 0}
-                                                    onChange={e => {
-                                                        const nb = [...banners];
-                                                        nb[adjustingBannerIdx].translateX = parseInt(e.target.value);
-                                                        updateBanners(nb);
-                                                    }}
-                                                    className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
-                                                />
-                                            </div>
-
-                                            {/* Y-Offset Slider */}
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between items-center">
-                                                    <label className="text-[11px] font-bold uppercase tracking-widest opacity-60">Vertical Calibration (Y)</label>
-                                                    <span className="font-mono text-brand-rose font-bold">{Math.round(banners[adjustingBannerIdx].translateY || 0)}px</span>
-                                                </div>
-                                                <input 
-                                                    type="range" min="-1000" max="1000" step="1"
-                                                    value={banners[adjustingBannerIdx].translateY || 0}
-                                                    onChange={e => {
-                                                        const nb = [...banners];
-                                                        nb[adjustingBannerIdx].translateY = parseInt(e.target.value);
-                                                        updateBanners(nb);
-                                                    }}
-                                                    className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="pt-10 border-t border-white/10">
-                                            <label className="text-[11px] font-bold uppercase tracking-widest opacity-40 block mb-4">Rendering Protocol</label>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <button 
-                                                    onClick={() => {
-                                                        const nb = [...banners];
-                                                        nb[adjustingBannerIdx].fitMode = 'cover';
-                                                        updateBanners(nb);
-                                                    }}
-                                                    className={`py-3 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${banners[adjustingBannerIdx].fitMode === 'cover' ? 'bg-brand-rose text-brand-charcoal' : 'bg-white/5 border border-white/10'}`}
-                                                >
-                                                    Crop To Fit
-                                                </button>
-                                                <button 
-                                                    onClick={() => {
-                                                        const nb = [...banners];
-                                                        nb[adjustingBannerIdx].fitMode = 'contain';
-                                                        updateBanners(nb);
-                                                    }}
-                                                    className={`py-3 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${banners[adjustingBannerIdx].fitMode === 'contain' ? 'bg-brand-rose text-brand-charcoal' : 'bg-white/5 border border-white/10'}`}
-                                                >
-                                                    Original Ratio
-                                                </button>
-                                            </div>
-                                        </div>
+                                        {/* Precision Crosshair Overlay */}
+                                        <div className="absolute inset-0 pointer-events-none border-4 border-white/5" />
+                                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/20" />
+                                        <div className="absolute top-1/2 left-0 right-0 h-px bg-white/20" />
+                                        
+                                        {/* Natural Image Fade Divider (Mirroring Home.jsx) */}
+                                        <div 
+                                            className="absolute top-0 right-0 bottom-0 w-[8%] pointer-events-none z-10"
+                                            style={{
+                                                background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.08) 30%, rgba(0, 0, 0, 0.18) 55%, rgba(0, 0, 0, 0.3) 75%, rgba(0, 0, 0, 0.4) 100%)'
+                                            }}
+                                        />
                                     </div>
 
-                                    <div className="space-y-4">
-                                        <button onClick={saveCalibration} className="w-full py-6 bg-brand-rose text-brand-charcoal font-bold uppercase tracking-[0.2em] text-[13px] rounded-sm hover:bg-white transition-all shadow-2xl active:scale-95">
-                                            Apply Universal Calibration
-                                        </button>
-                                        <p className="text-[9px] text-center opacity-30 uppercase tracking-widest">Pixel-perfect synchronization to storefront</p>
+                                    {/* Right Side: Content Panel (Mirroring Home.jsx) */}
+                                    <div className="w-full md:w-[35%] bg-[#7C846C] p-12 md:p-[60px] flex flex-col justify-center text-white relative">
+                                        <div className="max-w-md w-full mx-auto md:mx-0 flex flex-col gap-y-6">
+                                            <h1 className="text-4xl md:text-5xl font-medium leading-[1.2]">
+                                                {banners[adjustingBannerIdx].title || "Narrative Title"}
+                                            </h1>
+                                            <p className="text-white/80 text-lg italic font-medium">
+                                                {banners[adjustingBannerIdx].subtitle || "Supporting subtitle here"}
+                                            </p>
+                                            <div className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-lg uppercase tracking-[0.2em] inline-block text-center mr-auto">
+                                                {banners[adjustingBannerIdx].cta || "Explore collection"}
+                                            </div>
+                                        </div>
+
+                                        {/* Floating Precision Sidebar Overlay (Minimized/Discrete) */}
+                                        <div className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
+                                            <div className="w-full bg-brand-charcoal/90 backdrop-blur-xl p-8 pointer-events-auto border-t border-white/10">
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                                    <div className="space-y-4">
+                                                        <div className="flex justify-between items-center">
+                                                            <label className="text-[10px] font-bold uppercase tracking-widest opacity-60">Magnification</label>
+                                                            <span className="font-mono text-brand-rose font-bold">{Math.round((banners[adjustingBannerIdx].zoom || 1) * 100)}%</span>
+                                                        </div>
+                                                        <input 
+                                                            type="range" min="1" max="5" step="0.01"
+                                                            value={banners[adjustingBannerIdx].zoom || 1}
+                                                            onChange={e => {
+                                                                const nb = [...banners];
+                                                                nb[adjustingBannerIdx].zoom = parseFloat(e.target.value);
+                                                                updateBanners(nb);
+                                                            }}
+                                                            className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-4">
+                                                        <div className="flex justify-between items-center">
+                                                            <label className="text-[10px] font-bold uppercase tracking-widest opacity-60">Rendering Protocol</label>
+                                                            <span className="text-[10px] font-bold text-brand-rose uppercase">{banners[adjustingBannerIdx].fitMode || 'cover'}</span>
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            <button 
+                                                                onClick={() => {
+                                                                    const nb = [...banners];
+                                                                    nb[adjustingBannerIdx].fitMode = 'cover';
+                                                                    updateBanners(nb);
+                                                                }}
+                                                                className={`py-2 rounded-sm text-[9px] font-bold uppercase transition-all ${banners[adjustingBannerIdx].fitMode === 'cover' ? 'bg-brand-rose text-brand-charcoal' : 'bg-white/5 border border-white/10'}`}
+                                                            >
+                                                                Crop Fit
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => {
+                                                                    const nb = [...banners];
+                                                                    nb[adjustingBannerIdx].fitMode = 'contain';
+                                                                    updateBanners(nb);
+                                                                }}
+                                                                className={`py-2 rounded-sm text-[9px] font-bold uppercase transition-all ${banners[adjustingBannerIdx].fitMode === 'contain' ? 'bg-brand-rose text-brand-charcoal' : 'bg-white/5 border border-white/10'}`}
+                                                            >
+                                                                Preserve
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-end">
+                                                        <button 
+                                                            onClick={() => {
+                                                                openMediaPicker({
+                                                                    multi: false,
+                                                                    onSelect: (item) => {
+                                                                        const url = typeof item === 'string' ? item : item.url;
+                                                                        const nb = [...banners];
+                                                                        nb[adjustingBannerIdx].image = url;
+                                                                        updateBanners(nb);
+                                                                    }
+                                                                });
+                                                            }}
+                                                            className="w-full py-4 bg-white/10 border border-white/20 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-brand-rose hover:text-brand-charcoal transition-all"
+                                                        >
+                                                            Swap Asset
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
           </div>
                         </motion.div>
                     </div>
