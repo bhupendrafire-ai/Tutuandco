@@ -622,7 +622,7 @@ const AdminDashboard = () => {
                                                     {showNewCategoryInput ? (
                                                         <div className="flex items-center space-x-2 bg-brand-cream/50 rounded-sm pr-2">
                                                             <input value={newCatTemp} onChange={e => setNewCatTemp(e.target.value)} className="flex-grow bg-transparent p-4 font-medium border-none focus:outline-none focus:ring-0 text-sm" placeholder="Add..." autoFocus onKeyDown={(e) => { if(e.key === 'Enter') { if(newCatTemp.trim()){ setSessionCategories(prev => [...new Set([...prev, newCatTemp.trim()])]); setProductForm({...productForm, category: newCatTemp.trim()}); setShowNewCategoryInput(false); setNewCatTemp(''); }}} } />
-                                                            <button onClick={() => { if(newCatTemp.trim()){ setSessionCategories(prev => [...new Set([...prev, newCatTemp.trim()])]); setProductForm({...productForm, category: newCatTemp.trim()}); setShowNewCategoryInput(false); setNewCatTemp(''); }}} className="bg-brand-charcoal text-white p-1.5 rounded-full hover:bg-brand-rose transition-all shadow-md"><Check size={14}/></button>
+                                                            <button onClick={() => { if(newCatTemp.trim()){ setSessionCategories(prev => [...new Set([...prev, newCatTemp.trim()])]); setProductForm({...productForm, category: newCatTemp.trim()}); setShowNewCategoryInput(false); setNewCatTemp(''); }}} className="bg-brand-rose text-brand-charcoal p-2 rounded-full hover:bg-white transition-all shadow-md"><Check size={16}/></button>
                                                         </div>
                                                     ) : (
                                                         <div className="relative" ref={dropdownRef}>
@@ -704,7 +704,7 @@ const AdminDashboard = () => {
                                                     setProductForm({ name: '', category: '', price: 0, stock: 5, images: [], description: '', descriptionBlocks: [] });
                                                     setIsEditingProduct('new');
                                                 }}
-                                                className={`px-8 py-4 rounded-sm text-[11px] font-medium transition-all flex-grow md:flex-initial shadow-lg ${!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2) ? 'bg-brand-charcoal/10 text-brand-charcoal/30 cursor-not-allowed shadow-none' : 'bg-white text-brand-charcoal border border-brand-charcoal hover:bg-brand-cream'}`}
+                                                className={`px-10 py-5 rounded-sm text-sm font-bold transition-all flex-grow md:flex-initial shadow-lg ${!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2) ? 'bg-brand-charcoal/10 text-brand-charcoal/50 cursor-not-allowed shadow-none' : 'bg-white text-brand-charcoal border border-brand-charcoal hover:bg-brand-cream'}`}
                                             >
                                                 Save & add another
                                             </button>
@@ -717,7 +717,7 @@ const AdminDashboard = () => {
                                                     else await updateProduct(isEditingProduct, finalForm);
                                                     setIsEditingProduct(null);
                                                 }}
-                                                className={`px-12 py-4 rounded-sm text-[11px] font-medium shadow-2xl transition-all flex-grow md:flex-initial ${!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2) ? 'bg-brand-sage/10 text-brand-sage/40 cursor-not-allowed' : 'bg-brand-rose text-brand-charcoal hover:opacity-80'}`}
+                                                className={`px-14 py-5 rounded-sm text-sm font-bold shadow-2xl transition-all flex-grow md:flex-initial ${!(productForm.name?.trim() && productForm.price > 0 && (productForm.images || []).filter(img => img.url).length >= 2) ? 'bg-brand-sage/20 text-brand-charcoal/50 cursor-not-allowed' : 'bg-brand-rose text-brand-charcoal hover:opacity-80'}`}
                                             >
                                                 Synchronize listing
                                             </button>
