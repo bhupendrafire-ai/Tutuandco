@@ -1066,166 +1066,158 @@ const AdminDashboard = () => {
                     </div>
                 )}
             </AnimatePresence>
+
             <AnimatePresence>
                 {adjustingBannerIdx !== null && (
-                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-12">
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setAdjustingBannerIdx(null)} className="absolute inset-0 bg-brand-charcoal/95 backdrop-blur-xl" />
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setAdjustingBannerIdx(null)} className="absolute inset-0 bg-brand-charcoal/95 backdrop-blur-2xl" />
                         <motion.div 
-                            initial={{ scale: 0.9, opacity: 0 }} 
+                            initial={{ scale: 0.95, opacity: 0 }} 
                             animate={{ scale: 1, opacity: 1 }} 
-                            exit={{ scale: 0.9, opacity: 0 }} 
-                            className="relative w-full max-w-7xl h-[85vh] bg-white rounded-sm overflow-hidden shadow-2xl flex flex-col"
+                            exit={{ scale: 0.95, opacity: 0 }} 
+                            className="relative w-[95vw] h-[85vh] bg-white rounded-sm overflow-hidden shadow-2xl flex flex-col"
                         >
-                            <div className="p-8 border-b border-brand-charcoal/10 flex justify-between items-center bg-brand-cream/30">
-                                <div>
-                                    <h3 className="text-3xl font-medium text-brand-charcoal">Identity Panning Hub</h3>
-                                    <p className="text-[10px] font-bold text-brand-charcoal/40 uppercase tracking-widest mt-1">Universal Coordinate Mapping • 1920x1080 Reference</p>
+                            {/* Cinematic Ribbon: Top Control Bar */}
+                            <div className="absolute top-0 left-0 right-0 z-50 bg-brand-charcoal/40 backdrop-blur-md border-b border-white/10 px-8 py-4 flex justify-between items-center text-white">
+                                <div className="flex items-center space-x-4">
+                                    <h3 className="text-xl font-medium tracking-tight">Identity Panning Hub</h3>
+                                    <div className="h-4 w-px bg-white/20 mx-2" />
+                                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Storefront Mirror Mode</span>
                                 </div>
                                 <div className="flex items-center space-x-6">
-                                    <div className="flex items-center space-x-4 bg-brand-charcoal text-white px-6 py-3 rounded-full shadow-lg">
-                                        <div className="flex flex-col items-center">
-                                            <span className="text-[11px] font-bold uppercase opacity-40">Precision</span>
-                                            <span className="text-xl font-medium">{Math.round((banners[adjustingBannerIdx].zoom || 1) * 100)}%</span>
+                                    <div className="flex items-center space-x-4 bg-brand-charcoal/80 px-6 py-2 rounded-full border border-white/10">
+                                        <div className="flex flex-col">
+                                            <span className="text-[9px] font-bold uppercase opacity-40">Magnification</span>
+                                            <span className="text-sm font-bold text-brand-rose">{Math.round((banners[adjustingBannerIdx].zoom || 1) * 100)}%</span>
                                         </div>
-                                        <div className="h-8 w-px bg-white/20" />
-                                        <div className="flex flex-col items-center">
-                                            <span className="text-[11px] font-bold uppercase opacity-40">Coordinates</span>
-                                            <span className="text-sm font-bold font-mono">{Math.round(banners[adjustingBannerIdx].translateX || 0)}X, {Math.round(banners[adjustingBannerIdx].translateY || 0)}Y</span>
+                                        <div className="h-6 w-px bg-white/20" />
+                                        <div className="flex flex-col">
+                                            <span className="text-[9px] font-bold uppercase opacity-40">Calibration</span>
+                                            <span className="text-xs font-mono">{Math.round(banners[adjustingBannerIdx].translateX || 0)}X, {Math.round(banners[adjustingBannerIdx].translateY || 0)}Y</span>
                                         </div>
                                     </div>
-                                    <button onClick={saveCalibration} className="px-10 py-4 bg-green-600 text-white font-bold uppercase tracking-widest text-[11px] rounded-full hover:bg-green-700 transition-all shadow-xl">Apply Universal Calibration</button>
-                                    <button onClick={() => setAdjustingBannerIdx(null)} className="p-4 bg-brand-charcoal text-white rounded-full hover:scale-110 transition-all"><X size={24} /></button>
+                                    <button onClick={saveCalibration} className="bg-green-600 text-white px-8 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-green-500 transition-all shadow-lg active:scale-95">Apply Universal Calibration</button>
+                                    <button onClick={() => setAdjustingBannerIdx(null)} className="p-2 hover:bg-white/10 rounded-full transition-all"><X size={20} /></button>
                                 </div>
-                                <div className="flex-grow flex flex-col md:flex-row bg-brand-sage relative overflow-hidden group">
-                                    {/* Left Side: Image (Mirroring Home.jsx) */}
-                                    <div 
-                                        ref={el => {
-                                            if (el && (previewSize.w !== el.clientWidth || previewSize.h !== el.clientHeight)) {
-                                                setPreviewSize({ w: el.clientWidth, h: el.clientHeight });
-                                            }
+                            </div>
+
+                            {/* Full-width Mirror Container */}
+                            <div className="flex-grow flex bg-brand-sage relative overflow-hidden group">
+                                {/* Left Side: 65% Image (Storefront Mirror) */}
+                                <div 
+                                    ref={el => {
+                                        if (el && (previewSize.w !== el.clientWidth || previewSize.h !== el.clientHeight)) {
+                                            setPreviewSize({ w: el.clientWidth, h: el.clientHeight });
+                                        }
+                                    }}
+                                    className="relative w-[65%] h-full overflow-hidden cursor-move select-none"
+                                    onMouseDown={(e) => setPanningPoint({ x: e.clientX, y: e.clientY })}
+                                    onMouseMove={handlePanning}
+                                    onMouseUp={() => setPanningPoint(null)}
+                                    onMouseLeave={() => setPanningPoint(null)}
+                                >
+                                    <img 
+                                        src={getProductImage(banners[adjustingBannerIdx].image, media)} 
+                                        className="w-full h-full block origin-center pointer-events-none" 
+                                        draggable={false}
+                                        style={{ 
+                                            transform: (() => {
+                                                const b = banners[adjustingBannerIdx];
+                                                const ratioX = previewSize.w / (b.refWidth || 1920);
+                                                const ratioY = previewSize.h / (b.refHeight || 1080);
+                                                const tx = (b.translateX || 0) * ratioX;
+                                                const ty = (b.translateY || 0) * ratioY;
+                                                return `translate(${tx}px, ${ty}px) scale(${b.zoom || 1})`;
+                                            })(),
+                                            objectFit: banners[adjustingBannerIdx].fitMode || 'cover'
                                         }}
-                                        className="relative w-full md:w-[65%] h-full overflow-hidden cursor-grab active:cursor-grabbing select-none"
-                                        onMouseDown={(e) => setPanningPoint({ x: e.clientX, y: e.clientY })}
-                                        onMouseMove={handlePanning}
-                                        onMouseUp={() => setPanningPoint(null)}
-                                        onMouseLeave={() => setPanningPoint(null)}
-                                    >
-                                        <img 
-                                            src={getProductImage(banners[adjustingBannerIdx].image, media)} 
-                                            className="w-full h-full block origin-center pointer-events-none" 
-                                            draggable={false}
-                                            style={{ 
-                                                transform: (() => {
-                                                    const b = banners[adjustingBannerIdx];
-                                                    const ratioX = previewSize.w / (b.refWidth || 1920);
-                                                    const ratioY = previewSize.h / (b.refHeight || 1080);
-                                                    const tx = (b.translateX || 0) * ratioX;
-                                                    const ty = (b.translateY || 0) * ratioY;
-                                                    return `translate(${tx}px, ${ty}px) scale(${b.zoom || 1})`;
-                                                })(),
-                                                objectFit: banners[adjustingBannerIdx].fitMode || 'cover'
-                                            }}
-                                        />
-                                        {/* Precision Crosshair Overlay */}
-                                        <div className="absolute inset-0 pointer-events-none border-4 border-white/5" />
-                                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/20" />
-                                        <div className="absolute top-1/2 left-0 right-0 h-px bg-white/20" />
-                                        
-                                        {/* Natural Image Fade Divider (Mirroring Home.jsx) */}
-                                        <div 
-                                            className="absolute top-0 right-0 bottom-0 w-[8%] pointer-events-none z-10"
-                                            style={{
-                                                background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.08) 30%, rgba(0, 0, 0, 0.18) 55%, rgba(0, 0, 0, 0.3) 75%, rgba(0, 0, 0, 0.4) 100%)'
-                                            }}
-                                        />
+                                    />
+                                    
+                                    {/* Precision Crosshair */}
+                                    <div className="absolute inset-0 pointer-events-none border-4 border-white/5 opacity-40" />
+                                    <div className="absolute left-1/2 top-10 bottom-10 w-px bg-white/20 opacity-30" />
+                                    <div className="absolute top-1/2 left-10 right-10 h-px bg-white/20 opacity-30" />
+                                    
+                                    {/* Natural Divider Mirror (Home.jsx parity) */}
+                                    <div 
+                                        className="absolute top-0 right-0 bottom-0 w-[10%] pointer-events-none z-10"
+                                        style={{
+                                            background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.08) 30%, rgba(0, 0, 0, 0.18) 55%, rgba(0, 0, 0, 0.3) 75%, rgba(0, 0, 0, 0.4) 100%)'
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Right Side: 35% Content Panel (Home.jsx parity) */}
+                                <div className="w-[35%] bg-[#7C846C] p-20 flex flex-col justify-center text-white relative shadow-[-20px_0_40px_rgba(0,0,0,0.1)]">
+                                    <div className="max-w-md w-full mx-auto md:mx-0 flex flex-col gap-y-8">
+                                        <h1 className="text-5xl md:text-6xl font-medium leading-[1.1] tracking-tight">
+                                            {banners[adjustingBannerIdx].title || "Narrative Title"}
+                                        </h1>
+                                        <p className="text-white/80 text-xl italic font-medium leading-relaxed">
+                                            {banners[adjustingBannerIdx].subtitle || "Your supporting narrative goes here."}
+                                        </p>
+                                        <div className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-2xl uppercase tracking-[0.2em] inline-block text-center mr-auto active:scale-95 transition-transform">
+                                            {banners[adjustingBannerIdx].cta || "Explore collection"}
+                                        </div>
                                     </div>
 
-                                    {/* Right Side: Content Panel (Mirroring Home.jsx) */}
-                                    <div className="w-full md:w-[35%] bg-[#7C846C] p-12 md:p-[60px] flex flex-col justify-center text-white relative">
-                                        <div className="max-w-md w-full mx-auto md:mx-0 flex flex-col gap-y-6">
-                                            <h1 className="text-4xl md:text-5xl font-medium leading-[1.2]">
-                                                {banners[adjustingBannerIdx].title || "Narrative Title"}
-                                            </h1>
-                                            <p className="text-white/80 text-lg italic font-medium">
-                                                {banners[adjustingBannerIdx].subtitle || "Supporting subtitle here"}
-                                            </p>
-                                            <div className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-lg uppercase tracking-[0.2em] inline-block text-center mr-auto">
-                                                {banners[adjustingBannerIdx].cta || "Explore collection"}
-                                            </div>
+                                    {/* Submerged Precision Controls */}
+                                    <div className="absolute bottom-10 left-10 right-10 space-y-6 bg-brand-charcoal/20 p-8 rounded-sm backdrop-blur-sm border border-white/5 opacity-40 hover:opacity-100 transition-opacity">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest opacity-60">Magnification</label>
+                                            <span className="font-mono text-brand-rose font-bold">{Math.round((banners[adjustingBannerIdx].zoom || 1) * 100)}%</span>
                                         </div>
-
-                                        {/* Floating Precision Sidebar Overlay (Minimized/Discrete) */}
-                                        <div className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
-                                            <div className="w-full bg-brand-charcoal/90 backdrop-blur-xl p-8 pointer-events-auto border-t border-white/10">
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                                    <div className="space-y-4">
-                                                        <div className="flex justify-between items-center">
-                                                            <label className="text-[10px] font-bold uppercase tracking-widest opacity-60">Magnification</label>
-                                                            <span className="font-mono text-brand-rose font-bold">{Math.round((banners[adjustingBannerIdx].zoom || 1) * 100)}%</span>
-                                                        </div>
-                                                        <input 
-                                                            type="range" min="1" max="5" step="0.01"
-                                                            value={banners[adjustingBannerIdx].zoom || 1}
-                                                            onChange={e => {
-                                                                const nb = [...banners];
-                                                                nb[adjustingBannerIdx].zoom = parseFloat(e.target.value);
-                                                                updateBanners(nb);
-                                                            }}
-                                                            className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-4">
-                                                        <div className="flex justify-between items-center">
-                                                            <label className="text-[10px] font-bold uppercase tracking-widest opacity-60">Rendering Protocol</label>
-                                                            <span className="text-[10px] font-bold text-brand-rose uppercase">{banners[adjustingBannerIdx].fitMode || 'cover'}</span>
-                                                        </div>
-                                                        <div className="grid grid-cols-2 gap-2">
-                                                            <button 
-                                                                onClick={() => {
-                                                                    const nb = [...banners];
-                                                                    nb[adjustingBannerIdx].fitMode = 'cover';
-                                                                    updateBanners(nb);
-                                                                }}
-                                                                className={`py-2 rounded-sm text-[9px] font-bold uppercase transition-all ${banners[adjustingBannerIdx].fitMode === 'cover' ? 'bg-brand-rose text-brand-charcoal' : 'bg-white/5 border border-white/10'}`}
-                                                            >
-                                                                Crop Fit
-                                                            </button>
-                                                            <button 
-                                                                onClick={() => {
-                                                                    const nb = [...banners];
-                                                                    nb[adjustingBannerIdx].fitMode = 'contain';
-                                                                    updateBanners(nb);
-                                                                }}
-                                                                className={`py-2 rounded-sm text-[9px] font-bold uppercase transition-all ${banners[adjustingBannerIdx].fitMode === 'contain' ? 'bg-brand-rose text-brand-charcoal' : 'bg-white/5 border border-white/10'}`}
-                                                            >
-                                                                Preserve
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-end">
-                                                        <button 
-                                                            onClick={() => {
-                                                                openMediaPicker({
-                                                                    multi: false,
-                                                                    onSelect: (item) => {
-                                                                        const url = typeof item === 'string' ? item : item.url;
-                                                                        const nb = [...banners];
-                                                                        nb[adjustingBannerIdx].image = url;
-                                                                        updateBanners(nb);
-                                                                    }
-                                                                });
-                                                            }}
-                                                            className="w-full py-4 bg-white/10 border border-white/20 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-brand-rose hover:text-brand-charcoal transition-all"
-                                                        >
-                                                            Swap Asset
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <input 
+                                            type="range" min="1" max="5" step="0.01"
+                                            value={banners[adjustingBannerIdx].zoom || 1}
+                                            onChange={e => {
+                                                const nb = [...banners];
+                                                nb[adjustingBannerIdx].zoom = parseFloat(e.target.value);
+                                                updateBanners(nb);
+                                            }}
+                                            className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-rose mb-6"
+                                        />
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <button 
+                                                onClick={() => {
+                                                    const nb = [...banners];
+                                                    nb[adjustingBannerIdx].fitMode = 'cover';
+                                                    updateBanners(nb);
+                                                }}
+                                                className={`py-3 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${banners[adjustingBannerIdx].fitMode === 'cover' ? 'bg-brand-rose text-brand-charcoal' : 'bg-white/10 border border-white/10'}`}
+                                            >
+                                                Crop Fit
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    const nb = [...banners];
+                                                    nb[adjustingBannerIdx].fitMode = 'contain';
+                                                    updateBanners(nb);
+                                                }}
+                                                className={`py-3 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${banners[adjustingBannerIdx].fitMode === 'contain' ? 'bg-brand-rose text-brand-charcoal' : 'bg-white/10 border border-white/10'}`}
+                                            >
+                                                Preserve
+                                            </button>
                                         </div>
+                                        <button 
+                                            onClick={() => {
+                                                openMediaPicker({
+                                                    multi: false,
+                                                    onSelect: (item) => {
+                                                        const url = typeof item === 'string' ? item : item.url;
+                                                        const nb = [...banners];
+                                                        nb[adjustingBannerIdx].image = url;
+                                                        updateBanners(nb);
+                                                    }
+                                                });
+                                            }}
+                                            className="w-full py-4 mt-4 bg-white/10 border border-white/20 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-brand-rose hover:text-brand-charcoal transition-all"
+                                        >
+                                            Change Identity Asset
+                                        </button>
                                     </div>
                                 </div>
-          </div>
+                            </div>
                         </motion.div>
                     </div>
                 )}
@@ -1430,9 +1422,9 @@ const AdminDashboard = () => {
                     </div>
                 )}
             </AnimatePresence>
-        </div>
+        </main>
+    </div>
     );
 };
-
 
 export default AdminDashboard;
