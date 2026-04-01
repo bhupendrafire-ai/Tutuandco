@@ -914,7 +914,7 @@ const AdminDashboard = () => {
                                                 <button 
                                                     onClick={() => {
                                                         const nb = [...banners];
-                                                        nb[index].isVisible = banner.isVisible === false;
+                                                        nb[index] = { ...nb[index], isVisible: banner.isVisible === false };
                                                         updateBanners(nb);
                                                     }}
                                                     className="p-3 bg-white rounded-sm border border-brand-charcoal/5 text-brand-charcoal/60 hover:text-brand-charcoal shadow-sm transition-all"
@@ -954,26 +954,26 @@ const AdminDashboard = () => {
                                             <div className="space-y-6">
                                                 <div className="space-y-3">
                                                     <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide uppercase">Identity narrative</label>
-                                                    <input 
-                                                        value={banner.title} 
-                                                        onChange={e => {
-                                                            const nb = [...banners];
-                                                            nb[index].title = e.target.value;
-                                                            updateBanners(nb);
-                                                        }}
-                                                        placeholder="Master Title (e.g. Sunset Sage Collection)"
-                                                        className="w-full bg-white p-4 font-medium text-xl border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm"
-                                                    />
-                                                    <textarea 
-                                                        value={banner.subtitle} 
-                                                        onChange={e => {
-                                                            const nb = [...banners];
-                                                            nb[index].subtitle = e.target.value;
-                                                            updateBanners(nb);
-                                                        }}
-                                                        placeholder="Sub-narrative brief..."
-                                                        className="w-full bg-white p-4 italic text-lg border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm h-24"
-                                                    />
+                                                        <input 
+                                                            value={banner.title} 
+                                                            onChange={e => {
+                                                                const nb = [...banners];
+                                                                nb[index] = { ...nb[index], title: e.target.value };
+                                                                updateBanners(nb);
+                                                            }}
+                                                            placeholder="Master Title (e.g. Sunset Sage Collection)"
+                                                            className="w-full bg-white p-4 font-medium text-xl border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm"
+                                                        />
+                                                        <textarea 
+                                                            value={banner.subtitle} 
+                                                            onChange={e => {
+                                                                const nb = [...banners];
+                                                                nb[index] = { ...nb[index], subtitle: e.target.value };
+                                                                updateBanners(nb);
+                                                            }}
+                                                            placeholder="Sub-narrative brief..."
+                                                            className="w-full bg-white p-4 italic text-lg border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm h-24"
+                                                        />
                                                 </div>
                                             </div>
 
@@ -986,7 +986,7 @@ const AdminDashboard = () => {
                                                             value={banner.cta} 
                                                             onChange={e => {
                                                                 const nb = [...banners];
-                                                                nb[index].cta = e.target.value;
+                                                                nb[index] = { ...nb[index], cta: e.target.value };
                                                                 updateBanners(nb);
                                                             }}
                                                             className="w-full bg-white p-4 font-bold text-sm border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm uppercase tracking-widest"
@@ -1004,7 +1004,7 @@ const AdminDashboard = () => {
                                                                     key={pos.id}
                                                                     onClick={() => {
                                                                         const nb = [...banners];
-                                                                        nb[index].contentPosition = pos.id;
+                                                                        nb[index] = { ...nb[index], contentPosition: pos.id };
                                                                         updateBanners(nb);
                                                                     }}
                                                                     className={`p-2 rounded-sm transition-all ${banner.contentPosition === pos.id || (!banner.contentPosition && pos.id === 'center') ? 'bg-brand-rose text-brand-charcoal shadow-sm' : 'text-brand-charcoal/30 hover:text-brand-charcoal'}`}
@@ -1030,7 +1030,7 @@ const AdminDashboard = () => {
                                                         <button 
                                                             onClick={() => openMediaPicker({
                                                                 multi: false,
-                                                                onSelect: (url) => { const nb = [...banners]; nb[index].image = url; updateBanners(nb); }
+                                                                onSelect: (url) => { const nb = [...banners]; nb[index] = { ...nb[index], image: url }; updateBanners(nb); }
                                                             })}
                                                             className="w-full bg-white p-4 font-bold text-[11px] text-brand-rose border border-brand-rose/20 hover:bg-brand-rose hover:text-white outline-none rounded-sm shadow-sm transition-all flex items-center justify-center gap-2 uppercase tracking-widest"
                                                         >
@@ -1055,7 +1055,7 @@ const AdminDashboard = () => {
                                                                 value={banner.zoom || 1} 
                                                                 onChange={(e) => {
                                                                     const nb = [...banners];
-                                                                    nb[index].zoom = parseFloat(e.target.value);
+                                                                    nb[index] = { ...nb[index], zoom: parseFloat(e.target.value) };
                                                                     updateBanners(nb);
                                                                 }}
                                                                 className="flex-grow h-1.5 bg-brand-charcoal/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
@@ -1103,7 +1103,7 @@ const AdminDashboard = () => {
                                             onPanEnd={() => {
                                                 if (adjustingBannerIdx === index && panningPoint) {
                                                     const nb = [...banners];
-                                                    nb[index].focalPoint = panningPoint;
+                                                    nb[index] = { ...nb[index], focalPoint: panningPoint };
                                                     updateBanners(nb);
                                                     setPanningPoint(null);
                                                 }
@@ -1133,10 +1133,10 @@ const AdminDashboard = () => {
                                             {/* Calibration Suite Controls */}
                                             <div className="absolute top-8 right-8 z-[100] flex gap-2">
                                                 <button 
-                                                    onClick={(e) => {
+                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         const nb = [...banners];
-                                                        nb[index].fitMode = banner.fitMode === 'contain' ? 'cover' : 'contain';
+                                                        nb[index] = { ...nb[index], fitMode: banner.fitMode === 'contain' ? 'cover' : 'contain' };
                                                         updateBanners(nb);
                                                     }}
                                                     className="bg-brand-charcoal/80 backdrop-blur-md text-white hover:bg-black border border-white/10 shadow-2xl font-bold text-[10px] px-6 py-3 rounded-full transition-all flex items-center gap-2 uppercase tracking-widest"
