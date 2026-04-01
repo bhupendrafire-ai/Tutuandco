@@ -1084,14 +1084,16 @@ const AdminDashboard = () => {
                                                     const rect = e.currentTarget.getBoundingClientRect();
                                                     const zoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
                                                     
-                                                    // Scaling by zoom ensures 1:1 "stickiness" under the cursor
-                                                    // Dividing 100 by zoom because we are calculating percentage of container
-                                                    const deltaX = (info.delta.x / rect.width) * (100 / zoom);
-                                                    const deltaY = (info.delta.y / rect.height) * (100 / zoom);
+                                                    // Sticky Drag Formula:
+                                                    // x% change = (dx / (container_width * (zoom - 1))) * 100
+                                                    // Use Math.max(0.01) to prevent division by zero at zoom=1
+                                                    const scrollableFactor = Math.max(0.01, zoom - 1);
+                                                    const deltaX = (info.delta.x / (rect.width * scrollableFactor)) * 100;
+                                                    const deltaY = (info.delta.y / (rect.height * scrollableFactor)) * 100;
                                                     
                                                     setPanningPoint(prev => ({
-                                                        x: Math.min(100, Math.max(0, prev.x + deltaX)),
-                                                        y: Math.min(100, Math.max(0, prev.y + deltaY))
+                                                        x: Math.min(100, Math.max(0, prev.x - deltaX)),
+                                                        y: Math.min(100, Math.max(0, prev.y - deltaY))
                                                     }));
                                                 }
                                             }}
