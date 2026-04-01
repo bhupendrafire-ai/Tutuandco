@@ -1018,7 +1018,14 @@ const AdminDashboard = () => {
                                                 </div>
 
                                                 <div className="space-y-3">
-                                                    <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide uppercase">Asset identifier</label>
+                                                    <div className="flex justify-between items-center">
+                                                        <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide uppercase">Asset identifier</label>
+                                                        {adjustingBannerIdx === index && (
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-[10px] font-bold text-brand-rose tracking-widest uppercase">Calibration: {(banner.zoom || 1).toFixed(1)}x</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                         <button 
                                                             onClick={() => openMediaPicker({
@@ -1037,6 +1044,24 @@ const AdminDashboard = () => {
                                                             {adjustingBannerIdx === index ? 'Finish Positioning' : 'Reposition Center'}
                                                         </button>
                                                     </div>
+
+                                                    {adjustingBannerIdx === index && (
+                                                        <div className="pt-2 flex items-center gap-4">
+                                                            <input 
+                                                                type="range" 
+                                                                min="1" 
+                                                                max="3" 
+                                                                step="0.01" 
+                                                                value={banner.zoom || 1} 
+                                                                onChange={(e) => {
+                                                                    const nb = [...banners];
+                                                                    nb[index].zoom = parseFloat(e.target.value);
+                                                                    updateBanners(nb);
+                                                                }}
+                                                                className="flex-grow h-1.5 bg-brand-charcoal/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
+                                                            />
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -1091,7 +1116,9 @@ const AdminDashboard = () => {
                                                 draggable={false}
                                                 style={{ 
                                                     objectFit: banner.fitMode || 'cover',
-                                                    objectPosition: `${(panningPoint && adjustingBannerIdx === index ? panningPoint : (banner.focalPoint || {x:50,y:50})).x}% ${(panningPoint && adjustingBannerIdx === index ? panningPoint : (banner.focalPoint || {x:50,y:50})).y}%`
+                                                    objectPosition: `${(panningPoint && adjustingBannerIdx === index ? panningPoint : (banner.focalPoint || {x:50,y:50})).x}% ${(panningPoint && adjustingBannerIdx === index ? panningPoint : (banner.focalPoint || {x:50,y:50})).y}%`,
+                                                    transform: `scale(${banner.zoom || 1})`,
+                                                    transition: panningPoint ? 'none' : 'transform 0.2s ease-out'
                                                 }}
                                             />
                                             
