@@ -409,7 +409,17 @@ const AdminDashboard = () => {
                                                         setProductForm(item);
                                                         setIsEditingProduct(item.id);
                                                     }}><Edit3 size={18} /></button>
-                                                    <button onClick={() => deleteProduct(item.id)}><Trash2 size={18} /></button>
+                                                    <button 
+                                                        onClick={() => {
+                                                            if (window.confirm(`Are you sure you want to delete "${item.name}"? This action cannot be undone.`)) {
+                                                                deleteProduct(item.id);
+                                                            }
+                                                        }}
+                                                        className="hover:text-red-500 transition-colors"
+                                                        title="Delete Listing"
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}
