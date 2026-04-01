@@ -104,20 +104,27 @@ const Home = () => {
         return `translate(${tx}px, ${ty}px) scale(${zoom})`;
     }, [visibleBanners, currentBanner, heroSize]);
 
-    // STRICT: Debug Parity Check in component body
-    useEffect(() => {
+    if (loading) return (
+        <div className="min-h-screen flex flex-col items-center justify-center font-medium">
+            <div className="w-12 h-12 border-4 border-brand-charcoal/10 border-t-brand-charcoal rounded-full animate-spin mb-6" />
+            <div className="text-gray-400 text-sm tracking-wide">Loading</div>
+        </div>
+    );
+
+    // PARITY CHECK: Log actual numeric values on every render/update
+    (() => {
         const b = visibleBanners[currentBanner];
         if (b && heroSize.w && heroSize.h) {
-            const containerW = heroSize.w;
-            const containerH = heroSize.h;
-            const ratioX = containerW / b.refWidth;
-            const ratioY = containerH / (b.refHeight || 1);
+            const containerWidth = heroSize.w;
+            const containerHeight = heroSize.h;
+            const ratioX = containerWidth / b.refWidth;
+            const ratioY = containerHeight / (b.refHeight || 1);
             const tx = (b.translateX || 0) * ratioX;
             const ty = (b.translateY || 0) * ratioY;
 
             console.log("PARITY CHECK:", {
-                containerW,
-                containerH,
+                containerWidth,
+                containerHeight,
                 refWidth: b.refWidth,
                 refHeight: b.refHeight,
                 ratioX,
@@ -126,14 +133,7 @@ const Home = () => {
                 ty
             });
         }
-    }, [visibleBanners, currentBanner, heroSize]);
-
-    if (loading) return (
-        <div className="min-h-screen flex flex-col items-center justify-center font-medium">
-            <div className="w-12 h-12 border-4 border-brand-charcoal/10 border-t-brand-charcoal rounded-full animate-spin mb-6" />
-            <div className="text-gray-400 text-sm tracking-wide">Loading</div>
-        </div>
-    );
+    })();
 
     return (
         <div className="pb-20 bg-brand-sage">
