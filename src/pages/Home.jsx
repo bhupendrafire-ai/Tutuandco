@@ -46,10 +46,17 @@ const Home = () => {
     }, [products, media]);
 
     // Static banner for now - no automatic timer
-    useEffect(() => {
-        // Keeping setCurrentBanner(0) to ensure we start at the first banner
-        setCurrentBanner(0);
+    // Filter and sequence banners based on visibility
+    const visibleBanners = useMemo(() => {
+        return (banners || []).filter(b => b.isVisible !== false);
     }, [banners]);
+
+    // Ensure current banner index stays in bounds when visibility changes
+    useEffect(() => {
+        if (currentBanner >= visibleBanners.length && visibleBanners.length > 0) {
+            setCurrentBanner(0);
+        }
+    }, [visibleBanners, currentBanner]);
 
     if (loading) return (
         <div className="min-h-screen flex flex-col items-center justify-center font-medium">
@@ -61,12 +68,12 @@ const Home = () => {
 
     return (
         <div className="pb-20 bg-brand-sage">
-            {/* Static Hero Banner with Group Hover */}
-            <section className="relative h-[75vh] overflow-hidden group">
+            {/* Dynamic Hero Banner with Calibration Sync */}
+            <section className="relative h-[80vh] overflow-hidden group">
                 <AnimatePresence mode="wait">
-                    {banners[currentBanner] && (
+                    {visibleBanners[currentBanner] && (
                         <motion.div
-                            key={currentBanner}
+                            key={visibleBanners[currentBanner].id || currentBanner}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
@@ -74,19 +81,29 @@ const Home = () => {
                             className="absolute inset-0"
                         >
                             <img
-                                src={getProductImage(banners[currentBanner].image, media)}
-                                alt={banners[currentBanner].title}
-                                className="w-full h-full object-cover object-[center_20%] transition-transform duration-1000"
+                                src={getProductImage(visibleBanners[currentBanner].image, media)}
+                                alt={visibleBanners[currentBanner].title}
+                                className="w-full h-full transition-transform duration-[2000ms]"
+                                style={{ 
+                                    objectFit: visibleBanners[currentBanner].fitMode || 'cover',
+                                    objectPosition: `${visibleBanners[currentBanner].focalPoint?.x || 50}% ${visibleBanners[currentBanner].focalPoint?.y || 50}%`
+                                }}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/30 to-transparent flex items-center justify-end text-right p-12 md:p-32">
-                                <div className="max-w-xl text-white flex flex-col items-end backdrop-blur-[2px] p-8 rounded-sm">
+                            <div className={`absolute inset-0 flex items-center p-12 md:p-32 transition-all duration-[1500ms]
+                                ${visibleBanners[currentBanner].contentPosition === 'left' ? 'justify-start text-left bg-gradient-to-r from-black/80 via-black/20 to-transparent' : 
+                                  visibleBanners[currentBanner].contentPosition === 'center' ? 'justify-center text-center bg-gradient-to-t from-black/80 via-black/10 to-transparent' : 
+                                  'justify-end text-right bg-gradient-to-l from-black/80 via-black/20 to-transparent'}`}>
+                                <div className={`max-w-xl text-white flex flex-col p-8 rounded-sm transition-all duration-[1500ms]
+                                    ${visibleBanners[currentBanner].contentPosition === 'left' ? 'items-start' : 
+                                      visibleBanners[currentBanner].contentPosition === 'center' ? 'items-center' : 
+                                      'items-end'}`}>
                                     <motion.h1
-                                        initial={{ opacity: 0, x: 20 }}
+                                        initial={{ opacity: 0, x: visibleBanners[currentBanner].contentPosition === 'left' ? -20 : 20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ duration: 0.8, delay: 0.2 }}
-                                        className="text-4xl md:text-5xl font-medium mb-12 drop-shadow-xl leading-tight text-white/90"
+                                        className="text-4xl md:text-6xl font-medium mb-12 drop-shadow-2xl leading-[1.1] text-white/95"
                                     >
-                                        {banners[currentBanner].title}
+                                        {visibleBanners[currentBanner].title}
                                     </motion.h1>
                                     
                                     <motion.div
@@ -95,26 +112,38 @@ const Home = () => {
                                         transition={{ duration: 0.8, delay: 0.4 }}
                                     >
                                         <Link 
-                                            to={banners[currentBanner].link || "/"}
-                                            className="bg-[#4A5D4E] text-[#EADED0] px-16 py-8 text-[18px] font-medium hover:bg-white hover:text-brand-charcoal transition-all shadow-2xl"
+                                            to={visibleBanners[currentBanner].link || "/"}
+                                            className="bg-[#4A5D4E] text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-[0.2em] border border-white/10"
                                         >
-                                            {banners[currentBanner].cta || "Shop collection"}
+                                            {visibleBanners[currentBanner].cta || "Explore collection"}
                                         </Link>
                                     </motion.div>
+                                    
+                                    <motion.p
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.6 }}
+                                        className="mt-8 text-white/40 text-sm italic font-medium max-w-sm"
+                                    >
+                                        {visibleBanners[currentBanner].subtitle}
+                                    </motion.p>
                                 </div>
                             </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
 
-                <div className="absolute bottom-4 right-12 flex space-x-2 bg-black/10 backdrop-blur-md px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    {banners.map((_, i) => (
+                {/* Progress Indicators */}
+                <div className="absolute bottom-10 right-12 flex items-center gap-4 bg-black/20 backdrop-blur-xl px-6 py-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-4 group-hover:translate-y-0 border border-white/5">
+                    {visibleBanners.map((_, i) => (
                         <button
                             key={i}
                             onClick={(e) => { e.stopPropagation(); setCurrentBanner(i); }}
-                            className={`h-[2px] rounded-full transition-all duration-500 ${currentBanner === i ? 'bg-white w-8' : 'bg-white/20 w-4 hover:bg-white/40'}`}
+                            className={`h-[3px] rounded-full transition-all duration-700 ${currentBanner === i ? 'bg-white w-12 shadow-[0_0_15px_rgba(255,255,255,0.5)]' : 'bg-white/20 w-4 hover:bg-white/40'}`}
                         />
                     ))}
+                    <div className="w-px h-4 bg-white/10 mx-2" />
+                    <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{currentBanner + 1} / {visibleBanners.length}</span>
                 </div>
             </section>
 

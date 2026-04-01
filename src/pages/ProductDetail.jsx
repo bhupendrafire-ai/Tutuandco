@@ -189,13 +189,43 @@ const ProductDetail = () => {
                     <section className="mt-32 space-y-32">
                         {product.descriptionBlocks.map((block, i) => {
                             if (block.template === 'wide_banner') {
+                                const positionClasses = {
+                                    left: 'justify-start text-left',
+                                    center: 'justify-center text-center',
+                                    right: 'justify-end text-right'
+                                };
+                                const gradientClasses = {
+                                    left: 'bg-gradient-to-r from-[#F4F1EA]/90 via-[#F4F1EA]/40 to-transparent',
+                                    center: 'bg-gradient-to-b from-transparent via-[#F4F1EA]/20 to-[#F4F1EA]/60',
+                                    right: 'bg-gradient-to-l from-[#F4F1EA]/90 via-[#F4F1EA]/40 to-transparent'
+                                };
+                                const pos = block.contentPosition || 'center';
+
                                 return (
-                                    <div key={i} className="space-y-12">
-                                        <h3 className="text-4xl md:text-5xl font-medium text-center text-brand-charcoal italic max-w-4xl mx-auto leading-tight">{block.title}</h3>
-                                        <div className="w-full aspect-[21/9] bg-brand-cream rounded-sm overflow-hidden shadow-xl">
-                                            <img src={getProductImage(block.url, media)} className="w-full h-full object-cover" />
+                                    <div key={i} className="relative w-full aspect-[16/9] md:aspect-[21/9] bg-brand-cream rounded-sm overflow-hidden shadow-2xl group">
+                                        <img 
+                                            src={getProductImage(block.url, media)} 
+                                            className="w-full h-full transition-transform duration-700 group-hover:scale-105" 
+                                            style={{ 
+                                                objectFit: block.fitMode || 'cover',
+                                                objectPosition: `${block.focalPoint?.x || 50}% ${block.focalPoint?.y || 50}%`
+                                            }}
+                                        />
+                                        
+                                        {/* Dynamic Gradient Overlay */}
+                                        <div className={`absolute inset-0 ${gradientClasses[pos]} pointer-events-none`} />
+
+                                        {/* Positioned Content */}
+                                        <div className={`absolute inset-0 flex items-center p-8 md:p-20 ${positionClasses[pos]}`}>
+                                            <div className="max-w-2xl space-y-6">
+                                                <h3 className="text-3xl md:text-5xl font-medium text-brand-charcoal leading-tight italic drop-shadow-sm">
+                                                    {block.title || `Hero banner ${i + 1}`}
+                                                </h3>
+                                                <p className="text-brand-charcoal/80 text-sm md:text-xl leading-relaxed font-medium">
+                                                    {block.content}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <p className="text-brand-charcoal/80 text-xl text-center max-w-3xl mx-auto leading-relaxed">{block.content}</p>
                                     </div>
                                 );
                             }

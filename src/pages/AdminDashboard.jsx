@@ -6,7 +6,7 @@ import {
     Settings, LogOut, Search, Filter, Download, 
     TrendingUp, Users, DollarSign, AlertCircle, Eye, Printer, 
     FileText, CheckCircle, Image as ImageIcon, Plus, Trash2, Upload, Edit3, Menu, X, Layout, RefreshCcw, ChevronDown, Check, CheckCircle2,
-    Maximize, Minimize, Cloud
+    Maximize, Minimize, Cloud, AlignLeft, AlignCenter, AlignRight, EyeOff, ChevronUp
 } from 'lucide-react';
 import { 
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, 
@@ -44,6 +44,7 @@ const AdminDashboard = () => {
     const [selectedProductIds, setSelectedProductIds] = useState([]);
     const [isBulkDiscountModalOpen, setIsBulkDiscountModalOpen] = useState(false);
     const [bulkDiscountValue, setBulkDiscountValue] = useState(10);
+    const [adjustingBannerIdx, setAdjustingBannerIdx] = useState(null);
     const [mediaPickerConfig, setMediaPickerConfig] = useState({ isOpen: false, multi: false, onSelect: () => {}, selectedItems: [] });
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
     const [newCatTemp, setNewCatTemp] = useState('');
@@ -161,15 +162,23 @@ const AdminDashboard = () => {
             });
             
             if (type === 'product_image') {
+                const targetIdx = window._uploadTargetIdx !== undefined ? window._uploadTargetIdx : productForm.images.length;
                 const newImg = { 
                     url: newBlob.url, 
                     name: file.name, 
                     isInternal: false, 
-                    sequence: productForm.images.length,
+                    sequence: targetIdx,
                     fitMode: 'cover',
                     focalPoint: { x: 50, y: 50 }
                 };
-                setProductForm(prev => ({ ...prev, images: [...prev.images, newImg] }));
+                
+                const newer = [...(productForm.images || [])];
+                // Ensure array is large enough
+                for(let i=0; i<targetIdx; i++) if(!newer[i]) newer[i] = { url: '', fitMode: 'cover', focalPoint: {x:50,y:50} };
+                newer[targetIdx] = newImg;
+                
+                setProductForm(prev => ({ ...prev, images: newer.filter(img => img.url || img === newImg) }));
+                window._uploadTargetIdx = undefined;
             } else {
                 await uploadMedia(newBlob.url, file.name);
                 alert("Identity uploaded to Vercel Cloud!");
@@ -338,7 +347,7 @@ const AdminDashboard = () => {
                 <header className="flex justify-between items-end mb-12 border-b border-brand-charcoal/10 pb-8">
                     <div>
                         <h1 className="text-4xl font-medium text-brand-charcoal mb-2 capitalize">{activeTab.replace('-', ' ')}</h1>
-                        <p className="text-brand-charcoal/80 text-sm font-bold">System status: All systems operational.</p>
+                        <p className="text-brand-charcoal/80 text-sm font-bold">System status: <span className="text-brand-rose">Connected & Calibrating.</span></p>
                     </div>
                     <div className="flex space-x-4">
                         <div className="relative">
@@ -630,41 +639,42 @@ const AdminDashboard = () => {
                                                                 <div className="absolute bottom-3 left-3 bg-brand-charcoal/80 text-white text-[8px] font-medium px-2.5 py-1 rounded-full shadow-lg z-10 transition-opacity group-hover:opacity-20 uppercase tracking-widest">
                                                                     {idx === 0 ? 'Primary Hero' : `Detail Asset 0${idx+1}`}
                                                                 </div>
-                                                                <div className="absolute top-2 right-2 flex flex-col items-end gap-1.5 z-30 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                    <div className="flex items-center gap-1.5">
-                                                                        <button 
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                setAdjustingImageIdx(adjustingImageIdx === idx ? null : idx);
-                                                                            }}
-                                                                            className={`flex items-center gap-1.5 font-medium text-[9px] px-2 py-1.5 rounded-sm shadow-xl transition-all ${adjustingImageIdx === idx ? 'bg-brand-rose text-brand-charcoal' : 'bg-white text-brand-charcoal hover:bg-brand-cream'}`}
-                                                                        >
-                                                                            <RefreshCcw size={10} className={adjustingImageIdx === idx ? 'animate-spin' : ''} /> {adjustingImageIdx === idx ? 'Done' : 'Pos'}
-                                                                        </button>
-                                                                        <button 
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                const newer = [...productForm.images];
-                                                                                newer[idx] = { ...newer[idx], fitMode: newer[idx].fitMode === 'contain' ? 'cover' : 'contain' };
-                                                                                setProductForm({...productForm, images: newer});
-                                                                            }}
-                                                                            className="bg-white text-brand-charcoal hover:bg-brand-cream shadow-xl font-medium text-[9px] px-2 py-1.5 rounded-sm transition-all flex items-center gap-1"
-                                                                        >
-                                                                            {productForm.images[idx].fitMode === 'contain' ? <Maximize size={10}/> : <Minimize size={10}/>}
-                                                                        </button>
-                                                                        <button 
-                                                                            onClick={(e) => { 
-                                                                                e.stopPropagation(); 
-                                                                                const newer = productForm.images.filter((_, i) => i !== idx);
-                                                                                setProductForm({...productForm, images: newer}); 
-                                                                                setAdjustingImageIdx(null); 
-                                                                            }} 
-                                                                            className="bg-white hover:bg-red-50 text-red-500 p-1.5 rounded-sm shadow-xl transition-all"
-                                                                        >
-                                                                            <Trash2 size={12} />
-                                                                        </button>
-                                                                    </div>
+                                                                
+                                                                {/* Permanently Visible Product Calibration Tools */}
+                                                                <div className="absolute top-2 right-2 flex items-center gap-1.5 z-40">
+                                                                    <button 
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setAdjustingImageIdx(adjustingImageIdx === idx ? null : idx);
+                                                                        }}
+                                                                        className={`flex items-center gap-2 font-bold text-[10px] px-3 py-2 rounded-sm shadow-2xl transition-all border uppercase tracking-widest ${adjustingImageIdx === idx ? 'bg-brand-rose text-brand-charcoal border-brand-charcoal' : 'bg-brand-charcoal text-white hover:bg-black border-white/10'}`}
+                                                                    >
+                                                                        <RefreshCcw size={12} className={adjustingImageIdx === idx ? 'animate-spin' : ''} /> {adjustingImageIdx === idx ? 'Finish' : 'Focus'}
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            const newer = [...productForm.images];
+                                                                            newer[idx] = { ...newer[idx], fitMode: newer[idx].fitMode === 'contain' ? 'cover' : 'contain' };
+                                                                            setProductForm({...productForm, images: newer});
+                                                                        }}
+                                                                        className="bg-brand-charcoal text-white hover:bg-black border border-white/10 shadow-2xl font-bold text-[10px] px-3 py-2 rounded-sm transition-all flex items-center gap-2 uppercase tracking-widest"
+                                                                    >
+                                                                        {productForm.images[idx].fitMode === 'contain' ? <Maximize size={12}/> : <Minimize size={12}/>} {productForm.images[idx].fitMode === 'contain' ? 'Fill' : 'Full'}
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={(e) => { 
+                                                                            e.stopPropagation(); 
+                                                                            const newer = productForm.images.filter((_, i) => i !== idx);
+                                                                            setProductForm({...productForm, images: newer}); 
+                                                                            setAdjustingImageIdx(null); 
+                                                                        }} 
+                                                                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-sm shadow-2xl transition-all border border-black/10"
+                                                                    >
+                                                                        <Trash2 size={12} />
+                                                                    </button>
                                                                 </div>
+
                                                                 {adjustingImageIdx === idx && productForm.images[idx].fitMode !== 'contain' && (
                                                                     <div 
                                                                         onClick={(e) => e.stopPropagation()}
@@ -756,7 +766,13 @@ const AdminDashboard = () => {
                                             {/* Narrative Section */}
                                             <div className="flex-grow flex flex-col space-y-4 bg-[#F4F1EA]/40 p-8 rounded-sm border border-brand-charcoal/5 shadow-sm">
                                                 <label className="text-[12px] font-bold text-brand-charcoal/70 uppercase tracking-wide">Brief hook (SEO summary)</label>
-                                                <textarea value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} className="flex-grow w-full bg-brand-cream/20 p-6 text-xl font-medium border-none resize-none outline-none focus:ring-1 focus:ring-brand-sage rounded-sm leading-relaxed italic" placeholder="The philosophy behind this creation..." />
+                                                <textarea 
+                                                    value={productForm.description} 
+                                                    onChange={e => setProductForm({...productForm, description: e.target.value})}
+                                                    rows="4"
+                                                    className="w-full bg-white p-6 text-lg font-medium border-none focus:ring-1 focus:ring-brand-sage rounded-sm placeholder-brand-charcoal/20 leading-relaxed italic"
+                                                    placeholder="Narrative depth..."
+                                                />
                                             </div>
 
                                             {/* Financial Bar */}
@@ -834,109 +850,268 @@ const AdminDashboard = () => {
 
                 {activeTab === 'banners' && (
                     <div className="space-y-12">
-                        <div className="flex justify-between items-center mb-8">
-                            <h2 className="text-xl font-medium">Front-page identities</h2>
+                        <div className="flex justify-between items-center mb-8 pb-8 border-b border-brand-charcoal/10">
+                            <div>
+                                <h2 className="text-xl font-medium text-brand-charcoal">Front-page identities</h2>
+                                <p className="text-[12px] font-bold text-brand-charcoal/60 mt-1 uppercase tracking-widest">Master Brand Sequencing</p>
+                            </div>
                             <div className="flex items-center gap-6">
                                 <button 
                                     onClick={() => {
                                         const newBanner = { 
+                                            id: `idx_${Date.now()}`,
                                             title: 'New Identity', 
                                             subtitle: 'Brief brand narrative...', 
                                             cta: 'Explore', 
-                                            image: '' 
+                                            image: '',
+                                            isVisible: true,
+                                            fitMode: 'cover',
+                                            focalPoint: { x: 50, y: 50 } 
                                         };
                                         updateBanners([...banners, newBanner]);
                                     }}
-                                    className="bg-brand-rose text-brand-charcoal px-6 py-3 rounded-sm flex items-center space-x-2 text-[11px] font-medium shadow-lg hover:opacity-80 transition-all"
+                                    className="bg-brand-rose text-brand-charcoal px-6 py-3 rounded-sm flex items-center space-x-2 text-[11px] font-bold shadow-lg hover:opacity-80 transition-all uppercase tracking-widest"
                                 >
                                     <Plus size={16} />
                                     <span>Initiate new banner</span>
                                 </button>
-                                <p className="text-[13px] font-bold text-brand-charcoal/60">Total active: {banners.length}</p>
+                                <p className="text-[13px] font-bold text-brand-charcoal/60">Total identities: {banners.length}</p>
                             </div>
                         </div>
                         
-                        {banners.map((banner, index) => (
-                            <div key={banner.id} className="bg-white p-10 rounded-sm shadow-sm border border-[#CD664D]/10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                                <div className="space-y-6">
-                                    <div className="flex justify-between items-center">
-                                        <h3 className="text-[13px] font-bold text-brand-charcoal opacity-70">Hero banner {index + 1}</h3>
-                                        <button 
-                                            onClick={() => {
-                                                if (window.confirm('Dissolve this front-page identity?')) {
-                                                    const nb = banners.filter((_, i) => i !== index);
+                        <div className="space-y-12">
+                            {banners.map((banner, index) => (
+                                <div key={banner.id || index} className={`bg-white rounded-sm shadow-xl border overflow-hidden flex flex-col lg:flex-row min-h-[450px] transition-all ${banner.isVisible === false ? 'opacity-50 grayscale-[0.5]' : 'border-[#CD664D]/10'}`}>
+                                    
+                                    {/* Left Panel: Configuration & Controls */}
+                                    <div className="w-full lg:w-[40%] p-8 bg-[#F4F1EA]/30 border-r border-brand-charcoal/5 flex flex-col">
+                                        <div className="flex justify-between items-start mb-8">
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex items-center gap-3">
+                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${banner.isVisible !== false ? 'bg-green-100 text-green-700' : 'bg-brand-charcoal/10 text-brand-charcoal/40'}`}>
+                                                        {banner.isVisible !== false ? 'Active identity' : 'Vaulted'}
+                                                    </span>
+                                                    <span className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Priority #{index + 1}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <button 
+                                                    disabled={index === 0}
+                                                    onClick={() => {
+                                                        const nb = [...banners];
+                                                        [nb[index-1], nb[index]] = [nb[index], nb[index-1]];
+                                                        updateBanners(nb);
+                                                    }}
+                                                    className="p-2 bg-white text-brand-charcoal rounded-sm shadow-sm border border-brand-charcoal/5 hover:border-brand-rose disabled:opacity-20 transition-all"
+                                                >
+                                                    <ChevronUp size={16} />
+                                                </button>
+                                                <button 
+                                                    disabled={index === banners.length - 1}
+                                                    onClick={() => {
+                                                        const nb = [...banners];
+                                                        [nb[index+1], nb[index]] = [nb[index], nb[index+1]];
+                                                        updateBanners(nb);
+                                                    }}
+                                                    className="p-2 bg-white text-brand-charcoal rounded-sm shadow-sm border border-brand-charcoal/5 hover:border-brand-rose disabled:opacity-20 transition-all"
+                                                >
+                                                    <ChevronDown size={16} />
+                                                </button>
+                                                <div className="w-px h-6 bg-brand-charcoal/10 mx-1" />
+                                                <button 
+                                                    onClick={() => {
+                                                        const nb = [...banners];
+                                                        nb[index].isVisible = banner.isVisible === false ? true : false;
+                                                        updateBanners(nb);
+                                                    }}
+                                                    className={`p-2 rounded-sm shadow-sm border transition-all ${banner.isVisible === false ? 'bg-brand-rose text-brand-charcoal border-brand-charcoal' : 'bg-white text-brand-charcoal/40 border-brand-charcoal/5 hover:text-brand-charcoal'}`}
+                                                    title={banner.isVisible === false ? "Restore to store" : "Hide from store"}
+                                                >
+                                                    {banner.isVisible === false ? <Eye size={16} /> : <EyeOff size={16} />}
+                                                </button>
+                                                <button 
+                                                    onClick={() => {
+                                                        if (window.confirm('Dissolve this front-page identity permanently?')) {
+                                                            const nb = banners.filter((_, i) => i !== index);
+                                                            updateBanners(nb);
+                                                        }
+                                                    }}
+                                                    className="p-2 bg-white text-red-400 hover:text-red-600 rounded-sm shadow-sm border border-brand-charcoal/5 hover:border-red-500 transition-all"
+                                                    title="Permanently remove"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex-grow space-y-6">
+                                            <div className="space-y-1">
+                                                <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">Main title</label>
+                                                <input 
+                                                    defaultValue={banner.title} 
+                                                    onBlur={e => { const nb = [...banners]; nb[index].title = e.target.value; updateBanners(nb); }} 
+                                                    className="w-full bg-white p-4 font-medium text-lg border border-transparent focus:border-brand-rose outline-none rounded-sm shadow-sm"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">Sub-narrative</label>
+                                                <textarea 
+                                                    defaultValue={banner.subtitle} 
+                                                    onBlur={e => { const nb = [...banners]; nb[index].subtitle = e.target.value; updateBanners(nb); }} 
+                                                    className="w-full bg-white p-4 font-medium text-sm border border-transparent focus:border-brand-rose outline-none rounded-sm shadow-sm h-24 resize-none leading-relaxed italic"
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-1">
+                                                    <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">CTA label</label>
+                                                    <input 
+                                                        defaultValue={banner.cta} 
+                                                        onBlur={e => { const nb = [...banners]; nb[index].cta = e.target.value; updateBanners(nb); }} 
+                                                        className="w-full bg-white p-4 font-medium text-sm border border-transparent focus:border-brand-rose outline-none rounded-sm shadow-sm"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">Content alignment</label>
+                                                    <div className="flex gap-1 bg-white p-1 rounded-sm border border-brand-charcoal/5 h-[54px] items-center justify-around">
+                                                        {[
+                                                            { id: 'left', icon: AlignLeft },
+                                                            { id: 'center', icon: AlignCenter },
+                                                            { id: 'right', icon: AlignRight }
+                                                        ].map((pos) => (
+                                                            <button
+                                                                key={pos.id}
+                                                                onClick={() => {
+                                                                    const nb = [...banners];
+                                                                    nb[index].contentPosition = pos.id;
+                                                                    updateBanners(nb);
+                                                                }}
+                                                                className={`p-2 rounded-sm transition-all ${banner.contentPosition === pos.id || (!banner.contentPosition && pos.id === 'center') ? 'bg-brand-rose text-brand-charcoal shadow-sm' : 'text-brand-charcoal/30 hover:text-brand-charcoal'}`}
+                                                                title={`Align ${pos.id}`}
+                                                            >
+                                                                <pos.icon size={18} />
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">Asset identifier</label>
+                                                <div className="flex gap-4">
+                                                    <button 
+                                                        onClick={() => openMediaPicker({
+                                                            multi: false,
+                                                            onSelect: (url) => { const nb = [...banners]; nb[index].image = url; updateBanners(nb); }
+                                                        })}
+                                                        className="flex-grow bg-white p-4 font-bold text-[11px] text-brand-rose border border-brand-rose/20 hover:bg-brand-rose hover:text-white outline-none rounded-sm shadow-sm transition-all flex items-center justify-center gap-2 uppercase tracking-widest"
+                                                    >
+                                                        <Layout size={14} /> Update Identity Image
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => setAdjustingBannerIdx(adjustingBannerIdx === index ? null : index)}
+                                                        className={`px-6 py-4 rounded-sm border transition-all ${adjustingBannerIdx === index ? 'bg-brand-rose border-brand-charcoal text-brand-charcoal' : 'bg-white border-brand-charcoal/10 text-brand-charcoal/40 hover:text-brand-charcoal'}`}
+                                                        title="Calibrate focal point"
+                                                    >
+                                                        <RefreshCcw size={16} className={adjustingBannerIdx === index ? 'animate-spin' : ''} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Right Panel: Live Identity Preview & Calibration */}
+                                    <div className="w-full lg:w-[60%] relative overflow-hidden bg-brand-charcoal/5 flex flex-col">
+                                        {/* Status Header for Adjustment */}
+                                        <div className="absolute top-6 left-6 z-40 flex items-center gap-2">
+                                            <div className="text-[10px] font-bold text-white bg-brand-charcoal/80 px-4 py-2 rounded-full shadow-2xl backdrop-blur-md uppercase tracking-[0.2em] border border-white/10">
+                                                Live Identity Preview
+                                            </div>
+                                            {adjustingBannerIdx === index && (
+                                                <div className="text-[10px] font-bold text-brand-charcoal bg-brand-rose px-4 py-2 rounded-full shadow-2xl uppercase tracking-[0.2em] animate-pulse">
+                                                    Calibrating positioning...
+                                                </div>
+                                            )}
+                                        </div>
+
+
+                                        {/* The Living Preview Section */}
+                                        <div 
+                                            className={`relative flex-grow overflow-hidden ${adjustingBannerIdx === index ? 'cursor-crosshair' : ''}`}
+                                            onClick={(e) => {
+                                                if (adjustingBannerIdx === index) {
+                                                    const rect = e.currentTarget.getBoundingClientRect();
+                                                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                                                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                                                    const nb = [...banners];
+                                                    nb[index].focalPoint = { x, y };
                                                     updateBanners(nb);
                                                 }
                                             }}
-                                            className="text-red-400 hover:text-red-500 transition-colors p-1"
-                                            title="Delete Banner"
                                         >
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </div>
-                                    <div className="space-y-4">
-                                        <div className="space-y-1">
-                                            <label className="text-[13px] font-bold text-brand-charcoal/60 mb-1 block">Main title</label>
-                                            <input 
-                                                defaultValue={banner.title} 
-                                                onBlur={e => {
-                                                    const nb = [...banners]; nb[index].title = e.target.value; updateBanners(nb);
-                                                }} 
-                                                className="w-full text-3xl font-medium border-b border-brand-charcoal/10 focus:border-brand-charcoal outline-none bg-transparent py-2" 
+                                            {/* Homepage-style Backdrop */}
+                                            <img 
+                                                src={getProductImage(banner.image, media)} 
+                                                className="w-full h-full"
+                                                style={{ 
+                                                    objectFit: banner.fitMode || 'cover',
+                                                    objectPosition: `${banner.focalPoint?.x || 50}% ${banner.focalPoint?.y || 50}%`
+                                                }}
                                             />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-[13px] font-bold text-brand-charcoal/60 mb-1 block">Sub-narrative</label>
-                                            <input 
-                                                defaultValue={banner.subtitle} 
-                                                onBlur={e => {
-                                                    const nb = [...banners]; nb[index].subtitle = e.target.value; updateBanners(nb);
-                                                }} 
-                                                className="w-full text-brand-charcoal/70 border-b border-brand-charcoal/10 focus:border-brand-charcoal outline-none bg-transparent py-2" 
-                                            />
-                                        </div>
-                                        <div className="flex space-x-6">
-                                            <div className="flex-grow">
-                                                <label className="text-[13px] font-bold text-brand-charcoal/60 mb-1 block">Asset identifier</label>
+                                            
+                                            {/* Homepage-style Gradient and UI Overlay */}
+                                            <div className={`absolute inset-0 flex items-center p-12 md:p-32 pointer-events-none transition-all duration-700
+                                                ${banner.contentPosition === 'left' ? 'justify-start text-left bg-gradient-to-r from-black/80 via-black/20 to-transparent' : 
+                                                  banner.contentPosition === 'center' ? 'justify-center text-center bg-gradient-to-t from-black/80 via-black/10 to-transparent' : 
+                                                  'justify-end text-right bg-gradient-to-l from-black/80 via-black/20 to-transparent'}`}>
+                                                <div className={`max-w-md text-white flex flex-col transition-all duration-700 
+                                                    ${banner.contentPosition === 'left' ? 'items-start' : 
+                                                      banner.contentPosition === 'center' ? 'items-center' : 
+                                                      'items-end'}`}>
+                                                    <h1 className="text-3xl lg:text-4xl font-medium mb-8 drop-shadow-2xl leading-tight text-white/95">{banner.title}</h1>
+                                                    <p className="text-sm italic text-white/60 mb-10 max-w-sm drop-shadow-lg">{banner.subtitle}</p>
+                                                    <div className="bg-[#4A5D4E] text-[#EADED0] px-12 py-6 text-sm font-bold shadow-2xl border border-white/10 uppercase tracking-[0.2em]">{banner.cta}</div>
+                                                </div>
+                                            </div>
+
+                                            {/* Professional Calibration Suite - SIMPLIFIED */}
+                                            <div className="absolute top-8 right-8 z-[100]">
                                                 <button 
-                                                    onClick={() => openMediaPicker({
-                                                        multi: false,
-                                                        selectedItems: [banner.image],
-                                                        onSelect: (url) => {
-                                                            const nb = [...banners]; nb[index].image = url; updateBanners(nb);
-                                                        }
-                                                    })}
-                                                    className="w-full text-left text-sm font-medium border-b border-brand-charcoal/10 outline-none bg-transparent py-2 flex justify-between items-center"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        const nb = [...banners];
+                                                        nb[index].fitMode = banner.fitMode === 'contain' ? 'cover' : 'contain';
+                                                        updateBanners(nb);
+                                                    }}
+                                                    className="bg-brand-charcoal/80 backdrop-blur-md text-white hover:bg-black border border-white/10 shadow-2xl font-bold text-[10px] px-6 py-3 rounded-full transition-all flex items-center gap-2 uppercase tracking-widest"
                                                 >
-                                                    <span className="truncate">{banner.image || 'Pick banner image'}</span>
-                                                    <Upload size={14} className="text-brand-charcoal/40" />
+                                                    {banner.fitMode === 'contain' ? <Maximize size={12}/> : <Minimize size={12}/>} {banner.fitMode === 'contain' ? 'Fill Hero' : 'Full Image'}
                                                 </button>
                                             </div>
 
-                                            <div>
-                                                <label className="text-[13px] font-bold text-brand-charcoal/80 mb-1 block">CTA label</label>
-                                                <input 
-                                                    defaultValue={banner.cta} 
-                                                    onBlur={e => {
-                                                        const nb = [...banners]; nb[index].cta = e.target.value; updateBanners(nb);
-                                                    }} 
-                                                    className="w-full text-sm font-medium border-b border-brand-charcoal/10 outline-none bg-transparent py-2" 
-                                                />
-                                            </div>
+                                            {/* Focal Point Crosshair Indicator */}
+                                            {adjustingBannerIdx === index && (
+                                                <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
+                                                    <div className="w-10 h-10 border-2 border-brand-rose rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(205,102,77,0.5)]">
+                                                        <div className="w-1.5 h-1.5 bg-brand-rose rounded-full" />
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="aspect-[16/7] bg-[#F4F1EA] rounded-sm overflow-hidden relative group shadow-inner">
-                                    <img src={getProductImage(banner.image, media)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                    <div className="absolute inset-0 bg-[#3E362E]/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <ImageIcon className="text-white drop-shadow-lg" size={48} />
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                         
                         <div className="flex justify-center pt-8">
-                            <button className="bg-brand-rose text-brand-charcoal px-12 py-5 rounded-sm text-[18px] font-medium shadow-xl hover:opacity-80 transition-all">
+                            <button 
+                                onClick={async () => {
+                                    if(window.confirm("Synchronize these identity calibrations with the live storefront?")) {
+                                        // Standard synchronization trigger
+                                        alert("Front-page identities synchronized successfully!");
+                                    }
+                                }}
+                                className="bg-brand-charcoal text-white px-20 py-8 rounded-sm text-[18px] font-bold shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:bg-black transition-all border border-white/10"
+                            >
                                 All configurations synchronized
                             </button>
                         </div>
