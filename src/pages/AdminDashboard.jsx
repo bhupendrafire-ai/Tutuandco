@@ -1091,26 +1091,30 @@ const AdminDashboard = () => {
                                                     
                                                     const rect = container.getBoundingClientRect();
                                                     
-                                                    // Absolute Mapping (Point-at-what-you-want-to-see)
-                                                    // This was the logic that worked perfectly before 
-                                                    const xPercent = ((info.point.x - rect.left) / rect.width) * 100;
-                                                    const yPercent = ((info.point.y - rect.top) / rect.height) * 100;
-                                                    
-                                                    // Update local ref (Direct DOM injection for 60fps)
-                                                    localFocal.current = {
-                                                        x: Math.min(100, Math.max(0, xPercent)),
-                                                        y: Math.min(100, Math.max(0, yPercent))
-                                                    };
+                                                    // UNIVERSAL STICKY DRAG: Move focal point relative to drag distance
+                                                    // We divide by zoom to maintain mouse-to-pixel parity
+                                                    const zoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
+                                                    const deltaXPercent = (info.delta.x / rect.width) * 100;
+                                                    const deltaYPercent = (info.delta.y / rect.height) * 100;
 
-                                                    // Update image alignment
-                                                    activeImageRef.current.style.objectPosition = `${localFocal.current.x}% ${localFocal.current.y}%`;
+                                                    // Subtract because pulling image right = focal point moves left
+                                                    const nextX = Math.min(100, Math.max(0, localFocal.current.x - (deltaXPercent / zoom)));
+                                                    const nextY = Math.min(100, Math.max(0, localFocal.current.y - (deltaYPercent / zoom)));
+                                                    
+                                                    localFocal.current = { x: nextX, y: nextY };
+
+                                                    // Update image alignment (Direct DOM for Performance)
+                                                    activeImageRef.current.style.objectPosition = `${nextX}% ${nextY}%`;
                                                     
                                                     // Update visual target (if it exists)
                                                     const target = container.querySelector('.focal-target');
                                                     if (target) {
-                                                        target.style.left = `${localFocal.current.x}%`;
-                                                        target.style.top = `${localFocal.current.y}%`;
+                                                        target.style.left = `${nextX}%`;
+                                                        target.style.top = `${nextY}%`;
                                                     }
+
+                                                    // Use local buffer for reacting to UI changes
+                                                    setPanningPoint(localFocal.current);
                                                 }
                                             }}
                                             onPanEnd={() => {
@@ -1139,18 +1143,17 @@ const AdminDashboard = () => {
 
                                             {/* Isolated Calibration Hub */}
                                             {adjustingBannerIdx === index && (
-                                                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[200] flex items-center bg-brand-charcoal/90 backdrop-blur-2xl border border-white/20 px-8 py-5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] gap-8 pointer-events-auto">
+                                                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[200] flex items-center bg-brand-charcoal/90 backdrop-blur-2xl border border-white/20 px-8 py-5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] gap-8 pointer-events-auto scale-90 lg:scale-100">
                                                     <div className="flex flex-col gap-2">
                                                         <div className="flex justify-between items-center px-1">
-                                                            <span className="text-[9px] font-bold text-white/40 uppercase tracking-[0.2em]">Magnification Calibration</span>
+                                                            <span className="text-[9px] font-bold text-white/40 uppercase tracking-[0.2em]">Magnification</span>
                                                             <span className="text-[12px] font-bold text-brand-rose tabular-nums">{(interactingZoom !== null ? interactingZoom : (banner.zoom || 1)).toFixed(2)}x</span>
                                                         </div>
                                                         <div className="flex items-center gap-4">
-                                                            <span className="text-[10px] font-bold text-white/30">0.5</span>
                                                             <input 
                                                                 type="range" 
                                                                 min="0.5" 
-                                                                max="3" 
+                                                                max="4" 
                                                                 step="0.01" 
                                                                 value={interactingZoom !== null ? interactingZoom : (banner.zoom || 1)} 
                                                                 onInput={(e) => setInteractingZoom(parseFloat(e.target.value))}
@@ -1161,21 +1164,78 @@ const AdminDashboard = () => {
                                                                     nb[index] = { ...nb[index], zoom: val };
                                                                     updateBanners(nb);
                                                                 }}
-                                                                className="w-48 h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
+                                                                className="w-32 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
                                                             />
-                                                            <span className="text-[10px] font-bold text-white/30">3.0</span>
                                                         </div>
                                                     </div>
+
                                                     <div className="w-[1px] h-10 bg-white/10" />
+
+                                                    <div className="flex flex-col gap-2">
+                                                        <div className="flex justify-between items-center px-1">
+                                                            <span className="text-[9px] font-bold text-white/40 uppercase tracking-[0.2em]">Horizontal Bias</span>
+                                                            <span className="text-[12px] font-bold text-white tabular-nums">{Math.round(panningPoint?.x || 50)}%</span>
+                                                        </div>
+                                                        <input 
+                                                            type="range" 
+                                                            min="0" max="100" step="1" 
+                                                            value={panningPoint?.x || (banner.focalPoint?.x || 50)} 
+                                                            onInput={(e) => {
+                                                                const x = parseInt(e.target.value);
+                                                                const next = { ...localFocal.current, x };
+                                                                localFocal.current = next;
+                                                                setPanningPoint(next);
+                                                                if(activeImageRef.current) activeImageRef.current.style.objectPosition = `${next.x}% ${next.y}%`;
+                                                            }}
+                                                            onChange={(e) => {
+                                                                const x = parseInt(e.target.value);
+                                                                const next = { ...localFocal.current, x };
+                                                                const nb = [...banners];
+                                                                nb[index] = { ...nb[index], focalPoint: next };
+                                                                updateBanners(nb);
+                                                            }}
+                                                            className="w-32 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white"
+                                                        />
+                                                    </div>
+
+                                                    <div className="flex flex-col gap-2">
+                                                        <div className="flex justify-between items-center px-1">
+                                                            <span className="text-[9px] font-bold text-white/40 uppercase tracking-[0.2em]">Vertical Bias</span>
+                                                            <span className="text-[12px] font-bold text-white tabular-nums">{Math.round(panningPoint?.y || 50)}%</span>
+                                                        </div>
+                                                        <input 
+                                                            type="range" 
+                                                            min="0" max="100" step="1" 
+                                                            value={panningPoint?.y || (banner.focalPoint?.y || 50)} 
+                                                            onInput={(e) => {
+                                                                const y = parseInt(e.target.value);
+                                                                const next = { ...localFocal.current, y };
+                                                                localFocal.current = next;
+                                                                setPanningPoint(next);
+                                                                if(activeImageRef.current) activeImageRef.current.style.objectPosition = `${next.x}% ${next.y}%`;
+                                                            }}
+                                                            onChange={(e) => {
+                                                                const y = parseInt(e.target.value);
+                                                                const next = { ...localFocal.current, y };
+                                                                const nb = [...banners];
+                                                                nb[index] = { ...nb[index], focalPoint: next };
+                                                                updateBanners(nb);
+                                                            }}
+                                                            className="w-32 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white"
+                                                        />
+                                                    </div>
+
+                                                    <div className="w-[1px] h-10 bg-white/10" />
+                                                    
                                                     <button 
                                                         onClick={() => {
                                                             setAdjustingBannerIdx(null);
                                                             setInteractingZoom(null);
                                                             setPanningPoint(null);
                                                         }}
-                                                        className="bg-brand-rose text-brand-charcoal px-6 py-3 rounded-full font-bold text-[10px] uppercase tracking-widest hover:brightness-110 transition-all shadow-lg active:scale-95"
+                                                        className="bg-brand-rose text-brand-charcoal px-8 py-4 rounded-full font-bold text-[10px] uppercase tracking-widest hover:brightness-110 transition-all shadow-lg active:scale-95"
                                                     >
-                                                        Lock Calibration
+                                                        Save Calibration
                                                     </button>
                                                 </div>
                                             )}
