@@ -115,7 +115,7 @@ const Home = () => {
                                 <img
                                     src={getProductImage(visibleBanners[currentBanner].image, media)}
                                     alt={visibleBanners[currentBanner].title}
-                                    className="w-full h-full block object-cover transition-transform duration-[2000ms] origin-center"
+                                    className="w-full h-full block object-cover origin-center"
                                     style={{ 
                                         transform: (() => {
                                             const b = visibleBanners[currentBanner];
@@ -131,8 +131,12 @@ const Home = () => {
                                             
                                             const tx = (b.translateX || 0) * ratioX;
                                             const ty = (b.translateY || 0) * ratioY;
+                                            const zoom = b.zoom || 1;
+
+                                            // Debug check as requested
+                                            console.log(`Banner ${currentBanner} Calibration:`, { tx, ty, zoom, ratioX, ratioY });
                                             
-                                            return `translate3d(${tx}px, ${ty}px, 0) scale(${b.zoom || 1})`;
+                                            return `translate(${tx}px, ${ty}px) scale(${zoom})`;
                                         })()
                                     }}
                                 />
