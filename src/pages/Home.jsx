@@ -105,9 +105,12 @@ const Home = () => {
                                             const b = visibleBanners[currentBanner];
                                             if (!b.refWidth) return `scale(${b.zoom || 1})`;
                                             
-                                            // Dynamic recalculation based on current viewport
-                                            const currentW = window.innerWidth;
-                                            const currentH = window.innerHeight * 0.75; 
+                                            // Recalculate based on current rendered container width
+                                            // Desktop: 65% of viewport | Mobile: 100% of viewport
+                                            const currentW = window.innerWidth >= 768 ? window.innerWidth * 0.65 : window.innerWidth;
+                                            
+                                            // Desktop: 75vh | Mobile: 50vh (as defined in Link h-[50vh])
+                                            const currentH = window.innerWidth >= 768 ? window.innerHeight * 0.75 : window.innerHeight * 0.5; 
                                             
                                             const ratioX = currentW / b.refWidth;
                                             const ratioY = currentH / b.refHeight;

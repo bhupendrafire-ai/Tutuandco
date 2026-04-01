@@ -985,7 +985,7 @@ const AdminDashboard = () => {
 
                                             {/* Column 2: CTA, Alignment & Assets */}
                                             <div className="space-y-6">
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                                     <div className="space-y-3">
                                                         <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide uppercase">CTA label</label>
                                                         <input 
@@ -996,6 +996,19 @@ const AdminDashboard = () => {
                                                                 updateBanners(nb);
                                                             }}
                                                             className="w-full bg-white p-4 font-bold text-sm border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm uppercase tracking-widest"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-3">
+                                                        <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide uppercase">Link destination</label>
+                                                        <input 
+                                                            value={banner.link || ''} 
+                                                            onChange={e => {
+                                                                const nb = [...banners];
+                                                                nb[index] = { ...nb[index], link: e.target.value };
+                                                                updateBanners(nb);
+                                                            }}
+                                                            placeholder="/moments"
+                                                            className="w-full bg-white p-4 font-medium text-sm border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm"
                                                         />
                                                     </div>
                                                     <div className="space-y-3">
@@ -1061,21 +1074,23 @@ const AdminDashboard = () => {
                                         </div>
                                     </div>
 
-                                    {/* Bottom Panel: Full Width Actual-Scale Preview */}
-                                    <div className="w-full relative overflow-hidden bg-brand-charcoal flex flex-col">
+                                    {/* Bottom Panel: Split Identity Preview (Parity with Frontend) */}
+                                    <div className="w-full relative overflow-hidden bg-brand-charcoal flex flex-col md:flex-row">
                                         <div className="absolute top-8 left-8 z-40 flex items-center gap-4">
                                             <div className="text-[11px] font-bold text-white bg-black/60 px-6 py-3 rounded-full shadow-2xl backdrop-blur-md uppercase tracking-[0.2em] border border-white/20">
-                                                Active Backdrop (75vh Exact Match)
+                                                Active Backdrop (65% Width Parity)
                                             </div>
                                             {adjustingBannerIdx === index && (
                                                 <div className="text-[11px] font-bold text-brand-charcoal bg-brand-rose px-8 py-3 rounded-full shadow-2xl uppercase tracking-[0.2em] animate-pulse flex items-center gap-2">
                                                     <Menu size={14} className="rotate-90" />
-                                                    Hand-to-Image Panning Active
+                                                    Panning Active
                                                 </div>
                                             )}
                                         </div>
+
+                                        {/* Left Side: Interactive Panning Image (65%) */}
                                         <motion.div 
-                                            className={`relative h-[75vh] w-full overflow-hidden select-none banner-panning-container ${adjustingBannerIdx === index ? 'cursor-grab active:cursor-grabbing' : ''}`}
+                                            className={`relative h-[50vh] md:h-[75vh] w-full md:w-[65%] overflow-hidden select-none banner-panning-container ${adjustingBannerIdx === index ? 'cursor-grab active:cursor-grabbing' : ''}`}
                                             style={{ touchAction: 'none' }}
                                             onPanStart={() => {
                                                  if (adjustingBannerIdx === index) {
@@ -1116,14 +1131,12 @@ const AdminDashboard = () => {
                                                     const maxY = Math.max(0, (finalH - rect.height) / 2);
                                                     
                                                     // 4. Update relative pixel offsets
-                                                    // info.delta is the distance mouse moved this frame
                                                     const nextX = Math.min(maxX, Math.max(-maxX, (localFocal.current.x || 0) + info.delta.x));
                                                     const nextY = Math.min(maxY, Math.max(-maxY, (localFocal.current.y || 0) + info.delta.y));
                                                     
                                                     localFocal.current = { x: nextX, y: nextY };
 
                                                     // 5. Update image transform (Direct DOM for Performance)
-                                                    // We use translate3d for GPU acceleration
                                                     activeImageRef.current.style.transform = `translate3d(${nextX}px, ${nextY}px, 0) scale(${zoom})`;
                                                     
                                                     // Store current reference dimensions for sync
@@ -1144,19 +1157,10 @@ const AdminDashboard = () => {
                                                         refHeight: rect.height,
                                                         zoom: finalZoom
                                                     };
-                                                    console.log("💾 Banner Panning Saved (Drag End):", {
-                                                        id: banner.id,
-                                                        x: localFocal.current.x,
-                                                        y: localFocal.current.y,
-                                                        zoom: finalZoom,
-                                                        refW: rect.width
-                                                    });
                                                     updateBanners(nb);
                                                 }
                                             }}
                                         >
-                                            {/* Visual Framing Target removed as it no longer maps 1:1 with transform */}
-
                                             {/* Isolated Calibration Hub */}
                                             {adjustingBannerIdx === index && (
                                                 <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[200] flex items-center bg-brand-charcoal/90 backdrop-blur-2xl border border-white/20 px-8 py-5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] gap-8 pointer-events-auto scale-90 lg:scale-100">
@@ -1231,13 +1235,6 @@ const AdminDashboard = () => {
                                                                     refHeight: rect.height,
                                                                     zoom: scaledZoom
                                                                 };
-                                                                console.log("💾 Banner Calibration Saved (X-Slider):", {
-                                                                    x: localFocal.current.x,
-                                                                    y: localFocal.current.y,
-                                                                    zoom: scaledZoom,
-                                                                    refW: rect.width,
-                                                                    refH: rect.height
-                                                                });
                                                                 updateBanners(nb);
                                                             }}
                                                             className="w-32 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white"
@@ -1288,13 +1285,6 @@ const AdminDashboard = () => {
                                                                     refHeight: rect.height,
                                                                     zoom: scaledZoom
                                                                 };
-                                                                console.log("💾 Banner Calibration Saved (Y-Slider):", {
-                                                                    x: localFocal.current.x,
-                                                                    y: localFocal.current.y,
-                                                                    zoom: scaledZoom,
-                                                                    refW: rect.width,
-                                                                    refH: rect.height
-                                                                });
                                                                 updateBanners(nb);
                                                             }}
                                                             className="w-32 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white"
@@ -1316,7 +1306,6 @@ const AdminDashboard = () => {
                                                 </div>
                                             )}
 
-                                            {/* Homepage-style Backdrop */}
                                             <img 
                                                 ref={adjustingBannerIdx === index ? activeImageRef : null}
                                                 src={getProductImage(banner.image, media)} 
@@ -1330,9 +1319,9 @@ const AdminDashboard = () => {
                                                     transform: adjustingBannerIdx === index 
                                                         ? `translate3d(${panningPoint?.x || 0}px, ${panningPoint?.y || 0}px, 0) scale(${interactingZoom !== null ? interactingZoom : (banner.zoom || 1)})`
                                                         : (() => {
-                                                            const scaleX = (activeImageRef.current?.parentElement?.clientWidth || window.innerWidth) / (banner.refWidth || 1);
-                                                            const scaleY = (activeImageRef.current?.parentElement?.clientHeight || 450) / (banner.refHeight || 1);
-                                                            // Standard responsive recalculation fallback
+                                                            const rect = activeImageRef.current?.parentElement?.getBoundingClientRect() || { width: 1000, height: 300 };
+                                                            const scaleX = rect.width / (banner.refWidth || 1);
+                                                            const scaleY = rect.height / (banner.refHeight || 1);
                                                             const x = (banner.translateX || 0) * (scaleX || 1);
                                                             const y = (banner.translateY || 0) * (scaleY || 1);
                                                             return `translate3d(${x}px, ${y}px, 0) scale(${banner.zoom || 1})`;
@@ -1341,26 +1330,25 @@ const AdminDashboard = () => {
                                                 }}
                                             />
                                             
-                                            {/* Visual Framing Helper */}
                                             {adjustingBannerIdx === index && (
                                                 <div className="absolute inset-0 pointer-events-none border-[1px] border-brand-rose/30 shadow-[inset_0_0_100px_rgba(216,183,177,0.2)]" />
                                             )}
-                                            
-                                            {/* Homepage-style Gradient and UI Overlay */}
-                                            <div className={`absolute inset-0 flex items-center p-12 md:p-32 pointer-events-none transition-all duration-700
-                                                ${banner.contentPosition === 'left' ? 'justify-start text-left bg-gradient-to-r from-black/80 via-black/20 to-transparent' : 
-                                                  banner.contentPosition === 'center' ? 'justify-center text-center bg-gradient-to-t from-black/80 via-black/10 to-transparent' : 
-                                                  'justify-end text-right bg-gradient-to-l from-black/80 via-black/20 to-transparent'}`}>
-                                                <div className={`max-w-md text-white flex flex-col transition-all duration-700 
-                                                    ${banner.contentPosition === 'left' ? 'items-start' : 
-                                                      banner.contentPosition === 'center' ? 'items-center' : 
-                                                      'items-end'}`}>
-                                                    <h1 className="text-3xl lg:text-4xl font-medium mb-8 drop-shadow-2xl leading-tight text-white/95">{banner.title}</h1>
-                                                    <p className="text-sm italic text-white/60 mb-10 max-w-sm drop-shadow-lg">{banner.subtitle}</p>
-                                                    <div className="bg-[#4A5D4E] text-[#EADED0] px-12 py-6 text-sm font-bold shadow-2xl border border-white/10 uppercase tracking-[0.2em]">{banner.cta}</div>
+                                        </motion.div>
+
+                                        {/* Right Side: Content Preview Pane (35%) */}
+                                        <div className="w-full md:w-[35%] bg-[#7C846C] p-12 md:p-[60px] flex flex-col justify-center text-white border-l border-white/5">
+                                            <div className="max-w-md w-full mx-auto md:mx-0 flex flex-col gap-y-6">
+                                                <h1 className="text-3xl lg:text-4xl font-medium leading-[1.2]">
+                                                    {banner.title || "Identity Title"}
+                                                </h1>
+                                                <p className="text-white/70 text-sm italic font-medium">
+                                                    {banner.subtitle || "Identity sub-narrative brief..."}
+                                                </p>
+                                                <div className="bg-brand-charcoal text-[#EADED0] px-12 py-6 text-[12px] font-bold shadow-2xl border border-white/10 uppercase tracking-[0.25em] w-fit">
+                                                    {banner.cta || "CTA Label"}
                                                 </div>
                                             </div>
-                                        </motion.div>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
