@@ -987,7 +987,6 @@ const AdminDashboard = () => {
                         </div>
                     </div>
                 )}
-            </main>
 
             <AnimatePresence>
                 {mediaPickerConfig.isOpen && (
