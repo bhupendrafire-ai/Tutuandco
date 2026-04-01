@@ -949,37 +949,39 @@ const AdminDashboard = () => {
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                                            <div className="space-y-10">
-                                                <div className="space-y-4">
-                                                    <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">Identity narrative</label>
-                                                    <div className="space-y-4">
-                                                        <input 
-                                                            value={banner.title} 
-                                                            onChange={e => {
-                                                                const nb = [...banners];
-                                                                nb[index].title = e.target.value;
-                                                                updateBanners(nb);
-                                                            }}
-                                                            placeholder="Master Title (e.g. Sunset Sage Collection)"
-                                                            className="w-full bg-white p-5 font-medium text-2xl border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm"
-                                                        />
-                                                        <textarea 
-                                                            value={banner.subtitle} 
-                                                            onChange={e => {
-                                                                const nb = [...banners];
-                                                                nb[index].subtitle = e.target.value;
-                                                                updateBanners(nb);
-                                                            }}
-                                                            placeholder="Sub-narrative brief..."
-                                                            className="w-full bg-white p-5 italic text-lg border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm h-32"
-                                                        />
-                                                    </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                            {/* Column 1: Identity Narrative */}
+                                            <div className="space-y-6">
+                                                <div className="space-y-3">
+                                                    <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide uppercase">Identity narrative</label>
+                                                    <input 
+                                                        value={banner.title} 
+                                                        onChange={e => {
+                                                            const nb = [...banners];
+                                                            nb[index].title = e.target.value;
+                                                            updateBanners(nb);
+                                                        }}
+                                                        placeholder="Master Title (e.g. Sunset Sage Collection)"
+                                                        className="w-full bg-white p-4 font-medium text-xl border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm"
+                                                    />
+                                                    <textarea 
+                                                        value={banner.subtitle} 
+                                                        onChange={e => {
+                                                            const nb = [...banners];
+                                                            nb[index].subtitle = e.target.value;
+                                                            updateBanners(nb);
+                                                        }}
+                                                        placeholder="Sub-narrative brief..."
+                                                        className="w-full bg-white p-4 italic text-lg border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm h-24"
+                                                    />
                                                 </div>
+                                            </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                                    <div className="space-y-4">
-                                                        <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">CTA label</label>
+                                            {/* Column 2: CTA, Alignment & Assets */}
+                                            <div className="space-y-6">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <div className="space-y-3">
+                                                        <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide uppercase">CTA label</label>
                                                         <input 
                                                             value={banner.cta} 
                                                             onChange={e => {
@@ -987,11 +989,11 @@ const AdminDashboard = () => {
                                                                 nb[index].cta = e.target.value;
                                                                 updateBanners(nb);
                                                             }}
-                                                            className="w-full bg-white p-5 font-bold text-sm border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm uppercase tracking-widest"
+                                                            className="w-full bg-white p-4 font-bold text-sm border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm uppercase tracking-widest"
                                                         />
                                                     </div>
-                                                    <div className="space-y-4">
-                                                        <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">Content alignment</label>
+                                                    <div className="space-y-3">
+                                                        <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide uppercase">Content alignment</label>
                                                         <div className="flex bg-white p-2 rounded-sm border border-brand-charcoal/5 shadow-sm w-fit gap-2">
                                                             {[
                                                                 { id: 'left', icon: AlignLeft },
@@ -1015,21 +1017,21 @@ const AdminDashboard = () => {
                                                     </div>
                                                 </div>
 
-                                                <div className="space-y-1">
-                                                    <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide">Asset identifier</label>
-                                                    <div className="flex gap-4">
+                                                <div className="space-y-3">
+                                                    <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide uppercase">Asset identifier</label>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                         <button 
                                                             onClick={() => openMediaPicker({
                                                                 multi: false,
                                                                 onSelect: (url) => { const nb = [...banners]; nb[index].image = url; updateBanners(nb); }
                                                             })}
-                                                            className="flex-grow bg-white p-4 font-bold text-[11px] text-brand-rose border border-brand-rose/20 hover:bg-brand-rose hover:text-white outline-none rounded-sm shadow-sm transition-all flex items-center justify-center gap-2 uppercase tracking-widest"
+                                                            className="w-full bg-white p-4 font-bold text-[11px] text-brand-rose border border-brand-rose/20 hover:bg-brand-rose hover:text-white outline-none rounded-sm shadow-sm transition-all flex items-center justify-center gap-2 uppercase tracking-widest"
                                                         >
-                                                            <Layout size={14} /> Update Identity Image
+                                                            <Layout size={14} /> Identity Image
                                                         </button>
                                                         <button 
                                                             onClick={() => setAdjustingBannerIdx(adjustingBannerIdx === index ? null : index)}
-                                                            className={`flex items-center gap-3 px-6 py-4 rounded-sm border transition-all font-bold text-[11px] uppercase tracking-widest ${adjustingBannerIdx === index ? 'bg-brand-rose border-brand-charcoal text-brand-charcoal shadow-inner' : 'bg-white border-brand-charcoal/10 text-brand-charcoal/60 hover:text-brand-charcoal hover:border-brand-rose'}`}
+                                                            className={`flex items-center justify-center gap-3 px-6 py-4 rounded-sm border transition-all font-bold text-[11px] uppercase tracking-widest ${adjustingBannerIdx === index ? 'bg-brand-rose border-brand-charcoal text-brand-charcoal shadow-inner' : 'bg-white border-brand-charcoal/10 text-brand-charcoal/60 hover:text-brand-charcoal hover:border-brand-rose'}`}
                                                         >
                                                             <Crosshair size={16} className={adjustingBannerIdx === index ? 'animate-pulse' : ''} />
                                                             {adjustingBannerIdx === index ? 'Finish Positioning' : 'Reposition Center'}
