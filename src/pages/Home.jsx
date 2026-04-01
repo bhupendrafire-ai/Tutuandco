@@ -162,8 +162,11 @@ const Home = () => {
                                     <img
                                         src={getProductImage(activeBanner.image, media)}
                                         alt={activeBanner.title}
-                                        className="w-full h-full block object-cover origin-center"
-                                        style={{ transform: heroTransform }}
+                                        className="w-full h-full block origin-center"
+                                        style={{ 
+                                            transform: heroTransform,
+                                            objectFit: activeBanner.fitMode || 'cover'
+                                        }}
                                     />
                                 </Link>
                                 {/* Refined Natural Image Fade Divider */}

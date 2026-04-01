@@ -985,7 +985,7 @@ const AdminDashboard = () => {
 
                                             {/* Column 2: CTA, Alignment & Assets */}
                                             <div className="space-y-6">
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                                                     <div className="space-y-3">
                                                         <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide uppercase">CTA label</label>
                                                         <input 
@@ -1010,6 +1010,27 @@ const AdminDashboard = () => {
                                                             placeholder="/moments"
                                                             className="w-full bg-white p-4 font-medium text-sm border border-brand-charcoal/5 focus:border-brand-rose outline-none rounded-sm shadow-sm"
                                                         />
+                                                    </div>
+                                                    <div className="space-y-3">
+                                                        <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide uppercase">Fit Style</label>
+                                                        <div className="flex bg-white p-2 rounded-sm border border-brand-charcoal/5 shadow-sm w-fit gap-2">
+                                                            {[
+                                                                { id: 'cover', label: 'Crop to Fill' },
+                                                                { id: 'contain', label: 'Keep Original' }
+                                                            ].map((style) => (
+                                                                <button
+                                                                    key={style.id}
+                                                                    onClick={() => {
+                                                                        const nb = [...banners];
+                                                                        nb[index] = { ...nb[index], fitMode: style.id };
+                                                                        updateBanners(nb);
+                                                                    }}
+                                                                    className={`px-4 py-2 rounded-sm text-[9px] font-bold uppercase tracking-widest transition-all ${banner.fitMode === style.id || (!banner.fitMode && style.id === 'cover') ? 'bg-brand-rose text-brand-charcoal shadow-sm' : 'text-brand-charcoal/30 hover:text-brand-charcoal'}`}
+                                                                >
+                                                                    {style.label}
+                                                                </button>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                     <div className="space-y-3">
                                                         <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide uppercase">Content alignment</label>
@@ -1360,6 +1381,8 @@ const AdminDashboard = () => {
                             <button 
                                 onClick={async () => {
                                     if(window.confirm("Synchronize these identity calibrations with the live storefront?")) {
+                                        // Execute real persistence update
+                                        updateBanners(banners);
                                         alert("Front-page identities synchronized successfully!");
                                     }
                                 }}
