@@ -172,7 +172,7 @@ const Home = () => {
             </section>
 
             <section className="max-w-7xl mx-auto px-6 mt-20">
-                <div className="flex flex-col items-center mb-16">
+                <div className="flex flex-col items-center mb-10">
                     <h2 className="text-4xl md:text-5xl font-medium text-brand-charcoal text-center tracking-tight">Our community</h2>
                 </div>
                 
@@ -197,7 +197,7 @@ const Home = () => {
 
             <section className="py-20 bg-brand-cream/30 overflow-hidden">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-12">
+                    <div className="text-center mb-10">
                         <h2 className="text-4xl md:text-6xl font-medium text-brand-charcoal mb-6">Kind words</h2>
                         <div className="w-12 h-1 bg-brand-rose mx-auto opacity-30" />
                     </div>
@@ -234,7 +234,7 @@ const Home = () => {
                     <div className="flex flex-col items-center mb-10">
                         <img src={logo} alt="Tutu & Co" className="h-16 w-auto mb-2" />
                     </div>
-                    <p className="text-[#95714F] mb-16 text-xl font-light">Capture the joy. Share your moments with us.</p>
+                    <p className="text-[#95714F] mb-10 text-xl font-light">Capture the joy. Share your moments with us.</p>
                     <Link 
                         to="/moments"
                         className="inline-flex items-center space-x-6 bg-brand-rose text-brand-charcoal px-16 py-10 text-[18px] font-medium hover:bg-white transition-all shadow-lg"
@@ -248,7 +248,7 @@ const Home = () => {
             <section className="bg-brand-cream mt-20 py-20 px-6 text-center relative overflow-hidden">
                 <div className="max-w-4xl mx-auto relative z-10">
                     <span className="text-[11px] font-medium text-brand-charcoal opacity-60">Our philosophy</span>
-                    <h2 className="text-5xl md:text-7xl font-medium text-brand-charcoal mt-8 mb-12 leading-tight">Naturally Sourced.<br/>Designed for Movement.</h2>
+                    <h2 className="text-5xl md:text-7xl font-medium text-brand-charcoal mt-8 mb-10 leading-tight">Naturally Sourced.<br/>Designed for Movement.</h2>
                     <p className="text-brand-charcoal/80 leading-relaxed text-2xl italic opacity-80 max-w-2xl mx-auto">
                         "At Tutu & Co, we believe our pet companions deserve the same quality of organic materials and thoughtful design as we do."
                     </p>
