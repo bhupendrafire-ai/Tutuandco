@@ -464,403 +464,215 @@ const AdminDashboard = () => {
                                                 Synchronize listing
                                             </button>
                                         </div>
-                                    </div>
-
-                                    {/* Scrollable Workspace */}
-                                    <div className="flex-grow overflow-y-auto p-6 md:p-12 space-y-12 md:space-y-16">
-
-                                        {/* Row 1: General & Financials */}
-                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                                            <div className="lg:col-span-2 space-y-8">
-                                                <div className="bg-white p-8 rounded-sm shadow-sm border border-brand-charcoal/5">
-                                                    <h3 className="text-[11px] font-medium text-brand-charcoal/40 mb-6">General identity</h3>
-                                                    <div className="space-y-6">
-                                                        <div>
-                                                            <label className="text-[11px] font-medium text-brand-charcoal/40 mb-2 block">Product name</label>
-                                                            <input value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="w-full bg-brand-cream/50 p-5 font-medium text-2xl border-none focus:ring-1 focus:ring-brand-charcoal/10" placeholder="Enter name..." />
-                                                        </div>
-                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                             <div>
-                                                                 <div className="flex justify-between items-center mb-2">
-                                                                    <label className="text-[11px] font-medium text-brand-charcoal/40 block">Category</label>
-                                                                    <button 
-                                                                        onClick={() => setShowNewCategoryInput(!showNewCategoryInput)}
-                                                                        className="text-[10px] font-medium text-brand-rose hover:text-brand-charcoal transition-colors px-2 py-0.5 bg-brand-rose/10 rounded-sm"
-                                                                    >
-                                                                        {showNewCategoryInput ? 'Choose existing' : '+ Add new'}
-                                                                    </button>
-                                                                 </div>
-                                                                 
-                                                                 {showNewCategoryInput ? (
-                                                                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center space-x-4 bg-brand-cream/50 rounded-sm pr-4">
-                                                                        <input 
-                                                                            value={newCatTemp} 
-                                                                            onChange={e => setNewCatTemp(e.target.value)} 
-                                                                            className="flex-grow bg-transparent p-4 font-medium border-none focus:outline-none focus:ring-0" 
-                                                                            placeholder="New category name..." 
-                                                                            autoFocus
-                                                                            onKeyDown={(e) => {
-                                                                                if(e.key === 'Enter') {
-                                                                                    e.preventDefault();
-                                                                                    if(newCatTemp.trim()) {
-                                                                                        setSessionCategories(prev => [...new Set([...prev, newCatTemp.trim()])]);
-                                                                                        setProductForm({...productForm, category: newCatTemp.trim()});
-                                                                                        setShowNewCategoryInput(false);
-                                                                                        setNewCatTemp('');
-                                                                                    }
-                                                                                }
-                                                                            }}
-                                                                        />
-                                                                        <button 
-                                                                            onClick={() => {
-                                                                                if(newCatTemp.trim()) {
-                                                                                    setSessionCategories(prev => [...new Set([...prev, newCatTemp.trim()])]);
-                                                                                    setProductForm({...productForm, category: newCatTemp.trim()});
-                                                                                    setShowNewCategoryInput(false);
-                                                                                    setNewCatTemp('');
-                                                                                }
-                                                                            }}
-                                                                            className="bg-brand-charcoal text-white p-2 rounded-full hover:bg-brand-rose hover:text-brand-charcoal transition-all shadow-md"
-                                                                        >
-                                                                            <Check size={16} />
-                                                                        </button>
-                                                                    </motion.div>
-                                                                 ) : (
-                                                                    <div className="relative" ref={dropdownRef}>
-                                                                        <div 
-                                                                            onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
-                                                                            className="w-full bg-brand-cream/50 p-4 font-medium rounded-sm border border-transparent hover:border-brand-charcoal/10 transition-all cursor-pointer flex justify-between items-center"
-                                                                        >
-                                                                            <span className={productForm.category ? 'text-brand-charcoal' : 'text-brand-charcoal/30'}>
-                                                                                {productForm.category || 'Select category...'}
-                                                                            </span>
-                                                                            <ChevronDown className={`transition-transform duration-300 ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} size={18} />
-                                                                        </div>
-
-                                                                        <AnimatePresence>
-                                                                            {isCategoryDropdownOpen && (
-                                                                                <motion.div 
-                                                                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                                                    className="absolute left-0 right-0 mt-2 bg-white border border-brand-charcoal/5 shadow-2xl rounded-sm z-[110] overflow-hidden"
-                                                                                >
-                                                                                    <div className="max-h-80 overflow-y-auto">
-                                                                                        {[...(settings.categories || ['Accessories', 'Toys', 'Beds']), ...sessionCategories].map((cat, i) => (
-                                                                                            <div 
-                                                                                                key={i} 
-                                                                                                className={`flex items-center justify-between p-4 cursor-pointer transition-all group ${productForm.category === cat ? 'bg-brand-rose/10 bg-brand-rose' : 'hover:bg-brand-cream/40'}`}
-                                                                                                onClick={() => {
-                                                                                                    setProductForm({...productForm, category: cat});
-                                                                                                    setIsCategoryDropdownOpen(false);
-                                                                                                }}
-                                                                                            >
-                                                                                                <div className="flex items-center space-x-3">
-                                                                                                    {productForm.category === cat && <Check size={14} className="text-brand-charcoal" />}
-                                                                                                    <span className="text-sm font-medium">{cat}</span>
-                                                                                                </div>
-                                                                                                <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
-                                                                                                    <button 
-                                                                                                        onClick={() => {
-                                                                                                            const n = window.prompt(`Rename "${cat}" to:`, cat);
-                                                                                                            if (n) handleRenameCategory(cat, n);
-                                                                                                        }}
-                                                                                                        className="p-1 hover:text-brand-rose"
-                                                                                                    >
-                                                                                                        <Edit3 size={14} />
-                                                                                                    </button>
-                                                                                                    <button 
-                                                                                                        onClick={() => handleDeleteCategory(cat)}
-                                                                                                        className="p-1 hover:text-red-500"
-                                                                                                    >
-                                                                                                        <Trash2 size={14} />
-                                                                                                    </button>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        ))}
-                                                                                    </div>
-                                                                                    <div 
-                                                                                        className="border-t border-brand-charcoal/5 p-4 bg-brand-cream/10 hover:bg-brand-rose/10 cursor-pointer transition-all text-center"
-                                                                                        onClick={() => {
-                                                                                            setShowNewCategoryInput(true);
-                                                                                            setIsCategoryDropdownOpen(false);
-                                                                                        }}
-                                                                                    >
-                                                                                        <span className="text-[10px] font-medium text-brand-rose uppercase tracking-widest">+ Add new category</span>
-                                                                                    </div>
-                                                                                </motion.div>
-                                                                            )}
-                                                                        </AnimatePresence>
-                                                                    </div>
-                                                                 )}
-                                                             </div>
-                                                         </div>
-
-                                                        <div>
-                                                            <label className="text-[11px] font-medium text-brand-charcoal/40 mb-2 block">Brief hook (SEO description)</label>
-                                                            <textarea rows={3} value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} className="w-full bg-brand-cream/50 p-5 font-medium border-none resize-none" placeholder="Catchy summary..." />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="space-y-8">
-                                                <div className="bg-white p-8 rounded-sm shadow-sm border border-brand-charcoal/5 h-full">
-                                                    <h3 className="text-[11px] font-medium text-brand-charcoal/40 mb-6">Financial controls</h3>
-                                                    <div className="space-y-6">
-                                                        <div className="grid grid-cols-2 gap-4">
-                                                            <div className="p-4 bg-brand-cream/50 rounded-sm">
-                                                                <label className="text-[10px] font-medium text-brand-charcoal/40 block mb-1">Base price ({settings.currency?.symbol})</label>
-                                                                <input type="number" value={productForm.price} onChange={e => setProductForm({...productForm, price: parseFloat(e.target.value)})} className="w-full bg-transparent text-2xl font-medium p-0 border-none outline-none" />
-                                                            </div>
-                                                            <div className="p-4 bg-brand-charcoal/5 rounded-sm border border-brand-charcoal/5">
-                                                                <label className="text-[10px] font-medium text-brand-charcoal/40 block mb-1">Discount price</label>
-                                                                <input type="number" value={productForm.discountPrice || ''} onChange={e => setProductForm({...productForm, discountPrice: e.target.value ? parseFloat(e.target.value) : null})} className="w-full bg-transparent text-2xl font-medium p-0 border-none outline-none text-brand-charcoal" placeholder="None" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="p-4 bg-brand-cream/50 rounded-sm">
-                                                            <label className="text-[10px] font-medium text-brand-charcoal/40 block mb-1">Available stock</label>
-                                                            <input type="number" value={productForm.stock} onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} className="w-full bg-transparent text-xl font-medium p-0 border-none outline-none" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Row 2: Image Lounge */}
-                                        <div className="bg-white p-10 rounded-sm shadow-sm border border-brand-charcoal/5">
-                                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
-                                                <h3 className="text-[11px] font-medium text-brand-charcoal/40">Image lounge & sequencing</h3>
+                                    </div>                                    {/* High-Performance Workspace (One-Page, No Scroll) */}
+                                    <div className="flex-grow overflow-hidden flex flex-col md:flex-row h-full">
+                                        
+                                        {/* Column 1: Media Hub (40% width) */}
+                                        <div className="w-full md:w-[40%] bg-brand-cream/30 border-r border-brand-charcoal/5 flex flex-col p-6 md:p-10">
+                                            <div className="flex justify-between items-center mb-6">
+                                                <h3 className="text-[11px] font-medium text-brand-charcoal/40 uppercase tracking-widest">Media Hub</h3>
                                                 <div className="flex gap-4">
-                                                    <button 
-                                                        onClick={() => openMediaPicker({
-                                                            multi: true,
-                                                            selectedItems: productForm.images?.map(img => img.url) || [],
-                                                            onSelect: (urls) => {
-                                                                const newImages = urls.map((url, index) => {
-                                                                    const existing = productForm.images?.find(img => img.url === url);
-                                                                    return existing || { url, name: 'Gallery Image', isInternal: false, sequence: (productForm.images?.length || 0) + index };
-                                                                });
-                                                                setProductForm({ ...productForm, images: newImages });
-                                                            }
-                                                        })}
-                                                        className="flex items-center space-x-2 text-[10px] font-medium text-brand-charcoal/40 border-b border-brand-charcoal/10 pb-1"
-                                                    >
-                                                        <ImageIcon size={14} /> <span>Pick from library</span>
+                                                    <button onClick={() => openMediaPicker({
+                                                        multi: true,
+                                                        selectedItems: productForm.images?.map(img => img.url) || [],
+                                                        onSelect: (urls) => {
+                                                            const newImages = urls.map((url, index) => {
+                                                                const existing = productForm.images?.find(img => img.url === url);
+                                                                return existing || { url, name: 'Gallery Image', isInternal: false, sequence: index };
+                                                            }).slice(0, 5);
+                                                            setProductForm({ ...productForm, images: newImages });
+                                                        }
+                                                    })} className="text-[10px] font-medium text-brand-charcoal/60 hover:text-brand-rose transition-colors flex items-center gap-1">
+                                                        <ImageIcon size={14} /> Library
                                                     </button>
-                                                    <button 
-                                                        onClick={() => fileInputRef.current?.click()}
-                                                        className="flex items-center space-x-2 text-[10px] font-medium text-brand-charcoal/40 border-b border-brand-charcoal/10 pb-1"
-                                                    >
-                                                        <Plus size={14} /> <span>Upload fresh</span>
+                                                    <button onClick={() => fileInputRef.current?.click()} className="text-[10px] font-medium text-brand-charcoal/60 hover:text-brand-rose transition-colors flex items-center gap-1">
+                                                        <Plus size={14} /> Fresh
                                                         <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => handleFileUpload(e, 'product_image')} />
                                                     </button>
                                                 </div>
                                             </div>
 
-                                            
-                                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                                                {productForm.images?.sort((a,b) => a.sequence - b.sequence).map((img, idx) => (
-                                                    <div key={idx} className={`group relative aspect-[3/4] bg-[#F4F1EA] rounded-sm overflow-hidden border ${idx === 0 ? 'border-[#CD664D] border-2 shadow-xl' : 'border-[#CD664D]/10'}`}>
-                                                        <img src={getProductImage(img.url, media)} className="w-full h-full object-cover" />
-                                                        {idx === 0 && (
-                                                            <div className="absolute top-2 right-2 bg-brand-charcoal text-white text-[7px] font-medium px-2 py-0.5 rounded-full shadow-lg z-10">MAIN IMAGE</div>
-                                                        )}
-                                                        <div className="absolute top-2 left-2 bg-brand-charcoal text-white text-[8px] font-medium px-2 py-1 rounded-full shadow-lg">#{img.sequence}</div>
-                                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-3">
-                                                            <div className="flex justify-between">
-                                                                <button onClick={() => {
-                                                                    const newer = [...productForm.images];
-                                                                    newer[idx].isInternal = !newer[idx].isInternal;
-                                                                    setProductForm({...productForm, images: newer});
-                                                                }} className={`text-[9px] font-medium ${img.isInternal ? 'text-yellow-400' : 'text-green-400'}`}>
-                                                                    {img.isInternal ? 'Internal' : 'Public'}
-                                                                </button>
-                                                                <button onClick={() => {
-                                                                    setProductForm({...productForm, images: productForm.images.filter((_, i) => i !== idx)});
-                                                                }} className="text-white hover:text-red-500"><Trash2 size={14} /></button>
+                                            {/* Photo Slots (1 Hero + 4 Gallery) */}
+                                            <div className="flex-grow flex flex-col gap-6 overflow-hidden">
+                                                {/* Hero Slot */}
+                                                <div className="relative flex-grow bg-white rounded-sm border border-brand-charcoal/10 overflow-hidden group shadow-sm">
+                                                    {productForm.images?.[0] ? (
+                                                        <>
+                                                            <img src={getProductImage(productForm.images[0].url, media)} className="w-full h-full object-cover" />
+                                                            <div className="absolute top-4 left-4 bg-brand-charcoal text-white text-[8px] font-medium px-3 py-1 rounded-full shadow-lg">HERO ASSET</div>
+                                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                                <button onClick={() => setProductForm({...productForm, images: productForm.images.slice(1)})} className="text-white hover:text-brand-rose"><Trash2 size={24} /></button>
                                                             </div>
-                                                            <div className="flex space-x-2">
-                                                                <button onClick={() => {
-                                                                    if (img.sequence <= 0) return;
-                                                                    const newer = [...productForm.images];
-                                                                    newer[idx].sequence--;
-                                                                    setProductForm({...productForm, images: newer});
-                                                                }} className="flex-1 bg-white/20 hover:bg-white/40 text-white rounded p-1 text-[9px] font-medium">Up</button>
-                                                                <button onClick={() => {
-                                                                    const newer = [...productForm.images];
-                                                                    newer[idx].sequence++;
-                                                                    setProductForm({...productForm, images: newer});
-                                                                }} className="flex-1 bg-white/20 hover:bg-white/40 text-white rounded p-1 text-[9px] font-medium">Down</button>
-                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <div className="w-full h-full flex flex-col items-center justify-center text-brand-charcoal/20">
+                                                            <ImageIcon size={48} strokeWidth={1} />
+                                                            <span className="text-[10px] font-medium mt-4">Drop primary visual here</span>
                                                         </div>
-                                                    </div>
-                                                ))}
+                                                    )}
+                                                </div>
+
+                                                {/* Gallery Row */}
+                                                <div className="grid grid-cols-4 gap-4 h-32 flex-shrink-0">
+                                                    {[1, 2, 3, 4].map((idx) => (
+                                                        <div key={idx} className="relative bg-white rounded-sm border border-brand-charcoal/10 overflow-hidden group">
+                                                            {productForm.images?.[idx] ? (
+                                                                <>
+                                                                    <img src={getProductImage(productForm.images[idx].url, media)} className="w-full h-full object-cover" />
+                                                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                                        <button onClick={() => {
+                                                                            const newer = [...productForm.images];
+                                                                            newer.splice(idx, 1);
+                                                                            setProductForm({...productForm, images: newer});
+                                                                        }} className="text-white hover:text-brand-rose"><Trash2 size={16} /></button>
+                                                                    </div>
+                                                                </>
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center text-brand-charcoal/10">
+                                                                    <Plus size={16} />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
 
-                                        {/* Row 3: Story Builder (Narrative Designer) */}
-                                        <div className="bg-[#3E362E] p-6 md:p-12 rounded-sm text-white">
-                                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+                                        {/* Column 2: Product Intel (60% width) */}
+                                        <div className="w-full md:w-[60%] flex flex-col p-6 md:p-10 space-y-8 overflow-hidden">
+                                            
+                                            {/* Section 1: Main Identity */}
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 flex-shrink-0">
+                                                <div className="md:col-span-2">
+                                                    <label className="text-[11px] font-medium text-brand-charcoal/40 mb-2 block uppercase tracking-wide">Product Name</label>
+                                                    <input 
+                                                        value={productForm.name} 
+                                                        onChange={e => setProductForm({...productForm, name: e.target.value})} 
+                                                        className="w-full bg-brand-cream/50 p-4 font-medium text-2xl border-none focus:ring-1 focus:ring-brand-sage rounded-sm outline-none" 
+                                                        placeholder="Vogue..." 
+                                                    />
+                                                </div>
                                                 <div>
-                                                    <h3 className="text-[11px] font-medium text-brand-charcoal opacity-40">Story builder & brand narrative</h3>
-                                                    <p className="text-[10px] text-white/20 mt-1 italic">* Templates for premium visual storytelling</p>
-                                                </div>
-                                                <div className="flex flex-wrap gap-4">
-                                                    <div className="flex bg-white/5 p-1 rounded-sm gap-1 border border-white/10">
-                                                        <button onClick={() => addDescriptionBlock('text')} className="px-4 py-2 text-[10px] font-medium hover:bg-white hover:text-black transition-all flex items-center gap-2"><Plus size={12}/> Text</button>
-                                                        <button onClick={() => addDescriptionBlock('image')} className="px-4 py-2 text-[10px] font-medium hover:bg-white hover:text-black transition-all flex items-center gap-2"><ImageIcon size={12}/> Image row</button>
+                                                    <div className="flex justify-between items-center mb-2">
+                                                        <label className="text-[11px] font-medium text-brand-charcoal/40 uppercase tracking-wide">Category</label>
+                                                        <button onClick={() => setShowNewCategoryInput(!showNewCategoryInput)} className="text-[9px] font-medium text-brand-rose hover:text-brand-charcoal transition-colors">
+                                                            {showNewCategoryInput ? 'Existing' : '+ New'}
+                                                        </button>
                                                     </div>
-                                                    <div className="h-8 w-[1px] bg-white/10 self-center hidden md:block"></div>
-                                                    <button onClick={() => addDescriptionBlock('template', 'wide_banner')} className="px-4 py-2 text-[10px] font-medium bg-brand-rose text-brand-charcoal rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Wide banner</button>
-                                                    <button onClick={() => addDescriptionBlock('template', 'grid_spotlight')} className="px-4 py-2 text-[10px] font-medium bg-brand-rose text-brand-charcoal rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">4-Grid</button>
-                                                    <button onClick={() => addDescriptionBlock('template', 'overlay_feature')} className="px-4 py-2 text-[10px] font-medium bg-brand-rose text-brand-charcoal rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Overlay</button>
-                                                    <button onClick={() => addDescriptionBlock('template', 'alternating_items')} className="px-4 py-2 text-[10px] font-medium bg-brand-rose text-brand-charcoal rounded-sm hover:bg-white hover:text-black transition-all shadow-lg">Alt. rows</button>
+                                                    
+                                                    {showNewCategoryInput ? (
+                                                        <div className="flex items-center space-x-2 bg-brand-cream/50 rounded-sm pr-2">
+                                                            <input 
+                                                                value={newCatTemp} 
+                                                                onChange={e => setNewCatTemp(e.target.value)} 
+                                                                className="flex-grow bg-transparent p-4 font-medium border-none focus:outline-none focus:ring-0 text-sm" 
+                                                                placeholder="Add..." 
+                                                                autoFocus
+                                                                onKeyDown={(e) => {
+                                                                    if(e.key === 'Enter') {
+                                                                        e.preventDefault();
+                                                                        if(newCatTemp.trim()) {
+                                                                            setSessionCategories(prev => [...new Set([...prev, newCatTemp.trim()])]);
+                                                                            setProductForm({...productForm, category: newCatTemp.trim()});
+                                                                            setShowNewCategoryInput(false);
+                                                                            setNewCatTemp('');
+                                                                        }
+                                                                    }
+                                                                }}
+                                                            />
+                                                            <button onClick={() => {
+                                                                if(newCatTemp.trim()) {
+                                                                    setSessionCategories(prev => [...new Set([...prev, newCatTemp.trim()])]);
+                                                                    setProductForm({...productForm, category: newCatTemp.trim()});
+                                                                    setShowNewCategoryInput(false);
+                                                                    setNewCatTemp('');
+                                                                }
+                                                            }} className="bg-brand-charcoal text-white p-1.5 rounded-full hover:bg-brand-rose transition-all shadow-md">
+                                                                <Check size={14} />
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="relative" ref={dropdownRef}>
+                                                            <div 
+                                                                onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                                                                className="w-full bg-brand-cream/50 p-4 font-medium rounded-sm border border-transparent hover:border-brand-charcoal/10 transition-all cursor-pointer flex justify-between items-center text-sm h-[60px]"
+                                                            >
+                                                                <span className={productForm.category ? 'text-brand-charcoal' : 'text-brand-charcoal/30'}>
+                                                                    {productForm.category || 'Select...'}
+                                                                </span>
+                                                                <ChevronDown className={`transition-transform duration-300 ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} size={16} />
+                                                            </div>
+                                                            <AnimatePresence>
+                                                                {isCategoryDropdownOpen && (
+                                                                    <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute left-0 right-0 mt-2 bg-white border border-brand-charcoal/5 shadow-2xl rounded-sm z-[110] overflow-hidden">
+                                                                        <div className="max-h-60 overflow-y-auto">
+                                                                            {[...(settings.categories || ['Accessories', 'Toys', 'Beds']), ...sessionCategories].map((cat, i) => (
+                                                                                <div key={i} className={`flex items-center justify-between p-4 cursor-pointer transition-all ${productForm.category === cat ? 'bg-brand-rose' : 'hover:bg-brand-cream/40'}`} onClick={() => { setProductForm({...productForm, category: cat}); setIsCategoryDropdownOpen(false); }}>
+                                                                                    <span className="text-sm font-medium">{cat}</span>
+                                                                                    {productForm.category === cat && <Check size={14} />}
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </motion.div>
+                                                                )}
+                                                            </AnimatePresence>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
 
-                                            <div className="space-y-12">
-                                                {productForm.descriptionBlocks?.map((block, idx) => (
-                                                    <div key={block.id || idx} className="bg-white p-6 md:p-10 rounded-sm border-l-4 border-[#CD664D] relative group text-[#3E362E]">
-                                                        <button 
-                                                            onClick={() => setProductForm(prev => ({ ...prev, descriptionBlocks: prev.descriptionBlocks.filter((_, i) => i !== idx) }))}
-                                                            className="absolute top-4 right-4 text-red-500 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity"
-                                                        >
-                                                            <Trash2 size={16} />
-                                                        </button>
+                                            {/* Section 2: Narrative Centerpiece */}
+                                            <div className="flex-grow flex flex-col space-y-4 overflow-hidden bg-white p-8 rounded-sm border border-brand-charcoal/5 shadow-sm">
+                                                <div className="flex justify-between items-end">
+                                                    <label className="text-[11px] font-medium text-brand-charcoal/40 uppercase tracking-wide">Brief hook (SEO summary)</label>
+                                                    <span className="text-[9px] font-medium text-brand-charcoal/20">Storytelling mode active</span>
+                                                </div>
+                                                <textarea 
+                                                    value={productForm.description} 
+                                                    onChange={e => setProductForm({...productForm, description: e.target.value})} 
+                                                    className="flex-grow w-full bg-brand-cream/20 p-6 text-xl font-medium border-none resize-none outline-none focus:ring-1 focus:ring-brand-sage rounded-sm leading-relaxed italic" 
+                                                    placeholder="The philosophy behind this creation..." 
+                                                />
+                                            </div>
 
-                                                        {block.template === 'grid_spotlight' || block.template === 'alternating_items' ? (
-                                                            <div className="space-y-10">
-                                                                <h4 className="text-[11px] font-medium text-brand-charcoal opacity-40 mb-6 flex items-center gap-2 border-b border-brand-charcoal/10 pb-2">
-                                                                    <Layout size={14} /> {block.template.replace('_', ' ')}
-                                                                </h4>
-                                                                <div className={`grid ${block.template === 'grid_spotlight' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 md:grid-cols-2'} gap-8`}>
-                                                                    {block.items.map((item, itemIdx) => (
-                                                                        <div key={itemIdx} className="space-y-4 bg-[#F4F1EA]/30 p-4 md:p-6 rounded-sm">
-                                                                            <label className="text-[11px] font-medium text-brand-charcoal/40 block pb-1">Asset {itemIdx + 1}</label>
-                                                                            <button 
-                                                                                onClick={() => openMediaPicker({
-                                                                                    multi: false,
-                                                                                    selectedItems: [item.url],
-                                                                                    onSelect: (url) => {
-                                                                                        const newBlocks = [...productForm.descriptionBlocks];
-                                                                                        newBlocks[idx].items[itemIdx].url = url;
-                                                                                        setProductForm({ ...productForm, descriptionBlocks: newBlocks });
-                                                                                    }
-                                                                                })}
-                                                                                className="w-full aspect-square bg-[#F4F1EA] rounded-sm overflow-hidden flex items-center justify-center border-2 border-dashed border-[#CD664D]/20 hover:border-[#CD664D]/50 transition-all group/it"
-                                                                            >
-                                                                                {item.url ? (
-                                                                                    <img src={getProductImage(item.url, media)} className="w-full h-full object-cover" />
-                                                                                ) : (
-                                                                                    <ImageIcon size={24} className="text-[#CD664D]/30 group-hover/it:scale-110 transition-transform" />
-                                                                                )}
-                                                                            </button>
-                                                                            <input 
-                                                                                placeholder="Section Title..." 
-                                                                                value={item.title} 
-                                                                                onChange={e => {
-                                                                                    const newBlocks = [...productForm.descriptionBlocks];
-                                                                                    newBlocks[idx].items[itemIdx].title = e.target.value;
-                                                                                    setProductForm({ ...productForm, descriptionBlocks: newBlocks });
-                                                                                }}
-                                                                                className="w-full text-base font-medium italic border-b border-brand-charcoal/10 py-1 outline-none focus:border-brand-charcoal bg-transparent"
-                                                                            />
-                                                                            {block.template === 'grid_spotlight' ? (
-                                                                                <div className="space-y-2">
-                                                                                    {item.bullets.map((bullet, bIdx) => (
-                                                                                        <input 
-                                                                                            key={bIdx}
-                                                                                            placeholder={`Bullet Point ${bIdx + 1}`} 
-                                                                                            value={bullet} 
-                                                                                            onChange={e => {
-                                                                                                const newBlocks = [...productForm.descriptionBlocks];
-                                                                                                newBlocks[idx].items[itemIdx].bullets[bIdx] = e.target.value;
-                                                                                                setProductForm({ ...productForm, descriptionBlocks: newBlocks });
-                                                                                            }}
-                                                                                            className="w-full text-[9px] border-b border-[#CD664D]/5 py-1 outline-none bg-transparent"
-                                                                                        />
-                                                                                    ))}
-                                                                                </div>
-                                                                            ) : (
-                                                                                <textarea 
-                                                                                    placeholder="Narrative segment..." 
-                                                                                    value={item.content}
-                                                                                    onChange={e => {
-                                                                                        const newBlocks = [...productForm.descriptionBlocks];
-                                                                                        newBlocks[idx].items[itemIdx].content = e.target.value;
-                                                                                        setProductForm({ ...productForm, descriptionBlocks: newBlocks });
-                                                                                    }}
-                                                                                    className="w-full h-24 text-[10px] bg-white/50 p-2 border-none resize-none outline-none italic leading-relaxed"
-                                                                                />
-                                                                            )}
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                                                                <div className="space-y-6">
-                                                                    <div className="flex items-center gap-2 mb-2">
-                                                                        <span className={`px-2 py-1 text-[10px] font-medium rounded-sm ${block.template ? 'bg-brand-rose text-brand-charcoal' : 'bg-brand-charcoal/10 text-brand-charcoal'}`}>
-                                                                            {block.template || block.type} block
-                                                                        </span>
-                                                                    </div>
-                                                                    <input 
-                                                                        value={block.title} 
-                                                                        onChange={e => {
-                                                                            const newBlocks = [...productForm.descriptionBlocks];
-                                                                            newBlocks[idx].title = e.target.value;
-                                                                            setProductForm({ ...productForm, descriptionBlocks: newBlocks });
-                                                                        }}
-                                                                        className="w-full bg-transparent border-b border-brand-charcoal/10 p-2 font-medium text-2xl italic outline-none focus:border-brand-charcoal" 
-                                                                        placeholder="Header..." 
-                                                                    />
-                                                                    <textarea 
-                                                                        rows={5}
-                                                                        value={block.content} 
-                                                                        onChange={e => {
-                                                                            const newBlocks = [...productForm.descriptionBlocks];
-                                                                            newBlocks[idx].content = e.target.value;
-                                                                            setProductForm({ ...productForm, descriptionBlocks: newBlocks });
-                                                                        }}
-                                                                        className="w-full bg-[#F4F1EA]/30 p-4 text-sm resize-none outline-none focus:border-[#CD664D] border-none italic leading-relaxed" 
-                                                                        placeholder="Narrative content..." 
-                                                                    />
-                                                                </div>
-                                                                {(block.type === 'image' || block.template) && (
-                                                                    <div className="space-y-4">
-                                                                        <label className="text-[11px] font-medium text-brand-charcoal/40">Visual asset</label>
-                                                                        <button 
-                                                                            onClick={() => openMediaPicker({
-                                                                                multi: false,
-                                                                                selectedItems: [block.url],
-                                                                                onSelect: (url) => {
-                                                                                    const newBlocks = [...productForm.descriptionBlocks];
-                                                                                    newBlocks[idx].url = url;
-                                                                                    setProductForm({ ...productForm, descriptionBlocks: newBlocks });
-                                                                                }
-                                                                            })}
-                                                                            className="w-full aspect-video bg-[#F4F1EA] rounded-sm overflow-hidden flex items-center justify-center group/picker border-2 border-dashed border-[#CD664D]/10 hover:border-[#CD664D]/40 transition-all"
-                                                                        >
-                                                                            {block.url ? (
-                                                                                <img src={getProductImage(block.url, media)} className="w-full h-full object-cover" />
-                                                                            ) : (
-                                                                                <div className="flex flex-col items-center gap-2">
-                                                                                    <ImageIcon size={32} className="text-[#CD664D]/20 group-hover/picker:scale-110 transition-transform" />
-                                                                                    <span className="text-[11px] font-medium text-brand-charcoal/40">Pick asset</span>
-                                                                                </div>
-                                                                            )}
-                                                                        </button>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        )}
+                                            {/* Section 3: Financial Bar (Compact) */}
+                                            <div className="grid grid-cols-3 gap-8 flex-shrink-0">
+                                                <div className="bg-brand-charcoal p-6 rounded-sm text-white shadow-lg">
+                                                    <label className="text-[9px] font-medium opacity-40 block mb-2 uppercase tracking-widest">Base Price (₹)</label>
+                                                    <input 
+                                                        type="number" 
+                                                        value={productForm.price} 
+                                                        onChange={e => setProductForm({...productForm, price: parseInt(e.target.value)})} 
+                                                        className="w-full bg-transparent text-2xl font-medium outline-none border-none p-0" 
+                                                    />
+                                                </div>
+                                                <div className="bg-brand-rose p-6 rounded-sm text-brand-charcoal shadow-lg">
+                                                    <label className="text-[9px] font-medium opacity-40 block mb-2 uppercase tracking-widest">Discount Price</label>
+                                                    <div className="flex items-center space-x-2">
+                                                        <span className="text-lg opacity-40">₹</span>
+                                                        <input 
+                                                            type="number" 
+                                                            placeholder="None"
+                                                            value={productForm.discountPrice || ''} 
+                                                            onChange={e => setProductForm({...productForm, discountPrice: e.target.value ? parseInt(e.target.value) : null})} 
+                                                            className="w-full bg-transparent text-2xl font-medium outline-none border-none p-0 placeholder:text-brand-charcoal/20" 
+                                                        />
                                                     </div>
-                                                ))}
+                                                </div>
+                                                <div className="bg-white p-6 rounded-sm border border-brand-charcoal/10 shadow-sm">
+                                                    <label className="text-[9px] font-medium text-brand-charcoal/40 block mb-2 uppercase tracking-widest">Available Stock</label>
+                                                    <div className="flex items-end space-x-2">
+                                                        <input 
+                                                            type="number" 
+                                                            value={productForm.stock} 
+                                                            onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} 
+                                                            className="w-full bg-transparent text-2xl font-medium p-0 border-none outline-none" 
+                                                        />
+                                                        <span className="text-[10px] font-medium opacity-20 mb-1">Units</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-
                                     </div>
                                 </motion.div>
                             </div>
