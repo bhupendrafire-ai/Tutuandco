@@ -79,7 +79,7 @@ const Home = () => {
     return (
         <div className="pb-20 bg-brand-sage">
             {/* Dynamic Hero Banner with Calibration Sync */}
-            <section className="relative h-[75vh] overflow-hidden group">
+            <section className="relative h-auto md:h-[75vh] overflow-hidden group flex flex-col md:flex-row">
                 <AnimatePresence mode="wait">
                     {visibleBanners[currentBanner] && (
                         <motion.div
@@ -88,48 +88,47 @@ const Home = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 1.2 }}
-                            className="absolute inset-0"
+                            className="flex flex-col md:flex-row w-full h-full"
                         >
-                            <img
-                                src={getProductImage(visibleBanners[currentBanner].image, media)}
-                                alt={visibleBanners[currentBanner].title}
-                                className="w-full h-full transition-transform duration-[2000ms] origin-center"
-                                style={{ 
-                                    objectFit: visibleBanners[currentBanner].fitMode || 'cover',
-                                    transform: (() => {
-                                        const b = visibleBanners[currentBanner];
-                                        if (!b.refWidth) return `scale(${b.zoom || 1})`;
-                                        
-                                        // Dynamic recalculation based on current viewport
-                                        // We use 75vh for the height as defined in the layout
-                                        const currentW = window.innerWidth;
-                                        const currentH = window.innerHeight * 0.75; 
-                                        
-                                        const ratioX = currentW / b.refWidth;
-                                        const ratioY = currentH / b.refHeight;
-                                        
-                                        // We use the same scaling logic to maintain position
-                                        const tx = (b.translateX || 0) * ratioX;
-                                        const ty = (b.translateY || 0) * ratioY;
-                                        
-                                        return `translate3d(${tx}px, ${ty}px, 0) scale(${b.zoom || 1})`;
-                                    })()
-                                }}
-                            />
-                            <div className="absolute inset-0 bg-black/10 pointer-events-none" /> {/* Atmospheric dimming for unified composition */}
-                            <div className={`absolute inset-0 flex items-center p-12 md:p-32 transition-all duration-[1500ms]
-                                ${visibleBanners[currentBanner].contentPosition === 'left' ? 'justify-start text-left bg-gradient-to-r from-black/70 via-black/30 via-black/5 to-transparent' : 
-                                  visibleBanners[currentBanner].contentPosition === 'center' ? 'justify-center text-center bg-gradient-to-t from-black/70 via-black/20 via-black/5 to-transparent' : 
-                                  'justify-end text-right bg-gradient-to-l from-black/70 via-black/30 via-black/5 to-transparent'}`}>
-                                <div className={`max-w-2xl text-white flex flex-col p-8 rounded-sm transition-all duration-[1500ms] gap-y-6
-                                    ${visibleBanners[currentBanner].contentPosition === 'left' ? 'items-start' : 
-                                      visibleBanners[currentBanner].contentPosition === 'center' ? 'items-center' : 
-                                      'items-end'}`}>
+                            {/* Left Side: Image (65% on Desktop) */}
+                            <Link 
+                                to={visibleBanners[currentBanner].link || "/"}
+                                className="relative w-full md:w-[65%] h-[50vh] md:h-full overflow-hidden"
+                            >
+                                <img
+                                    src={getProductImage(visibleBanners[currentBanner].image, media)}
+                                    alt={visibleBanners[currentBanner].title}
+                                    className="w-full h-full transition-transform duration-[2000ms] origin-center"
+                                    style={{ 
+                                        objectFit: visibleBanners[currentBanner].fitMode || 'cover',
+                                        transform: (() => {
+                                            const b = visibleBanners[currentBanner];
+                                            if (!b.refWidth) return `scale(${b.zoom || 1})`;
+                                            
+                                            // Dynamic recalculation based on current viewport
+                                            const currentW = window.innerWidth;
+                                            const currentH = window.innerHeight * 0.75; 
+                                            
+                                            const ratioX = currentW / b.refWidth;
+                                            const ratioY = currentH / b.refHeight;
+                                            
+                                            const tx = (b.translateX || 0) * ratioX;
+                                            const ty = (b.translateY || 0) * ratioY;
+                                            
+                                            return `translate3d(${tx}px, ${ty}px, 0) scale(${b.zoom || 1})`;
+                                        })()
+                                    }}
+                                />
+                            </Link>
+
+                            {/* Right Side: Content Panel (35% on Desktop) */}
+                            <div className="w-full md:w-[35%] bg-[#7C846C] p-12 md:p-[60px] flex flex-col justify-center min-h-[350px] md:min-h-0 text-white">
+                                <div className="max-w-md w-full mx-auto md:mx-0 flex flex-col gap-y-6">
                                     <motion.h1
-                                        initial={{ opacity: 0, x: visibleBanners[currentBanner].contentPosition === 'left' ? -30 : 30 }}
+                                        initial={{ opacity: 0, x: 30 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ duration: 0.8, delay: 0.2 }}
-                                        className="text-4xl md:text-6xl font-medium drop-shadow-2xl leading-[1.2] text-white/95"
+                                        className="text-4xl md:text-5xl font-medium leading-[1.2]"
                                     >
                                         {visibleBanners[currentBanner].title}
                                     </motion.h1>
@@ -138,7 +137,7 @@ const Home = () => {
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.8, delay: 0.4 }}
-                                        className="text-white/70 text-lg italic font-medium max-w-lg drop-shadow-md"
+                                        className="text-white/80 text-lg italic font-medium"
                                     >
                                         {visibleBanners[currentBanner].subtitle}
                                     </motion.p>
@@ -150,7 +149,7 @@ const Home = () => {
                                     >
                                         <Link 
                                             to={visibleBanners[currentBanner].link || "/"}
-                                            className="bg-[#4A5D4E] text-[#EADED0] px-20 py-12 text-[20px] font-bold shadow-[0_30px_60px_rgba(0,0,0,0.4)] hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-[0.25em] border border-white/10 active:scale-95 inline-block"
+                                            className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-lg hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-[0.2em] active:scale-95 inline-block text-center mr-auto"
                                         >
                                             {visibleBanners[currentBanner].cta || "Explore collection"}
                                         </Link>
