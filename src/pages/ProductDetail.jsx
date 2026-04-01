@@ -6,14 +6,13 @@ import { useShop, getProductImage } from '../context/ShopContext';
 import logo from '../assets/logo.png';
 import logoWhite from '../assets/logo-white.png';
 
-import mockApi from '../api/mockApi';
 
 // Import all images from the folder
 const imageModules = import.meta.glob('../assets/heroshots/*.{jpg,png,jpeg}', { eager: true });
 const allImages = Object.values(imageModules).map(m => m.default).filter(img => typeof img === 'string');
 
 
-const BRAND_DETAILS = [
+const DEFAULT_DETAILS = [
     "Fabric: Premium cotton, lightweight and breathable",
     "Stitching: Reinforced for durability and everyday wear",
     "Fit: Adjustable with two snap button levels for a secure, comfortable fit",
@@ -35,10 +34,15 @@ const ProductDetail = () => {
         if (product) {
             const mainImg = product.images?.sort((a,b) => a.sequence - b.sequence)[0]?.url || product.imageName;
             setSelectedImage(getProductImage(mainImg, media));
-            mockApi.getReviews(product.id).then(setReviews);
+            
+            // Load reviews from real API
+            fetch(`${FINAL_API_URL}/api/reviews/${product.id}`)
+                .then(res => res.json())
+                .then(data => setReviews(data || []))
+                .catch(err => console.error("Error loading reviews:", err));
         }
         window.scrollTo(0, 0);
-    }, [product]);
+    }, [product, FINAL_API_URL, media]);
 
     if (loading || !product) return <div className="min-h-screen flex items-center justify-center font-medium">Loading product...</div>;
 
@@ -126,7 +130,7 @@ const ProductDetail = () => {
                         </div>
 
                         <div className="space-y-5 mb-12">
-                            {BRAND_DETAILS.map((detail, i) => (
+                            {(product.details?.length > 0 ? product.details : DEFAULT_DETAILS).map((detail, i) => (
                                 <div key={i} className="flex items-start text-[18px] text-brand-charcoal/80 font-medium">
                                     <Heart size={16} className="text-brand-rose mr-4 mt-1.5 flex-shrink-0" fill="currentColor" />
                                     <span>
@@ -353,7 +357,10 @@ const ProductDetail = () => {
                                 <span className="text-brand-charcoal/60 font-medium">{(Number(product.rating) || 5).toFixed(1)} out of 5</span>
                             </div>
                         </div>
-                        <button className="text-[18px] font-medium bg-brand-rose text-brand-charcoal px-14 py-6 hover:bg-white transition-all shadow-md">
+                        <button 
+                            onClick={() => document.getElementById('review-form')?.scrollIntoView({ behavior: 'smooth' })}
+                            className="text-[18px] font-medium bg-brand-rose text-brand-charcoal px-14 py-6 hover:bg-white transition-all shadow-md"
+                        >
                             Write a review
                         </button>
                     </div>
@@ -381,7 +388,7 @@ const ProductDetail = () => {
                         </div>
 
                         {/* Review Form */}
-                        <div className="bg-brand-cream/50 p-10 rounded-sm h-fit">
+                        <div id="review-form" className="bg-brand-cream/50 p-10 rounded-sm h-fit">
                             <h3 className="text-xl font-medium text-brand-charcoal mb-8">Tell us what you think</h3>
                             <form onSubmit={async (e) => {
                                 e.preventDefault();
@@ -392,10 +399,23 @@ const ProductDetail = () => {
                                     title: e.target.title.value,
                                     comment: e.target.comment.value
                                 };
-                                await mockApi.addReview(data);
-                                mockApi.getReviews(product.id).then(setReviews);
-                                e.target.reset();
-                                alert("Review submitted! Thank you.");
+                                
+                                try {
+                                    const res = await fetch(`${FINAL_API_URL}/api/reviews`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify(data)
+                                    });
+                                    if (res.ok) {
+                                        const updatedReviews = await fetch(`${FINAL_API_URL}/api/reviews/${product.id}`).then(r => r.json());
+                                        setReviews(updatedReviews);
+                                        e.target.reset();
+                                        alert("Review submitted! Thank you.");
+                                    }
+                                } catch (err) {
+                                    console.error("Error posting review:", err);
+                                    alert("Could not post review. Please try again later.");
+                                }
                             }} className="space-y-6">
                                 <div>
                                     <label className="block text-[11px] font-medium text-brand-charcoal/40 mb-2">Display name</label>
@@ -428,13 +448,13 @@ const ProductDetail = () => {
                         <p className="text-brand-charcoal/40">Every angle of the craftsmanship.</p>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {allImages.slice(0, 8).map((img, index) => (
+                        {(product.images?.length > 0 ? product.images : [{url: product.imageName}]).map((imgObj, index) => (
                             <motion.div 
                                 key={index}
                                 whileHover={{ y: -10 }}
                                 className="aspect-[3/4] bg-brand-cream rounded-sm overflow-hidden cursor-zoom-in shadow-sm"
                             >
-                                <img src={img} alt={`Showcase ${index}`} className="w-full h-full object-cover" />
+                                <img src={getProductImage(imgObj.url, media)} alt={`Showcase ${index}`} className="w-full h-full object-cover" />
                             </motion.div>
                         ))}
                     </div>

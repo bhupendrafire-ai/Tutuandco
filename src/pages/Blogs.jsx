@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Calendar, User } from 'lucide-react';
-import mockApi from '../api/mockApi';
-import { getProductImage } from '../context/ShopContext';
+import { useShop, getProductImage, FINAL_API_URL } from '../context/ShopContext';
 import logo from '../assets/logo.png';
 
 
@@ -13,11 +12,19 @@ const Blogs = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        mockApi.getBlogs().then(data => {
-            setPosts(data);
-            setLoading(false);
-        });
-    }, []);
+        const loadBlogs = async () => {
+            try {
+                const res = await fetch(`${FINAL_API_URL}/api/blogs`);
+                const data = await res.json();
+                setPosts(data || []);
+            } catch (err) {
+                console.error("Error loading blogs:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadBlogs();
+    }, [FINAL_API_URL]);
 
     if (loading) return <div className="min-h-screen flex items-center justify-center font-medium">Loading journal...</div>;
 

@@ -246,6 +246,17 @@ app.post('/api/reviews', async (req, res) => {
     }
 });
 
+// Admin Auth
+app.post('/api/admin/login', (req, res) => {
+    const { username, password } = req.body;
+    // Hardcoded credentials for now, as requested by user
+    if (username === 'sneha@tutuandco.in' && password === 'Black@5353') {
+        res.json({ authenticated: true });
+    } else {
+        res.status(401).json({ error: 'Invalid credentials' });
+    }
+});
+
 // Start Server
 app.listen(PORT, () => {
     console.log(`Tutu & Co Backend running on port ${PORT}`);

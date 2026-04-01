@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, User, Share2 } from 'lucide-react';
-import mockApi from '../api/mockApi';
-import { getProductImage } from '../context/ShopContext';
+import { useShop, getProductImage, FINAL_API_URL } from '../context/ShopContext';
 import logo from '../assets/logo.png';
 
 
@@ -14,13 +13,21 @@ const BlogPost = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        mockApi.getBlogs().then(blogs => {
-            const found = blogs.find(b => b.id === id);
-            setPost(found);
-            setLoading(false);
-            window.scrollTo(0, 0);
-        });
-    }, [id]);
+        const loadPost = async () => {
+            try {
+                const res = await fetch(`${FINAL_API_URL}/api/blogs`);
+                const blogs = await res.json();
+                const found = blogs.find(b => String(b.id) === String(id));
+                setPost(found);
+            } catch (err) {
+                console.error("Error loading blog post:", err);
+            } finally {
+                setLoading(false);
+                window.scrollTo(0, 0);
+            }
+        };
+        loadPost();
+    }, [id, FINAL_API_URL]);
 
     if (loading) return <div className="min-h-screen flex items-center justify-center font-medium">Loading journal...</div>;
     if (!post) return <div className="min-h-screen flex items-center justify-center font-medium">Article not found</div>;

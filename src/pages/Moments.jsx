@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, Heart, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import mockApi from '../api/mockApi';
-import { getProductImage } from '../context/ShopContext';
+import { useShop, getProductImage, FINAL_API_URL } from '../context/ShopContext';
 import logo from '../assets/logo.png';
 import logoWhite from '../assets/logo-white.png';
 
@@ -14,11 +13,19 @@ const Moments = () => {
     const [showUpload, setShowUpload] = useState(false);
 
     useEffect(() => {
-        mockApi.getMoments().then(data => {
-            setMoments(data);
-            setLoading(false);
-        });
-    }, []);
+        const loadMoments = async () => {
+            try {
+                const res = await fetch(`${FINAL_API_URL}/api/moments`);
+                const data = await res.json();
+                setMoments(data || []);
+            } catch (err) {
+                console.error("Error loading moments:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadMoments();
+    }, [FINAL_API_URL]);
 
     const handleUpload = (e) => {
         e.preventDefault();

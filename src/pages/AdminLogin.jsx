@@ -12,14 +12,31 @@ const AdminLogin = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        // Updated mock credentials
-        if (username === 'sneha@tutuandco.in' && password === 'Black@5353') {
-            sessionStorage.setItem('isAdminAuthenticated', 'true');
-            navigate('/admin/dashboard');
-        } else {
-            setError('Invalid credentials. Please try again.');
+        setError('');
+        
+        try {
+            // Determine API URL (using a fallback if context isn't ready)
+            const apiUrl = 'https://tutuandco-production.up.railway.app'; // Final confirmed API
+            
+            const response = await fetch(`${apiUrl}/api/admin/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.authenticated) {
+                sessionStorage.setItem('isAdminAuthenticated', 'true');
+                navigate('/admin/dashboard');
+            } else {
+                setError(data.error || 'Invalid credentials. Please try again.');
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            setError('Could not connect to the authentication server.');
         }
     };
 
