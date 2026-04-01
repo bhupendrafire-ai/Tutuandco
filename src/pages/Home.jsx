@@ -100,11 +100,12 @@ const Home = () => {
                                     transform: `scale(${visibleBanners[currentBanner].zoom || 1})`
                                 }}
                             />
+                            <div className="absolute inset-0 bg-black/10 pointer-events-none" /> {/* Atmospheric dimming for unified composition */}
                             <div className={`absolute inset-0 flex items-center p-12 md:p-32 transition-all duration-[1500ms]
-                                ${visibleBanners[currentBanner].contentPosition === 'left' ? 'justify-start text-left bg-gradient-to-r from-black/80 via-black/20 to-transparent' : 
-                                  visibleBanners[currentBanner].contentPosition === 'center' ? 'justify-center text-center bg-gradient-to-t from-black/80 via-black/10 to-transparent' : 
-                                  'justify-end text-right bg-gradient-to-l from-black/80 via-black/20 to-transparent'}`}>
-                                <div className={`max-w-2xl text-white flex flex-col p-8 rounded-sm transition-all duration-[1500ms] gap-y-10
+                                ${visibleBanners[currentBanner].contentPosition === 'left' ? 'justify-start text-left bg-gradient-to-r from-black/70 via-black/30 via-black/5 to-transparent' : 
+                                  visibleBanners[currentBanner].contentPosition === 'center' ? 'justify-center text-center bg-gradient-to-t from-black/70 via-black/20 via-black/5 to-transparent' : 
+                                  'justify-end text-right bg-gradient-to-l from-black/70 via-black/30 via-black/5 to-transparent'}`}>
+                                <div className={`max-w-2xl text-white flex flex-col p-8 rounded-sm transition-all duration-[1500ms] gap-y-6
                                     ${visibleBanners[currentBanner].contentPosition === 'left' ? 'items-start' : 
                                       visibleBanners[currentBanner].contentPosition === 'center' ? 'items-center' : 
                                       'items-end'}`}>
@@ -112,7 +113,7 @@ const Home = () => {
                                         initial={{ opacity: 0, x: visibleBanners[currentBanner].contentPosition === 'left' ? -30 : 30 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ duration: 0.8, delay: 0.2 }}
-                                        className="text-4xl md:text-7xl font-medium drop-shadow-2xl leading-[1.2] text-white/95"
+                                        className="text-4xl md:text-6xl font-medium drop-shadow-2xl leading-[1.2] text-white/95"
                                     >
                                         {visibleBanners[currentBanner].title}
                                     </motion.h1>
@@ -121,7 +122,7 @@ const Home = () => {
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.8, delay: 0.4 }}
-                                        className="text-white/80 text-lg md:text-xl italic font-medium max-w-lg drop-shadow-md"
+                                        className="text-white/70 text-lg italic font-medium max-w-lg drop-shadow-md"
                                     >
                                         {visibleBanners[currentBanner].subtitle}
                                     </motion.p>
@@ -133,7 +134,7 @@ const Home = () => {
                                     >
                                         <Link 
                                             to={visibleBanners[currentBanner].link || "/"}
-                                            className="bg-[#4A5D4E] text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-[0_25px_60px_rgba(0,0,0,0.4)] hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-[0.25em] border border-white/10 active:scale-95 inline-block"
+                                            className="bg-[#4A5D4E] text-[#EADED0] px-20 py-12 text-[20px] font-bold shadow-[0_30px_60px_rgba(0,0,0,0.4)] hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-[0.25em] border border-white/10 active:scale-95 inline-block"
                                         >
                                             {visibleBanners[currentBanner].cta || "Explore collection"}
                                         </Link>
