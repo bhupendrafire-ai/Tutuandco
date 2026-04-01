@@ -47,6 +47,7 @@ const AdminDashboard = () => {
     const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
     const fileInputRef = useRef(null);
+    const [adjustingImageIdx, setAdjustingImageIdx] = useState(null);
 
 
     const trendData = [
@@ -154,7 +155,14 @@ const AdminDashboard = () => {
             });
             
             if (type === 'product_image') {
-                const newImg = { url: newBlob.url, name: file.name, isInternal: false, sequence: productForm.images.length };
+                const newImg = { 
+                    url: newBlob.url, 
+                    name: file.name, 
+                    isInternal: false, 
+                    sequence: productForm.images.length,
+                    fitMode: 'cover',
+                    focalPoint: { x: 50, y: 50 }
+                };
                 setProductForm(prev => ({ ...prev, images: [...prev.images, newImg] }));
             } else {
                 await uploadMedia(newBlob.url, file.name);
@@ -462,11 +470,12 @@ const AdminDashboard = () => {
                                                 Synchronize listing
                                             </button>
                                         </div>
-                                    </div>                                    {/* High-Performance Workspace (One-Page, No Scroll) */}
+                                    </div>
+                                    {/* High-Performance Workspace (One-Page, No Scroll) */}
                                     <div className="flex-grow overflow-hidden flex flex-col md:flex-row h-full">
                                         
                                         {/* Column 1: Media Hub (40% width) */}
-                                        <div className="w-full md:w-[40%] bg-brand-cream/30 border-r border-brand-charcoal/5 flex flex-col p-6 md:p-10">
+                                        <div className="w-full md:w-[40%] bg-white/40 border-r border-brand-charcoal/5 flex flex-col p-6 md:p-10 overflow-hidden">
                                             <div className="flex justify-between items-center mb-6">
                                                 <h3 className="text-[11px] font-medium text-brand-charcoal/40 uppercase tracking-widest">Media Hub</h3>
                                                 <div className="flex gap-4">
@@ -476,7 +485,14 @@ const AdminDashboard = () => {
                                                         onSelect: (urls) => {
                                                             const newImages = urls.map((url, index) => {
                                                                 const existing = productForm.images?.find(img => img.url === url);
-                                                                return existing || { url, name: 'Gallery Image', isInternal: false, sequence: index };
+                                                                return existing || { 
+                                                                    url, 
+                                                                    name: 'Gallery Image', 
+                                                                    isInternal: false, 
+                                                                    sequence: index,
+                                                                    fitMode: 'cover',
+                                                                    focalPoint: { x: 50, y: 50 }
+                                                                };
                                                             }).slice(0, 5);
                                                             setProductForm({ ...productForm, images: newImages });
                                                         }
@@ -489,7 +505,6 @@ const AdminDashboard = () => {
                                                     </button>
                                                 </div>
                                             </div>
-
                                             {/* Photo Slots (1 Hero + 4 Gallery) */}
                                             <div className="flex-grow flex flex-col gap-6 overflow-hidden">
                                                 {/* Hero Slot */}
@@ -498,24 +513,89 @@ const AdminDashboard = () => {
                                                         multi: false,
                                                         onSelect: (url) => {
                                                             const newer = [...(productForm.images || [])];
-                                                            newer[0] = { url, name: 'Hero Asset', isInternal: false, sequence: 0 };
+                                                            newer[0] = { url, name: 'Hero Asset', isInternal: false, sequence: 0, fitMode: 'cover', focalPoint: { x: 50, y: 50 } };
                                                             setProductForm({...productForm, images: newer});
                                                         }
                                                     })}
-                                                    className={`relative flex-grow rounded-sm border border-brand-charcoal/10 overflow-hidden group shadow-sm transition-all duration-300 ${!productForm.images?.[0] ? 'cursor-pointer hover:border-brand-rose/40 hover:bg-white bg-white/50' : 'bg-white'}`}
+                                                    className={`relative flex-grow rounded-sm border border-brand-charcoal/10 overflow-hidden group shadow-sm transition-all duration-300 ${!productForm.images?.[0] ? 'cursor-pointer hover:border-brand-rose/40 hover:bg-white bg-white/50' : 'bg-brand-cream/10'}`}
                                                 >
                                                     {productForm.images?.[0] ? (
                                                         <>
-                                                            <img src={getProductImage(productForm.images[0].url, media)} className="w-full h-full object-cover" />
-                                                            <div className="absolute top-4 left-4 bg-brand-charcoal text-white text-[8px] font-medium px-3 py-1 rounded-full shadow-lg">HERO ASSET</div>
-                                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                                <button onClick={(e) => { e.stopPropagation(); setProductForm({...productForm, images: productForm.images.slice(1)}) }} className="text-white hover:text-brand-rose"><Trash2 size={24} /></button>
+                                                            <img 
+                                                                src={getProductImage(productForm.images[0].url, media)} 
+                                                                className="w-full h-full pointer-events-none"
+                                                                style={{ 
+                                                                    objectFit: productForm.images[0].fitMode || 'cover',
+                                                                    objectPosition: `${productForm.images[0].focalPoint?.x || 50}% ${productForm.images[0].focalPoint?.y || 50}%`
+                                                                }}
+                                                            />
+
+                                                            {/* Persistent Status Tag (Bottom) */}
+                                                            <div className="absolute bottom-4 left-4 bg-brand-charcoal/80 text-white text-[8px] font-medium px-3 py-1 rounded-full shadow-lg z-10">HERO ASSET</div>
+                                                            
+                                                            {/* Persistent Control Bar (Top) */}
+                                                            <div className="absolute top-3 right-3 flex items-center gap-2 z-30">
+                                                                <button 
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setAdjustingImageIdx(adjustingImageIdx === 0 ? null : 0);
+                                                                    }}
+                                                                    className={`flex items-center gap-2 font-medium text-[10px] px-3 py-1.5 rounded-sm shadow-xl transition-all ${adjustingImageIdx === 0 ? 'bg-brand-rose text-brand-charcoal' : 'bg-white text-brand-charcoal hover:bg-brand-cream'}`}
+                                                                >
+                                                                    <RefreshCcw size={12} className={adjustingImageIdx === 0 ? 'animate-spin' : ''} /> {adjustingImageIdx === 0 ? 'Save Position' : 'Adjust Frame'}
+                                                                </button>
+                                                                <button 
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        const newer = [...productForm.images];
+                                                                        newer[0] = { ...newer[0], fitMode: newer[0].fitMode === 'contain' ? 'cover' : 'contain' };
+                                                                        setProductForm({...productForm, images: newer});
+                                                                    }}
+                                                                    className="bg-white text-brand-charcoal hover:bg-brand-cream shadow-xl font-medium text-[10px] px-3 py-1.5 rounded-sm transition-all flex items-center gap-1"
+                                                                >
+                                                                    {productForm.images[0].fitMode === 'contain' ? <Maximize size={12}/> : <Minimize size={12}/>}
+                                                                    {productForm.images[0].fitMode === 'contain' ? 'Fill Frame' : 'Fit Whole'}
+                                                                </button>
+                                                                <button 
+                                                                    onClick={(e) => { 
+                                                                        e.stopPropagation(); 
+                                                                        setProductForm({...productForm, images: productForm.images.slice(1)}); 
+                                                                        setAdjustingImageIdx(null); 
+                                                                    }} 
+                                                                    className="bg-white/90 hover:bg-red-50 text-red-500 p-1.5 rounded-sm shadow-xl transition-all"
+                                                                >
+                                                                    <Trash2 size={16} />
+                                                                </button>
                                                             </div>
+
+                                                            {/* Draggable Focal Point Overlay */}
+                                                            {adjustingImageIdx === 0 && productForm.images[0].fitMode !== 'contain' && (
+                                                                <div 
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                    onMouseMove={(e) => {
+                                                                        if (e.buttons !== 1) return;
+                                                                        const rect = e.currentTarget.getBoundingClientRect();
+                                                                        const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+                                                                        const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+                                                                        const newer = [...productForm.images];
+                                                                        newer[0] = { ...newer[0], focalPoint: { x, y } };
+                                                                        setProductForm({...productForm, images: newer});
+                                                                    }}
+                                                                    className="absolute inset-0 z-20 cursor-move bg-brand-rose/5 border-2 border-brand-rose border-dashed"
+                                                                >
+                                                                    <div 
+                                                                        className="absolute w-10 h-10 -ml-5 -mt-5 border-2 border-brand-rose rounded-full pointer-events-none shadow-2xl flex items-center justify-center animate-pulse"
+                                                                        style={{ left: `${productForm.images[0].focalPoint?.x || 50}%`, top: `${productForm.images[0].focalPoint?.y || 50}%` }}
+                                                                    >
+                                                                        <div className="w-1 h-1 bg-brand-rose rounded-full"></div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
                                                         </>
                                                     ) : (
-                                                        <div className="w-full h-full flex flex-col items-center justify-center text-brand-charcoal/20 group-hover:text-brand-rose/40 transition-colors">
+                                                        <div className="w-full h-full flex flex-col items-center justify-center text-brand-charcoal/20 group-hover:text-brand-rose/40 transition-colors bg-white/40">
                                                             <ImageIcon size={48} strokeWidth={1} />
-                                                            <span className="text-[10px] font-medium mt-4 uppercase tracking-widest">Assign hero asset</span>
+                                                            <span className="text-[10px] font-medium mt-4 uppercase tracking-widest text-center px-4">Assign Hero Asset</span>
                                                         </div>
                                                     )}
                                                 </div>
@@ -529,25 +609,66 @@ const AdminDashboard = () => {
                                                                 multi: false,
                                                                 onSelect: (url) => {
                                                                     const newer = [...(productForm.images || [])];
-                                                                    // Ensure preceding slots aren't completely undefined holes if possible
-                                                                    for(let i=0; i<idx; i++) if(!newer[i]) newer[i] = null; 
-                                                                    newer[idx] = { url, name: `Gallery ${idx}`, isInternal: false, sequence: idx };
-                                                                    setProductForm({...productForm, images: newer.filter(img => img !== null)});
+                                                                    for(let i=0; i<idx; i++) if(!newer[i]) newer[i] = { url: '', fitMode: 'cover', focalPoint: {x:50,y:50} }; 
+                                                                    newer[idx] = { url, name: `Gallery ${idx}`, isInternal: false, sequence: idx, fitMode: 'cover', focalPoint: { x: 50, y: 50 } };
+                                                                    setProductForm({...productForm, images: newer.filter(img => img.url)});
                                                                 }
                                                             })}
-                                                            className={`relative rounded-sm border border-brand-charcoal/10 overflow-hidden group transition-all duration-300 ${!productForm.images?.[idx] ? 'cursor-pointer hover:border-brand-rose/40 hover:bg-white bg-white/50' : 'bg-white'}`}
+                                                            className={`relative rounded-sm border border-brand-charcoal/10 overflow-hidden group transition-all duration-300 ${!productForm.images?.[idx] ? 'cursor-pointer hover:border-brand-rose/40 hover:bg-white bg-white/50' : 'bg-brand-cream/10'}`}
                                                         >
                                                             {productForm.images?.[idx] ? (
                                                                 <>
-                                                                    <img src={getProductImage(productForm.images[idx].url, media)} className="w-full h-full object-cover" />
-                                                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                                        <button onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            const newer = [...productForm.images];
-                                                                            newer.splice(idx, 1);
-                                                                            setProductForm({...productForm, images: newer});
-                                                                        }} className="text-white hover:text-brand-rose"><Trash2 size={16} /></button>
+                                                                    <img 
+                                                                        src={getProductImage(productForm.images[idx].url, media)} 
+                                                                        className="w-full h-full pointer-events-none"
+                                                                        style={{ 
+                                                                            objectFit: productForm.images[idx].fitMode || 'cover',
+                                                                            objectPosition: `${productForm.images[idx].focalPoint?.x || 50}% ${productForm.images[idx].focalPoint?.y || 50}%`
+                                                                        }}
+                                                                    />
+                                                                    
+                                                                    {/* Persistent Gallery Controls (Top) */}
+                                                                    <div className="absolute top-2 right-2 flex items-center gap-1 z-30">
+                                                                        <button 
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                setAdjustingImageIdx(adjustingImageIdx === idx ? null : idx);
+                                                                            }}
+                                                                            className={`p-1.5 rounded-sm shadow-lg transition-all ${adjustingImageIdx === idx ? 'bg-brand-rose text-brand-charcoal' : 'bg-white text-brand-charcoal'}`}
+                                                                            title="Adjust Position"
+                                                                        >
+                                                                            <RefreshCcw size={10} className={adjustingImageIdx === idx ? 'animate-spin' : ''} />
+                                                                        </button>
+                                                                        <button 
+                                                                            onClick={(e) => { e.stopPropagation(); setProductForm({...productForm, images: productForm.images.filter((_, i) => i !== idx)}); setAdjustingImageIdx(null); }} 
+                                                                            className="p-1.5 bg-white text-red-500 hover:bg-red-50 rounded-sm shadow-lg transition-all"
+                                                                            title="Remove Photo"
+                                                                        >
+                                                                            <Trash2 size={10} />
+                                                                        </button>
                                                                     </div>
+
+                                                                    {/* Draggable Focal Point (Gallery) */}
+                                                                    {adjustingImageIdx === idx && productForm.images[idx].fitMode !== 'contain' && (
+                                                                        <div 
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                            onMouseMove={(e) => {
+                                                                                if (e.buttons !== 1) return;
+                                                                                const rect = e.currentTarget.getBoundingClientRect();
+                                                                                const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+                                                                                const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+                                                                                const newer = [...productForm.images];
+                                                                                newer[idx] = { ...newer[idx], focalPoint: { x, y } };
+                                                                                setProductForm({...productForm, images: newer});
+                                                                            }}
+                                                                            className="absolute inset-0 z-20 cursor-move bg-brand-rose/10 border border-brand-rose border-dashed"
+                                                                        >
+                                                                            <div 
+                                                                                className="absolute w-4 h-4 -ml-2 -mt-2 border border-white rounded-full pointer-events-none bg-brand-rose shadow-md"
+                                                                                style={{ left: `${productForm.images[idx].focalPoint?.x || 50}%`, top: `${productForm.images[idx].focalPoint?.y || 50}%` }}
+                                                                            ></div>
+                                                                        </div>
+                                                                    )}
                                                                 </>
                                                             ) : (
                                                                 <div className="w-full h-full flex items-center justify-center text-brand-charcoal/10 group-hover:text-brand-rose/40 transition-colors">
@@ -562,7 +683,6 @@ const AdminDashboard = () => {
 
                                         {/* Column 2: Product Intel (60% width) */}
                                         <div className="w-full md:w-[60%] flex flex-col p-6 md:p-10 space-y-8 overflow-hidden">
-                                            
                                             {/* Section 1: Main Identity */}
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 flex-shrink-0">
                                                 <div className="md:col-span-2">
@@ -658,7 +778,7 @@ const AdminDashboard = () => {
                                             </div>
 
                                             {/* Section 3: Financial Bar (Compact) */}
-                                            <div className="grid grid-cols-3 gap-8 flex-shrink-0">
+                                            <div className="grid grid-cols-3 gap-8 flex-shrink-0 text-brand-charcoal">
                                                 <div className="bg-brand-charcoal p-6 rounded-sm text-white shadow-lg">
                                                     <label className="text-[9px] font-medium opacity-40 block mb-2 uppercase tracking-widest">Base Price (₹)</label>
                                                     <input 
