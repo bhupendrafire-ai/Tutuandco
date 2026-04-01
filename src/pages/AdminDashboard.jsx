@@ -64,6 +64,8 @@ const AdminDashboard = () => {
     });
     const [mediaPickerConfig, setMediaPickerConfig] = useState({ isOpen: false, multi: false, onSelect: () => {}, selectedItems: [] });
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+    const [newCatTemp, setNewCatTemp] = useState('');
+    const [sessionCategories, setSessionCategories] = useState([]);
     const fileInputRef = useRef(null);
 
 
@@ -427,27 +429,46 @@ const AdminDashboard = () => {
                                                                  </div>
                                                                  
                                                                  {showNewCategoryInput ? (
-                                                                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+                                                                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center space-x-4 bg-brand-cream/50 rounded-sm pr-4">
                                                                         <input 
-                                                                            value={productForm.category} 
-                                                                            onChange={e => setProductForm({...productForm, category: e.target.value})} 
-                                                                            className="w-full bg-brand-cream/50 p-4 font-medium border-none focus:ring-1 focus:ring-brand-charcoal/10" 
-                                                                            placeholder="Enter new category..." 
+                                                                            value={newCatTemp} 
+                                                                            onChange={e => setNewCatTemp(e.target.value)} 
+                                                                            className="flex-grow bg-transparent p-4 font-medium border-none focus:outline-none focus:ring-0" 
+                                                                            placeholder="New category name..." 
                                                                             autoFocus
                                                                         />
+                                                                        <button 
+                                                                            onClick={() => {
+                                                                                if(newCatTemp.trim()) {
+                                                                                    setSessionCategories(prev => [...new Set([...prev, newCatTemp.trim()])]);
+                                                                                    setProductForm({...productForm, category: newCatTemp.trim()});
+                                                                                    setShowNewCategoryInput(false);
+                                                                                    setNewCatTemp('');
+                                                                                }
+                                                                            }}
+                                                                            className="bg-brand-charcoal text-white p-2 rounded-full hover:bg-brand-rose hover:text-brand-charcoal transition-all shadow-md"
+                                                                            title="Confirm category"
+                                                                        >
+                                                                            <CheckCircle size={16} />
+                                                                        </button>
                                                                     </motion.div>
                                                                  ) : (
-                                                                    <select 
-                                                                        value={productForm.category} 
-                                                                        onChange={e => setProductForm({...productForm, category: e.target.value})} 
-                                                                        className="w-full bg-brand-cream/50 p-4 font-medium border-none focus:ring-1 focus:ring-brand-charcoal/10 appearance-none cursor-pointer"
-                                                                    >
-                                                                        <option value="">Select category...</option>
-                                                                        {/* Predefined + any new unique ones added by user during this session or previous */}
-                                                                        {Array.from(new Set(['Accessories', 'Toys', 'Beds', ...products.map(p => p.category)])).filter(Boolean).map(cat => (
-                                                                            <option key={cat} value={cat}>{cat}</option>
-                                                                        ))}
-                                                                    </select>
+                                                                    <div className="relative group">
+                                                                        <select 
+                                                                            value={productForm.category} 
+                                                                            onChange={e => setProductForm({...productForm, category: e.target.value})} 
+                                                                            className="w-full bg-brand-cream/50 p-4 font-medium border-none focus:ring-1 focus:ring-brand-charcoal/10 appearance-none cursor-pointer pr-12"
+                                                                        >
+                                                                            <option value="">Select category...</option>
+                                                                            {/* Predefined + any newly added + current product's if unique */}
+                                                                            {Array.from(new Set(['Accessories', 'Toys', 'Beds', ...sessionCategories, ...products.map(p => p.category)])).filter(Boolean).map(cat => (
+                                                                                <option key={cat} value={cat}>{cat}</option>
+                                                                            ))}
+                                                                        </select>
+                                                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-brand-charcoal/20">
+                                                                            <Filter size={16} />
+                                                                        </div>
+                                                                    </div>
                                                                  )}
                                                              </div>
                                                          </div>
