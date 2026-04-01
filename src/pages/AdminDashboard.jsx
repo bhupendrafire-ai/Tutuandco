@@ -47,6 +47,8 @@ const AdminDashboard = () => {
     const [adjustingBannerIdx, setAdjustingBannerIdx] = useState(null);
     const [panningPoint, setPanningPoint] = useState(null); // Local buffer for lag-free dragging
     const [interactingZoom, setInteractingZoom] = useState(null); // Local buffer for lag-free zooming
+    const activeImageRef = useRef(null); // High-performance Direct DOM reference
+    const localFocal = useRef({ x: 50, y: 50 }); // Performance-safe position tracking
 
     const [mediaPickerConfig, setMediaPickerConfig] = useState({ isOpen: false, multi: false, onSelect: () => {}, selectedItems: [] });
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
@@ -1077,36 +1079,42 @@ const AdminDashboard = () => {
                                             style={{ touchAction: 'none' }}
                                             onPanStart={() => {
                                                 if (adjustingBannerIdx === index) {
-                                                    setPanningPoint(banner.focalPoint || { x: 50, y: 50 });
+                                                    const startFocal = banner.focalPoint || { x: 50, y: 50 };
+                                                    setPanningPoint(startFocal);
+                                                    localFocal.current = startFocal;
                                                 }
                                             }}
                                             onPan={(e, info) => {
-                                                if (adjustingBannerIdx === index && panningPoint) {
+                                                if (adjustingBannerIdx === index && localFocal.current) {
                                                     const container = e.target.closest('.banner-panning-container');
-                                                    if (!container) return;
+                                                    if (!container || !activeImageRef.current) return;
                                                     
                                                     const rect = container.getBoundingClientRect();
                                                     const zoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
                                                     
                                                     // Sticky Drag Formula (1:1 Movement):
-                                                    // Move focal point by (pixels / (container * (zoom-1)))
-                                                    // Math.max ensures we don't divide by zero if zoom is 1.0
                                                     const scrollableFactor = Math.max(0.01, zoom - 1);
+                                                    
+                                                    // Flip sign to (+) for "Natural" direction (Push-the-Paper)
                                                     const deltaX = (info.delta.x / (rect.width * scrollableFactor)) * 100;
                                                     const deltaY = (info.delta.y / (rect.height * scrollableFactor)) * 100;
                                                     
-                                                    setPanningPoint(prev => ({
-                                                        x: Math.min(100, Math.max(0, (prev?.x || 50) - deltaX)),
-                                                        y: Math.min(100, Math.max(0, (prev?.y || 50) - deltaY))
-                                                    }));
+                                                    // Update local tracking (Zero React re-renders)
+                                                    localFocal.current = {
+                                                        x: Math.min(100, Math.max(0, localFocal.current.x - deltaX)),
+                                                        y: Math.min(100, Math.max(0, localFocal.current.y - deltaY))
+                                                    };
+
+                                                    // Direct DOM Injection for 60fps performance
+                                                    activeImageRef.current.style.objectPosition = `${localFocal.current.x}% ${localFocal.current.y}%`;
                                                 }
                                             }}
                                             onPanEnd={() => {
-                                                if (adjustingBannerIdx === index && panningPoint) {
+                                                if (adjustingBannerIdx === index && localFocal.current) {
                                                     const nb = [...banners];
-                                                    nb[index] = { ...nb[index], focalPoint: panningPoint };
+                                                    nb[index] = { ...nb[index], focalPoint: localFocal.current };
                                                     updateBanners(nb);
-                                                    // Do NOT set panningPoint to null here to prevent snap-back
+                                                    setPanningPoint(localFocal.current); // Sync final state to React
                                                 }
                                             }}
                                         >
@@ -1155,6 +1163,7 @@ const AdminDashboard = () => {
 
                                             {/* Homepage-style Backdrop */}
                                             <img 
+                                                ref={adjustingBannerIdx === index ? activeImageRef : null}
                                                 src={getProductImage(banner.image, media)} 
                                                 className="w-full h-full pointer-events-none"
                                                 draggable={false}
