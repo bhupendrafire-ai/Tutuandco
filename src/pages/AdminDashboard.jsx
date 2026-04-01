@@ -715,26 +715,35 @@ const AdminDashboard = () => {
                                 <p className="text-[10px] font-medium text-brand-charcoal/40 uppercase tracking-[0.2em] mb-1">Homepage Slideshow</p>
                                 <h3 className="text-2xl font-medium text-brand-charcoal">Digital Identity Banners</h3>
                             </div>
-                            <button 
-                                onClick={() => updateBanners([...banners, { 
-                                    id: Date.now(), 
-                                    title: 'New Narrative Title', 
-                                    subtitle: 'Supporting subtitle here',
-                                    cta: 'Explore Collection', 
-                                    image: '', 
-                                    isVisible: true,
-                                    zoom: 1,
-                                    translateX: 0,
-                                    translateY: 0,
-                                    refWidth: 1920,
-                                    refHeight: 1080,
-                                    fitMode: 'cover'
-                                }])} 
-                                className="bg-brand-rose text-brand-charcoal px-8 py-4 rounded-sm text-[11px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-xl flex items-center space-x-3"
-                            >
-                                <Plus size={16} />
-                                <span>Create New Banner</span>
-                            </button>
+                            <div className="flex items-center space-x-4">
+                                <button 
+                                    onClick={() => updateBanners(banners, true)} 
+                                    className="bg-brand-charcoal text-white px-8 py-4 rounded-sm text-[11px] font-bold uppercase tracking-widest hover:bg-black transition-all shadow-xl flex items-center space-x-3"
+                                >
+                                    <Cloud size={16} />
+                                    <span>Sync All Banners</span>
+                                </button>
+                                <button 
+                                    onClick={() => updateBanners([...banners, { 
+                                        id: Date.now(), 
+                                        title: 'New Narrative Title', 
+                                        subtitle: 'Supporting subtitle here',
+                                        cta: 'Explore Collection', 
+                                        image: '', 
+                                        isVisible: true,
+                                        zoom: 1,
+                                        translateX: 0,
+                                        translateY: 0,
+                                        refWidth: 1920,
+                                        refHeight: 1080,
+                                        fitMode: 'cover'
+                                    }])} 
+                                    className="bg-brand-rose text-brand-charcoal px-8 py-4 rounded-sm text-[11px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-xl flex items-center space-x-3"
+                                >
+                                    <Plus size={16} />
+                                    <span>Create New Banner</span>
+                                </button>
+                            </div>
                         </div>
                         <div className="space-y-12">
                              {(Array.isArray(banners) ? banners : []).map((banner, index) => (
@@ -1125,9 +1134,8 @@ const AdminDashboard = () => {
                                     <button onClick={() => setAdjustingBannerIdx(null)} className="p-2 hover:bg-white/10 rounded-full transition-all"><X size={20} /></button>
                                 </div>
                             </div>
-
                             {/* Full-width Mirror Container */}
-                            <div className="flex-grow flex bg-brand-sage relative overflow-hidden group">
+                            <div className="flex-grow flex flex-col lg:flex-row bg-brand-sage relative overflow-hidden group">
                                 {/* Left Side: 65% Image (Storefront Mirror) */}
                                 <div 
                                     ref={el => {
@@ -1135,7 +1143,7 @@ const AdminDashboard = () => {
                                             setPreviewSize({ w: el.clientWidth, h: el.clientHeight });
                                         }
                                     }}
-                                    className="relative w-[65%] h-full overflow-hidden cursor-move select-none"
+                                    className="relative w-full lg:w-[65%] h-[50vh] lg:h-full overflow-hidden cursor-move select-none"
                                     onMouseDown={(e) => setPanningPoint({ x: e.clientX, y: e.clientY })}
                                     onMouseMove={handlePanning}
                                     onMouseUp={() => setPanningPoint(null)}
@@ -1165,7 +1173,7 @@ const AdminDashboard = () => {
                                     
                                     {/* Natural Divider Mirror (Home.jsx parity) */}
                                     <div 
-                                        className="absolute top-0 right-0 bottom-0 w-[10%] pointer-events-none z-10"
+                                        className="absolute top-0 right-0 bottom-0 w-[10%] pointer-events-none z-10 hidden lg:block"
                                         style={{
                                             background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.08) 30%, rgba(0, 0, 0, 0.18) 55%, rgba(0, 0, 0, 0.3) 75%, rgba(0, 0, 0, 0.4) 100%)'
                                         }}
@@ -1173,38 +1181,114 @@ const AdminDashboard = () => {
                                 </div>
 
                                 {/* Right Side: 35% Content Panel (Home.jsx parity) */}
-                                <div className="w-[35%] bg-[#7C846C] p-20 flex flex-col justify-center text-white relative shadow-[-20px_0_40px_rgba(0,0,0,0.1)]">
-                                    <div className="max-w-md w-full mx-auto md:mx-0 flex flex-col gap-y-8">
-                                        <div className="space-y-4">
-                                            <input 
-                                                value={banners[adjustingBannerIdx].title || ""}
-                                                onChange={e => {
-                                                    const nb = [...banners];
-                                                    nb[adjustingBannerIdx].title = e.target.value;
-                                                    updateBanners(nb);
-                                                }}
-                                                placeholder="Narrative Title"
-                                                className="w-full bg-transparent text-5xl md:text-6xl font-medium leading-[1.1] tracking-tight outline-none border-none placeholder:opacity-20"
-                                            />
-                                        </div>
+                                <div className="w-full lg:w-[35%] h-full bg-[#7C846C] p-10 lg:p-16 flex flex-col text-white relative shadow-[-20px_0_40px_rgba(0,0,0,0.1)] overflow-y-auto">
+                                    <div className="max-w-md w-full mx-auto lg:mx-0 flex flex-col gap-y-12">
                                         
-                                        <div className="space-y-4">
-                                            <textarea 
-                                                value={banners[adjustingBannerIdx].subtitle || ""}
-                                                onChange={e => {
-                                                    const nb = [...banners];
-                                                    nb[adjustingBannerIdx].subtitle = e.target.value;
-                                                    updateBanners(nb);
-                                                }}
-                                                placeholder="Supporting narrative..."
-                                                className="w-full bg-transparent text-white/80 text-xl italic font-medium leading-relaxed outline-none border-none resize-none h-24 placeholder:opacity-20"
-                                            />
+                                        {/* SECTION: Narrative */}
+                                        <div className="space-y-6">
+                                            <div className="flex items-center space-x-3 mb-2 opacity-30">
+                                                <AlignLeft size={14} />
+                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Core Narrative</span>
+                                            </div>
+                                            <div className="space-y-6">
+                                                <input 
+                                                    value={banners[adjustingBannerIdx].title || ""}
+                                                    onChange={e => {
+                                                        const nb = [...banners];
+                                                        nb[adjustingBannerIdx].title = e.target.value;
+                                                        updateBanners(nb);
+                                                    }}
+                                                    placeholder="Narrative Title"
+                                                    className="w-full bg-transparent text-4xl md:text-5xl font-medium leading-[1.1] tracking-tight outline-none border-none placeholder:opacity-20"
+                                                />
+                                                <textarea 
+                                                    value={banners[adjustingBannerIdx].subtitle || ""}
+                                                    onChange={e => {
+                                                        const nb = [...banners];
+                                                        nb[adjustingBannerIdx].subtitle = e.target.value;
+                                                        updateBanners(nb);
+                                                    }}
+                                                    placeholder="Supporting narrative..."
+                                                    className="w-full bg-transparent text-white/80 text-lg italic font-medium leading-relaxed outline-none border-none resize-none h-24 placeholder:opacity-20"
+                                                />
+                                            </div>
                                         </div>
 
-                                        <div className="flex flex-col gap-y-8">
+                                        {/* SECTION: Visual Calibration */}
+                                        <div className="p-8 bg-black/10 rounded-sm space-y-6 border border-white/5">
+                                            <div className="flex items-center space-x-3 mb-2 opacity-60">
+                                                <Maximize size={14} />
+                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Image Hub Controls</span>
+                                            </div>
+                                            
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between items-center text-[10px] font-bold uppercase opacity-60">
+                                                    <span>Magnification</span>
+                                                    <span className="text-brand-rose">{Math.round((banners[adjustingBannerIdx].zoom || 1) * 100)}%</span>
+                                                </div>
+                                                <input 
+                                                    type="range" min="1" max="5" step="0.01"
+                                                    value={banners[adjustingBannerIdx].zoom || 1}
+                                                    onChange={e => {
+                                                        const nb = [...banners];
+                                                        nb[adjustingBannerIdx].zoom = parseFloat(e.target.value);
+                                                        updateBanners(nb);
+                                                    }}
+                                                    className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
+                                                />
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-4 pt-2">
+                                                <button 
+                                                    onClick={() => {
+                                                        const nb = [...banners];
+                                                        nb[adjustingBannerIdx].fitMode = 'cover';
+                                                        updateBanners(nb);
+                                                    }}
+                                                    className={`py-3 text-[9px] font-bold uppercase tracking-widest rounded-sm border transition-all ${banners[adjustingBannerIdx].fitMode === 'cover' ? 'bg-white text-brand-charcoal border-white shadow-lg' : 'bg-transparent border-white/20 text-white hover:border-white'}`}
+                                                >
+                                                    Crop Fit
+                                                </button>
+                                                <button 
+                                                    onClick={() => {
+                                                        const nb = [...banners];
+                                                        nb[adjustingBannerIdx].fitMode = 'contain';
+                                                        updateBanners(nb);
+                                                    }}
+                                                    className={`py-3 text-[9px] font-bold uppercase tracking-widest rounded-sm border transition-all ${banners[adjustingBannerIdx].fitMode === 'contain' ? 'bg-white text-brand-charcoal border-white shadow-lg' : 'bg-transparent border-white/20 text-white hover:border-white'}`}
+                                                >
+                                                    Preserve
+                                                </button>
+                                            </div>
+
+                                            <button 
+                                                onClick={() => {
+                                                    openMediaPicker({
+                                                        multi: false,
+                                                        onSelect: (item) => {
+                                                            const nb = [...banners];
+                                                            nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], image: typeof item === 'string' ? item : item.url };
+                                                            updateBanners(nb);
+                                                        }
+                                                    });
+                                                }}
+                                                className="w-full py-4 border-2 border-dashed border-white/10 rounded-sm text-[9px] font-bold uppercase tracking-widest opacity-60 hover:opacity-100 transition-all flex items-center justify-center space-x-2"
+                                            >
+                                                <ImageIcon size={14} />
+                                                <span>Change Identity Asset</span>
+                                            </button>
+                                        </div>
+
+                                        {/* SECTION: CTA & Pathway */}
+                                        <div className="space-y-8">
+                                            <div className="flex items-center space-x-3 mb-2 opacity-30">
+                                                <Plus size={14} />
+                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Digital Call to Action</span>
+                                            </div>
+                                            
                                             <div className="grid grid-cols-2 gap-6">
                                                 <div className="space-y-3">
-                                                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">CTA Label</label>
+                                                    <label className="text-[10px] font-bold uppercase tracking-widest opacity-40">Label</label>
                                                     <input 
                                                         value={banners[adjustingBannerIdx].cta || ""}
                                                         onChange={e => {
@@ -1212,12 +1296,12 @@ const AdminDashboard = () => {
                                                             nb[adjustingBannerIdx].cta = e.target.value;
                                                             updateBanners(nb);
                                                         }}
-                                                        placeholder="Explore Collection"
+                                                        placeholder="Explore Collection..."
                                                         className="w-full bg-white/5 border border-white/10 p-4 text-xs font-bold rounded-sm outline-none focus:border-brand-rose transition-colors"
                                                     />
                                                 </div>
                                                 <div className="space-y-3">
-                                                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Pathway Hub</label>
+                                                    <label className="text-[10px] font-bold uppercase tracking-widest opacity-40">Pathway Hub</label>
                                                     <input 
                                                         list="product-paths"
                                                         value={banners[adjustingBannerIdx].link || ""}
@@ -1229,94 +1313,31 @@ const AdminDashboard = () => {
                                                         placeholder="/product/..."
                                                         className="w-full bg-white/5 border border-white/10 p-4 text-xs font-bold rounded-sm outline-none focus:border-brand-rose transition-colors"
                                                     />
-                                                    <datalist id="product-paths">
-                                                        <option value="/" />
-                                                        <option value="/blogs" />
-                                                        <option value="/collab" />
-                                                        <option value="/sizing" />
-                                                        <option value="/moments" />
-                                                        {(Array.isArray(products) ? products : []).map(p => (
-                                                            <option key={p.id} value={`/product/${p.id}`}>{p.name} (₹{p.price})</option>
-                                                        ))}
-                                                    </datalist>
                                                 </div>
                                             </div>
 
-                                            <Link 
-                                                to={banners[adjustingBannerIdx].link || "#"}
-                                                target="_blank"
-                                                className="bg-white/5 text-white/40 px-16 py-10 text-[18px] font-bold border border-white/10 uppercase tracking-[0.2em] inline-block text-center mr-auto active:scale-95 transition-all hover:bg-white hover:text-brand-charcoal cursor-pointer"
-                                            >
-                                                {banners[adjustingBannerIdx].cta || "Explore collection"}
-                                            </Link>
-
-                                            <div className="pt-8 border-t border-white/5 mt-auto">
-                                                <button 
-                                                    onClick={saveCalibration}
-                                                    disabled={isSyncing}
-                                                    className="w-full bg-brand-rose text-brand-charcoal py-6 rounded-sm text-[13px] font-bold uppercase tracking-[0.2em] shadow-2xl hover:bg-white transition-all transform active:scale-95 flex items-center justify-center space-x-3"
+                                            <div className="space-y-3">
+                                                <span className="text-[10px] font-bold uppercase tracking-widest opacity-40 block">Interactive Prototype</span>
+                                                <Link 
+                                                    to={banners[adjustingBannerIdx].link || "#"}
+                                                    target="_blank"
+                                                    className="w-full bg-brand-charcoal text-[#EADED0] px-16 py-8 text-[16px] font-bold shadow-2xl uppercase tracking-[0.2em] inline-block text-center active:scale-95 transition-all hover:bg-white hover:text-brand-charcoal cursor-pointer border border-transparent"
                                                 >
-                                                    {isSyncing ? <RefreshCcw size={18} className="animate-spin" /> : <CheckCircle2 size={18} />}
-                                                    <span>{isSyncing ? 'Synchronizing State...' : 'SAVE ALL HUB CHANGES'}</span>
-                                                </button>
+                                                    {banners[adjustingBannerIdx].cta || "Test Call to Action"}
+                                                </Link>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    {/* Submerged Precision Controls */}
-                                    <div className="absolute bottom-10 left-10 right-10 space-y-6 bg-brand-charcoal/20 p-8 rounded-sm backdrop-blur-sm border border-white/5 opacity-40 hover:opacity-100 transition-opacity">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <label className="text-[10px] font-bold uppercase tracking-widest opacity-60">Magnification</label>
-                                            <span className="font-mono text-brand-rose font-bold">{Math.round((banners[adjustingBannerIdx].zoom || 1) * 100)}%</span>
-                                        </div>
-                                        <input 
-                                            type="range" min="1" max="5" step="0.01"
-                                            value={banners[adjustingBannerIdx].zoom || 1}
-                                            onChange={e => {
-                                                const nb = [...banners];
-                                                nb[adjustingBannerIdx].zoom = parseFloat(e.target.value);
-                                                updateBanners(nb);
-                                            }}
-                                            className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-rose mb-6"
-                                        />
-                                        <div className="grid grid-cols-2 gap-4">
+                                        <div className="pt-8 border-t border-white/5 pb-20">
                                             <button 
-                                                onClick={() => {
-                                                    const nb = [...banners];
-                                                    nb[adjustingBannerIdx].fitMode = 'cover';
-                                                    updateBanners(nb);
-                                                }}
-                                                className={`py-3 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${banners[adjustingBannerIdx].fitMode === 'cover' ? 'bg-brand-rose text-brand-charcoal' : 'bg-white/10 border border-white/10'}`}
+                                                onClick={saveCalibration}
+                                                disabled={isSyncing}
+                                                className="w-full bg-brand-rose text-brand-charcoal py-6 rounded-sm text-[13px] font-bold uppercase tracking-[0.2em] shadow-2xl hover:bg-white transition-all transform active:scale-95 flex items-center justify-center space-x-3"
                                             >
-                                                Crop Fit
-                                            </button>
-                                            <button 
-                                                onClick={() => {
-                                                    const nb = [...banners];
-                                                    nb[adjustingBannerIdx].fitMode = 'contain';
-                                                    updateBanners(nb);
-                                                }}
-                                                className={`py-3 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${banners[adjustingBannerIdx].fitMode === 'contain' ? 'bg-brand-rose text-brand-charcoal' : 'bg-white/10 border border-white/10'}`}
-                                            >
-                                                Preserve
+                                                {isSyncing ? <RefreshCcw size={18} className="animate-spin" /> : <CheckCircle2 size={18} />}
+                                                <span>{isSyncing ? 'Synchronizing State...' : 'Commit All Identity Changes'}</span>
                                             </button>
                                         </div>
-                                        <button 
-                                            onClick={() => {
-                                                openMediaPicker({
-                                                    multi: false,
-                                                    onSelect: (item) => {
-                                                        const url = typeof item === 'string' ? item : item.url;
-                                                        const nb = [...banners];
-                                                        nb[adjustingBannerIdx].image = url;
-                                                        updateBanners(nb);
-                                                    }
-                                                });
-                                            }}
-                                            className="w-full py-4 mt-4 bg-white/10 border border-white/20 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-brand-rose hover:text-brand-charcoal transition-all"
-                                        >
-                                            Change Identity Asset
-                                        </button>
                                     </div>
                                 </div>
                             </div>
