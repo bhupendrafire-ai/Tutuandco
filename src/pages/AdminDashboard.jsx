@@ -42,8 +42,8 @@ const FINAL_API_URL = (resolvedUrl || (IS_PROD ? '' : FALLBACK_URL))?.replace(/\
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
-    const { section } = useParams();
-    const activeTab = section || 'overview';
+    const { '*': dashPath } = useParams();
+    const activeTab = dashPath?.split('/').filter(Boolean)[0] || 'overview';
     const { 
         products, banners, media, loading: shopLoading, 
         addProduct, deleteProduct, updateProduct, updateBanners, uploadMedia 
@@ -234,32 +234,32 @@ const AdminDashboard = () => {
                         <SidebarItem 
                             icon={LayoutDashboard} label="Overview" 
                             active={activeTab === 'overview'} 
-                            onClick={() => navigate('/admin/dashboard/overview')} 
+                            onClick={() => { navigate('/admin/dashboard/overview'); setIsSidebarOpen(false); }} 
                         />
                         <SidebarItem 
                             icon={Package} label="Product CMS" 
                             active={activeTab === 'products'} 
-                            onClick={() => navigate('/admin/dashboard/products')} 
+                            onClick={() => { navigate('/admin/dashboard/products'); setIsSidebarOpen(false); }} 
                         />
                         <SidebarItem 
                             icon={ImageIcon} label="Banner Manager" 
                             active={activeTab === 'banners'} 
-                            onClick={() => navigate('/admin/dashboard/banners')} 
+                            onClick={() => { navigate('/admin/dashboard/banners'); setIsSidebarOpen(false); }} 
                         />
                         <SidebarItem 
                             icon={Upload} label="Media Library" 
                             active={activeTab === 'media'} 
-                            onClick={() => navigate('/admin/dashboard/media')} 
+                            onClick={() => { navigate('/admin/dashboard/media'); setIsSidebarOpen(false); }} 
                         />
                         <SidebarItem 
                             icon={ShoppingCart} label="Orders" 
                             active={activeTab === 'orders'} 
-                            onClick={() => navigate('/admin/dashboard/orders')} 
+                            onClick={() => { navigate('/admin/dashboard/orders'); setIsSidebarOpen(false); }} 
                         />
                         <SidebarItem 
                             icon={Settings} label="Universal Settings" 
                             active={activeTab === 'settings'} 
-                            onClick={() => navigate('/admin/dashboard/settings')} 
+                            onClick={() => { navigate('/admin/dashboard/settings'); setIsSidebarOpen(false); }} 
                         />
                 </div>
                 <button 

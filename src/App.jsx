@@ -32,7 +32,7 @@ function App() {
                     <Route path="/moments" element={<Layout><Moments /></Layout>} />
                     <Route path="/admin/login" element={<AdminLogin />} />
                     <Route 
-                        path="/admin/dashboard" 
+                        path="/admin/dashboard/*" 
                         element={
                             <AdminRoute>
                                 <AdminDashboard />
