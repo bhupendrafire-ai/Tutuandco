@@ -5,7 +5,7 @@ import {
     LayoutDashboard, Package, ShoppingCart, BarChart3, 
     Settings, LogOut, Search, Filter, Download, 
     TrendingUp, Users, DollarSign, AlertCircle, Eye, Printer, 
-    FileText, CheckCircle, Image as ImageIcon, Plus, Trash2, Upload, Edit3, Menu, X, Layout, RefreshCcw
+    FileText, CheckCircle, Image as ImageIcon, Plus, Trash2, Upload, Edit3, Menu, X, Layout, RefreshCcw, ChevronDown, Check, CheckCircle2
 } from 'lucide-react';
 import { 
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, 
@@ -66,6 +66,8 @@ const AdminDashboard = () => {
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
     const [newCatTemp, setNewCatTemp] = useState('');
     const [sessionCategories, setSessionCategories] = useState([]);
+    const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
     const fileInputRef = useRef(null);
 
 
@@ -78,6 +80,42 @@ const AdminDashboard = () => {
         { name: 'Sat', sales: 8390, orders: 51 },
         { name: 'Sun', sales: 4490, orders: 32 },
     ];
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsCategoryDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleRenameCategory = async (oldName, newName) => {
+        if (!newName || newName === oldName) return;
+        const updatedCats = (localSettings.categories || []).map(c => c === oldName ? newName : c);
+        const nextSettings = { ...localSettings, categories: updatedCats };
+        setLocalSettings(nextSettings);
+        
+        // Batch update products locally and on server
+        const affected = products.filter(p => p.category === oldName);
+        for (const p of affected) {
+            await updateProduct(p.id, { ...p, category: newName });
+        }
+
+        // Auto-update form if it's currently using the old name
+        if (productForm.category === oldName) {
+            setProductForm(prev => ({ ...prev, category: newName }));
+        }
+    };
+
+    const handleDeleteCategory = (catName) => {
+        if (window.confirm(`Remove "${catName}" from master list? Products in this category will remain but the category will be removed from selection pools.`)) {
+            const updatedCats = (localSettings.categories || []).filter(c => c !== catName);
+            setLocalSettings({ ...localSettings, categories: updatedCats });
+            if (productForm.category === catName) setProductForm({ ...productForm, category: '' });
+        }
+    };
 
     useEffect(() => {
         const loadOrders = async () => {
@@ -436,6 +474,17 @@ const AdminDashboard = () => {
                                                                             className="flex-grow bg-transparent p-4 font-medium border-none focus:outline-none focus:ring-0" 
                                                                             placeholder="New category name..." 
                                                                             autoFocus
+                                                                            onKeyDown={(e) => {
+                                                                                if(e.key === 'Enter') {
+                                                                                    e.preventDefault();
+                                                                                    if(newCatTemp.trim()) {
+                                                                                        setSessionCategories(prev => [...new Set([...prev, newCatTemp.trim()])]);
+                                                                                        setProductForm({...productForm, category: newCatTemp.trim()});
+                                                                                        setShowNewCategoryInput(false);
+                                                                                        setNewCatTemp('');
+                                                                                    }
+                                                                                }
+                                                                            }}
                                                                         />
                                                                         <button 
                                                                             onClick={() => {
@@ -447,27 +496,76 @@ const AdminDashboard = () => {
                                                                                 }
                                                                             }}
                                                                             className="bg-brand-charcoal text-white p-2 rounded-full hover:bg-brand-rose hover:text-brand-charcoal transition-all shadow-md"
-                                                                            title="Confirm category"
                                                                         >
-                                                                            <CheckCircle size={16} />
+                                                                            <Check size={16} />
                                                                         </button>
                                                                     </motion.div>
                                                                  ) : (
-                                                                    <div className="relative group">
-                                                                        <select 
-                                                                            value={productForm.category} 
-                                                                            onChange={e => setProductForm({...productForm, category: e.target.value})} 
-                                                                            className="w-full bg-brand-cream/50 p-4 font-medium border-none focus:ring-1 focus:ring-brand-charcoal/10 appearance-none cursor-pointer pr-12"
+                                                                    <div className="relative" ref={dropdownRef}>
+                                                                        <div 
+                                                                            onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                                                                            className="w-full bg-brand-cream/50 p-4 font-medium rounded-sm border border-transparent hover:border-brand-charcoal/10 transition-all cursor-pointer flex justify-between items-center"
                                                                         >
-                                                                            <option value="">Select category...</option>
-                                                                            {/* Master settings list + current product's if unique */}
-                                                                            {Array.from(new Set([...(settings.categories || ['Accessories', 'Toys', 'Beds']), ...sessionCategories, ...products.map(p => p.category)])).filter(Boolean).map(cat => (
-                                                                                <option key={cat} value={cat}>{cat}</option>
-                                                                            ))}
-                                                                        </select>
-                                                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-brand-charcoal/20">
-                                                                            <Filter size={16} />
+                                                                            <span className={productForm.category ? 'text-brand-charcoal' : 'text-brand-charcoal/30'}>
+                                                                                {productForm.category || 'Select category...'}
+                                                                            </span>
+                                                                            <ChevronDown className={`transition-transform duration-300 ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} size={18} />
                                                                         </div>
+
+                                                                        <AnimatePresence>
+                                                                            {isCategoryDropdownOpen && (
+                                                                                <motion.div 
+                                                                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                                                    className="absolute left-0 right-0 mt-2 bg-white border border-brand-charcoal/5 shadow-2xl rounded-sm z-[110] overflow-hidden"
+                                                                                >
+                                                                                    <div className="max-h-80 overflow-y-auto">
+                                                                                        {[...(settings.categories || ['Accessories', 'Toys', 'Beds']), ...sessionCategories].map((cat, i) => (
+                                                                                            <div 
+                                                                                                key={i} 
+                                                                                                className={`flex items-center justify-between p-4 cursor-pointer transition-all group ${productForm.category === cat ? 'bg-brand-rose/10 bg-brand-rose' : 'hover:bg-brand-cream/40'}`}
+                                                                                                onClick={() => {
+                                                                                                    setProductForm({...productForm, category: cat});
+                                                                                                    setIsCategoryDropdownOpen(false);
+                                                                                                }}
+                                                                                            >
+                                                                                                <div className="flex items-center space-x-3">
+                                                                                                    {productForm.category === cat && <Check size={14} className="text-brand-charcoal" />}
+                                                                                                    <span className="text-sm font-medium">{cat}</span>
+                                                                                                </div>
+                                                                                                <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+                                                                                                    <button 
+                                                                                                        onClick={() => {
+                                                                                                            const n = window.prompt(`Rename "${cat}" to:`, cat);
+                                                                                                            if (n) handleRenameCategory(cat, n);
+                                                                                                        }}
+                                                                                                        className="p-1 hover:text-brand-rose"
+                                                                                                    >
+                                                                                                        <Edit3 size={14} />
+                                                                                                    </button>
+                                                                                                    <button 
+                                                                                                        onClick={() => handleDeleteCategory(cat)}
+                                                                                                        className="p-1 hover:text-red-500"
+                                                                                                    >
+                                                                                                        <Trash2 size={14} />
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        ))}
+                                                                                    </div>
+                                                                                    <div 
+                                                                                        className="border-t border-brand-charcoal/5 p-4 bg-brand-cream/10 hover:bg-brand-rose/10 cursor-pointer transition-all text-center"
+                                                                                        onClick={() => {
+                                                                                            setShowNewCategoryInput(true);
+                                                                                            setIsCategoryDropdownOpen(false);
+                                                                                        }}
+                                                                                    >
+                                                                                        <span className="text-[10px] font-medium text-brand-rose uppercase tracking-widest">+ Add new category</span>
+                                                                                    </div>
+                                                                                </motion.div>
+                                                                            )}
+                                                                        </AnimatePresence>
                                                                     </div>
                                                                  )}
                                                              </div>
