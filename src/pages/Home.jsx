@@ -122,11 +122,11 @@ const Home = () => {
                                         })()
                                     }}
                                 />
-                                {/* Soft Gradient Divider Overlay */}
+                                {/* Soft & Subtle Gradient Divider Overlay */}
                                 <div 
-                                    className="absolute top-0 right-0 bottom-0 w-[10%] pointer-events-none z-10"
+                                    className="absolute top-0 right-0 bottom-0 w-[6%] pointer-events-none z-10"
                                     style={{
-                                        background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0.7) 100%)'
+                                        background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.15) 40%, rgba(0, 0, 0, 0.35) 100%)'
                                     }}
                                 />
                             </Link>
