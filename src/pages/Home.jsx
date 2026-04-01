@@ -89,24 +89,39 @@ const Home = () => {
         }
     }, [visibleBanners, currentBanner]);
 
+    // PARITY CHECK: Log actual numeric values on every render/update (STRICT TOP-LEVEL)
+    const activeBanner = visibleBanners[currentBanner];
+    const containerWidth = heroRef.current?.offsetWidth || 0;
+    const containerHeight = heroRef.current?.offsetHeight || 0;
+    const refWidth = activeBanner?.refWidth;
+    const refHeight = activeBanner?.refHeight;
+
+    // Safety Ratio Calculations
+    const ratioX = (activeBanner && refWidth) ? containerWidth / refWidth : 1;
+    const ratioY = (activeBanner && refHeight) ? containerHeight / refHeight : 1;
+    const tx = activeBanner ? (activeBanner.translateX || 0) * ratioX : 0;
+    const ty = activeBanner ? (activeBanner.translateY || 0) * ratioY : 0;
+
+    console.log("PARITY CHECK:", {
+        containerWidth,
+        containerHeight,
+        refWidth,
+        refHeight,
+        ratioX,
+        ratioY,
+        tx,
+        ty
+    });
+
     // Calculate current hero transform values for parity sync
     const heroTransform = useMemo(() => {
-        const b = visibleBanners[currentBanner];
         // STRICT: Reference frame must be ready and banner data must exist
-        if (!heroSize.w || !heroSize.h || !b || !b.refWidth) return `scale(${b?.zoom || 1})`;
+        if (containerHeight === 0 || !activeBanner || !refWidth || !refHeight) {
+            return `scale(${activeBanner?.zoom || 1})`;
+        }
         
-        const containerW = heroSize.w;
-        const containerH = heroSize.h;
-        
-        const ratioX = containerW / b.refWidth;
-        const ratioY = (b.refHeight) ? containerH / b.refHeight : 1;
-        
-        const tx = (b.translateX || 0) * ratioX;
-        const ty = (b.translateY || 0) * ratioY;
-        const zoom = b.zoom || 1;
-
-        return `translate(${tx}px, ${ty}px) scale(${zoom})`;
-    }, [visibleBanners, currentBanner, heroSize]);
+        return `translate(${tx}px, ${ty}px) scale(${activeBanner.zoom || 1})`;
+    }, [activeBanner, containerWidth, containerHeight, refWidth, refHeight, tx, ty]);
 
     if (loading) {
         console.log("HOME LOADING...");
@@ -118,27 +133,14 @@ const Home = () => {
         );
     }
 
-    // PARITY CHECK: Log actual numeric values on every render/update (STRICT TOP-LEVEL)
-    const activeBanner = visibleBanners[currentBanner];
-    console.log("PARITY CHECK:", {
-        containerWidth: heroSize.w,
-        containerHeight: heroSize.h,
-        refWidth: activeBanner?.refWidth,
-        refHeight: activeBanner?.refHeight,
-        ratioX: activeBanner ? heroSize.w / activeBanner.refWidth : 1,
-        ratioY: activeBanner ? heroSize.h / (activeBanner.refHeight || 1) : 1,
-        tx: activeBanner ? (activeBanner.translateX || 0) * (heroSize.w / activeBanner.refWidth) : 0,
-        ty: activeBanner ? (activeBanner.translateY || 0) * (heroSize.h / (activeBanner.refHeight || 1)) : 0
-    });
-
     return (
         <div className="pb-20 bg-brand-sage">
             {/* Dynamic Hero Banner with Calibration Sync */}
             <section className="relative h-auto md:h-[75vh] overflow-hidden group flex flex-col md:flex-row">
                 <AnimatePresence mode="wait">
-                    {visibleBanners[currentBanner] && (
+                    {activeBanner && (
                         <motion.div
-                            key={visibleBanners[currentBanner].id || currentBanner}
+                            key={activeBanner.id || currentBanner}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
@@ -146,17 +148,21 @@ const Home = () => {
                             className="flex flex-col md:flex-row w-full h-full"
                         >
                             {/* Left Side: Image (65% on Desktop) */}
-                            <Link 
+                            <div 
                                 ref={heroRef}
-                                to={visibleBanners[currentBanner].link || "/"}
                                 className="relative w-full md:w-[65%] h-[50vh] md:h-full overflow-hidden"
                             >
-                                <img
-                                    src={getProductImage(visibleBanners[currentBanner].image, media)}
-                                    alt={visibleBanners[currentBanner].title}
-                                    className="w-full h-full block object-cover origin-center"
-                                    style={{ transform: heroTransform }}
-                                />
+                                <Link 
+                                    to={activeBanner.link || "/"}
+                                    className="block w-full h-full"
+                                >
+                                    <img
+                                        src={getProductImage(activeBanner.image, media)}
+                                        alt={activeBanner.title}
+                                        className="w-full h-full block object-cover origin-center"
+                                        style={{ transform: heroTransform }}
+                                    />
+                                </Link>
                                 {/* Refined Natural Image Fade Divider */}
                                 <div 
                                     className="absolute top-0 right-0 bottom-0 w-[8%] pointer-events-none z-10"
@@ -164,7 +170,7 @@ const Home = () => {
                                         background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.08) 30%, rgba(0, 0, 0, 0.18) 55%, rgba(0, 0, 0, 0.3) 75%, rgba(0, 0, 0, 0.4) 100%)'
                                     }}
                                 />
-                            </Link>
+                            </div>
 
                             {/* Right Side: Content Panel (35% on Desktop) */}
                             <div className="w-full md:w-[35%] bg-[#7C846C] p-12 md:p-[60px] flex flex-col justify-center min-h-[350px] md:min-h-0 text-white">
@@ -175,7 +181,7 @@ const Home = () => {
                                         transition={{ duration: 0.8, delay: 0.2 }}
                                         className="text-4xl md:text-5xl font-medium leading-[1.2]"
                                     >
-                                        {visibleBanners[currentBanner].title}
+                                        {activeBanner.title}
                                     </motion.h1>
                                     
                                     <motion.p
@@ -184,7 +190,7 @@ const Home = () => {
                                         transition={{ duration: 0.8, delay: 0.4 }}
                                         className="text-white/80 text-lg italic font-medium"
                                     >
-                                        {visibleBanners[currentBanner].subtitle}
+                                        {activeBanner.subtitle}
                                     </motion.p>
 
                                     <motion.div
@@ -193,10 +199,10 @@ const Home = () => {
                                         transition={{ duration: 0.8, delay: 0.6 }}
                                     >
                                         <Link 
-                                            to={visibleBanners[currentBanner].link || "/"}
+                                            to={activeBanner.link || "/"}
                                             className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-lg hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-[0.2em] active:scale-95 inline-block text-center mr-auto"
                                         >
-                                            {visibleBanners[currentBanner].cta || "Explore collection"}
+                                            {activeBanner.cta || "Explore collection"}
                                         </Link>
                                     </motion.div>
                                 </div>
