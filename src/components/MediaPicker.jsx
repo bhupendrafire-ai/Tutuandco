@@ -37,7 +37,13 @@ const MediaPicker = ({ isOpen, onClose, onSelect, multi = false, selectedItems =
                 setLocalSelected([...localSelected, identifier]);
             }
         } else {
-            setLocalSelected([identifier]);
+            // SINGLE SELECT: If already selected, clicking it again confirms.
+            if (localSelected.includes(identifier)) {
+                onSelect(identifier);
+                onClose();
+            } else {
+                setLocalSelected([identifier]);
+            }
         }
     };
 
@@ -173,12 +179,15 @@ const MediaPicker = ({ isOpen, onClose, onSelect, multi = false, selectedItems =
                                         </div>
                                     )}
                                     {!multi && isSelected && (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-brand-charcoal/20">
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-brand-charcoal/60 backdrop-blur-[2px] transition-all animate-in fade-in zoom-in duration-200">
+                                            <div className="bg-white text-brand-charcoal px-4 py-2 rounded-sm text-[10px] font-bold uppercase shadow-2xl mb-2 flex items-center gap-2">
+                                                <Check size={14} className="text-green-600" /> Selected
+                                            </div>
                                             <button 
                                                 onClick={(e) => { e.stopPropagation(); handleConfirm(); }}
-                                                className="bg-brand-charcoal text-white px-4 py-2 rounded-sm text-[10px] font-medium shadow-lg"
+                                                className="bg-brand-rose text-brand-charcoal px-8 py-3 rounded-sm text-[11px] font-bold uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all"
                                             >
-                                                Select
+                                                Finalize Choice
                                             </button>
                                         </div>
                                     )}
