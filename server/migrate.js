@@ -46,6 +46,17 @@ const migrate = async () => {
                 id SERIAL PRIMARY KEY,
                 data JSONB NOT NULL,
                 status TEXT DEFAULT 'Pending',
+                customer_name TEXT,
+                customer_email TEXT,
+                customer_phone TEXT,
+                total_amount DECIMAL DEFAULT 0,
+                shipping_cost DECIMAL DEFAULT 0,
+                discount_amount DECIMAL DEFAULT 0,
+                items JSONB,
+                shipping_address JSONB,
+                tracking_number TEXT,
+                carrier TEXT,
+                shipped_at TIMESTAMP,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
@@ -60,6 +71,19 @@ const migrate = async () => {
             ALTER TABLE banners ADD COLUMN IF NOT EXISTS content_position TEXT DEFAULT 'center';
             ALTER TABLE banners ADD COLUMN IF NOT EXISTS focal_point JSONB DEFAULT '{"x": 50, "y": 50}';
             ALTER TABLE banners ADD COLUMN IF NOT EXISTS fit_mode TEXT DEFAULT 'cover';
+
+            -- Ensure new order columns exist for existing tables
+            ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_name TEXT;
+            ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_email TEXT;
+            ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_phone TEXT;
+            ALTER TABLE orders ADD COLUMN IF NOT EXISTS total_amount DECIMAL DEFAULT 0;
+            ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_cost DECIMAL DEFAULT 0;
+            ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_amount DECIMAL DEFAULT 0;
+            ALTER TABLE orders ADD COLUMN IF NOT EXISTS items JSONB;
+            ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_address JSONB;
+            ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_number TEXT;
+            ALTER TABLE orders ADD COLUMN IF NOT EXISTS carrier TEXT;
+            ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipped_at TIMESTAMP;
         `);
         console.log('✅ Tables created or already exist.');
 
@@ -103,11 +127,16 @@ const migrate = async () => {
 
             // Settings
             const settingsCheck = await db.query('SELECT COUNT(*) FROM settings');
-            if (parseInt(settingsCheck.rows[0].count) === 0) {
-                console.log('⚙️ Importing settings...');
+            // Sync settings
+            if (data.settings) {
+                console.log('⚙️ Synchronizing global settings...');
+                const globalData = {
+                    ...data.settings.global,
+                    carriers: data.settings.global?.carriers || ["FedEx", "Delhivery", "BlueDart", "DTDC"]
+                };
                 await db.query(
-                    `INSERT INTO settings (id, data) VALUES ($1, $2)`,
-                    ['global', JSON.stringify(data.settings)]
+                    'INSERT INTO settings (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data',
+                    ['global', JSON.stringify(globalData)]
                 );
             }
 

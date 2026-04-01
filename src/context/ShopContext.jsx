@@ -344,6 +344,22 @@ export const ShopProvider = ({ children }) => {
         }
     };
 
+    const shipOrder = async (id, shippingDetails) => {
+        if (!FINAL_API_URL) return;
+        try {
+            const res = await fetch(`${FINAL_API_URL}/api/orders/${id}/ship`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(shippingDetails)
+            });
+            const result = await res.json();
+            await loadData();
+            return result;
+        } catch (err) {
+            console.error("Ship order failed", err);
+        }
+    };
+
     const value = {
         products,
         banners,
@@ -357,6 +373,7 @@ export const ShopProvider = ({ children }) => {
         applyCoupon,
         coupon,
         checkout,
+        shipOrder,
         addProduct,
         deleteProduct,
         updateProduct,

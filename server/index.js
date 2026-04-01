@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { handleUpload } = require('@vercel/blob/client');
 const db = require('./db');
+const NotificationService = require('./NotificationService');
 require('dotenv').config();
 
 const app = express();
@@ -164,12 +165,76 @@ app.get('/api/orders', async (req, res) => {
 });
 
 app.post('/api/orders', async (req, res) => {
+    const o = req.body;
     try {
         const result = await db.query(
-            'INSERT INTO orders (data, status) VALUES ($1, $2) RETURNING *',
-            [JSON.stringify(req.body), 'Pending']
+            `INSERT INTO orders (
+                data, status, customer_name, customer_email, customer_phone, 
+                total_amount, shipping_cost, discount_amount, items, shipping_address
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
+            [
+                JSON.stringify(o), 
+                'Pending', 
+                `${o.firstName} ${o.lastName}`, 
+                o.email, 
+                o.phone, 
+                o.total, 
+                o.shipping, 
+                o.discountAmount, 
+                JSON.stringify(o.items), 
+                JSON.stringify({ address: o.address, city: o.city, state: o.state, zip: o.zip })
+            ]
         );
-        res.status(201).json(result.rows[0]);
+        
+        const newOrder = result.rows[0];
+        // Trigger async notification (non-blocking)
+        NotificationService.notifyOrdered(newOrder).catch(err => console.error("Initial notification failed:", err));
+        
+        res.status(201).json(newOrder);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Patch Order Shipping Status
+app.patch('/api/orders/:id/ship', async (req, res) => {
+    const { id } = req.params;
+    const { tracking_number, carrier } = req.body;
+
+    try {
+        // 1. Update Order
+        const result = await db.query(
+            `UPDATE orders SET 
+                status = 'Shipped', 
+                tracking_number = $1, 
+                carrier = $2, 
+                shipped_at = CURRENT_TIMESTAMP 
+             WHERE id = $3 RETURNING *`,
+            [tracking_number, carrier, id]
+        );
+
+        if (result.rowCount === 0) return res.status(404).json({ error: "Order not found" });
+        const updatedOrder = result.rows[0];
+
+        // 2. Dynamic Carrier Learning
+        const settingsResult = await db.query('SELECT data FROM settings WHERE id=$1', ['global']);
+        let settings = settingsResult.rows[0]?.data || {};
+        let carriers = settings.carriers || ["FedEx", "Delhivery", "BlueDart", "DTDC"];
+        
+        if (!carriers.includes(carrier)) {
+            carriers.push(carrier);
+            await db.query(
+                'INSERT INTO settings (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data',
+                ['global', JSON.stringify({ ...settings, carriers })]
+            );
+            console.log(`📦 New carrier registered: ${carrier}`);
+        }
+
+        // 3. Trigger Notifications
+        NotificationService.notifyShipped(updatedOrder, { tracking_number, carrier })
+            .catch(err => console.error("Shipment notification failed:", err));
+
+        res.json(updatedOrder);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
