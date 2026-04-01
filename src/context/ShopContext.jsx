@@ -29,7 +29,7 @@ if (resolvedUrl && !resolvedUrl.startsWith('http')) {
     resolvedUrl = `https://${resolvedUrl}`;
 }
 
-const FINAL_API_URL = (resolvedUrl || (IS_PROD ? '' : FALLBACK_URL))?.replace(/\/$/, "");
+export const FINAL_API_URL = (resolvedUrl || (IS_PROD ? '' : FALLBACK_URL))?.replace(/\/$/, "");
 
 if (IS_PROD) {
     console.log("🛠️ Production Build Info:", { 

@@ -12,33 +12,11 @@ import {
     ResponsiveContainer, AreaChart, Area, BarChart, Bar 
 } from 'recharts';
 import { upload } from '@vercel/blob/client';
-import { useShop, getProductImage } from '../context/ShopContext';
+import { useShop, getProductImage, FINAL_API_URL } from '../context/ShopContext';
 import MediaPicker from '../components/MediaPicker';
 import mockApi from '../api/mockApi';
 import logo from '../assets/logo.png';
 import logoWhite from '../assets/logo-white.png';
-
-
-// Static constant for Vite replacement
-const VITE_API_URL = import.meta.env.VITE_API_URL;
-const IS_PROD = import.meta.env.PROD;
-const FALLBACK_URL = 'http://localhost:3001';
-
-// Auto-fix protocol OR Auto-detect for the live domain
-let resolvedUrl = VITE_API_URL;
-
-if (!resolvedUrl && IS_PROD && typeof window !== 'undefined') {
-    const isLiveSite = window.location.hostname === 'www.tutuandco.in' || window.location.hostname === 'tutuandco.in';
-    if (isLiveSite) {
-        resolvedUrl = 'https://tutuandco-production.up.railway.app';
-    }
-}
-
-if (resolvedUrl && !resolvedUrl.startsWith('http')) {
-    resolvedUrl = `https://${resolvedUrl}`;
-}
-
-const FINAL_API_URL = (resolvedUrl || (IS_PROD ? '' : FALLBACK_URL))?.replace(/\/$/, "");
 
 const AdminDashboard = () => {
     const navigate = useNavigate();

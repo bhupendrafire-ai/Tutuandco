@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search, Upload, Check, ImageIcon } from 'lucide-react';
-import { useShop, getProductImage } from '../context/ShopContext';
+import { useShop, getProductImage, FINAL_API_URL } from '../context/ShopContext';
 import { upload } from '@vercel/blob/client';
 
 const MediaPicker = ({ isOpen, onClose, onSelect, multi = false, selectedItems = [] }) => {
@@ -10,7 +10,6 @@ const MediaPicker = ({ isOpen, onClose, onSelect, multi = false, selectedItems =
     const [localSelected, setLocalSelected] = useState(multi ? selectedItems : (selectedItems[0] ? [selectedItems[0]] : []));
     const [isUploading, setIsUploading] = useState(false);
 
-    const FINAL_API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:3001');
 
     useEffect(() => {
         if (isOpen) {
@@ -82,7 +81,7 @@ const MediaPicker = ({ isOpen, onClose, onSelect, multi = false, selectedItems =
             }
         } catch (error) {
             console.error("Upload failed", error);
-            alert("Upload failed. Check console for details.");
+            alert(`Upload failed: ${error.message || "Unknown error"}. Check server logs and environment variables (BLOB_READ_WRITE_TOKEN).`);
         } finally {
             setIsUploading(false);
         }
