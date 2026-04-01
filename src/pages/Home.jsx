@@ -93,6 +93,30 @@ const Home = () => {
     );
 
 
+    // Calculate current hero transform values for parity sync
+    const heroTransform = useMemo(() => {
+        const b = visibleBanners[currentBanner];
+        if (!b || !b.refWidth) return `scale(${b?.zoom || 1})`;
+        
+        const isDesktop = window.innerWidth >= 768;
+        const currentW = heroSize.w ? (isDesktop ? heroSize.w * 0.65 : heroSize.w) : (isDesktop ? window.innerWidth * 0.65 : window.innerWidth);
+        const currentH = heroSize.h || (isDesktop ? window.innerHeight * 0.75 : window.innerHeight * 0.5);
+        
+        const ratioX = currentW / b.refWidth;
+        const ratioY = currentH / b.refHeight;
+        
+        const tx = (b.translateX || 0) * ratioX;
+        const ty = (b.translateY || 0) * ratioY;
+        const zoom = b.zoom || 1;
+
+        // Debug check as requested - accurately reflects storefront logic
+        console.log(`Banner ${currentBanner} Calibration:`, { tx, ty, zoom, ratioX, ratioY, containerW: currentW, containerH: currentH });
+        
+        return `translate(${tx}px, ${ty}px) scale(${zoom})`;
+    }, [visibleBanners, currentBanner, heroSize]);
+
+    if (loading) return <div className="min-h-screen flex items-center justify-center font-medium bg-brand-sage text-brand-charcoal">Synchronizing with Cloud Storefront...</div>;
+
     return (
         <div className="pb-20 bg-brand-sage">
             {/* Dynamic Hero Banner with Calibration Sync */}
@@ -116,29 +140,7 @@ const Home = () => {
                                     src={getProductImage(visibleBanners[currentBanner].image, media)}
                                     alt={visibleBanners[currentBanner].title}
                                     className="w-full h-full block object-cover origin-center"
-                                    style={{ 
-                                        transform: (() => {
-                                            const b = visibleBanners[currentBanner];
-                                            if (!b.refWidth) return `scale(${b.zoom || 1})`;
-                                            
-                                            // Parity: Use actual rendered dimensions of container
-                                            const isDesktop = window.innerWidth >= 768;
-                                            const currentW = heroSize.w ? (isDesktop ? heroSize.w * 0.65 : heroSize.w) : (isDesktop ? window.innerWidth * 0.65 : window.innerWidth);
-                                            const currentH = heroSize.h || (isDesktop ? window.innerHeight * 0.75 : window.innerHeight * 0.5);
-                                            
-                                            const ratioX = currentW / b.refWidth;
-                                            const ratioY = currentH / b.refHeight;
-                                            
-                                            const tx = (b.translateX || 0) * ratioX;
-                                            const ty = (b.translateY || 0) * ratioY;
-                                            const zoom = b.zoom || 1;
-
-                                            // Debug check as requested
-                                            console.log(`Banner ${currentBanner} Calibration:`, { tx, ty, zoom, ratioX, ratioY });
-                                            
-                                            return `translate(${tx}px, ${ty}px) scale(${zoom})`;
-                                        })()
-                                    }}
+                                    style={{ transform: heroTransform }}
                                 />
                                 {/* Refined Natural Image Fade Divider */}
                                 <div 
