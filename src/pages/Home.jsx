@@ -86,7 +86,8 @@ const Home = () => {
                                 className="w-full h-full transition-transform duration-[2000ms]"
                                 style={{ 
                                     objectFit: visibleBanners[currentBanner].fitMode || 'cover',
-                                    objectPosition: `${visibleBanners[currentBanner].focalPoint?.x || 50}% ${visibleBanners[currentBanner].focalPoint?.y || 50}%`
+                                    objectPosition: `${visibleBanners[currentBanner].focalPoint?.x || 50}% ${visibleBanners[currentBanner].focalPoint?.y || 50}%`,
+                                    transform: `scale(${visibleBanners[currentBanner].zoom || 1})`
                                 }}
                             />
                             <div className={`absolute inset-0 flex items-center p-12 md:p-32 transition-all duration-[1500ms]

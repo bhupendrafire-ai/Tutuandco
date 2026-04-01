@@ -1152,7 +1152,7 @@ const AdminDashboard = () => {
                                                     objectFit: banner.fitMode || 'cover',
                                                     objectPosition: `${(panningPoint && adjustingBannerIdx === index ? panningPoint : (banner.focalPoint || {x:50,y:50})).x}% ${(panningPoint && adjustingBannerIdx === index ? panningPoint : (banner.focalPoint || {x:50,y:50})).y}%`,
                                                     transform: `scale(${interactingZoom !== null ? interactingZoom : (banner.zoom || 1)})`,
-                                                    transition: (panningPoint && adjustingBannerIdx === index) ? 'none' : 'transform 0.2s ease-out'
+                                                    transition: 'none' // Always disable while in calibration mode to prevent jumping
                                                 }}
                                             />
                                             
