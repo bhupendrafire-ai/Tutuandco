@@ -460,8 +460,8 @@ const AdminDashboard = () => {
                                                                             className="w-full bg-brand-cream/50 p-4 font-medium border-none focus:ring-1 focus:ring-brand-charcoal/10 appearance-none cursor-pointer pr-12"
                                                                         >
                                                                             <option value="">Select category...</option>
-                                                                            {/* Predefined + any newly added + current product's if unique */}
-                                                                            {Array.from(new Set(['Accessories', 'Toys', 'Beds', ...sessionCategories, ...products.map(p => p.category)])).filter(Boolean).map(cat => (
+                                                                            {/* Master settings list + current product's if unique */}
+                                                                            {Array.from(new Set([...(settings.categories || ['Accessories', 'Toys', 'Beds']), ...sessionCategories, ...products.map(p => p.category)])).filter(Boolean).map(cat => (
                                                                                 <option key={cat} value={cat}>{cat}</option>
                                                                             ))}
                                                                         </select>
@@ -990,6 +990,69 @@ const AdminDashboard = () => {
                                         className="bg-white text-brand-charcoal px-10 py-5 rounded-sm text-sm font-medium shadow-lg hover:bg-brand-sage transition-all"
                                     >
                                         Synchronize all settings
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-10 rounded-sm shadow-sm border border-brand-charcoal/5">
+                            <h3 className="text-[11px] font-medium text-brand-charcoal/40 mb-8">Category orchestration</h3>
+                            <div className="space-y-6">
+                                {(localSettings.categories || ['Accessories', 'Toys', 'Beds']).map((cat, idx) => (
+                                    <div key={idx} className="flex items-center justify-between p-6 bg-brand-cream/30 rounded-sm group hover:bg-brand-rose/10 transition-all border border-transparent hover:border-brand-rose/20">
+                                        <div className="flex items-center space-x-6">
+                                            <div className="w-10 h-10 bg-brand-charcoal/5 rounded-full flex items-center justify-center text-[10px] font-medium text-brand-charcoal/40 group-hover:bg-brand-rose group-hover:text-brand-charcoal transition-all">
+                                                0{idx + 1}
+                                            </div>
+                                            <span className="text-lg font-medium text-brand-charcoal">{cat}</span>
+                                        </div>
+                                        <div className="flex items-center space-x-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button 
+                                                onClick={() => {
+                                                    const newName = window.prompt(`Rename "${cat}" to:`, cat);
+                                                    if (newName && newName !== cat) {
+                                                        const updatedCats = localSettings.categories.map(c => c === cat ? newName : c);
+                                                        setLocalSettings({...localSettings, categories: updatedCats});
+                                                        
+                                                        // Batch update products
+                                                        const affectedProducts = products.filter(p => p.category === cat);
+                                                        affectedProducts.forEach(p => {
+                                                            updateProduct(p.id, { ...p, category: newName });
+                                                        });
+                                                    }
+                                                }}
+                                                className="text-brand-charcoal/40 hover:text-brand-charcoal transition-colors"
+                                                title="Rename"
+                                            >
+                                                <Edit3 size={18} />
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    if(window.confirm(`Delete the "${cat}" category? Products in this category will remain but the category will be removed from future selection.`)) {
+                                                        const updatedCats = localSettings.categories.filter(c => c !== cat);
+                                                        setLocalSettings({...localSettings, categories: updatedCats});
+                                                    }
+                                                }}
+                                                className="text-red-400 hover:text-red-600 transition-colors"
+                                                title="Delete"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <div className="pt-4">
+                                    <button 
+                                        onClick={() => {
+                                            const newCat = window.prompt("Enter new category name:");
+                                            if (newCat && !localSettings.categories.includes(newCat)) {
+                                                setLocalSettings({...localSettings, categories: [...localSettings.categories, newCat]});
+                                            }
+                                        }}
+                                        className="text-[11px] font-medium text-brand-rose hover:text-brand-charcoal transition-all flex items-center space-x-2"
+                                    >
+                                        <Plus size={14} />
+                                        <span>Establish new category</span>
                                     </button>
                                 </div>
                             </div>

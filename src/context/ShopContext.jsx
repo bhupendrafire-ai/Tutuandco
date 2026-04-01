@@ -81,7 +81,8 @@ export const ShopProvider = ({ children }) => {
     const [settings, setSettings] = useState({
         currency: { code: 'USD', symbol: '$', rate: 1 },
         globalDiscount: 0,
-        shopName: 'Tutu & Co'
+        shopName: 'Tutu & Co',
+        categories: ['Accessories', 'Toys', 'Beds']
     });
     const [loading, setLoading] = useState(true);
     const [coupon, setCoupon] = useState(null);
