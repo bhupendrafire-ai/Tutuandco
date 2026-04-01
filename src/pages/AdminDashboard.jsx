@@ -6,7 +6,7 @@ import {
     Settings, LogOut, Search, Filter, Download, 
     TrendingUp, Users, DollarSign, AlertCircle, Eye, Printer, 
     FileText, CheckCircle, Image as ImageIcon, Plus, Trash2, Upload, Edit3, Menu, X, Layout, RefreshCcw, ChevronDown, Check, CheckCircle2,
-    Maximize, Minimize
+    Maximize, Minimize, Cloud
 } from 'lucide-react';
 import { 
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, 
@@ -613,17 +613,37 @@ const AdminDashboard = () => {
                                                                 )}
                                                             </>
                                                         ) : (
-                                                            <div className="w-full h-full flex flex-col items-center justify-center text-brand-charcoal/10 group-hover:text-brand-rose/20 transition-colors bg-white/40">
+                                                        <div className="w-full h-full relative group">
+                                                            <div className="w-full h-full flex flex-col items-center justify-center text-brand-charcoal/10 group-hover:text-brand-rose/30 transition-all bg-white/40">
                                                                 <ImageIcon size={idx === 0 ? 32 : 24} strokeWidth={1} />
                                                                 <span className="text-[8px] font-medium mt-3 uppercase tracking-widest text-center px-4 opacity-40">
                                                                     {idx === 0 ? 'Primary Slot' : `Slot 0${idx+1}`}
                                                                 </span>
                                                             </div>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
+                                                            
+                                                            {/* Direct Access Overlay (Visible on Hover/Always for Empty) */}
+                                                            <div className="absolute inset-0 flex items-center justify-center gap-4 bg-white/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <button 
+                                                                    onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); window._uploadTargetIdx = idx; }} 
+                                                                    className="p-3 bg-white text-brand-charcoal hover:text-brand-rose rounded-full shadow-xl transition-all"
+                                                                    title="Upload from computer"
+                                                                >
+                                                                    <Upload size={18} />
+                                                                </button>
+                                                                <button 
+                                                                    onClick={(e) => { e.stopPropagation(); alert('Connecting to Google Drive... Please provide a Client ID to activate this link.'); }}
+                                                                    className="p-3 bg-white text-brand-charcoal hover:text-blue-500 rounded-full shadow-xl transition-all"
+                                                                    title="Select from Google Drive"
+                                                                >
+                                                                    <Cloud size={18} />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
                                         </div>
+                                    </div>
 
                                         {/* Column 2: Product Intel (60% width) */}
                                         <div className="w-full md:w-[60%] flex flex-col p-6 md:p-10 space-y-8 overflow-hidden">
