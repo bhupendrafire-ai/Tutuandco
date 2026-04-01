@@ -7,7 +7,8 @@ import {
     X, Upload, Check, AlertCircle, 
     FileText, CheckCircle, Printer, RefreshCcw, 
     Image as ImageIcon, Menu, Layout, ChevronDown, CheckCircle2,
-    Maximize, Minimize, Cloud, AlignLeft, AlignCenter, AlignRight, EyeOff, ChevronUp, Crosshair
+    Maximize, Minimize, Cloud, AlignLeft, AlignCenter, AlignRight, EyeOff, ChevronUp, Crosshair,
+    DollarSign, Users, TrendingUp
 } from 'lucide-react';
 import { 
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, 
