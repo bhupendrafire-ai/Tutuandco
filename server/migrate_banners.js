@@ -12,10 +12,11 @@ const migrateBanners = async () => {
             ALTER TABLE banners ADD COLUMN IF NOT EXISTS zoom FLOAT DEFAULT 1;
             ALTER TABLE banners ADD COLUMN IF NOT EXISTS ref_width INT;
             ALTER TABLE banners ADD COLUMN IF NOT EXISTS ref_height INT;
+            ALTER TABLE banners ADD COLUMN IF NOT EXISTS link TEXT;
         `);
         console.log('✅ Banners table updated successfully.');
     } catch (err) {
-        console.error('❌ Migration failed:', err.message);
+        console.error('❌ Migration failed:', err);
     } finally {
         await db.pool.end();
     }

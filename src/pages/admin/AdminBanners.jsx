@@ -66,11 +66,22 @@ const AdminBanners = () => {
                 </div>
                 <div className="flex items-center space-x-4">
                     <button 
-                        onClick={() => updateBanners(banners, true)} 
-                        className="bg-brand-charcoal text-white px-8 py-4 rounded-sm text-[11px] font-bold uppercase tracking-widest hover:bg-black transition-all shadow-xl flex items-center space-x-3"
+                        onClick={async () => {
+                            setIsSyncing(true);
+                            try {
+                                await updateBanners(banners, true);
+                                alert("All banners synchronized successfully!");
+                            } catch (err) {
+                                alert("Failed to synchronize banners.");
+                            } finally {
+                                setIsSyncing(false);
+                            }
+                        }}
+                        disabled={isSyncing}
+                        className={`bg-brand-charcoal text-white px-8 py-4 rounded-sm text-[11px] font-bold uppercase tracking-widest hover:bg-black transition-all shadow-xl flex items-center space-x-3 ${isSyncing ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                        <Cloud size={16} />
-                        <span>Sync All Banners</span>
+                        {isSyncing ? <RefreshCcw size={16} className="animate-spin" /> : <Cloud size={16} />}
+                        <span>{isSyncing ? 'Syncing...' : 'Sync All Banners'}</span>
                     </button>
                     <button 
                         onClick={() => updateBanners([...banners, { 
@@ -337,7 +348,7 @@ const AdminBanners = () => {
                                                     value={banners[adjustingBannerIdx].title || ""}
                                                     onChange={e => {
                                                         const nb = [...banners];
-                                                        nb[adjustingBannerIdx].title = e.target.value;
+                                                        nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], title: e.target.value };
                                                         updateBanners(nb);
                                                     }}
                                                     placeholder="Narrative Title"
@@ -347,7 +358,7 @@ const AdminBanners = () => {
                                                     value={banners[adjustingBannerIdx].subtitle || ""}
                                                     onChange={e => {
                                                         const nb = [...banners];
-                                                        nb[adjustingBannerIdx].subtitle = e.target.value;
+                                                        nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], subtitle: e.target.value };
                                                         updateBanners(nb);
                                                     }}
                                                     placeholder="Supporting narrative..."
@@ -372,7 +383,7 @@ const AdminBanners = () => {
                                                     value={banners[adjustingBannerIdx].zoom || 1}
                                                     onChange={e => {
                                                         const nb = [...banners];
-                                                        nb[adjustingBannerIdx].zoom = parseFloat(e.target.value);
+                                                        nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], zoom: parseFloat(e.target.value) };
                                                         updateBanners(nb);
                                                     }}
                                                     className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
@@ -383,7 +394,7 @@ const AdminBanners = () => {
                                                 <button 
                                                     onClick={() => {
                                                         const nb = [...banners];
-                                                        nb[adjustingBannerIdx].fitMode = 'cover';
+                                                        nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], fitMode: 'cover' };
                                                         updateBanners(nb);
                                                     }}
                                                     className={`py-3 text-[9px] font-bold uppercase tracking-widest rounded-sm border transition-all ${banners[adjustingBannerIdx].fitMode === 'cover' ? 'bg-white text-brand-charcoal border-white shadow-lg' : 'bg-transparent border-white/20 text-white hover:border-white'}`}
@@ -393,7 +404,7 @@ const AdminBanners = () => {
                                                 <button 
                                                     onClick={() => {
                                                         const nb = [...banners];
-                                                        nb[adjustingBannerIdx].fitMode = 'contain';
+                                                        nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], fitMode: 'contain' };
                                                         updateBanners(nb);
                                                     }}
                                                     className={`py-3 text-[9px] font-bold uppercase tracking-widest rounded-sm border transition-all ${banners[adjustingBannerIdx].fitMode === 'contain' ? 'bg-white text-brand-charcoal border-white shadow-lg' : 'bg-transparent border-white/20 text-white hover:border-white'}`}
@@ -433,7 +444,7 @@ const AdminBanners = () => {
                                                         value={banners[adjustingBannerIdx].cta || ""}
                                                         onChange={e => {
                                                             const nb = [...banners];
-                                                            nb[adjustingBannerIdx].cta = e.target.value;
+                                                            nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], cta: e.target.value };
                                                             updateBanners(nb);
                                                         }}
                                                         placeholder="Explore Collection..."
@@ -447,7 +458,7 @@ const AdminBanners = () => {
                                                         value={banners[adjustingBannerIdx].link || ""}
                                                         onChange={e => {
                                                             const nb = [...banners];
-                                                            nb[adjustingBannerIdx].link = e.target.value;
+                                                            nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], link: e.target.value };
                                                             updateBanners(nb);
                                                         }}
                                                         placeholder="/product/..."
