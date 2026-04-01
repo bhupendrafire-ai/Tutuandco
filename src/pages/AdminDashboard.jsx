@@ -45,10 +45,11 @@ const AdminDashboard = () => {
     const [isBulkDiscountModalOpen, setIsBulkDiscountModalOpen] = useState(false);
     const [bulkDiscountValue, setBulkDiscountValue] = useState(10);
     const [adjustingBannerIdx, setAdjustingBannerIdx] = useState(null);
-    const [panningPoint, setPanningPoint] = useState(null); // Local buffer for lag-free dragging
-    const [interactingZoom, setInteractingZoom] = useState(null); // Local buffer for lag-free zooming
+    const [panningPoint, setPanningPoint] = useState(null); // Local buffer for final calibration sync
+    const [interactingZoom, setInteractingZoom] = useState(null); // Local buffer for live zooming
     const activeImageRef = useRef(null); // High-performance Direct DOM reference
-    const localFocal = useRef({ x: 50, y: 50 }); // Performance-safe position tracking
+    const localFocal = useRef({ x: 50, y: 50 }); // Performance-safe current position
+    const startingFocalRef = useRef({ x: 50, y: 50 }); // Fixed anchor point for 'Sticky Drag'
 
     const [mediaPickerConfig, setMediaPickerConfig] = useState({ isOpen: false, multi: false, onSelect: () => {}, selectedItems: [] });
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
@@ -1079,7 +1080,8 @@ const AdminDashboard = () => {
                                             onPanStart={() => {
                                                 if (adjustingBannerIdx === index) {
                                                     const startFocal = banner.focalPoint || { x: 50, y: 50 };
-                                                    // Initialize Ref-only tracking for Zero-Lag (No React re-renders)
+                                                    // Lock starting anchor point to avoid jitter
+                                                    startingFocalRef.current = startFocal;
                                                     localFocal.current = startFocal;
                                                 }
                                             }}
@@ -1094,14 +1096,15 @@ const AdminDashboard = () => {
                                                     // Sticky Drag Formula (1:1 Movement Offset)
                                                     const scrollableFactor = Math.max(0.01, zoom - 1);
                                                     
-                                                    // Using (+) based on previous intuition test
-                                                    const deltaX = (info.delta.x / (rect.width * scrollableFactor)) * 100;
-                                                    const deltaY = (info.delta.y / (rect.height * scrollableFactor)) * 100;
+                                                    // Calculate TOTAL percent change since original click (info.offset)
+                                                    // Negative sign (-) is the natural "Pull" direction for object-position
+                                                    const offsetXPercent = (info.offset.x / (rect.width * scrollableFactor)) * 100;
+                                                    const offsetYPercent = (info.offset.y / (rect.height * scrollableFactor)) * 100;
                                                     
-                                                    // Update local ref only (Zero UI lag)
+                                                    // Derive new position from the original anchor point (Zero cumulative error)
                                                     localFocal.current = {
-                                                        x: Math.min(100, Math.max(0, localFocal.current.x + deltaX)),
-                                                        y: Math.min(100, Math.max(0, localFocal.current.y + deltaY))
+                                                        x: Math.min(100, Math.max(0, startingFocalRef.current.x - offsetXPercent)),
+                                                        y: Math.min(100, Math.max(0, startingFocalRef.current.y - offsetYPercent))
                                                     };
 
                                                     // Direct DOM update (60fps)
