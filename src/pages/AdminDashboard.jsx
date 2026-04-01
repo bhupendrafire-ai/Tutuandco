@@ -41,8 +41,13 @@ if (resolvedUrl && !resolvedUrl.startsWith('http')) {
 const FINAL_API_URL = (resolvedUrl || (IS_PROD ? '' : FALLBACK_URL))?.replace(/\/$/, "");
 
 const AdminDashboard = () => {
+    const navigate = useNavigate();
     const { section } = useParams();
     const activeTab = section || 'overview';
+    const { 
+        products, banners, media, loading: shopLoading, 
+        addProduct, deleteProduct, updateProduct, updateBanners, uploadMedia 
+    } = useShop();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({ totalSales: 0, totalOrders: 0, totalCustomers: 0, health: 98 });
@@ -194,16 +199,17 @@ const AdminDashboard = () => {
         setProductForm(prev => ({ ...prev, descriptionBlocks: prev.descriptionBlocks.filter((_, i) => i !== index) }));
     };
 
-    const SidebarItem = ({ id, icon: Icon, label }) => (
+    const SidebarItem = ({ icon: Icon, label, active, onClick }) => (
         <button 
-            onClick={() => {
-                setActiveTab(id);
-                setIsSidebarOpen(false);
-            }}
-            className={`w-full flex items-center space-x-4 p-4 rounded-sm transition-all ${activeTab === id ? 'bg-brand-rose text-brand-charcoal shadow-lg' : 'text-brand-charcoal hover:bg-brand-rose/20'}`}
+            onClick={onClick}
+            className={`w-full flex items-center space-x-4 p-4 rounded-sm transition-all duration-300 ${
+                active 
+                    ? 'bg-brand-charcoal text-white shadow-lg scale-[1.02]' 
+                    : 'text-brand-charcoal/60 hover:bg-white/40'
+            }`}
         >
             <Icon size={20} />
-            <span className="text-[11px] font-medium">{label}</span>
+            <span className="text-[11px] font-medium tracking-wide">{label}</span>
         </button>
     );
 
@@ -223,7 +229,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Sidebar */}
-            <aside className={`fixed lg:relative inset-y-0 left-0 w-72 bg-brand-cream border-r border-brand-charcoal/10 p-8 flex flex-col pt-32 lg:pt-32 z-[60] transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 shadow-2xl lg:shadow-none'}`}>
+            <aside className={`fixed lg:relative inset-y-0 left-0 w-72 bg-[#B4BFA8] border-r border-brand-charcoal/5 p-8 flex flex-col pt-32 lg:pt-32 z-[60] transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 shadow-2xl lg:shadow-none'}`}>
                 <div className="flex-grow space-y-2">
                         <SidebarItem 
                             icon={LayoutDashboard} label="Overview" 
