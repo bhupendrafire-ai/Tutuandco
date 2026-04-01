@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useShop, getProductImage } from '../context/ShopContext';
-import { CheckCircle, Truck, FileText, CreditCard, ChevronRight, ArrowLeft } from 'lucide-react';
+import { CheckCircle, Truck, FileText, CreditCard, ChevronRight, ArrowLeft, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Checkout = () => {
