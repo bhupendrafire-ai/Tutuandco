@@ -1073,35 +1073,39 @@ const AdminDashboard = () => {
                                                 </div>
                                             )}
                                         </div>
-
                                         <motion.div 
                                             className={`relative h-[75vh] w-full overflow-hidden select-none banner-panning-container ${adjustingBannerIdx === index ? 'cursor-grab active:cursor-grabbing' : ''}`}
                                             style={{ touchAction: 'none' }}
                                             onPanStart={() => {
                                                 if (adjustingBannerIdx === index) {
                                                     const startFocal = banner.focalPoint || { x: 50, y: 50 };
-                                                    setPanningPoint(startFocal);
+                                                    // Initialize Ref-only tracking for Zero-Lag (No React re-renders)
+                                                    localFocal.current = startFocal;
                                                 }
                                             }}
                                             onPan={(e, info) => {
-                                                if (adjustingBannerIdx === index && panningPoint) {
+                                                if (adjustingBannerIdx === index && localFocal.current) {
                                                     const container = e.target.closest('.banner-panning-container');
-                                                    if (!container) return;
+                                                    if (!container || !activeImageRef.current) return;
                                                     
                                                     const rect = container.getBoundingClientRect();
                                                     const zoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
                                                     
-                                                    // Sticky Drag Formula (1:1 Movement):
-                                                    // Move focal point by (pixels / (container * (zoom-1)))
-                                                    // Math.max ensures we don't divide by zero if zoom is 1.0
+                                                    // Sticky Drag Formula (1:1 Movement Offset)
                                                     const scrollableFactor = Math.max(0.01, zoom - 1);
+                                                    
+                                                    // Using (+) based on previous intuition test
                                                     const deltaX = (info.delta.x / (rect.width * scrollableFactor)) * 100;
                                                     const deltaY = (info.delta.y / (rect.height * scrollableFactor)) * 100;
                                                     
-                                                    setPanningPoint(prev => ({
-                                                        x: Math.min(100, Math.max(0, (prev?.x || 50) - deltaX)),
-                                                        y: Math.min(100, Math.max(0, (prev?.y || 50) - deltaY))
-                                                    }));
+                                                    // Update local ref only (Zero UI lag)
+                                                    localFocal.current = {
+                                                        x: Math.min(100, Math.max(0, localFocal.current.x + deltaX)),
+                                                        y: Math.min(100, Math.max(0, localFocal.current.y + deltaY))
+                                                    };
+
+                                                    // Direct DOM update (60fps)
+                                                    activeImageRef.current.style.objectPosition = `${localFocal.current.x}% ${localFocal.current.y}%`;
                                                 }
                                             }}
                                             onPanEnd={() => {
@@ -1109,7 +1113,7 @@ const AdminDashboard = () => {
                                                     const nb = [...banners];
                                                     nb[index] = { ...nb[index], focalPoint: localFocal.current };
                                                     updateBanners(nb);
-                                                    setPanningPoint(localFocal.current); // Sync final state to React
+                                                    setPanningPoint(localFocal.current); // Sync visual state back to React on release
                                                 }
                                             }}
                                         >
