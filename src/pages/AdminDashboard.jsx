@@ -421,20 +421,34 @@ const AdminDashboard = () => {
 
                         {/* Premium Listing Workspace Modal */}
                         {isEditingProduct && (
-                            <div className="fixed inset-0 bg-[#3E362E]/90 backdrop-blur-md z-[100] flex items-center justify-center p-6 md:p-12">
+                            <div 
+                                className="fixed inset-0 bg-[#3E362E]/90 backdrop-blur-md z-[100] flex items-center justify-center p-6 md:p-12 cursor-pointer"
+                                onClick={() => setIsEditingProduct(null)}
+                            >
                                 <motion.div 
                                     initial={{ opacity: 0, y: 50, scale: 0.95 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    className="bg-[#F4F1EA] w-full max-w-7xl h-[90vh] rounded-sm shadow-2xl overflow-hidden flex flex-col"
+                                    className="bg-[#F4F1EA] w-full max-w-7xl h-[90vh] rounded-sm shadow-2xl overflow-hidden flex flex-col cursor-default"
+                                    onClick={(e) => e.stopPropagation()}
                                 >
                                     {/* Modal Header */}
-                                    <div className="bg-white border-b border-[#CD664D]/10 p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                                    <div 
+                                        className="bg-white border-b border-[#CD664D]/10 p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
                                         <div>
                                             <h2 className="text-2xl md:text-3xl font-medium text-brand-charcoal">
                                                 {isEditingProduct === 'new' ? 'New creation' : `Refining: ${productForm.name}`}
                                             </h2>
                                             <p className="text-[10px] font-medium text-brand-charcoal/40 mt-1">Product ID: {isEditingProduct}</p>
                                         </div>
+                                        <button 
+                                            onClick={() => setIsEditingProduct(null)} 
+                                            className="absolute -top-3 -right-3 p-2 bg-brand-charcoal text-white rounded-full hover:bg-black transition-all shadow-xl z-[60]"
+                                            title="Close Workspace"
+                                        >
+                                            <X size={16} />
+                                        </button>
                                         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                                             {/* Requirements Checklist (Real-time feedback) */}
                                             <div className="hidden lg:flex items-center gap-4 px-6 border-r border-brand-charcoal/10 mr-2 h-10">
