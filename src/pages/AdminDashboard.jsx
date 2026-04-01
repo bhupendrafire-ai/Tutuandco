@@ -45,7 +45,8 @@ const AdminDashboard = () => {
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
     const [newCatTemp, setNewCatTemp] = useState('');
     const [sessionCategories, setSessionCategories] = useState([]);
-    const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+    const [showCategoryManager, setShowCategoryManager] = useState(false);
+    const [newCategoryName, setNewCategoryName] = useState('');
     const dropdownRef = useRef(null);
     const fileInputRef = useRef(null);
     const [adjustingImageIdx, setAdjustingImageIdx] = useState(null);
@@ -765,6 +766,18 @@ const AdminDashboard = () => {
                                                         />
                                                     </div>
                                                 </div>
+                                                <div className="bg-white/60 p-6 rounded-sm border border-brand-charcoal/5 flex flex-col gap-2 relative">
+                                                    <div className="flex justify-between items-center px-1">
+                                                        <label className="text-[10px] font-medium text-brand-charcoal/40 uppercase tracking-widest">Category</label>
+                                                        <button 
+                                                            onClick={() => setShowCategoryManager(true)}
+                                                            className="p-1.5 hover:bg-brand-rose/20 rounded-full transition-colors text-brand-charcoal/30 hover:text-brand-rose"
+                                                            title="Manage Master Categories"
+                                                        >
+                                                            <Settings size={14} />
+                                                        </button>
+                                                    </div>
+                                                </div>
                                                 <div className="bg-white p-6 rounded-sm border border-brand-charcoal/10 shadow-sm">
                                                     <label className="text-[9px] font-medium text-brand-charcoal/40 block mb-2 uppercase tracking-widest">Available Stock</label>
                                                     <div className="flex items-end space-x-2">
@@ -1130,6 +1143,77 @@ const AdminDashboard = () => {
                         {...mediaPickerConfig} 
                         onClose={() => setMediaPickerConfig(prev => ({ ...prev, isOpen: false }))} 
                     />
+                )}
+            </AnimatePresence>
+            {/* Master Category Manager Modal */}
+            <AnimatePresence>
+                {showCategoryManager && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowCategoryManager(false)} className="absolute inset-0 bg-brand-charcoal/80 backdrop-blur-md" />
+                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative bg-white w-full max-w-md rounded-sm overflow-hidden shadow-2xl">
+                            <div className="p-8 bg-brand-cream/30 border-b border-brand-charcoal/5 flex justify-between items-center">
+                                <div>
+                                    <h3 className="text-xl font-medium text-brand-charcoal">Manage Categories</h3>
+                                    <p className="text-xs text-brand-charcoal/40 mt-1 uppercase tracking-widest">Master Store Taxonomy</p>
+                                </div>
+                                <button onClick={() => setShowCategoryManager(false)} className="p-2 hover:bg-white rounded-full transition-all text-brand-charcoal/20 hover:text-brand-charcoal"><X size={20} /></button>
+                            </div>
+                            
+                            <div className="p-8 space-y-6">
+                                {/* Add New Category */}
+                                <div className="flex gap-2">
+                                    <input 
+                                        type="text" 
+                                        value={newCategoryName}
+                                        onChange={(e) => setNewCategoryName(e.target.value)}
+                                        placeholder="New Category Name..."
+                                        className="flex-grow bg-brand-cream/50 p-4 font-medium rounded-sm border border-transparent focus:border-brand-rose outline-none text-sm"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && newCategoryName.trim()) {
+                                                const updated = [...(settings.categories || []), newCategoryName.trim()];
+                                                updateSettings({ ...settings, categories: updated });
+                                                setNewCategoryName('');
+                                            }
+                                        }}
+                                    />
+                                    <button 
+                                        onClick={() => {
+                                            if (newCategoryName.trim()) {
+                                                const updated = [...(settings.categories || []), newCategoryName.trim()];
+                                                updateSettings({ ...settings, categories: updated });
+                                                setNewCategoryName('');
+                                            }
+                                        }}
+                                        className="bg-brand-charcoal text-white p-4 rounded-sm hover:bg-black transition-all shadow-lg"
+                                    >
+                                        <Plus size={20} />
+                                    </button>
+                                </div>
+
+                                {/* Master List */}
+                                <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                                    {(settings.categories || []).map((cat, i) => (
+                                        <div key={i} className="flex items-center justify-between p-4 bg-brand-cream/20 rounded-sm group hover:bg-brand-cream/40 transition-all border border-transparent hover:border-brand-rose/10">
+                                            <span className="font-medium text-brand-charcoal">{cat}</span>
+                                            <button 
+                                                onClick={() => {
+                                                    const updated = settings.categories.filter((_, idx) => idx !== i);
+                                                    updateSettings({ ...settings, categories: updated });
+                                                }}
+                                                className="opacity-20 group-hover:opacity-100 text-red-500 hover:scale-110 transition-all p-1"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="p-8 bg-brand-cream/10 border-t border-brand-charcoal/5 flex justify-end">
+                                <button onClick={() => setShowCategoryManager(false)} className="px-8 py-3 bg-brand-rose text-brand-charcoal font-medium text-[11px] uppercase tracking-widest rounded-sm shadow-xl hover:opacity-80 transition-all">Done Managing</button>
+                            </div>
+                        </motion.div>
+                    </div>
                 )}
             </AnimatePresence>
         </div>
