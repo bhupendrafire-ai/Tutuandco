@@ -451,7 +451,7 @@ const AdminDashboard = () => {
                                     </button>
 
                                     {/* Modal Header */}
-                                    <div className="bg-white border-b border-[#CD664D]/10 p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                                    <div className="bg-[#F4F1EA] border-b border-[#CD664D]/10 p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                                         <div>
                                             <h2 className="text-2xl md:text-3xl font-medium text-brand-charcoal">
                                                 {isEditingProduct === 'new' ? 'New creation' : `Refining: ${productForm.name}`}
@@ -467,7 +467,7 @@ const AdminDashboard = () => {
                                     <div className="flex-grow overflow-y-auto flex flex-col md:flex-row custom-scrollbar">
                                         
                                         {/* Column 1: Media Hub */}
-                                        <div className="w-full md:w-[40%] bg-white/40 border-r border-brand-charcoal/5 flex flex-col p-6 md:p-10 overflow-hidden">
+                                        <div className="w-full md:w-[40%] bg-[#F4F1EA]/60 border-r border-brand-charcoal/5 flex flex-col p-6 md:p-10 overflow-hidden">
                                             <div className="flex justify-between items-center mb-6">
                                                 <h3 className="text-[12px] font-bold text-brand-charcoal/70 uppercase tracking-widest">Media Hub</h3>
                                                 <div className="flex gap-4">
@@ -650,7 +650,7 @@ const AdminDashboard = () => {
                                             </div>
 
                                             {/* Narrative Section */}
-                                            <div className="flex-grow flex flex-col space-y-4 bg-white p-8 rounded-sm border border-brand-charcoal/5 shadow-sm">
+                                            <div className="flex-grow flex flex-col space-y-4 bg-[#F4F1EA]/40 p-8 rounded-sm border border-brand-charcoal/5 shadow-sm">
                                                 <label className="text-[12px] font-bold text-brand-charcoal/70 uppercase tracking-wide">Brief hook (SEO summary)</label>
                                                 <textarea value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} className="flex-grow w-full bg-brand-cream/20 p-6 text-xl font-medium border-none resize-none outline-none focus:ring-1 focus:ring-brand-sage rounded-sm leading-relaxed italic" placeholder="The philosophy behind this creation..." />
                                             </div>
@@ -668,16 +668,16 @@ const AdminDashboard = () => {
                                                         <input type="number" placeholder="None" value={productForm.discountPrice || ''} onChange={e => setProductForm({...productForm, discountPrice: e.target.value ? parseInt(e.target.value) : null})} className="w-full bg-transparent text-2xl font-medium outline-none border-none p-0 placeholder:text-brand-charcoal/20" />
                                                     </div>
                                                 </div>
-                                                <div className="bg-white p-6 rounded-sm border border-brand-charcoal/10 shadow-sm flex flex-col">
+                                                <div className="bg-[#F4F1EA]/60 p-6 rounded-sm border border-brand-charcoal/5 shadow-sm flex flex-col">
                                                     <label className="text-[11px] font-bold text-brand-charcoal/70 block mb-2 uppercase tracking-widest">Stock Units</label>
-                                                    <input type="number" value={productForm.stock} onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} className="w-full bg-transparent text-2xl font-medium p-0 border-none outline-none" />
+                                                    <input type="number" value={productForm.stock} onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} className="w-full bg-transparent text-2xl font-medium p-0 border-none outline-none text-brand-charcoal" />
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Safe Action Hub (Sticky Footer) */}
-                                    <div className="bg-white border-t border-brand-charcoal/10 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 sticky bottom-0 z-[100] shadow-[0_-10px_30px_rgba(0,0,0,0.02)]">
+                                    <div className="bg-[#F4F1EA] border-t border-brand-charcoal/10 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 sticky bottom-0 z-[100] shadow-[0_-10px_30px_rgba(0,0,0,0.02)]">
                                         {/* Audit Checklist (Left) */}
                                         <div className="flex items-center gap-6 px-6 py-3 bg-brand-cream/30 rounded-full border border-brand-charcoal/5">
                                             <div className="text-[11px] font-bold text-brand-charcoal/60 uppercase tracking-widest mr-2">Audit</div>
