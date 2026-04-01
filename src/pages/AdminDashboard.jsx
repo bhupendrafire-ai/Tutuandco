@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     LayoutDashboard, Package, ShoppingCart, BarChart3, 
@@ -41,13 +41,8 @@ if (resolvedUrl && !resolvedUrl.startsWith('http')) {
 const FINAL_API_URL = (resolvedUrl || (IS_PROD ? '' : FALLBACK_URL))?.replace(/\/$/, "");
 
 const AdminDashboard = () => {
-    const navigate = useNavigate();
-    const { 
-        products, banners, media, loading: shopLoading, 
-        addProduct, deleteProduct, updateProduct, updateBanners, uploadMedia 
-    } = useShop();
-
-    const [activeTab, setActiveTab] = useState('overview');
+    const { section } = useParams();
+    const activeTab = section || 'overview';
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({ totalSales: 0, totalOrders: 0, totalCustomers: 0, health: 98 });
@@ -230,12 +225,36 @@ const AdminDashboard = () => {
             {/* Sidebar */}
             <aside className={`fixed lg:relative inset-y-0 left-0 w-72 bg-brand-cream border-r border-brand-charcoal/10 p-8 flex flex-col pt-32 lg:pt-32 z-[60] transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 shadow-2xl lg:shadow-none'}`}>
                 <div className="flex-grow space-y-2">
-                    <SidebarItem id="overview" icon={LayoutDashboard} label="Overview" />
-                    <SidebarItem id="products" icon={Package} label="Product CMS" />
-                    <SidebarItem id="banners" icon={ImageIcon} label="Banner Manager" />
-                    <SidebarItem id="media" icon={Upload} label="Media Library" />
-                    <SidebarItem id="orders" icon={ShoppingCart} label="Orders" />
-                    <SidebarItem id="settings" icon={Settings} label="Universal Settings" />
+                        <SidebarItem 
+                            icon={LayoutDashboard} label="Overview" 
+                            active={activeTab === 'overview'} 
+                            onClick={() => navigate('/admin/dashboard/overview')} 
+                        />
+                        <SidebarItem 
+                            icon={Package} label="Product CMS" 
+                            active={activeTab === 'products'} 
+                            onClick={() => navigate('/admin/dashboard/products')} 
+                        />
+                        <SidebarItem 
+                            icon={ImageIcon} label="Banner Manager" 
+                            active={activeTab === 'banners'} 
+                            onClick={() => navigate('/admin/dashboard/banners')} 
+                        />
+                        <SidebarItem 
+                            icon={Upload} label="Media Library" 
+                            active={activeTab === 'media'} 
+                            onClick={() => navigate('/admin/dashboard/media')} 
+                        />
+                        <SidebarItem 
+                            icon={ShoppingCart} label="Orders" 
+                            active={activeTab === 'orders'} 
+                            onClick={() => navigate('/admin/dashboard/orders')} 
+                        />
+                        <SidebarItem 
+                            icon={Settings} label="Universal Settings" 
+                            active={activeTab === 'settings'} 
+                            onClick={() => navigate('/admin/dashboard/settings')} 
+                        />
                 </div>
                 <button 
                     onClick={() => {
