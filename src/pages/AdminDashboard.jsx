@@ -830,8 +830,7 @@ const AdminDashboard = () => {
                                 </motion.div>
                             </div>
                         )}
-                    </div>
-                )}
+                    </AnimatePresence>
 
                 {activeTab === 'banners' && (
                     <div className="space-y-12">
