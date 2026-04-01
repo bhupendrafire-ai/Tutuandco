@@ -63,6 +63,7 @@ const AdminDashboard = () => {
         images: [], descriptionBlocks: [] 
     });
     const [mediaPickerConfig, setMediaPickerConfig] = useState({ isOpen: false, multi: false, onSelect: () => {}, selectedItems: [] });
+    const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
     const fileInputRef = useRef(null);
 
 
@@ -290,6 +291,7 @@ const AdminDashboard = () => {
                                 <h2 className="text-xl font-medium">Product catalog</h2>
                                 <button 
                                     onClick={() => {
+                                        setShowNewCategoryInput(false);
                                         setProductForm({ 
                                             name: '', price: 0, discountPrice: null, stock: 0, 
                                             category: '', description: '', imageName: '',
@@ -329,6 +331,7 @@ const AdminDashboard = () => {
                                                 <td className="p-6 font-medium text-lg">₹{item.price}</td>
                                                 <td className="p-6 text-right space-x-3 text-[#CD664D]">
                                                     <button onClick={() => {
+                                                        setShowNewCategoryInput(false);
                                                         setProductForm(item);
                                                         setIsEditingProduct(item.id);
                                                     }}><Edit3 size={18} /></button>
@@ -412,11 +415,42 @@ const AdminDashboard = () => {
                                                             <input value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="w-full bg-brand-cream/50 p-5 font-medium text-2xl border-none focus:ring-1 focus:ring-brand-charcoal/10" placeholder="Enter name..." />
                                                         </div>
                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                            <div>
-                                                                <label className="text-[11px] font-medium text-brand-charcoal/40 mb-2 block">Category</label>
-                                                                <input value={productForm.category} onChange={e => setProductForm({...productForm, category: e.target.value})} className="w-full bg-brand-cream/50 p-4 font-medium border-none" placeholder="e.g. Apparel" />
-                                                            </div>
-                                                        </div>
+                                                             <div>
+                                                                 <div className="flex justify-between items-center mb-2">
+                                                                    <label className="text-[11px] font-medium text-brand-charcoal/40 block">Category</label>
+                                                                    <button 
+                                                                        onClick={() => setShowNewCategoryInput(!showNewCategoryInput)}
+                                                                        className="text-[10px] font-medium text-brand-rose hover:text-brand-charcoal transition-colors px-2 py-0.5 bg-brand-rose/10 rounded-sm"
+                                                                    >
+                                                                        {showNewCategoryInput ? 'Choose existing' : '+ Add new'}
+                                                                    </button>
+                                                                 </div>
+                                                                 
+                                                                 {showNewCategoryInput ? (
+                                                                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+                                                                        <input 
+                                                                            value={productForm.category} 
+                                                                            onChange={e => setProductForm({...productForm, category: e.target.value})} 
+                                                                            className="w-full bg-brand-cream/50 p-4 font-medium border-none focus:ring-1 focus:ring-brand-charcoal/10" 
+                                                                            placeholder="Enter new category..." 
+                                                                            autoFocus
+                                                                        />
+                                                                    </motion.div>
+                                                                 ) : (
+                                                                    <select 
+                                                                        value={productForm.category} 
+                                                                        onChange={e => setProductForm({...productForm, category: e.target.value})} 
+                                                                        className="w-full bg-brand-cream/50 p-4 font-medium border-none focus:ring-1 focus:ring-brand-charcoal/10 appearance-none cursor-pointer"
+                                                                    >
+                                                                        <option value="">Select category...</option>
+                                                                        {/* Predefined + any new unique ones added by user during this session or previous */}
+                                                                        {Array.from(new Set(['Accessories', 'Toys', 'Beds', ...products.map(p => p.category)])).filter(Boolean).map(cat => (
+                                                                            <option key={cat} value={cat}>{cat}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                 )}
+                                                             </div>
+                                                         </div>
 
                                                         <div>
                                                             <label className="text-[11px] font-medium text-brand-charcoal/40 mb-2 block">Brief hook (SEO description)</label>
