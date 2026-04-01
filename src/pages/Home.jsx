@@ -93,11 +93,27 @@ const Home = () => {
                             <img
                                 src={getProductImage(visibleBanners[currentBanner].image, media)}
                                 alt={visibleBanners[currentBanner].title}
-                                className="w-full h-full transition-transform duration-[2000ms]"
+                                className="w-full h-full transition-transform duration-[2000ms] origin-center"
                                 style={{ 
                                     objectFit: visibleBanners[currentBanner].fitMode || 'cover',
-                                    objectPosition: `${visibleBanners[currentBanner].focalPoint?.x || 50}% ${visibleBanners[currentBanner].focalPoint?.y || 50}%`,
-                                    transform: `scale(${visibleBanners[currentBanner].zoom || 1})`
+                                    transform: (() => {
+                                        const b = visibleBanners[currentBanner];
+                                        if (!b.refWidth) return `scale(${b.zoom || 1})`;
+                                        
+                                        // Dynamic recalculation based on current viewport
+                                        // We use 75vh for the height as defined in the layout
+                                        const currentW = window.innerWidth;
+                                        const currentH = window.innerHeight * 0.75; 
+                                        
+                                        const ratioX = currentW / b.refWidth;
+                                        const ratioY = currentH / b.refHeight;
+                                        
+                                        // We use the same scaling logic to maintain position
+                                        const tx = (b.translateX || 0) * ratioX;
+                                        const ty = (b.translateY || 0) * ratioY;
+                                        
+                                        return `translate3d(${tx}px, ${ty}px, 0) scale(${b.zoom || 1})`;
+                                    })()
                                 }}
                             />
                             <div className="absolute inset-0 bg-black/10 pointer-events-none" /> {/* Atmospheric dimming for unified composition */}

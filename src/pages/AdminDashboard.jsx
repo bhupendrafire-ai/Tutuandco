@@ -61,6 +61,7 @@ const AdminDashboard = () => {
     const dropdownRef = useRef(null);
     const fileInputRef = useRef(null);
     const [adjustingImageIdx, setAdjustingImageIdx] = useState(null);
+    const naturalAspectRef = useRef(1); // Track image aspect ratio for clamping
 
 
     const trendData = [
@@ -1090,56 +1091,64 @@ const AdminDashboard = () => {
                                                     if (!container || !activeImageRef.current) return;
                                                     
                                                     const rect = container.getBoundingClientRect();
-                                                    
-                                                    // UNIVERSAL STICKY DRAG: Move focal point relative to drag distance
-                                                    // We divide by zoom to maintain mouse-to-pixel parity
                                                     const zoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
-                                                    const deltaXPercent = (info.delta.x / rect.width) * 100;
-                                                    const deltaYPercent = (info.delta.y / rect.height) * 100;
-
-                                                    // Subtract because pulling image right = focal point moves left
-                                                    const nextX = Math.min(100, Math.max(0, localFocal.current.x - (deltaXPercent / zoom)));
-                                                    const nextY = Math.min(100, Math.max(0, localFocal.current.y - (deltaYPercent / zoom)));
+                                                    
+                                                    // 1. Calculate rendered dimensions with object-fit: cover
+                                                    const aspect = naturalAspectRef.current || 1;
+                                                    const containerAspect = rect.width / rect.height;
+                                                    
+                                                    let renderW, renderH;
+                                                    if (aspect > containerAspect) {
+                                                        // Image is wider than container: fits height
+                                                        renderH = rect.height;
+                                                        renderW = rect.height * aspect;
+                                                    } else {
+                                                        // Image is taller than container: fits width
+                                                        renderW = rect.width;
+                                                        renderH = rect.width / aspect;
+                                                    }
+                                                    
+                                                    // 2. Final Scaled Dimensions
+                                                    const finalW = renderW * zoom;
+                                                    const finalH = renderH * zoom;
+                                                    
+                                                    // 3. Current Max Bounds (Allowed Translation from center)
+                                                    const maxX = Math.max(0, (finalW - rect.width) / 2);
+                                                    const maxY = Math.max(0, (finalH - rect.height) / 2);
+                                                    
+                                                    // 4. Update relative pixel offsets
+                                                    // info.delta is the distance mouse moved this frame
+                                                    const nextX = Math.min(maxX, Math.max(-maxX, (localFocal.current.x || 0) + info.delta.x));
+                                                    const nextY = Math.min(maxY, Math.max(-maxY, (localFocal.current.y || 0) + info.delta.y));
                                                     
                                                     localFocal.current = { x: nextX, y: nextY };
 
-                                                    // Update image alignment (Direct DOM for Performance)
-                                                    activeImageRef.current.style.objectPosition = `${nextX}% ${nextY}%`;
+                                                    // 5. Update image transform (Direct DOM for Performance)
+                                                    // We use translate3d for GPU acceleration
+                                                    activeImageRef.current.style.transform = `translate3d(${nextX}px, ${nextY}px, 0) scale(${zoom})`;
                                                     
-                                                    // Update visual target (if it exists)
-                                                    const target = container.querySelector('.focal-target');
-                                                    if (target) {
-                                                        target.style.left = `${nextX}%`;
-                                                        target.style.top = `${nextY}%`;
-                                                    }
-
-                                                    // Use local buffer for reacting to UI changes
-                                                    setPanningPoint(localFocal.current);
+                                                    // Store current reference dimensions for sync
+                                                    setPanningPoint({ x: nextX, y: nextY, refW: rect.width, refH: rect.height });
                                                 }
                                             }}
                                             onPanEnd={() => {
                                                 if (adjustingBannerIdx === index && localFocal.current) {
+                                                    const container = e.target.closest('.banner-panning-container');
+                                                    const rect = container?.getBoundingClientRect() || { width: 1000, height: 300 };
                                                     const nb = [...banners];
-                                                    nb[index] = { ...nb[index], focalPoint: localFocal.current };
+                                                    nb[index] = { 
+                                                        ...nb[index], 
+                                                        translateX: localFocal.current.x, 
+                                                        translateY: localFocal.current.y,
+                                                        refWidth: rect.width,
+                                                        refHeight: rect.height,
+                                                        zoom: interactingZoom !== null ? interactingZoom : (banner.zoom || 1)
+                                                    };
                                                     updateBanners(nb);
-                                                    setPanningPoint(localFocal.current); // Sync final state back to React on release
                                                 }
                                             }}
                                         >
-                                            {/* Visual Focal Point Target (Proves vertical/horizontal tracking) */}
-                                            {adjustingBannerIdx === index && (
-                                                <div 
-                                                    className="focal-target absolute w-20 h-20 -ml-10 -mt-10 border-2 border-brand-rose rounded-full flex items-center justify-center pointer-events-none z-[100] shadow-[0_0_20px_rgba(255,51,102,0.5)] transition-none"
-                                                    style={{
-                                                        left: `${panningPoint?.x || (banner.focalPoint?.x || 50)}%`,
-                                                        top: `${panningPoint?.y || (banner.focalPoint?.y || 50)}%`
-                                                    }}
-                                                >
-                                                    <div className="w-1.5 h-1.5 bg-brand-rose rounded-full" />
-                                                    <div className="absolute w-8 h-[1px] bg-brand-rose/50" />
-                                                    <div className="absolute h-8 w-[1px] bg-brand-rose/50" />
-                                                </div>
-                                            )}
+                                            {/* Visual Framing Target removed as it no longer maps 1:1 with transform */}
 
                                             {/* Isolated Calibration Hub */}
                                             {adjustingBannerIdx === index && (
@@ -1244,39 +1253,31 @@ const AdminDashboard = () => {
                                             <img 
                                                 ref={adjustingBannerIdx === index ? activeImageRef : null}
                                                 src={getProductImage(banner.image, media)} 
-                                                className="w-full h-full pointer-events-none"
+                                                className="w-full h-full pointer-events-none origin-center"
                                                 draggable={false}
+                                                onLoad={(e) => {
+                                                    naturalAspectRef.current = e.target.naturalWidth / e.target.naturalHeight;
+                                                }}
                                                 style={{ 
                                                     objectFit: banner.fitMode || 'cover',
-                                                    objectPosition: `${(panningPoint && adjustingBannerIdx === index ? panningPoint : (banner.focalPoint || {x:50,y:50})).x}% ${(panningPoint && adjustingBannerIdx === index ? panningPoint : (banner.focalPoint || {x:50,y:50})).y}%`,
-                                                    transform: `scale(${interactingZoom !== null ? interactingZoom : (banner.zoom || 1)})`,
-                                                    transition: 'none' // Always disable while in calibration mode to prevent jumping
+                                                    transform: adjustingBannerIdx === index 
+                                                        ? `translate3d(${panningPoint?.x || 0}px, ${panningPoint?.y || 0}px, 0) scale(${interactingZoom !== null ? interactingZoom : (banner.zoom || 1)})`
+                                                        : (() => {
+                                                            const scaleX = (activeImageRef.current?.parentElement?.clientWidth || window.innerWidth) / (banner.refWidth || 1);
+                                                            const scaleY = (activeImageRef.current?.parentElement?.clientHeight || 450) / (banner.refHeight || 1);
+                                                            // Standard responsive recalculation fallback
+                                                            const x = (banner.translateX || 0) * (scaleX || 1);
+                                                            const y = (banner.translateY || 0) * (scaleY || 1);
+                                                            return `translate3d(${x}px, ${y}px, 0) scale(${banner.zoom || 1})`;
+                                                          })(),
+                                                    transition: 'none'
                                                 }}
                                             />
                                             
-                                            {/* Visual Focal Indicator (Subtle Center Marker) */}
+                                            {/* Visual Framing Helper */}
                                             {adjustingBannerIdx === index && (
-                                                <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
-                                                    <div className="w-1 h-20 bg-white/50" />
-                                                    <div className="h-1 w-20 bg-white/50 absolute" />
-                                                </div>
+                                                <div className="absolute inset-0 pointer-events-none border-[1px] border-brand-rose/30 shadow-[inset_0_0_100px_rgba(216,183,177,0.2)]" />
                                             )}
-
-                                            {/* Calibration Suite Controls */}
-                                            <div className="absolute top-8 right-8 z-[100] flex gap-2">
-                                                <button 
-                                                     onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        const nb = [...banners];
-                                                        nb[index] = { ...nb[index], fitMode: banner.fitMode === 'contain' ? 'cover' : 'contain' };
-                                                        updateBanners(nb);
-                                                    }}
-                                                    className="bg-brand-charcoal/80 backdrop-blur-md text-white hover:bg-black border border-white/10 shadow-2xl font-bold text-[10px] px-6 py-3 rounded-full transition-all flex items-center gap-2 uppercase tracking-widest"
-                                                >
-                                                    {banner.fitMode === 'contain' ? <Maximize size={12}/> : <Minimize size={12}/>} 
-                                                    {banner.fitMode === 'contain' ? 'Fill Banner' : 'Show Full Image'}
-                                                </button>
-                                            </div>
                                             
                                             {/* Homepage-style Gradient and UI Overlay */}
                                             <div className={`absolute inset-0 flex items-center p-12 md:p-32 pointer-events-none transition-all duration-700
