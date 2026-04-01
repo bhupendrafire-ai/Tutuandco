@@ -1099,10 +1099,10 @@ const AdminDashboard = () => {
                                                     const deltaX = (info.delta.x / (rect.width * scrollableFactor)) * 100;
                                                     const deltaY = (info.delta.y / (rect.height * scrollableFactor)) * 100;
                                                     
-                                                    // Update local tracking (Zero React re-renders)
+                                                    // Flip sign to (+) for "Camera" direction logic as requested
                                                     localFocal.current = {
-                                                        x: Math.min(100, Math.max(0, localFocal.current.x - deltaX)),
-                                                        y: Math.min(100, Math.max(0, localFocal.current.y - deltaY))
+                                                        x: Math.min(100, Math.max(0, (localFocal.current?.x || 50) + deltaX)),
+                                                        y: Math.min(100, Math.max(0, (localFocal.current?.y || 50) + deltaY))
                                                     };
 
                                                     // Direct DOM Injection for 60fps performance
