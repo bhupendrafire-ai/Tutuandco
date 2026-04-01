@@ -8,11 +8,15 @@ import logoWhite from '../assets/logo-white.png';
 
 
 const Home = () => {
+    console.log("HOME COMPONENT RENDERED");
+
     const { products, banners, media, loading, formatPrice, settings } = useShop();
     const [currentBanner, setCurrentBanner] = useState(0);
     const [galleryImages, setGalleryImages] = useState([]);
     const heroRef = useRef(null);
     const [heroSize, setHeroSize] = useState({ w: 0, h: 0 });
+
+    console.log("heroRef current:", heroRef?.current);
 
     // Handle Hero Resizing for Calibration Parity
     useEffect(() => {
@@ -104,36 +108,28 @@ const Home = () => {
         return `translate(${tx}px, ${ty}px) scale(${zoom})`;
     }, [visibleBanners, currentBanner, heroSize]);
 
-    if (loading) return (
-        <div className="min-h-screen flex flex-col items-center justify-center font-medium">
-            <div className="w-12 h-12 border-4 border-brand-charcoal/10 border-t-brand-charcoal rounded-full animate-spin mb-6" />
-            <div className="text-gray-400 text-sm tracking-wide">Loading</div>
-        </div>
-    );
+    if (loading) {
+        console.log("HOME LOADING...");
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center font-medium">
+                <div className="w-12 h-12 border-4 border-brand-charcoal/10 border-t-brand-charcoal rounded-full animate-spin mb-6" />
+                <div className="text-gray-400 text-sm tracking-wide">Loading</div>
+            </div>
+        );
+    }
 
-    // PARITY CHECK: Log actual numeric values on every render/update
-    (() => {
-        const b = visibleBanners[currentBanner];
-        if (b && heroSize.w && heroSize.h) {
-            const containerWidth = heroSize.w;
-            const containerHeight = heroSize.h;
-            const ratioX = containerWidth / b.refWidth;
-            const ratioY = containerHeight / (b.refHeight || 1);
-            const tx = (b.translateX || 0) * ratioX;
-            const ty = (b.translateY || 0) * ratioY;
-
-            console.log("PARITY CHECK:", {
-                containerWidth,
-                containerHeight,
-                refWidth: b.refWidth,
-                refHeight: b.refHeight,
-                ratioX,
-                ratioY,
-                tx,
-                ty
-            });
-        }
-    })();
+    // PARITY CHECK: Log actual numeric values on every render/update (STRICT TOP-LEVEL)
+    const activeBanner = visibleBanners[currentBanner];
+    console.log("PARITY CHECK:", {
+        containerWidth: heroSize.w,
+        containerHeight: heroSize.h,
+        refWidth: activeBanner?.refWidth,
+        refHeight: activeBanner?.refHeight,
+        ratioX: activeBanner ? heroSize.w / activeBanner.refWidth : 1,
+        ratioY: activeBanner ? heroSize.h / (activeBanner.refHeight || 1) : 1,
+        tx: activeBanner ? (activeBanner.translateX || 0) * (heroSize.w / activeBanner.refWidth) : 0,
+        ty: activeBanner ? (activeBanner.translateY || 0) * (heroSize.h / (activeBanner.refHeight || 1)) : 0
+    });
 
     return (
         <div className="pb-20 bg-brand-sage">
