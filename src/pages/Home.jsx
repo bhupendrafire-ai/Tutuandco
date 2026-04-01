@@ -88,15 +88,14 @@ const Home = () => {
     // Calculate current hero transform values for parity sync
     const heroTransform = useMemo(() => {
         const b = visibleBanners[currentBanner];
-        // Safety check for container and banner data
-        if (!heroRef.current || !b || !b.refWidth) return `scale(${b?.zoom || 1})`;
+        // STRICT: Reference frame must be ready and banner data must exist
+        if (!heroSize.w || !heroSize.h || !b || !b.refWidth) return `scale(${b?.zoom || 1})`;
         
-        const isDesktop = window.innerWidth >= 768;
-        const currentW = heroSize.w ? (isDesktop ? heroSize.w * 0.65 : heroSize.w) : (isDesktop ? window.innerWidth * 0.65 : window.innerWidth);
-        const currentH = heroSize.h || (isDesktop ? window.innerHeight * 0.75 : window.innerHeight * 0.5);
+        const containerW = heroSize.w;
+        const containerH = heroSize.h;
         
-        const ratioX = currentW / b.refWidth;
-        const ratioY = (b.refHeight && currentH) ? currentH / b.refHeight : 1;
+        const ratioX = containerW / b.refWidth;
+        const ratioY = (b.refHeight) ? containerH / b.refHeight : 1;
         
         const tx = (b.translateX || 0) * ratioX;
         const ty = (b.translateY || 0) * ratioY;
@@ -105,21 +104,26 @@ const Home = () => {
         return `translate(${tx}px, ${ty}px) scale(${zoom})`;
     }, [visibleBanners, currentBanner, heroSize]);
 
-    // Debug check in component body (outside useMemo)
+    // STRICT: Debug Parity Check in component body
     useEffect(() => {
         const b = visibleBanners[currentBanner];
-        if (b && heroSize.w) {
-            const isDesktop = window.innerWidth >= 768;
-            const currentW = isDesktop ? heroSize.w * 0.65 : heroSize.w;
-            const currentH = heroSize.h;
-            const ratioX = currentW / b.refWidth;
-            const ratioY = currentH / (b.refHeight || 1);
-            console.log(`Banner ${currentBanner} Calibration:`, { 
-                tx: (b.translateX || 0) * ratioX, 
-                ty: (b.translateY || 0) * ratioY, 
-                zoom: b.zoom,
-                containerW: currentW,
-                containerH: currentH
+        if (b && heroSize.w && heroSize.h) {
+            const containerW = heroSize.w;
+            const containerH = heroSize.h;
+            const ratioX = containerW / b.refWidth;
+            const ratioY = containerH / (b.refHeight || 1);
+            const tx = (b.translateX || 0) * ratioX;
+            const ty = (b.translateY || 0) * ratioY;
+
+            console.log("PARITY CHECK:", {
+                containerW,
+                containerH,
+                refWidth: b.refWidth,
+                refHeight: b.refHeight,
+                ratioX,
+                ratioY,
+                tx,
+                ty
             });
         }
     }, [visibleBanners, currentBanner, heroSize]);
@@ -134,7 +138,7 @@ const Home = () => {
     return (
         <div className="pb-20 bg-brand-sage">
             {/* Dynamic Hero Banner with Calibration Sync */}
-            <section ref={heroRef} className="relative h-auto md:h-[75vh] overflow-hidden group flex flex-col md:flex-row">
+            <section className="relative h-auto md:h-[75vh] overflow-hidden group flex flex-col md:flex-row">
                 <AnimatePresence mode="wait">
                     {visibleBanners[currentBanner] && (
                         <motion.div
@@ -147,6 +151,7 @@ const Home = () => {
                         >
                             {/* Left Side: Image (65% on Desktop) */}
                             <Link 
+                                ref={heroRef}
                                 to={visibleBanners[currentBanner].link || "/"}
                                 className="relative w-full md:w-[65%] h-[50vh] md:h-full overflow-hidden"
                             >
