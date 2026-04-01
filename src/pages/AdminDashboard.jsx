@@ -302,8 +302,8 @@ const AdminDashboard = () => {
 
                         <div className="bg-white p-10 rounded-sm shadow-sm border border-brand-charcoal/5">
                             <h2 className="text-xl font-medium text-brand-charcoal mb-8">Revenue trends (weekly)</h2>
-                            <div className="h-[400px]">
-                                <ResponsiveContainer width="100%" height="100%">
+                        <div className="h-[400px] w-full">
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     <AreaChart data={trendData}>
                                         <defs>
                                             <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
@@ -693,7 +693,7 @@ const AdminDashboard = () => {
                         {orders.map((order) => (
                             <div key={order.id} className="bg-white p-8 rounded-sm shadow-sm border border-brand-charcoal/5 flex justify-between items-center">
                                 <div>
-                                    <h3 className="font-medium text-xl">Order #{order.id.slice(-6).toUpperCase()}</h3>
+                                    <h3 className="font-medium text-xl">Order #{String(order.id || '').split('-').pop()?.toUpperCase() || 'NEW'}</h3>
                                     <p className="text-xs text-brand-charcoal/40">{order.customerName}</p>
                                 </div>
                                 <p className="font-medium text-xl">₹{order.total.toFixed(2)}</p>
