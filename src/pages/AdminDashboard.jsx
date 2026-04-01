@@ -46,6 +46,7 @@ const AdminDashboard = () => {
     const [bulkDiscountValue, setBulkDiscountValue] = useState(10);
     const [adjustingBannerIdx, setAdjustingBannerIdx] = useState(null);
     const [panningPoint, setPanningPoint] = useState(null); // Local buffer for lag-free dragging
+    const [interactingZoom, setInteractingZoom] = useState(null); // Local buffer for lag-free zooming
 
     const [mediaPickerConfig, setMediaPickerConfig] = useState({ isOpen: false, multi: false, onSelect: () => {}, selectedItems: [] });
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
@@ -1020,11 +1021,7 @@ const AdminDashboard = () => {
                                                 <div className="space-y-3">
                                                     <div className="flex justify-between items-center">
                                                         <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide uppercase">Asset identifier</label>
-                                                        {adjustingBannerIdx === index && (
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="text-[10px] font-bold text-brand-rose tracking-widest uppercase">Calibration: {(banner.zoom || 1).toFixed(1)}x</span>
-                                                            </div>
-                                                        )}
+                                                        {/* Calibration indicator removed from here to reduce clutter */}
                                                     </div>
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                         <button 
@@ -1037,7 +1034,17 @@ const AdminDashboard = () => {
                                                             <Layout size={14} /> Identity Image
                                                         </button>
                                                         <button 
-                                                            onClick={() => setAdjustingBannerIdx(adjustingBannerIdx === index ? null : index)}
+                                                            onClick={() => {
+                                                                if (adjustingBannerIdx === index) {
+                                                                    setAdjustingBannerIdx(null);
+                                                                    setInteractingZoom(null);
+                                                                    setPanningPoint(null);
+                                                                } else {
+                                                                    setAdjustingBannerIdx(index);
+                                                                    setInteractingZoom(banner.zoom || 1);
+                                                                    setPanningPoint(banner.focalPoint || { x: 50, y: 50 });
+                                                                }
+                                                            }}
                                                             className={`flex items-center justify-center gap-3 px-6 py-4 rounded-sm border transition-all font-bold text-[11px] uppercase tracking-widest ${adjustingBannerIdx === index ? 'bg-brand-rose border-brand-charcoal text-brand-charcoal shadow-inner' : 'bg-white border-brand-charcoal/10 text-brand-charcoal/60 hover:text-brand-charcoal hover:border-brand-rose'}`}
                                                         >
                                                             <Crosshair size={16} className={adjustingBannerIdx === index ? 'animate-pulse' : ''} />
@@ -1045,23 +1052,7 @@ const AdminDashboard = () => {
                                                         </button>
                                                     </div>
 
-                                                    {adjustingBannerIdx === index && (
-                                                        <div className="pt-2 flex items-center gap-4">
-                                                            <input 
-                                                                type="range" 
-                                                                min="0.5" 
-                                                                max="3" 
-                                                                step="0.01" 
-                                                                value={banner.zoom || 1} 
-                                                                onChange={(e) => {
-                                                                    const nb = [...banners];
-                                                                    nb[index] = { ...nb[index], zoom: parseFloat(e.target.value) };
-                                                                    updateBanners(nb);
-                                                                }}
-                                                                className="flex-grow h-1.5 bg-brand-charcoal/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
-                                                            />
-                                                        </div>
-                                                    )}
+                                                    {/* Isolated slider moved to preview overlay below */}
                                                 </div>
                                             </div>
                                         </div>
@@ -1105,10 +1096,53 @@ const AdminDashboard = () => {
                                                     const nb = [...banners];
                                                     nb[index] = { ...nb[index], focalPoint: panningPoint };
                                                     updateBanners(nb);
-                                                    setPanningPoint(null);
+                                                    // Do NOT set panningPoint to null here to prevent snap-back
                                                 }
                                             }}
                                         >
+                                            {/* Isolated Calibration Hub */}
+                                            {adjustingBannerIdx === index && (
+                                                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[200] flex items-center bg-brand-charcoal/90 backdrop-blur-2xl border border-white/20 px-8 py-5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] gap-8 pointer-events-auto">
+                                                    <div className="flex flex-col gap-2">
+                                                        <div className="flex justify-between items-center px-1">
+                                                            <span className="text-[9px] font-bold text-white/40 uppercase tracking-[0.2em]">Magnification Calibration</span>
+                                                            <span className="text-[12px] font-bold text-brand-rose tabular-nums">{(interactingZoom !== null ? interactingZoom : (banner.zoom || 1)).toFixed(2)}x</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-4">
+                                                            <span className="text-[10px] font-bold text-white/30">0.5</span>
+                                                            <input 
+                                                                type="range" 
+                                                                min="0.5" 
+                                                                max="3" 
+                                                                step="0.01" 
+                                                                value={interactingZoom !== null ? interactingZoom : (banner.zoom || 1)} 
+                                                                onInput={(e) => setInteractingZoom(parseFloat(e.target.value))}
+                                                                onChange={(e) => {
+                                                                    const val = parseFloat(e.target.value);
+                                                                    setInteractingZoom(val);
+                                                                    const nb = [...banners];
+                                                                    nb[index] = { ...nb[index], zoom: val };
+                                                                    updateBanners(nb);
+                                                                }}
+                                                                className="w-48 h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
+                                                            />
+                                                            <span className="text-[10px] font-bold text-white/30">3.0</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="w-[1px] h-10 bg-white/10" />
+                                                    <button 
+                                                        onClick={() => {
+                                                            setAdjustingBannerIdx(null);
+                                                            setInteractingZoom(null);
+                                                            setPanningPoint(null);
+                                                        }}
+                                                        className="bg-brand-rose text-brand-charcoal px-6 py-3 rounded-full font-bold text-[10px] uppercase tracking-widest hover:brightness-110 transition-all shadow-lg active:scale-95"
+                                                    >
+                                                        Lock Calibration
+                                                    </button>
+                                                </div>
+                                            )}
+
                                             {/* Homepage-style Backdrop */}
                                             <img 
                                                 src={getProductImage(banner.image, media)} 
@@ -1117,8 +1151,8 @@ const AdminDashboard = () => {
                                                 style={{ 
                                                     objectFit: banner.fitMode || 'cover',
                                                     objectPosition: `${(panningPoint && adjustingBannerIdx === index ? panningPoint : (banner.focalPoint || {x:50,y:50})).x}% ${(panningPoint && adjustingBannerIdx === index ? panningPoint : (banner.focalPoint || {x:50,y:50})).y}%`,
-                                                    transform: `scale(${banner.zoom || 1})`,
-                                                    transition: panningPoint ? 'none' : 'transform 0.2s ease-out'
+                                                    transform: `scale(${interactingZoom !== null ? interactingZoom : (banner.zoom || 1)})`,
+                                                    transition: (panningPoint && adjustingBannerIdx === index) ? 'none' : 'transform 0.2s ease-out'
                                                 }}
                                             />
                                             
