@@ -218,7 +218,7 @@ const AdminDashboard = () => {
             }`}
         >
             <Icon size={20} />
-            <span className="text-[11px] font-medium tracking-wide">{label}</span>
+            <span className="text-[13px] font-bold tracking-wide">{label}</span>
         </button>
     );
 
@@ -279,7 +279,7 @@ const AdminDashboard = () => {
                     className="flex items-center space-x-4 p-4 text-red-500 hover:bg-red-50 transition-all rounded-sm"
                 >
                     <LogOut size={20} />
-                    <span className="text-[11px] font-medium">Logout</span>
+                    <span className="text-[13px] font-bold">Logout</span>
                 </button>
             </aside>
 
@@ -303,12 +303,12 @@ const AdminDashboard = () => {
                 <header className="flex justify-between items-end mb-12 border-b border-brand-charcoal/10 pb-8">
                     <div>
                         <h1 className="text-4xl font-medium text-brand-charcoal mb-2 capitalize">{activeTab.replace('-', ' ')}</h1>
-                        <p className="text-brand-charcoal/60 text-sm">System status: All systems operational.</p>
+                        <p className="text-brand-charcoal/80 text-sm font-bold">System status: All systems operational.</p>
                     </div>
                     <div className="flex space-x-4">
                         <div className="relative">
-                            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-charcoal/40" />
-                            <input className="bg-brand-cream border border-brand-charcoal/10 pl-12 pr-6 py-3 rounded-sm text-sm focus:outline-none focus:border-brand-charcoal" placeholder="Search data..." />
+                            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-charcoal/60" />
+                            <input className="bg-brand-cream border border-brand-charcoal/20 pl-12 pr-6 py-3 rounded-sm text-sm focus:outline-none focus:border-brand-charcoal placeholder-brand-charcoal/50 font-medium" placeholder="Search data..." />
                         </div>
                     </div>
                 </header>
@@ -326,9 +326,9 @@ const AdminDashboard = () => {
                                 <div key={i} className="bg-brand-cream p-8 rounded-sm shadow-sm border-b-4" style={{ borderColor: stat.color === '#CD664D' ? '#3B3B3B' : (stat.color === '#9FA993' ? '#8C916C' : stat.color) }}>
                                     <div className="flex justify-between items-start mb-6">
                                         <div className="p-3 bg-brand-sage/50 rounded-sm text-brand-charcoal"><stat.icon size={24} /></div>
-                                        <span className="text-[11px] font-medium text-green-600">{stat.trend}</span>
+                                        <span className="text-[12px] font-bold text-green-700">{stat.trend}</span>
                                     </div>
-                                    <p className="text-[11px] font-medium text-brand-charcoal/40 mb-1">{stat.label}</p>
+                                    <p className="text-[13px] font-bold text-brand-charcoal/60 mb-1">{stat.label}</p>
                                     <h3 className="text-3xl font-medium text-brand-charcoal">{stat.val}</h3>
                                 </div>
                             ))}
@@ -383,7 +383,7 @@ const AdminDashboard = () => {
                             <div className="overflow-x-auto -mx-8 px-8">
                                 <table className="w-full text-left min-w-[600px]">
                                     <thead className="bg-brand-cream">
-                                        <tr className="text-[11px] font-medium text-brand-charcoal/40">
+                                        <tr className="text-[13px] font-bold text-brand-charcoal/60">
                                             <th className="p-6">Product</th>
                                             <th className="p-6">Stock</th>
                                             <th className="p-6">Price</th>
@@ -398,7 +398,7 @@ const AdminDashboard = () => {
                                                     <span className="font-medium text-sm md:text-base line-clamp-1">{item.name}</span>
                                                 </td>
                                                 <td className="p-6 text-sm">
-                                                    <span className={`px-3 py-1 text-[10px] font-medium rounded-full ${item.stock < 10 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
+                                                    <span className={`px-4 py-1.5 text-[12px] font-bold rounded-full ${item.stock < 10 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
                                                         {item.stock} units
                                                     </span>
                                                 </td>
@@ -749,7 +749,7 @@ const AdminDashboard = () => {
                                     <Plus size={16} />
                                     <span>Initiate new banner</span>
                                 </button>
-                                <p className="text-[11px] font-medium text-brand-charcoal/40">Total active: {banners.length}</p>
+                                <p className="text-[13px] font-bold text-brand-charcoal/60">Total active: {banners.length}</p>
                             </div>
                         </div>
                         
@@ -757,7 +757,7 @@ const AdminDashboard = () => {
                             <div key={banner.id} className="bg-white p-10 rounded-sm shadow-sm border border-[#CD664D]/10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                                 <div className="space-y-6">
                                     <div className="flex justify-between items-center">
-                                        <h3 className="text-[11px] font-medium text-brand-charcoal opacity-40">Hero banner {index + 1}</h3>
+                                        <h3 className="text-[13px] font-bold text-brand-charcoal opacity-70">Hero banner {index + 1}</h3>
                                         <button 
                                             onClick={() => {
                                                 if (window.confirm('Dissolve this front-page identity?')) {
@@ -773,7 +773,7 @@ const AdminDashboard = () => {
                                     </div>
                                     <div className="space-y-4">
                                         <div className="space-y-1">
-                                            <label className="text-[11px] font-medium text-brand-charcoal/40 mb-1 block">Main title</label>
+                                            <label className="text-[13px] font-bold text-brand-charcoal/60 mb-1 block">Main title</label>
                                             <input 
                                                 defaultValue={banner.title} 
                                                 onBlur={e => {
@@ -783,7 +783,7 @@ const AdminDashboard = () => {
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[11px] font-medium text-brand-charcoal/40 mb-1 block">Sub-narrative</label>
+                                            <label className="text-[13px] font-bold text-brand-charcoal/60 mb-1 block">Sub-narrative</label>
                                             <input 
                                                 defaultValue={banner.subtitle} 
                                                 onBlur={e => {
@@ -794,7 +794,7 @@ const AdminDashboard = () => {
                                         </div>
                                         <div className="flex space-x-6">
                                             <div className="flex-grow">
-                                                <label className="text-[11px] font-medium text-brand-charcoal/40 mb-1 block">Asset identifier</label>
+                                                <label className="text-[13px] font-bold text-brand-charcoal/60 mb-1 block">Asset identifier</label>
                                                 <button 
                                                     onClick={() => openMediaPicker({
                                                         multi: false,
@@ -811,7 +811,7 @@ const AdminDashboard = () => {
                                             </div>
 
                                             <div>
-                                                <label className="text-[11px] font-medium text-brand-charcoal/40 mb-1 block">CTA label</label>
+                                                <label className="text-[13px] font-bold text-brand-charcoal/80 mb-1 block">CTA label</label>
                                                 <input 
                                                     defaultValue={banner.cta} 
                                                     onBlur={e => {
