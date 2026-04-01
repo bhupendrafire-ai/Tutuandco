@@ -96,6 +96,9 @@ const Home = () => {
     const refWidth = activeBanner?.refWidth;
     const refHeight = activeBanner?.refHeight;
 
+    // Debug check for data presence
+    console.log("BANNER DATA:", activeBanner);
+
     // Safety Ratio Calculations
     const ratioX = (activeBanner && refWidth) ? containerWidth / refWidth : 1;
     const ratioY = (activeBanner && refHeight) ? containerHeight / refHeight : 1;
