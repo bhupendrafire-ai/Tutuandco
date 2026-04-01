@@ -344,7 +344,7 @@ const AdminDashboard = () => {
 
                         {/* Premium Listing Workspace Modal */}
                         {isEditingProduct && (
-                            <div className="fixed inset-0 bg-[#3E362E]/90 backdrop-blur-md z-50 flex items-center justify-center p-6 md:p-12">
+                            <div className="fixed inset-0 bg-[#3E362E]/90 backdrop-blur-md z-[100] flex items-center justify-center p-6 md:p-12">
                                 <motion.div 
                                     initial={{ opacity: 0, y: 50, scale: 0.95 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
