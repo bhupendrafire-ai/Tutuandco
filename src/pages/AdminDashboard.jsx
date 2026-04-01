@@ -1049,7 +1049,7 @@ const AdminDashboard = () => {
                                                         <div className="pt-2 flex items-center gap-4">
                                                             <input 
                                                                 type="range" 
-                                                                min="1" 
+                                                                min="0.5" 
                                                                 max="3" 
                                                                 step="0.01" 
                                                                 value={banner.zoom || 1} 
