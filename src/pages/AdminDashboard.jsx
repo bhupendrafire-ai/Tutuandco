@@ -920,6 +920,7 @@ const AdminDashboard = () => {
                                                     onClick={() => {
                                                         const nb = [...banners];
                                                         nb[index] = { ...nb[index], isVisible: banner.isVisible === false };
+                                                        console.log("💾 Banner Panning Saved (Drag End):", nb[index]);
                                                         updateBanners(nb);
                                                     }}
                                                     className="p-3 bg-white rounded-sm border border-brand-charcoal/5 text-brand-charcoal/60 hover:text-brand-charcoal shadow-sm transition-all"
@@ -1025,7 +1026,6 @@ const AdminDashboard = () => {
                                                 <div className="space-y-3">
                                                     <div className="flex justify-between items-center">
                                                         <label className="text-[12px] font-bold text-brand-charcoal/70 tracking-wide uppercase">Asset identifier</label>
-                                                        {/* Calibration indicator removed from here to reduce clutter */}
                                                     </div>
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                         <button 
@@ -1038,25 +1038,24 @@ const AdminDashboard = () => {
                                                             <Layout size={14} /> Identity Image
                                                         </button>
                                                         <button 
-                                                            onClick={() => {
-                                                                if (adjustingBannerIdx === index) {
-                                                                    setAdjustingBannerIdx(null);
-                                                                    setInteractingZoom(null);
-                                                                    setPanningPoint(null);
-                                                                } else {
-                                                                    setAdjustingBannerIdx(index);
-                                                                    setInteractingZoom(banner.zoom || 1);
-                                                                    setPanningPoint(banner.focalPoint || { x: 50, y: 50 });
-                                                                }
-                                                            }}
-                                                            className={`flex items-center justify-center gap-3 px-6 py-4 rounded-sm border transition-all font-bold text-[11px] uppercase tracking-widest ${adjustingBannerIdx === index ? 'bg-brand-rose border-brand-charcoal text-brand-charcoal shadow-inner' : 'bg-white border-brand-charcoal/10 text-brand-charcoal/60 hover:text-brand-charcoal hover:border-brand-rose'}`}
-                                                        >
-                                                            <Crosshair size={16} className={adjustingBannerIdx === index ? 'animate-pulse' : ''} />
-                                                            {adjustingBannerIdx === index ? 'Finish Positioning' : 'Reposition Center'}
-                                                        </button>
+                                                             onClick={(e) => { 
+                                                                 e.stopPropagation(); 
+                                                                 const nextIdx = adjustingBannerIdx === index ? null : index;
+                                                                 setAdjustingBannerIdx(nextIdx); 
+                                                                 if (nextIdx !== null) {
+                                                                     // Initialize the local ref with current pixel offsets
+                                                                     const startX = banner.translateX || 0;
+                                                                     const startY = banner.translateY || 0;
+                                                                     localFocal.current = { x: startX, y: startY };
+                                                                     setPanningPoint({ x: startX, y: startY, refW: 1000, refH: 300 }); // Dummy ref dimensions until first layout
+                                                                 }
+                                                             }}
+                                                             className={`flex items-center justify-center gap-3 px-6 py-4 rounded-sm border transition-all font-bold text-[11px] uppercase tracking-widest ${adjustingBannerIdx === index ? 'bg-brand-rose border-brand-charcoal text-brand-charcoal shadow-inner' : 'bg-white border-brand-charcoal/10 text-brand-charcoal/60 hover:text-brand-charcoal hover:border-brand-rose'}`}
+                                                         >
+                                                             <Crosshair size={16} className={adjustingBannerIdx === index ? 'animate-pulse' : ''} />
+                                                             {adjustingBannerIdx === index ? 'Finish Positioning' : 'Reposition Center'}
+                                                         </button>
                                                     </div>
-
-                                                    {/* Isolated slider moved to preview overlay below */}
                                                 </div>
                                             </div>
                                         </div>
@@ -1079,11 +1078,11 @@ const AdminDashboard = () => {
                                             className={`relative h-[75vh] w-full overflow-hidden select-none banner-panning-container ${adjustingBannerIdx === index ? 'cursor-grab active:cursor-grabbing' : ''}`}
                                             style={{ touchAction: 'none' }}
                                             onPanStart={() => {
-                                                if (adjustingBannerIdx === index) {
-                                                    const startFocal = banner.focalPoint || { x: 50, y: 50 };
-                                                    setPanningPoint(startFocal);
-                                                    localFocal.current = startFocal;
-                                                }
+                                                 if (adjustingBannerIdx === index) {
+                                                     const startX = banner.translateX || 0;
+                                                     const startY = banner.translateY || 0;
+                                                     localFocal.current = { x: startX, y: startY };
+                                                 }
                                             }}
                                             onPan={(e, info) => {
                                                 if (adjustingBannerIdx === index && localFocal.current) {
@@ -1131,19 +1130,27 @@ const AdminDashboard = () => {
                                                     setPanningPoint({ x: nextX, y: nextY, refW: rect.width, refH: rect.height });
                                                 }
                                             }}
-                                            onPanEnd={() => {
+                                            onPanEnd={(e) => {
                                                 if (adjustingBannerIdx === index && localFocal.current) {
-                                                    const container = e.target.closest('.banner-panning-container');
+                                                    const container = e.target?.closest?.('.banner-panning-container');
                                                     const rect = container?.getBoundingClientRect() || { width: 1000, height: 300 };
                                                     const nb = [...banners];
+                                                    const finalZoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
                                                     nb[index] = { 
                                                         ...nb[index], 
                                                         translateX: localFocal.current.x, 
                                                         translateY: localFocal.current.y,
                                                         refWidth: rect.width,
                                                         refHeight: rect.height,
-                                                        zoom: interactingZoom !== null ? interactingZoom : (banner.zoom || 1)
+                                                        zoom: finalZoom
                                                     };
+                                                    console.log("💾 Banner Panning Saved (Drag End):", {
+                                                        id: banner.id,
+                                                        x: localFocal.current.x,
+                                                        y: localFocal.current.y,
+                                                        zoom: finalZoom,
+                                                        refW: rect.width
+                                                    });
                                                     updateBanners(nb);
                                                 }
                                             }}
@@ -1183,24 +1190,54 @@ const AdminDashboard = () => {
                                                     <div className="flex flex-col gap-2">
                                                         <div className="flex justify-between items-center px-1">
                                                             <span className="text-[9px] font-bold text-white/40 uppercase tracking-[0.2em]">Horizontal Bias</span>
-                                                            <span className="text-[12px] font-bold text-white tabular-nums">{Math.round(panningPoint?.x || 50)}%</span>
+                                                            <span className="text-[12px] font-bold text-white tabular-nums">{Math.round(panningPoint?.x || 0)}px</span>
                                                         </div>
                                                         <input 
                                                             type="range" 
                                                             min="0" max="100" step="1" 
-                                                            value={panningPoint?.x || (banner.focalPoint?.x || 50)} 
+                                                            value={(() => {
+                                                                const rect = activeImageRef.current?.parentElement?.getBoundingClientRect() || { width: 1000, height: 300 };
+                                                                const zoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
+                                                                const aspect = naturalAspectRef.current || 1;
+                                                                const renderW = aspect > (rect.width/rect.height) ? rect.height * aspect : rect.width;
+                                                                const maxX = Math.max(0, (renderW * zoom - rect.width) / 2);
+                                                                if(maxX === 0) return 50;
+                                                                return ((localFocal.current.x / maxX) + 1) * 50;
+                                                            })()}
                                                             onInput={(e) => {
-                                                                const x = parseInt(e.target.value);
+                                                                const val = parseInt(e.target.value);
+                                                                const rect = activeImageRef.current?.parentElement?.getBoundingClientRect();
+                                                                if(!rect) return;
+                                                                const zoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
+                                                                const aspect = naturalAspectRef.current || 1;
+                                                                const renderW = aspect > (rect.width/rect.height) ? rect.height * aspect : rect.width;
+                                                                const maxX = Math.max(0, (renderW * zoom - rect.width) / 2);
+                                                                
+                                                                const x = (val / 50 - 1) * maxX;
                                                                 const next = { ...localFocal.current, x };
                                                                 localFocal.current = next;
-                                                                setPanningPoint(next);
-                                                                if(activeImageRef.current) activeImageRef.current.style.objectPosition = `${next.x}% ${next.y}%`;
+                                                                setPanningPoint({ ...next, refW: rect.width, refH: rect.height });
+                                                                if(activeImageRef.current) activeImageRef.current.style.transform = `translate3d(${next.x}px, ${next.y}px, 0) scale(${zoom})`;
                                                             }}
                                                             onChange={(e) => {
-                                                                const x = parseInt(e.target.value);
-                                                                const next = { ...localFocal.current, x };
+                                                                const rect = activeImageRef.current?.parentElement?.getBoundingClientRect() || { width: 1000, height: 300 };
                                                                 const nb = [...banners];
-                                                                nb[index] = { ...nb[index], focalPoint: next };
+                                                                const scaledZoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
+                                                                nb[index] = { 
+                                                                    ...nb[index], 
+                                                                    translateX: localFocal.current.x, 
+                                                                    translateY: localFocal.current.y,
+                                                                    refWidth: rect.width,
+                                                                    refHeight: rect.height,
+                                                                    zoom: scaledZoom
+                                                                };
+                                                                console.log("💾 Banner Calibration Saved (X-Slider):", {
+                                                                    x: localFocal.current.x,
+                                                                    y: localFocal.current.y,
+                                                                    zoom: scaledZoom,
+                                                                    refW: rect.width,
+                                                                    refH: rect.height
+                                                                });
                                                                 updateBanners(nb);
                                                             }}
                                                             className="w-32 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white"
@@ -1210,24 +1247,54 @@ const AdminDashboard = () => {
                                                     <div className="flex flex-col gap-2">
                                                         <div className="flex justify-between items-center px-1">
                                                             <span className="text-[9px] font-bold text-white/40 uppercase tracking-[0.2em]">Vertical Bias</span>
-                                                            <span className="text-[12px] font-bold text-white tabular-nums">{Math.round(panningPoint?.y || 50)}%</span>
+                                                            <span className="text-[12px] font-bold text-white tabular-nums">{Math.round(panningPoint?.y || 0)}px</span>
                                                         </div>
                                                         <input 
                                                             type="range" 
                                                             min="0" max="100" step="1" 
-                                                            value={panningPoint?.y || (banner.focalPoint?.y || 50)} 
+                                                            value={(() => {
+                                                                const rect = activeImageRef.current?.parentElement?.getBoundingClientRect() || { width: 1000, height: 300 };
+                                                                const zoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
+                                                                const aspect = naturalAspectRef.current || 1;
+                                                                const renderH = aspect > (rect.width/rect.height) ? rect.height : rect.width / aspect;
+                                                                const maxY = Math.max(0, (renderH * zoom - rect.height) / 2);
+                                                                if(maxY === 0) return 50;
+                                                                return ((localFocal.current.y / maxY) + 1) * 50;
+                                                            })()}
                                                             onInput={(e) => {
-                                                                const y = parseInt(e.target.value);
+                                                                const val = parseInt(e.target.value);
+                                                                const rect = activeImageRef.current?.parentElement?.getBoundingClientRect();
+                                                                if(!rect) return;
+                                                                const zoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
+                                                                const aspect = naturalAspectRef.current || 1;
+                                                                const renderH = aspect > (rect.width/rect.height) ? rect.height : rect.width / aspect;
+                                                                const maxY = Math.max(0, (renderH * zoom - rect.height) / 2);
+                                                                
+                                                                const y = (val / 50 - 1) * maxY;
                                                                 const next = { ...localFocal.current, y };
                                                                 localFocal.current = next;
-                                                                setPanningPoint(next);
-                                                                if(activeImageRef.current) activeImageRef.current.style.objectPosition = `${next.x}% ${next.y}%`;
+                                                                setPanningPoint({ ...next, refW: rect.width, refH: rect.height });
+                                                                if(activeImageRef.current) activeImageRef.current.style.transform = `translate3d(${next.x}px, ${next.y}px, 0) scale(${zoom})`;
                                                             }}
                                                             onChange={(e) => {
-                                                                const y = parseInt(e.target.value);
-                                                                const next = { ...localFocal.current, y };
+                                                                const rect = activeImageRef.current?.parentElement?.getBoundingClientRect() || { width: 1000, height: 300 };
                                                                 const nb = [...banners];
-                                                                nb[index] = { ...nb[index], focalPoint: next };
+                                                                const scaledZoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
+                                                                nb[index] = { 
+                                                                    ...nb[index], 
+                                                                    translateX: localFocal.current.x, 
+                                                                    translateY: localFocal.current.y,
+                                                                    refWidth: rect.width,
+                                                                    refHeight: rect.height,
+                                                                    zoom: scaledZoom
+                                                                };
+                                                                console.log("💾 Banner Calibration Saved (Y-Slider):", {
+                                                                    x: localFocal.current.x,
+                                                                    y: localFocal.current.y,
+                                                                    zoom: scaledZoom,
+                                                                    refW: rect.width,
+                                                                    refH: rect.height
+                                                                });
                                                                 updateBanners(nb);
                                                             }}
                                                             className="w-32 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white"
