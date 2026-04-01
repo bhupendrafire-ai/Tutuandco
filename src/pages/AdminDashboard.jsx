@@ -1081,32 +1081,27 @@ const AdminDashboard = () => {
                                                 if (adjustingBannerIdx === index) {
                                                     const startFocal = banner.focalPoint || { x: 50, y: 50 };
                                                     setPanningPoint(startFocal);
-                                                    localFocal.current = startFocal;
                                                 }
                                             }}
                                             onPan={(e, info) => {
-                                                if (adjustingBannerIdx === index && localFocal.current) {
+                                                if (adjustingBannerIdx === index && panningPoint) {
                                                     const container = e.target.closest('.banner-panning-container');
-                                                    if (!container || !activeImageRef.current) return;
+                                                    if (!container) return;
                                                     
                                                     const rect = container.getBoundingClientRect();
                                                     const zoom = interactingZoom !== null ? interactingZoom : (banner.zoom || 1);
                                                     
                                                     // Sticky Drag Formula (1:1 Movement):
+                                                    // Move focal point by (pixels / (container * (zoom-1)))
+                                                    // Math.max ensures we don't divide by zero if zoom is 1.0
                                                     const scrollableFactor = Math.max(0.01, zoom - 1);
-                                                    
-                                                    // Flip sign to (+) for "Natural" direction (Push-the-Paper)
                                                     const deltaX = (info.delta.x / (rect.width * scrollableFactor)) * 100;
                                                     const deltaY = (info.delta.y / (rect.height * scrollableFactor)) * 100;
                                                     
-                                                    // Flip sign to (+) for "Camera" direction logic as requested
-                                                    localFocal.current = {
-                                                        x: Math.min(100, Math.max(0, (localFocal.current?.x || 50) + deltaX)),
-                                                        y: Math.min(100, Math.max(0, (localFocal.current?.y || 50) + deltaY))
-                                                    };
-
-                                                    // Direct DOM Injection for 60fps performance
-                                                    activeImageRef.current.style.objectPosition = `${localFocal.current.x}% ${localFocal.current.y}%`;
+                                                    setPanningPoint(prev => ({
+                                                        x: Math.min(100, Math.max(0, (prev?.x || 50) - deltaX)),
+                                                        y: Math.min(100, Math.max(0, (prev?.y || 50) - deltaY))
+                                                    }));
                                                 }
                                             }}
                                             onPanEnd={() => {
