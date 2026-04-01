@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search, Upload, Check, ImageIcon } from 'lucide-react';
 import { useShop, getProductImage, FINAL_API_URL } from '../context/ShopContext';
@@ -11,10 +11,13 @@ const MediaPicker = ({ isOpen, onClose, onSelect, multi = false, selectedItems =
     const [isUploading, setIsUploading] = useState(false);
 
 
+    const prevOpenRef = useRef(false);
     useEffect(() => {
-        if (isOpen) {
-            setLocalSelected(multi ? selectedItems : (selectedItems[0] ? [selectedItems[0]] : []));
+        // ONLY reset internal selection when the window transitions from CLOSED to OPEN
+        if (isOpen && !prevOpenRef.current) {
+            setLocalSelected(multi ? (selectedItems || []) : ((selectedItems && selectedItems[0]) ? [selectedItems[0]] : []));
         }
+        prevOpenRef.current = isOpen;
     }, [isOpen, selectedItems, multi]);
 
     const filteredMedia = media.filter(item => 
