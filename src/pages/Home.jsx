@@ -140,8 +140,9 @@ const Home = () => {
 
     return (
         <div className="pb-20 bg-brand-sage">
-            {/* Dynamic Hero Banner with Calibration Sync */}
-            <section className="relative h-auto md:h-[75vh] overflow-hidden group flex flex-col md:flex-row">
+            {/* Myntra-Style Universal Gutter Container (Aligns with Header) */}
+            <div className="max-w-7xl mx-auto px-6 pt-10">
+                <section className="relative h-auto md:h-[75vh] overflow-hidden group flex flex-col md:flex-row rounded-sm shadow-2xl ring-1 ring-black/5 bg-white">
                 <AnimatePresence mode="wait">
                     {activeBanner && (
                         <motion.div
@@ -233,8 +234,9 @@ const Home = () => {
                     <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{currentBanner + 1} / {visibleBanners.length || 1}</span>
                 </div>
             </section>
+        </div>
 
-            <section className="max-w-7xl mx-auto px-6 mt-20">
+        <section className="max-w-7xl mx-auto px-6 mt-20">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-8">
                     <div>
                         <h2 className="text-4xl md:text-5xl font-medium text-brand-charcoal mb-4">Featured Collections</h2>

@@ -108,9 +108,9 @@ const AdminBanners = () => {
 
             <div className="space-y-12">
                  {(Array.isArray(banners) ? banners : []).map((banner, index) => (
-                    <div key={banner.id || index} className="bg-white rounded-sm shadow-xl border border-[#CD664D]/10 overflow-hidden">
+                    <div key={banner.id || index} className="bg-white rounded-sm shadow-xl border border-[#CD664D]/10 overflow-hidden mb-8">
                          <div className="flex flex-col md:flex-row">
-                            {/* Banner Preview */}
+                            {/* Banner Preview - Life-Size Proportion Mirror */}
                             <div className="w-full md:w-[65%] aspect-[16/9] bg-brand-cream relative group cursor-crosshair overflow-hidden">
                                 {banner.image ? (
                                     <img 
@@ -268,7 +268,7 @@ const AdminBanners = () => {
                             initial={{ scale: 0.95, opacity: 0 }} 
                             animate={{ scale: 1, opacity: 1 }} 
                             exit={{ scale: 0.95, opacity: 0 }} 
-                            className="relative w-[95vw] h-[85vh] bg-white rounded-sm overflow-hidden shadow-2xl flex flex-col"
+                            className="relative w-[95vw] max-w-7xl h-[85vh] bg-white rounded-sm overflow-hidden shadow-2xl flex flex-col"
                         >
                             <div className="absolute top-0 left-0 right-0 z-50 bg-brand-charcoal/40 backdrop-blur-md border-b border-white/10 px-8 py-4 flex justify-between items-center text-white">
                                 <div className="flex items-center space-x-4">
