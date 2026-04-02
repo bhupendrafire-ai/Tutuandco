@@ -166,7 +166,7 @@ const Policy = () => {
 
     return (
         <div className="bg-brand-sage min-h-screen pt-32 pb-32">
-            <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-20">
+            <div className="max-w-[1440px] mx-auto px-3 grid grid-cols-1 lg:grid-cols-12 gap-20">
                 {/* Sidebar Nav */}
                 <nav className="lg:col-span-4 space-y-8">
                     <h1 className="text-4xl font-medium text-brand-charcoal mb-12">Customer care</h1>

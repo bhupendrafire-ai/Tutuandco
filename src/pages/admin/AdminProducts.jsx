@@ -272,7 +272,7 @@ const AdminProducts = () => {
                             initial={{ opacity: 0, y: 50, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 50, scale: 0.95 }}
-                            className="bg-[#F4F1EA] w-full max-w-7xl h-[90vh] rounded-sm shadow-2xl overflow-hidden flex flex-col cursor-default relative"
+                            className="bg-[#F4F1EA] w-full max-w-[1440px] h-[90vh] rounded-sm shadow-2xl overflow-hidden flex flex-col cursor-default relative"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <button onClick={() => setIsEditingProduct(null)} className="absolute top-4 right-4 p-2 bg-brand-charcoal text-white rounded-full hover:bg-black transition-all shadow-xl z-[200]"><X size={16} /></button>

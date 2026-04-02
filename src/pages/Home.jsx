@@ -289,7 +289,7 @@ const Home = () => {
                 </div>
             </section>
 
-            <section className="max-w-7xl mx-auto px-6 mt-20">
+            <section className="max-w-[1440px] mx-auto px-3 mt-20">
                 <div className="flex flex-col items-center mb-10">
                     <h2 className="text-4xl md:text-5xl font-medium text-brand-charcoal text-center tracking-tight">Our community</h2>
                 </div>
@@ -314,7 +314,7 @@ const Home = () => {
             </section>
 
             <section className="py-20 bg-brand-cream/30 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-6">
+                <div className="max-w-[1440px] mx-auto px-3">
                     <div className="text-center mb-10">
                         <h2 className="text-4xl md:text-6xl font-medium text-brand-charcoal mb-6">Kind words</h2>
                         <div className="w-12 h-1 bg-brand-rose mx-auto opacity-30" />

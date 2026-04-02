@@ -58,7 +58,7 @@ const AdminDashboard = () => {
     return (
         <div className="min-h-screen bg-brand-sage flex text-brand-charcoal relative">
             {/* Mobile Header */}
-            <div className="lg:hidden fixed top-0 left-0 right-0 h-20 bg-brand-cream border-b border-brand-charcoal/10 z-50 flex items-center justify-between px-6">
+            <div className="lg:hidden fixed top-0 left-0 right-0 h-20 bg-brand-cream border-b border-brand-charcoal/10 z-50 flex items-center justify-between px-3">
                 <img src={logo} alt="Tutu & Co" className="h-10 w-auto" />
                 <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-brand-charcoal">
                     {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
@@ -101,7 +101,7 @@ const AdminDashboard = () => {
             </AnimatePresence>
 
             {/* Main Content */}
-            <main className="flex-grow p-6 lg:p-12 pt-28 lg:pt-32 overflow-x-hidden">
+            <main className="flex-grow p-3 lg:p-12 pt-28 lg:pt-32 overflow-x-hidden">
                 <header className="flex justify-between items-end mb-12 border-b border-brand-charcoal/10 pb-8">
                     <div>
                         <h1 className="text-4xl font-medium text-brand-charcoal mb-2 capitalize">{getActiveLabel()}</h1>

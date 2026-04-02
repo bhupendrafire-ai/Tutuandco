@@ -35,7 +35,7 @@ const Moments = () => {
 
     return (
         <div className="bg-brand-sage min-h-screen pt-32 pb-32">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="max-w-[1440px] mx-auto px-3">
                 <header className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
                     <div className="max-w-2xl">
                     <div className="flex flex-col items-center mb-6">

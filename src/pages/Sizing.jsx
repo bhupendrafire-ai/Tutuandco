@@ -5,7 +5,7 @@ import { Ruler, CheckCircle2, Info } from 'lucide-react';
 const Sizing = () => {
     return (
         <div className="bg-brand-sage min-h-screen pt-32 pb-32">
-            <div className="max-w-5xl mx-auto px-6">
+            <div className="max-w-[1440px] mx-auto px-3">
                 <header className="mb-20">
                     <span className="text-[11px] font-medium text-brand-charcoal opacity-40 mb-6 block">Fitting guide</span>
                     <h1 className="text-5xl md:text-7xl font-medium text-brand-charcoal mb-12">Size guide</h1>

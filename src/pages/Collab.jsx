@@ -10,7 +10,7 @@ import logoWhite from '../assets/logo-white.png';
 const Collab = () => {
     return (
         <div className="bg-brand-sage min-h-screen pt-32 pb-32">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="max-w-[1440px] mx-auto px-3">
                 <header className="text-center mb-32">
                     <div className="flex flex-col items-center mb-6">
                         <img src={logo} alt="Tutu & Co" className="h-10 w-auto mb-2" />

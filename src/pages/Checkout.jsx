@@ -48,7 +48,7 @@ const Checkout = () => {
 
     return (
         <div className="bg-brand-sage min-h-screen pt-24 pb-32">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="max-w-[1440px] mx-auto px-3">
                 
                 {/* Progress Bar */}
                 <div className="flex items-center justify-center mb-16 space-x-4 max-w-xl mx-auto">

@@ -268,7 +268,7 @@ const AdminBanners = () => {
                             initial={{ scale: 0.95, opacity: 0 }} 
                             animate={{ scale: 1, opacity: 1 }} 
                             exit={{ scale: 0.95, opacity: 0 }} 
-                            className="relative w-[95vw] max-w-7xl h-[85vh] bg-white rounded-sm overflow-hidden shadow-2xl flex flex-col"
+                            className="relative w-[95vw] max-w-[1440px] h-[85vh] bg-white rounded-sm overflow-hidden shadow-2xl flex flex-col"
                         >
                             <div className="flex-shrink-0 bg-brand-charcoal/95 border-b border-white/10 px-8 py-3 flex justify-between items-center text-white">
                                 <div className="flex items-center space-x-4">

@@ -30,7 +30,7 @@ const Blogs = () => {
 
     return (
         <div className="bg-brand-sage min-h-screen pt-32 pb-32">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="max-w-[1440px] mx-auto px-3">
                 <header className="text-center mb-24">
                     <div className="flex flex-col items-center mb-6">
                         <span className="text-[11px] font-medium text-brand-charcoal opacity-40">Journal</span>
