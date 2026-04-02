@@ -141,7 +141,7 @@ const Home = () => {
     return (
         <div className="pb-20 bg-brand-sage">
             {/* Force Gutter System - Aligns with Header Boundaries */}
-            <div className="max-w-[1440px] mx-auto pt-10 px-10">
+            <div className="max-w-[1440px] mx-auto pt-10 px-5">
                 <section className="relative mx-auto h-auto md:h-[75vh] overflow-hidden group flex flex-col md:flex-row rounded-sm shadow-2xl ring-1 ring-black/5 bg-white">
                 <AnimatePresence mode="wait">
                     {activeBanner && (
@@ -236,7 +236,7 @@ const Home = () => {
             </section>
         </div>
 
-        <section className="max-w-[1440px] mx-auto px-10 mt-28">
+        <section className="max-w-[1440px] mx-auto px-5 mt-28">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
                     <div>
                         <h2 className="text-4xl md:text-5xl font-medium text-brand-charcoal mb-4">Featured Collections</h2>
@@ -347,7 +347,7 @@ const Home = () => {
             </section>
 
             <section className="py-20 bg-white">
-                <div className="max-w-[1440px] mx-auto px-10 text-center flex flex-col items-center">
+                <div className="max-w-[1440px] mx-auto px-5 text-center flex flex-col items-center">
                     <span className="tracking-[0.3em] text-[10px] font-medium text-[#8C916C] mb-6 block">Stay connected</span>
                     <div className="flex flex-col items-center mb-10">
                         <img src={logo} alt="Tutu & Co" className="h-16 w-auto mb-2" />

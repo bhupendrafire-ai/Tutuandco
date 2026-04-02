@@ -28,7 +28,7 @@ const Cart = () => {
 
     return (
         <div className="bg-brand-sage min-h-screen pt-24 pb-32">
-            <div className="max-w-[1440px] mx-auto px-10">
+            <div className="max-w-[1440px] mx-auto px-5">
                 <h1 className="text-4xl md:text-5xl font-medium text-brand-charcoal mb-16">Shopping bag</h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
