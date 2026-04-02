@@ -11,7 +11,7 @@ const Header = () => {
 
     return (
         <header className="sticky top-0 z-50 bg-brand-sage/80 backdrop-blur-md border-b border-brand-charcoal/10">
-            <div className="max-w-[1440px] mx-auto px-4 h-20 flex items-center justify-between">
+            <div className="max-w-[1440px] mx-auto px-3 h-20 flex items-center justify-between">
                 {/* Left: Nav Links (Desktop) or Menu (Mobile) */}
                 <div className="flex-1 flex items-center">
                     <nav className="hidden md:flex items-center space-x-8 text-brand-charcoal font-medium text-sm">
