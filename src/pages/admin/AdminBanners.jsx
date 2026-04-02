@@ -111,7 +111,7 @@ const AdminBanners = () => {
                     <div key={banner.id || index} className="bg-white rounded-sm shadow-xl border border-[#CD664D]/10 overflow-hidden">
                          <div className="flex flex-col md:flex-row">
                             {/* Banner Preview */}
-                            <div className="w-full md:w-1/2 aspect-[16/9] bg-brand-cream relative group cursor-crosshair overflow-hidden">
+                            <div className="w-full md:w-[65%] aspect-[16/9] bg-brand-cream relative group cursor-crosshair overflow-hidden">
                                 {banner.image ? (
                                     <img 
                                         src={getProductImage(banner.image, media)} 
@@ -154,7 +154,7 @@ const AdminBanners = () => {
                             </div>
 
                             {/* Banner Form */}
-                            <div className="w-full md:w-1/2 p-10 space-y-8 flex flex-col justify-between">
+                            <div className="w-full md:w-[35%] p-10 space-y-8 flex flex-col justify-between">
                                 <div className="space-y-6">
                                     <div className="flex justify-between items-start">
                                         <input 
