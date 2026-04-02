@@ -108,7 +108,7 @@ const AdminBanners = () => {
 
             <div className="space-y-12">
                  {(Array.isArray(banners) ? banners : []).map((banner, index) => (
-                    <div key={banner.id || index} className="bg-white rounded-sm shadow-xl border border-[#CD664D]/10 overflow-hidden mb-8">
+                    <div key={banner.id || index} className="bg-white rounded-sm shadow-xl border border-[#CD664D]/10 overflow-hidden mb-12 mx-4 md:mx-6">
                          <div className="flex flex-col md:flex-row">
                             {/* Banner Preview - Life-Size Proportion Mirror */}
                             <div className="w-full md:w-[65%] aspect-[16/9] bg-brand-cream relative group cursor-crosshair overflow-hidden">

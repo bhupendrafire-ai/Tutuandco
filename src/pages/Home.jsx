@@ -140,9 +140,9 @@ const Home = () => {
 
     return (
         <div className="pb-20 bg-brand-sage">
-            {/* Myntra-Style Universal Gutter Container (Aligns with Header) */}
-            <div className="max-w-7xl mx-auto px-6 pt-10">
-                <section className="relative h-auto md:h-[75vh] overflow-hidden group flex flex-col md:flex-row rounded-sm shadow-2xl ring-1 ring-black/5 bg-white">
+            {/* Force Gutter System - Aligns with Header Boundaries */}
+            <div className="max-w-7xl mx-auto pt-6 px-4 md:px-0">
+                <section className="relative mx-auto md:mx-6 h-auto md:h-[75vh] overflow-hidden group flex flex-col md:flex-row rounded-sm shadow-2xl ring-1 ring-black/5 bg-white">
                 <AnimatePresence mode="wait">
                     {activeBanner && (
                         <motion.div
