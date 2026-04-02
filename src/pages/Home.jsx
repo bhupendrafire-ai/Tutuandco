@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { useShop, getProductImage } from '../context/ShopContext';
 import logo from '../assets/logo.png';
 import logoWhite from '../assets/logo-white.png';
-import BannerIdentityFrame from '../components/BannerIdentityFrame';
+
 
 const Home = () => {
     console.log("HOME COMPONENT RENDERED");
@@ -151,52 +151,71 @@ const Home = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 1.2 }}
-                            className="w-full h-full"
+                            className="flex flex-col md:flex-row w-full h-full"
                         >
-                            <BannerIdentityFrame 
-                                banner={activeBanner} 
-                                media={media}
-                                className="h-full"
-                                imageClassName="cursor-pointer"
-                                onInteractionProps={{
-                                    onClick: () => window.location.href = activeBanner.link || "/"
-                                }}
+                            {/* Left Side: Image (65% on Desktop) */}
+                            <div 
+                                ref={heroRef}
+                                className="relative w-full md:w-[65%] h-[50vh] md:h-full overflow-hidden"
                             >
-                                <div className="p-12 md:p-[60px] text-white">
-                                    <div className="max-w-md w-full mx-auto md:mx-0 flex flex-col gap-y-6">
-                                        <motion.h1
-                                            initial={{ opacity: 0, x: 30 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ duration: 0.8, delay: 0.2 }}
-                                            className="text-4xl md:text-5xl font-medium leading-[1.2]"
-                                        >
-                                            {activeBanner.title}
-                                        </motion.h1>
-                                        
-                                        <motion.p
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ duration: 0.8, delay: 0.4 }}
-                                            className="text-white/80 text-lg italic font-medium"
-                                        >
-                                            {activeBanner.subtitle}
-                                        </motion.p>
+                                <Link 
+                                    to={activeBanner.link || "/"}
+                                    className="block w-full h-full"
+                                >
+                                    <img
+                                        src={getProductImage(activeBanner.image, media)}
+                                        alt={activeBanner.title}
+                                        className="w-full h-full block origin-center"
+                                        style={{ 
+                                            transform: heroTransform,
+                                            objectFit: activeBanner.fitMode || 'cover'
+                                        }}
+                                    />
+                                </Link>
+                                {/* Refined Natural Image Fade Divider */}
+                                <div 
+                                    className="absolute top-0 right-0 bottom-0 w-[4%] pointer-events-none z-10"
+                                    style={{
+                                        background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(124, 132, 108, 0.08) 30%, rgba(124, 132, 108, 0.18) 55%, rgba(124, 132, 108, 0.3) 75%, rgba(124, 132, 108, 0.5) 100%)'
+                                    }}
+                                />
+                            </div>
 
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ duration: 0.8, delay: 0.6 }}
+                            {/* Right Side: Content Panel (35% on Desktop) */}
+                            <div className="w-full md:w-[35%] bg-[#7C846C] p-12 md:p-[60px] flex flex-col justify-center min-h-[350px] md:min-h-0 text-white">
+                                <div className="max-w-md w-full mx-auto md:mx-0 flex flex-col gap-y-6">
+                                    <motion.h1
+                                        initial={{ opacity: 0, x: 30 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.8, delay: 0.2 }}
+                                        className="text-4xl md:text-5xl font-medium leading-[1.2]"
+                                    >
+                                        {activeBanner.title}
+                                    </motion.h1>
+                                    
+                                    <motion.p
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.8, delay: 0.4 }}
+                                        className="text-white/80 text-lg italic font-medium"
+                                    >
+                                        {activeBanner.subtitle}
+                                    </motion.p>
+
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.8, delay: 0.6 }}
+                                    >
+                                        <Link 
+                                            to={activeBanner.link || "/"}
+                                            className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-lg hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-[0.2em] active:scale-95 inline-block text-center mr-auto cursor-pointer"
                                         >
-                                            <Link 
-                                                to={activeBanner.link || "/"}
-                                                className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-lg hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-[0.2em] active:scale-95 inline-block text-center mr-auto cursor-pointer"
-                                            >
-                                                {activeBanner.cta || "Explore collection"}
-                                            </Link>
-                                        </motion.div>
-                                    </div>
+                                            {activeBanner.cta || "Explore collection"}
+                                        </Link>
+                                    </motion.div>
                                 </div>
-                            </BannerIdentityFrame>
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>

@@ -7,16 +7,64 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useShop, getProductImage } from '../../context/ShopContext';
 import MediaPicker from '../../components/MediaPicker';
-import BannerIdentityFrame from '../../components/BannerIdentityFrame';
 
 const BannerPreviewItem = ({ banner, media, onAdjust, onOpenMediaPicker, index }) => {
+    const containerRef = useRef(null);
+    const [size, setSize] = useState({ w: 0, h: 0 });
+
+    useEffect(() => {
+        const updateSize = () => {
+            if (containerRef.current) {
+                setSize({
+                    w: containerRef.current.clientWidth,
+                    h: containerRef.current.clientHeight
+                });
+            }
+        };
+        updateSize();
+        const timer = setTimeout(updateSize, 100);
+        window.addEventListener('resize', updateSize);
+        return () => {
+            window.removeEventListener('resize', updateSize);
+            clearTimeout(timer);
+        };
+    }, []);
+
+    const ratioX = size.w / (banner.refWidth || 1920);
+    const ratioY = size.h / (banner.refHeight || 1080);
+
+    const transformStyle = {
+        transform: `translate(${(banner.translateX || 0) * ratioX}px, ${(banner.translateY || 0) * ratioY}px) scale(${banner.zoom || 1})`,
+        objectFit: banner.fitMode || 'cover'
+    };
+
     return (
-        <div className="w-full md:w-[65%] relative group cursor-crosshair overflow-hidden shadow-inner">
-            <BannerIdentityFrame 
-                banner={banner} 
-                media={media}
-                className="pointer-events-none"
+        <div 
+            ref={containerRef}
+            className="w-full md:w-[65%] bg-brand-cream relative group cursor-crosshair overflow-hidden shadow-inner"
+            style={{ aspectRatio: '832 / 810' }}
+        >
+            {banner.image ? (
+                <img 
+                    src={getProductImage(banner.image, media)} 
+                    className="w-full h-full block origin-center"
+                    style={transformStyle}
+                    alt=""
+                />
+            ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-brand-charcoal/20 space-y-4">
+                    <ImageIcon size={48} strokeWidth={1} />
+                    <p className="text-[10px] font-bold uppercase tracking-widest">No Visual Asset Assigned</p>
+                </div>
+            )}
+            
+            <div 
+                className="absolute top-0 right-0 bottom-0 w-[4%] pointer-events-none z-10"
+                style={{
+                    background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(124, 132, 108, 0.08) 30%, rgba(124, 132, 108, 0.18) 55%, rgba(124, 132, 108, 0.3) 75%, rgba(124, 132, 108, 0.5) 100%)'
+                }}
             />
+
             <div className="absolute inset-0 bg-brand-charcoal/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-6 backdrop-blur-[2px]">
                 <button 
                    onClick={() => onOpenMediaPicker()}
@@ -55,6 +103,7 @@ const AdminBanners = () => {
         const b = banners[adjustingBannerIdx];
         const rect = e.currentTarget.getBoundingClientRect();
         
+        // Use reference dimensions (1920x1080) for universal calibration
         const refW = b.refWidth || 1920;
         const refH = b.refHeight || 1080;
         
@@ -153,6 +202,7 @@ const AdminBanners = () => {
                                 })}
                             />
 
+                            {/* Banner Form */}
                             <div className="w-full md:w-[35%] p-10 space-y-8 flex flex-col justify-between bg-[#7C846C] text-white">
                                 <div className="space-y-6">
                                     <div className="flex justify-between items-start">
@@ -163,7 +213,7 @@ const AdminBanners = () => {
                                                 nb[index] = { ...nb[index], title: e.target.value };
                                                 updateBanners(nb);
                                             }}
-                                            className="text-2xl font-medium text-white/90 bg-transparent border-none focus:ring-0 w-full placeholder:text-white/20"
+                                            className="text-2xl font-medium text-brand-charcoal bg-transparent border-none focus:ring-0 w-full"
                                             placeholder="Narrative Title"
                                         />
                                         <div className="flex items-center space-x-2">
@@ -173,7 +223,7 @@ const AdminBanners = () => {
                                                     nb[index] = { ...nb[index], isVisible: !nb[index].isVisible };
                                                     updateBanners(nb);
                                                 }}
-                                                className={`p-2 rounded-full transition-all ${banner.isVisible !== false ? 'text-green-400' : 'text-white/20'}`}
+                                                className={`p-2 rounded-full transition-all ${banner.isVisible !== false ? 'text-green-500' : 'text-brand-charcoal/20'}`}
                                             >
                                                 {banner.isVisible !== false ? <CheckCircle2 size={20} /> : <EyeOff size={20} />}
                                             </button>
@@ -184,9 +234,9 @@ const AdminBanners = () => {
                                                         updateBanners(nb);
                                                     }
                                                 }}
-                                                className="p-2 text-white/20 hover:text-red-400 transition-all"
+                                                className="p-2 text-brand-charcoal/20 hover:text-red-500 transition-all"
                                             >
-                                               <Trash2 size={20} />
+                                                <Trash2 size={20} />
                                             </button>
                                         </div>
                                     </div>
@@ -197,12 +247,12 @@ const AdminBanners = () => {
                                             nb[index] = { ...nb[index], subtitle: e.target.value };
                                             updateBanners(nb);
                                         }}
-                                        className="w-full text-sm text-white/60 bg-transparent border-none focus:ring-0 resize-none h-20 placeholder:text-white/20"
+                                        className="w-full text-sm text-brand-charcoal/60 bg-transparent border-none focus:ring-0 resize-none h-20"
                                         placeholder="Enter descriptive subtitle..."
                                     />
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest block">CTA Label</label>
+                                        <div>
+                                            <label className="text-[10px] font-bold text-brand-charcoal/40 uppercase tracking-widest block mb-2">CTA Label</label>
                                             <input 
                                                 value={banner.cta}
                                                 onChange={e => {
@@ -210,11 +260,11 @@ const AdminBanners = () => {
                                                     nb[index] = { ...nb[index], cta: e.target.value };
                                                     updateBanners(nb);
                                                 }}
-                                                className="w-full bg-white/5 border border-white/10 p-3 text-xs font-bold rounded-sm outline-none focus:border-brand-rose"
+                                                className="w-full bg-brand-cream/50 p-3 text-xs font-bold rounded-sm border-none"
                                             />
                                         </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest block">Internal Pathway</label>
+                                        <div>
+                                            <label className="text-[10px] font-bold text-brand-charcoal/40 uppercase tracking-widest block mb-2">Internal Pathway</label>
                                             <input 
                                                 list="product-paths"
                                                 value={banner.link || ''}
@@ -224,15 +274,25 @@ const AdminBanners = () => {
                                                     updateBanners(nb);
                                                 }}
                                                 placeholder="/product/..."
-                                                className="w-full bg-white/5 border border-white/10 p-3 text-xs font-bold rounded-sm outline-none focus:border-brand-rose"
+                                                className="w-full bg-brand-cream/50 p-3 text-xs font-bold rounded-sm border-none"
                                             />
+                                            <datalist id="product-paths">
+                                                <option value="/" />
+                                                <option value="/blogs" />
+                                                <option value="/collab" />
+                                                <option value="/sizing" />
+                                                <option value="/moments" />
+                                                {(Array.isArray(products) ? products : []).map(p => (
+                                                    <option key={p.id} value={`/product/${p.id}`}>{p.name} (₹{p.price})</option>
+                                                ))}
+                                            </datalist>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center space-x-4 border-t border-white/5 pt-6">
+                                <div className="flex items-center space-x-4 border-t border-brand-charcoal/5 pt-6">
                                     <div className="flex items-center space-x-2 bg-brand-rose/10 px-4 py-2 rounded-full">
                                         <span className="text-[10px] font-bold text-brand-rose uppercase tracking-widest">Calibration:</span>
-                                        <span className="text-[10px] font-bold text-white uppercase tracking-widest">
+                                        <span className="text-[10px] font-bold text-brand-charcoal uppercase tracking-widest">
                                             {Math.round((banner.zoom || 1) * 100)}% / {Math.round(banner.translateX || 0)}px, {Math.round(banner.translateY || 0)}px
                                         </span>
                                     </div>
@@ -243,6 +303,7 @@ const AdminBanners = () => {
                 ))}
             </div>
 
+            {/* Panning Calibration Hub Modal */}
             <AnimatePresence>
                 {adjustingBannerIdx !== null && (
                     <div className="fixed inset-0 z-[200] flex items-center justify-center">
@@ -282,179 +343,204 @@ const AdminBanners = () => {
                                     <button onClick={() => setAdjustingBannerIdx(null)} className="p-2 hover:bg-white/10 rounded-full transition-all"><X size={20} /></button>
                                 </div>
                             </div>
+                            
                             <div className="flex-grow flex flex-row bg-brand-sage relative overflow-hidden group min-h-[50vh] max-h-[75vh]">
-                                <BannerIdentityFrame
-                                    banner={banners[adjustingBannerIdx]}
-                                    media={media}
-                                    onInteractionProps={{
-                                        ref: (el) => {
-                                            if (el && (previewSize.w !== el.clientWidth || previewSize.h !== el.clientHeight)) {
-                                                setPreviewSize({ w: el.clientWidth, h: el.clientHeight });
-                                            }
-                                        },
-                                        onMouseDown: (e) => setPanningPoint({ x: e.clientX, y: e.clientY }),
-                                        onMouseMove: handlePanning,
-                                        onMouseUp: () => setPanningPoint(null),
-                                        onMouseLeave: () => setPanningPoint(null),
-                                        className: "cursor-move select-none"
+                                <div 
+                                    className="relative w-[65%] h-full overflow-hidden cursor-move select-none"
+                                    style={{ aspectRatio: '832 / 810' }}
+                                    ref={el => {
+                                        if (el && (previewSize.w !== el.clientWidth || previewSize.h !== el.clientHeight)) {
+                                            setPreviewSize({ w: el.clientWidth, h: el.clientHeight });
+                                        }
                                     }}
+                                    onMouseDown={(e) => setPanningPoint({ x: e.clientX, y: e.clientY })}
+                                    onMouseMove={handlePanning}
+                                    onMouseUp={() => setPanningPoint(null)}
+                                    onMouseLeave={() => setPanningPoint(null)}
                                 >
-                                    <div className="w-full h-full p-10 lg:p-16 flex flex-col text-white relative overflow-y-auto">
-                                        <div className="max-w-md w-full mx-auto lg:mx-0 flex flex-col gap-y-12">
+                                    <img 
+                                        src={getProductImage(banners[adjustingBannerIdx].image, media)} 
+                                        className="w-full h-full block origin-center pointer-events-none" 
+                                        draggable={false}
+                                        style={{ 
+                                            transform: (() => {
+                                                const b = banners[adjustingBannerIdx];
+                                                const ratioX = previewSize.w / (b.refWidth || 1920);
+                                                const ratioY = previewSize.h / (b.refHeight || 1080);
+                                                const tx = (b.translateX || 0) * ratioX;
+                                                const ty = (b.translateY || 0) * ratioY;
+                                                return `translate(${tx}px, ${ty}px) scale(${b.zoom || 1})`;
+                                            })(),
+                                            objectFit: banners[adjustingBannerIdx].fitMode || 'cover'
+                                        }}
+                                        alt=""
+                                    />
+                                    <div className="absolute inset-0 pointer-events-none border-4 border-white/5 opacity-40" />
+                                    <div className="absolute left-1/2 top-10 bottom-10 w-px bg-white/20 opacity-30" />
+                                    <div className="absolute top-1/2 left-10 right-10 h-px bg-white/20 opacity-30" />
+                                    <div 
+                                        className="absolute top-0 right-0 bottom-0 w-[4%] pointer-events-none z-10 hidden lg:block"
+                                        style={{
+                                            background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(124, 132, 108, 0.08) 30%, rgba(124, 132, 108, 0.18) 55%, rgba(124, 132, 108, 0.3) 75%, rgba(124, 132, 108, 0.5) 100%)'
+                                        }}
+                                    />
+                                </div>
+
+                                <div className="w-full lg:w-[35%] h-full bg-[#7C846C] p-10 lg:p-16 flex flex-col text-white relative shadow-[-20px_0_40px_rgba(0,0,0,0.1)] overflow-y-auto">
+                                    <div className="max-w-md w-full mx-auto lg:mx-0 flex flex-col gap-y-12">
+                                        <div className="space-y-6">
+                                            <div className="flex items-center space-x-3 mb-2 opacity-30">
+                                                <AlignLeft size={14} />
+                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Core Narrative</span>
+                                            </div>
                                             <div className="space-y-6">
-                                                <div className="flex items-center space-x-3 mb-2 opacity-30">
-                                                    <AlignLeft size={14} />
-                                                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Core Narrative</span>
-                                                </div>
-                                                <div className="space-y-6">
-                                                    <input 
-                                                        value={banners[adjustingBannerIdx].title || ""}
-                                                        onChange={e => {
-                                                            const nb = [...banners];
-                                                            nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], title: e.target.value };
-                                                            updateBanners(nb);
-                                                        }}
-                                                        placeholder="Narrative Title"
-                                                        className="w-full bg-transparent text-4xl md:text-5xl font-medium leading-[1.1] tracking-tight outline-none border-none placeholder:opacity-20"
-                                                    />
-                                                    <textarea 
-                                                        value={banners[adjustingBannerIdx].subtitle || ""}
-                                                        onChange={e => {
-                                                            const nb = [...banners];
-                                                            nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], subtitle: e.target.value };
-                                                            updateBanners(nb);
-                                                        }}
-                                                        placeholder="Supporting narrative..."
-                                                        className="w-full bg-transparent text-white/80 text-lg italic font-medium leading-relaxed outline-none border-none resize-none h-24 placeholder:opacity-20"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="p-8 bg-black/10 rounded-sm space-y-6 border border-white/5">
-                                                <div className="flex items-center space-x-3 mb-2 opacity-60">
-                                                    <Maximize size={14} />
-                                                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Image Hub Controls</span>
-                                                </div>
-                                                
-                                                <div className="space-y-4">
-                                                    <div className="flex justify-between items-center text-[10px] font-bold uppercase opacity-60">
-                                                        <span>Magnification</span>
-                                                        <span className="text-brand-rose">{Math.round((banners[adjustingBannerIdx].zoom || 1) * 100)}%</span>
-                                                    </div>
-                                                    <input 
-                                                        type="range" min="1" max="5" step="0.01"
-                                                        value={banners[adjustingBannerIdx].zoom || 1}
-                                                        onChange={e => {
-                                                            const nb = [...banners];
-                                                            nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], zoom: parseFloat(e.target.value) };
-                                                            updateBanners(nb);
-                                                        }}
-                                                        className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
-                                                    />
-                                                </div>
-
-                                                <div className="grid grid-cols-2 gap-4 pt-2">
-                                                    <button 
-                                                        onClick={() => {
-                                                            const nb = [...banners];
-                                                            nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], fitMode: 'cover' };
-                                                            updateBanners(nb);
-                                                        }}
-                                                        className={`py-3 text-[9px] font-bold uppercase tracking-widest rounded-sm border transition-all ${banners[adjustingBannerIdx].fitMode === 'cover' ? 'bg-white text-brand-charcoal border-white shadow-lg' : 'bg-transparent border-white/20 text-white hover:border-white'}`}
-                                                    >
-                                                        Crop Fit
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => {
-                                                            const nb = [...banners];
-                                                            nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], fitMode: 'contain' };
-                                                            updateBanners(nb);
-                                                        }}
-                                                        className={`py-3 text-[9px] font-bold uppercase tracking-widest rounded-sm border transition-all ${banners[adjustingBannerIdx].fitMode === 'contain' ? 'bg-white text-brand-charcoal border-white shadow-lg' : 'bg-transparent border-white/20 text-white hover:border-white'}`}
-                                                    >
-                                                        Preserve
-                                                    </button>
-                                                </div>
-
-                                                <button 
-                                                    onClick={() => {
-                                                        openMediaPicker({
-                                                            multi: false,
-                                                            onSelect: (item) => {
-                                                                const nb = [...banners];
-                                                                nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], image: typeof item === 'string' ? item : item.url };
-                                                                updateBanners(nb);
-                                                            }
-                                                        });
+                                                <input 
+                                                    value={banners[adjustingBannerIdx].title || ""}
+                                                    onChange={e => {
+                                                        const nb = [...banners];
+                                                        nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], title: e.target.value };
+                                                        updateBanners(nb);
                                                     }}
-                                                    className="w-full py-4 border-2 border-dashed border-white/10 rounded-sm text-[9px] font-bold uppercase tracking-widest opacity-60 hover:opacity-100 transition-all flex items-center justify-center space-x-2"
-                                                >
-                                                    <ImageIcon size={14} />
-                                                    <span>Change Identity Asset</span>
-                                                </button>
-                                            </div>
-
-                                            <div className="space-y-8">
-                                                <div className="flex items-center space-x-3 mb-2 opacity-30">
-                                                    <Plus size={14} />
-                                                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Digital Call to Action</span>
-                                                </div>
-                                                
-                                                <div className="grid grid-cols-2 gap-6">
-                                                    <div className="space-y-3">
-                                                        <label className="text-[10px] font-bold uppercase tracking-widest opacity-40">Label</label>
-                                                        <input 
-                                                            value={banners[adjustingBannerIdx].cta || ""}
-                                                            onChange={e => {
-                                                                const nb = [...banners];
-                                                                nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], cta: e.target.value };
-                                                                updateBanners(nb);
-                                                            }}
-                                                            placeholder="Explore Collection..."
-                                                            className="w-full bg-white/5 border border-white/10 p-4 text-xs font-bold rounded-sm outline-none focus:border-brand-rose transition-colors"
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-3">
-                                                        <label className="text-[10px] font-bold uppercase tracking-widest opacity-40">Pathway Hub</label>
-                                                        <input 
-                                                            list="product-paths"
-                                                            value={banners[adjustingBannerIdx].link || ""}
-                                                            onChange={e => {
-                                                                const nb = [...banners];
-                                                                nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], link: e.target.value };
-                                                                updateBanners(nb);
-                                                            }}
-                                                            placeholder="/product/..."
-                                                            className="w-full bg-white/5 border border-white/10 p-4 text-xs font-bold rounded-sm outline-none focus:border-brand-rose transition-colors"
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                <div className="space-y-3">
-                                                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-40 block">Interactive Prototype</span>
-                                                    <Link 
-                                                        to={banners[adjustingBannerIdx].link || "#"}
-                                                        target="_blank"
-                                                        className="w-full bg-brand-charcoal text-[#EADED0] px-16 py-8 text-[16px] font-bold shadow-2xl uppercase tracking-[0.2em] inline-block text-center active:scale-95 transition-all hover:bg-white hover:text-brand-charcoal cursor-pointer border border-transparent"
-                                                    >
-                                                        {banners[adjustingBannerIdx].cta || "Test Call to Action"}
-                                                    </Link>
-                                                </div>
-                                            </div>
-
-                                            <div className="pt-8 border-t border-white/5 pb-20">
-                                                <button 
-                                                    onClick={saveCalibration}
-                                                    disabled={isSyncing}
-                                                    className="w-full bg-brand-rose text-brand-charcoal py-6 rounded-sm text-[13px] font-bold uppercase tracking-[0.2em] shadow-2xl hover:bg-white transition-all transform active:scale-95 flex items-center justify-center space-x-3"
-                                                >
-                                                    {isSyncing ? <RefreshCcw size={18} className="animate-spin" /> : <CheckCircle2 size={18} />}
-                                                    <span>{isSyncing ? 'Synchronizing State...' : 'Commit All Identity Changes'}</span>
-                                                </button>
+                                                    placeholder="Narrative Title"
+                                                    className="w-full bg-transparent text-4xl md:text-5xl font-medium leading-[1.1] tracking-tight outline-none border-none placeholder:opacity-20"
+                                                />
+                                                <textarea 
+                                                    value={banners[adjustingBannerIdx].subtitle || ""}
+                                                    onChange={e => {
+                                                        const nb = [...banners];
+                                                        nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], subtitle: e.target.value };
+                                                        updateBanners(nb);
+                                                    }}
+                                                    placeholder="Supporting narrative..."
+                                                    className="w-full bg-transparent text-white/80 text-lg italic font-medium leading-relaxed outline-none border-none resize-none h-24 placeholder:opacity-20"
+                                                />
                                             </div>
                                         </div>
+
+                                        <div className="p-8 bg-black/10 rounded-sm space-y-6 border border-white/5">
+                                            <div className="flex items-center space-x-3 mb-2 opacity-60">
+                                                <Maximize size={14} />
+                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Image Hub Controls</span>
+                                            </div>
+                                            
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between items-center text-[10px] font-bold uppercase opacity-60">
+                                                    <span>Magnification</span>
+                                                    <span className="text-brand-rose">{Math.round((banners[adjustingBannerIdx].zoom || 1) * 100)}%</span>
+                                                </div>
+                                                <input 
+                                                    type="range" min="1" max="5" step="0.01"
+                                                    value={banners[adjustingBannerIdx].zoom || 1}
+                                                    onChange={e => {
+                                                        const nb = [...banners];
+                                                        nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], zoom: parseFloat(e.target.value) };
+                                                        updateBanners(nb);
+                                                    }}
+                                                    className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-rose"
+                                                />
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-4 pt-2">
+                                                <button 
+                                                    onClick={() => {
+                                                        const nb = [...banners];
+                                                        nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], fitMode: 'cover' };
+                                                        updateBanners(nb);
+                                                    }}
+                                                    className={`py-3 text-[9px] font-bold uppercase tracking-widest rounded-sm border transition-all ${banners[adjustingBannerIdx].fitMode === 'cover' ? 'bg-white text-brand-charcoal border-white shadow-lg' : 'bg-transparent border-white/20 text-white hover:border-white'}`}
+                                                >
+                                                    Crop Fit
+                                                </button>
+                                                <button 
+                                                    onClick={() => {
+                                                        const nb = [...banners];
+                                                        nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], fitMode: 'contain' };
+                                                        updateBanners(nb);
+                                                    }}
+                                                    className={`py-3 text-[9px] font-bold uppercase tracking-widest rounded-sm border transition-all ${banners[adjustingBannerIdx].fitMode === 'contain' ? 'bg-white text-brand-charcoal border-white shadow-lg' : 'bg-transparent border-white/20 text-white hover:border-white'}`}
+                                                >
+                                                    Preserve
+                                                </button>
+                                            </div>
+
+                                            <button 
+                                                onClick={() => {
+                                                    openMediaPicker({
+                                                        multi: false,
+                                                        onSelect: (item) => {
+                                                            const nb = [...banners];
+                                                            nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], image: typeof item === 'string' ? item : item.url };
+                                                            updateBanners(nb);
+                                                        }
+                                                    });
+                                                }}
+                                                className="w-full py-4 border-2 border-dashed border-white/10 rounded-sm text-[9px] font-bold uppercase tracking-widest opacity-60 hover:opacity-100 transition-all flex items-center justify-center space-x-2"
+                                            >
+                                                <ImageIcon size={14} />
+                                                <span>Change Identity Asset</span>
+                                            </button>
+                                        </div>
+
+                                        <div className="space-y-8">
+                                            <div className="flex items-center space-x-3 mb-2 opacity-30">
+                                                <Plus size={14} />
+                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Digital Call to Action</span>
+                                            </div>
+                                            
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <div className="space-y-3">
+                                                    <label className="text-[10px] font-bold uppercase tracking-widest opacity-40">Label</label>
+                                                    <input 
+                                                        value={banners[adjustingBannerIdx].cta || ""}
+                                                        onChange={e => {
+                                                            const nb = [...banners];
+                                                            nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], cta: e.target.value };
+                                                            updateBanners(nb);
+                                                        }}
+                                                        placeholder="Explore Collection..."
+                                                        className="w-full bg-white/5 border border-white/10 p-4 text-xs font-bold rounded-sm outline-none focus:border-brand-rose transition-colors"
+                                                    />
+                                                </div>
+                                                <div className="space-y-3">
+                                                    <label className="text-[10px] font-bold uppercase tracking-widest opacity-40">Pathway Hub</label>
+                                                    <input 
+                                                        list="product-paths"
+                                                        value={banners[adjustingBannerIdx].link || ""}
+                                                        onChange={e => {
+                                                            const nb = [...banners];
+                                                            nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], link: e.target.value };
+                                                            updateBanners(nb);
+                                                        }}
+                                                        placeholder="/product/..."
+                                                        className="w-full bg-white/5 border border-white/10 p-4 text-xs font-bold rounded-sm outline-none focus:border-brand-rose transition-colors"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                <span className="text-[10px] font-bold uppercase tracking-widest opacity-40 block">Interactive Prototype</span>
+                                                <Link 
+                                                    to={banners[adjustingBannerIdx].link || "#"}
+                                                    target="_blank"
+                                                    className="w-full bg-brand-charcoal text-[#EADED0] px-16 py-8 text-[16px] font-bold shadow-2xl uppercase tracking-[0.2em] inline-block text-center active:scale-95 transition-all hover:bg-white hover:text-brand-charcoal cursor-pointer border border-transparent"
+                                                >
+                                                    {banners[adjustingBannerIdx].cta || "Test Call to Action"}
+                                                </Link>
+                                            </div>
+                                        </div>
+
+                                        <div className="pt-8 border-t border-white/5 pb-20">
+                                            <button 
+                                                onClick={saveCalibration}
+                                                disabled={isSyncing}
+                                                className="w-full bg-brand-rose text-brand-charcoal py-6 rounded-sm text-[13px] font-bold uppercase tracking-[0.2em] shadow-2xl hover:bg-white transition-all transform active:scale-95 flex items-center justify-center space-x-3"
+                                            >
+                                                {isSyncing ? <RefreshCcw size={18} className="animate-spin" /> : <CheckCircle2 size={18} />}
+                                                <span>{isSyncing ? 'Synchronizing State...' : 'Commit All Identity Changes'}</span>
+                                            </button>
+                                        </div>
                                     </div>
-                                </BannerIdentityFrame>
+                                </div>
                             </div>
                         </motion.div>
                     </div>
