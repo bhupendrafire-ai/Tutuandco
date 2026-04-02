@@ -270,7 +270,7 @@ const AdminBanners = () => {
                             exit={{ scale: 0.95, opacity: 0 }} 
                             className="relative w-[95vw] max-w-7xl h-[85vh] bg-white rounded-sm overflow-hidden shadow-2xl flex flex-col"
                         >
-                            <div className="absolute top-0 left-0 right-0 z-50 bg-brand-charcoal/40 backdrop-blur-md border-b border-white/10 px-8 py-4 flex justify-between items-center text-white">
+                            <div className="flex-shrink-0 bg-brand-charcoal/95 border-b border-white/10 px-8 py-3 flex justify-between items-center text-white">
                                 <div className="flex items-center space-x-4">
                                     <h3 className="text-xl font-medium tracking-tight">Identity Panning Hub</h3>
                                     <div className="h-4 w-px bg-white/20 mx-2" />
@@ -300,7 +300,7 @@ const AdminBanners = () => {
                                 </div>
                             </div>
                             
-                            <div className="flex-grow flex flex-col lg:flex-row bg-brand-sage relative overflow-hidden group lg:h-[71.25vh]">
+                            <div className="flex-grow flex flex-col lg:flex-row bg-brand-sage relative overflow-hidden group lg:h-[71.25vh] min-h-0">
                                 <div 
                                     ref={el => {
                                         if (el && (previewSize.w !== el.clientWidth || previewSize.h !== el.clientHeight)) {
