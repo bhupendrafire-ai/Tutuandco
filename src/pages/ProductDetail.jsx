@@ -56,7 +56,7 @@ const ProductDetail = () => {
 
     return (
         <div className="bg-brand-sage min-h-screen pt-24 pb-32">
-            <div className="max-w-[1440px] mx-auto px-3">
+            <div className="max-w-7xl mx-auto px-6">
                 {/* Breadcrumbs */}
                 <Link to="/" className="inline-flex items-center text-brand-charcoal opacity-70 hover:opacity-100 transition-opacity mb-12 group">
                     <ArrowLeft size={18} className="mr-2 group-hover:-translate-x-1 transition-transform" />
