@@ -128,6 +128,11 @@ const AdminBanners = () => {
                                         <span className="text-xs font-bold uppercase tracking-widest">No Asset Assigned</span>
                                     </div>
                                 )}
+                                <div className="absolute top-0 right-0 bottom-0 w-[4%] pointer-events-none z-10"
+                                    style={{
+                                        background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(124, 132, 108, 0.08) 30%, rgba(124, 132, 108, 0.18) 55%, rgba(124, 132, 108, 0.3) 75%, rgba(124, 132, 108, 0.5) 100%)'
+                                    }}
+                                />
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-4">
                                     <button 
                                         onClick={() => {
@@ -154,7 +159,7 @@ const AdminBanners = () => {
                             </div>
 
                             {/* Banner Form */}
-                            <div className="w-full md:w-[35%] p-10 space-y-8 flex flex-col justify-between">
+                            <div className="w-full md:w-[35%] p-10 space-y-8 flex flex-col justify-between bg-[#7C846C] text-white">
                                 <div className="space-y-6">
                                     <div className="flex justify-between items-start">
                                         <input 
@@ -269,7 +274,7 @@ const AdminBanners = () => {
                                 <div className="flex items-center space-x-4">
                                     <h3 className="text-xl font-medium tracking-tight">Identity Panning Hub</h3>
                                     <div className="h-4 w-px bg-white/20 mx-2" />
-                                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Storefront Mirror Mode</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-brand-rose">Mirror Mode: Proportion Locked</span>
                                 </div>
                                 <div className="flex items-center space-x-6">
                                     <div className="flex items-center space-x-4 bg-brand-charcoal/80 px-6 py-2 rounded-full border border-white/10">
@@ -295,7 +300,7 @@ const AdminBanners = () => {
                                 </div>
                             </div>
                             
-                            <div className="flex-grow flex flex-col lg:flex-row bg-brand-sage relative overflow-hidden group">
+                            <div className="flex-grow flex flex-col lg:flex-row bg-brand-sage relative overflow-hidden group lg:h-[71.25vh]">
                                 <div 
                                     ref={el => {
                                         if (el && (previewSize.w !== el.clientWidth || previewSize.h !== el.clientHeight)) {
@@ -329,7 +334,7 @@ const AdminBanners = () => {
                                     <div className="absolute left-1/2 top-10 bottom-10 w-px bg-white/20 opacity-30" />
                                     <div className="absolute top-1/2 left-10 right-10 h-px bg-white/20 opacity-30" />
                                     <div 
-                                        className="absolute top-0 right-0 bottom-0 w-[8%] pointer-events-none z-10 hidden lg:block"
+                                        className="absolute top-0 right-0 bottom-0 w-[4%] pointer-events-none z-10 hidden lg:block"
                                         style={{
                                             background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(124, 132, 108, 0.08) 30%, rgba(124, 132, 108, 0.18) 55%, rgba(124, 132, 108, 0.3) 75%, rgba(124, 132, 108, 0.5) 100%)'
                                         }}

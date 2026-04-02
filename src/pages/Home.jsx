@@ -173,7 +173,7 @@ const Home = () => {
                                 </Link>
                                 {/* Refined Natural Image Fade Divider */}
                                 <div 
-                                    className="absolute top-0 right-0 bottom-0 w-[8%] pointer-events-none z-10"
+                                    className="absolute top-0 right-0 bottom-0 w-[4%] pointer-events-none z-10"
                                     style={{
                                         background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(124, 132, 108, 0.08) 30%, rgba(124, 132, 108, 0.18) 55%, rgba(124, 132, 108, 0.3) 75%, rgba(124, 132, 108, 0.5) 100%)'
                                     }}
