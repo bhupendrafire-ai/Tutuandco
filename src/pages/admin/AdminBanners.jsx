@@ -41,7 +41,8 @@ const BannerPreviewItem = ({ banner, media, onAdjust, onOpenMediaPicker, index }
     return (
         <div 
             ref={containerRef}
-            className="w-full md:w-[65%] aspect-[16/9] bg-brand-cream relative group cursor-crosshair overflow-hidden"
+            className="w-full md:w-[65%] bg-brand-cream relative group cursor-crosshair overflow-hidden shadow-inner"
+            style={{ aspectRatio: '832 / 810' }}
         >
             {banner.image ? (
                 <img 
@@ -311,7 +312,7 @@ const AdminBanners = () => {
                             initial={{ scale: 0.95, opacity: 0 }} 
                             animate={{ scale: 1, opacity: 1 }} 
                             exit={{ scale: 0.95, opacity: 0 }} 
-                            className="relative w-[95vw] max-w-7xl h-[85vh] bg-white rounded-sm overflow-hidden shadow-2xl flex flex-col"
+                            className="relative w-[95vw] max-w-7xl h-auto max-h-[90vh] bg-white rounded-sm overflow-hidden shadow-2xl flex flex-col"
                         >
                             <div className="flex-shrink-0 bg-brand-charcoal/95 border-b border-white/10 px-8 py-3 flex justify-between items-center text-white">
                                 <div className="flex items-center space-x-4">
@@ -343,14 +344,15 @@ const AdminBanners = () => {
                                 </div>
                             </div>
                             
-                            <div className="flex-grow flex flex-col lg:flex-row bg-brand-sage relative overflow-hidden group lg:h-[71.25vh] min-h-0">
+                            <div className="flex-grow flex flex-row bg-brand-sage relative overflow-hidden group min-h-[50vh] max-h-[75vh]">
                                 <div 
+                                    className="relative w-[65%] h-full overflow-hidden cursor-move select-none"
+                                    style={{ aspectRatio: '832 / 810' }}
                                     ref={el => {
                                         if (el && (previewSize.w !== el.clientWidth || previewSize.h !== el.clientHeight)) {
                                             setPreviewSize({ w: el.clientWidth, h: el.clientHeight });
                                         }
                                     }}
-                                    className="relative w-full lg:w-[65%] h-[50vh] lg:h-full overflow-hidden cursor-move select-none"
                                     onMouseDown={(e) => setPanningPoint({ x: e.clientX, y: e.clientY })}
                                     onMouseMove={handlePanning}
                                     onMouseUp={() => setPanningPoint(null)}
