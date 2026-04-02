@@ -8,6 +8,82 @@ import { Link } from 'react-router-dom';
 import { useShop, getProductImage } from '../../context/ShopContext';
 import MediaPicker from '../../components/MediaPicker';
 
+const BannerPreviewItem = ({ banner, media, onAdjust, onOpenMediaPicker, index }) => {
+    const containerRef = useRef(null);
+    const [size, setSize] = useState({ w: 0, h: 0 });
+
+    useEffect(() => {
+        const updateSize = () => {
+            if (containerRef.current) {
+                setSize({
+                    w: containerRef.current.clientWidth,
+                    h: containerRef.current.clientHeight
+                });
+            }
+        };
+        updateSize();
+        const timer = setTimeout(updateSize, 100);
+        window.addEventListener('resize', updateSize);
+        return () => {
+            window.removeEventListener('resize', updateSize);
+            clearTimeout(timer);
+        };
+    }, []);
+
+    const ratioX = size.w / (banner.refWidth || 1920);
+    const ratioY = size.h / (banner.refHeight || 1080);
+
+    const transformStyle = {
+        transform: `translate(${(banner.translateX || 0) * ratioX}px, ${(banner.translateY || 0) * ratioY}px) scale(${banner.zoom || 1})`,
+        objectFit: banner.fitMode || 'cover'
+    };
+
+    return (
+        <div 
+            ref={containerRef}
+            className="w-full md:w-[65%] aspect-[16/9] bg-brand-cream relative group cursor-crosshair overflow-hidden"
+        >
+            {banner.image ? (
+                <img 
+                    src={getProductImage(banner.image, media)} 
+                    className="w-full h-full block origin-center"
+                    style={transformStyle}
+                    alt=""
+                />
+            ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-brand-charcoal/20 space-y-4">
+                    <ImageIcon size={48} strokeWidth={1} />
+                    <p className="text-[10px] font-bold uppercase tracking-widest">No Visual Asset Assigned</p>
+                </div>
+            )}
+            
+            <div 
+                className="absolute top-0 right-0 bottom-0 w-[4%] pointer-events-none z-10"
+                style={{
+                    background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(124, 132, 108, 0.08) 30%, rgba(124, 132, 108, 0.18) 55%, rgba(124, 132, 108, 0.3) 75%, rgba(124, 132, 108, 0.5) 100%)'
+                }}
+            />
+
+            <div className="absolute inset-0 bg-brand-charcoal/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-6 backdrop-blur-[2px]">
+                <button 
+                   onClick={() => onOpenMediaPicker()}
+                   className="bg-white text-brand-charcoal p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all"
+                   title="Change Visual Asset"
+                >
+                    <ImageIcon size={20} />
+                </button>
+                <button 
+                   onClick={() => onAdjust(index)}
+                   className="bg-brand-charcoal text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all"
+                   title="Calibrate Identity Hub"
+                >
+                    <Crosshair size={20} />
+                </button>
+            </div>
+        </div>
+    );
+};
+
 const AdminBanners = () => {
     const { banners, media, products, updateBanners } = useShop();
     const [adjustingBannerIdx, setAdjustingBannerIdx] = useState(null);
@@ -110,53 +186,20 @@ const AdminBanners = () => {
                  {(Array.isArray(banners) ? banners : []).map((banner, index) => (
                     <div key={banner.id || index} className="bg-white rounded-sm shadow-xl border border-[#CD664D]/10 overflow-hidden mb-12 mx-4 md:mx-6">
                          <div className="flex flex-col md:flex-row">
-                            {/* Banner Preview - Life-Size Proportion Mirror */}
-                            <div className="w-full md:w-[65%] aspect-[16/9] bg-brand-cream relative group cursor-crosshair overflow-hidden">
-                                {banner.image ? (
-                                    <img 
-                                        src={getProductImage(banner.image, media)} 
-                                        className="w-full h-full object-cover transition-transform duration-500"
-                                        style={{ 
-                                            transform: `translate(${banner.translateX || 0}px, ${banner.translateY || 0}px) scale(${banner.zoom || 1})`,
-                                            objectFit: banner.fitMode || 'cover'
-                                        }}
-                                        alt=""
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex flex-col items-center justify-center text-brand-charcoal/20">
-                                        <ImageIcon size={48} className="mb-4" />
-                                        <span className="text-xs font-bold uppercase tracking-widest">No Asset Assigned</span>
-                                    </div>
-                                )}
-                                <div className="absolute top-0 right-0 bottom-0 w-[4%] pointer-events-none z-10"
-                                    style={{
-                                        background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(124, 132, 108, 0.08) 30%, rgba(124, 132, 108, 0.18) 55%, rgba(124, 132, 108, 0.3) 75%, rgba(124, 132, 108, 0.5) 100%)'
-                                    }}
-                                />
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-4">
-                                    <button 
-                                        onClick={() => {
-                                            openMediaPicker({
-                                                multi: false,
-                                                onSelect: (item) => {
-                                                    const nb = [...banners];
-                                                    nb[index] = { ...nb[index], image: typeof item === 'string' ? item : item.url };
-                                                    updateBanners(nb);
-                                                }
-                                            });
-                                        }}
-                                        className="px-6 py-3 bg-white text-brand-charcoal text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-brand-rose transition-all"
-                                    >
-                                        Change Asset
-                                    </button>
-                                    <button 
-                                        onClick={() => setAdjustingBannerIdx(index)}
-                                        className="px-6 py-3 bg-brand-charcoal text-white text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-white hover:text-brand-charcoal transition-all"
-                                    >
-                                        Calibrate Hub
-                                    </button>
-                                </div>
-                            </div>
+                            <BannerPreviewItem 
+                                banner={banner}
+                                media={media}
+                                index={index}
+                                onAdjust={setAdjustingBannerIdx}
+                                onOpenMediaPicker={() => openMediaPicker({
+                                    multi: false,
+                                    onSelect: (item) => {
+                                        const nb = [...banners];
+                                        nb[index] = { ...nb[index], image: typeof item === 'string' ? item : item.url };
+                                        updateBanners(nb);
+                                    }
+                                })}
+                            />
 
                             {/* Banner Form */}
                             <div className="w-full md:w-[35%] p-10 space-y-8 flex flex-col justify-between bg-[#7C846C] text-white">
