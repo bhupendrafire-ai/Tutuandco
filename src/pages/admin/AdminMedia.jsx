@@ -12,6 +12,10 @@ const AdminMedia = () => {
         if (!file) return;
 
         try {
+            // Support HEIC (iPhone) photos by converting them on the fly
+            const { convertHeicToJpeg } = await import('../../utils/imageUtils');
+            file = await convertHeicToJpeg(file);
+
             const newBlob = await upload(file.name, file, {
                 access: 'public',
                 handleUploadUrl: `${FINAL_API_URL}/api/upload`,
@@ -32,10 +36,10 @@ const AdminMedia = () => {
                     className="border-2 border-dashed border-[#CD664D]/20 rounded-sm p-12 text-center cursor-pointer hover:bg-brand-cream/10 transition-all" 
                     onClick={() => fileInputRef.current.click()}
                 >
-                    <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} accept="image/jpeg,image/png" />
+                    <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} accept="image/*" />
                     <Upload className="mx-auto mb-4 text-[#CD664D]" size={48} />
                     <h3 className="text-xl font-medium">Upload new identity asset</h3>
-                    <p className="text-sm text-brand-charcoal/40 mt-2 font-bold uppercase tracking-widest">Supports JPEG, PNG • Direct Cloud Sync</p>
+                    <p className="text-sm text-brand-charcoal/40 mt-2 font-bold uppercase tracking-widest">Supports JPEG, PNG, HEIC (iPhone) • Direct Cloud Sync</p>
                 </div>
             </div>
         </div>

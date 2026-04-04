@@ -87,6 +87,10 @@ const AdminProducts = () => {
         if (!file) return;
 
         try {
+            // Support HEIC (iPhone) photos by converting them on the fly
+            const { convertHeicToJpeg } = await import('../../utils/imageUtils');
+            file = await convertHeicToJpeg(file);
+
             const newBlob = await upload(file.name, file, {
                 access: 'public',
                 handleUploadUrl: `${FINAL_API_URL}/api/upload`,
