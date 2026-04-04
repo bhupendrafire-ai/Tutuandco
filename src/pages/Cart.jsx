@@ -37,7 +37,7 @@ const Cart = () => {
                         <AnimatePresence>
                             {(Array.isArray(cart) ? cart : []).map((item) => (
                                 <motion.div 
-                                    key={`${item.id}-${item.selectedSize}`}
+                                    key={item.id}
                                     layout
                                     exit={{ opacity: 0, x: -20 }}
                                     className="flex flex-col sm:flex-row items-center gap-8 py-8 border-b border-brand-charcoal/10"
@@ -54,11 +54,6 @@ const Cart = () => {
                                         <span className="text-[11px] font-medium text-brand-charcoal opacity-40 mb-3 block">{item.category}</span>
                                         <h3 className="text-xl font-medium text-brand-charcoal mb-2">{item.name}</h3>
                                         <div className="flex flex-col items-start gap-1">
-                                            {item.selectedSize && (
-                                                <p className="text-[10px] font-bold text-brand-charcoal/40 uppercase tracking-widest mb-2 px-2 py-1 bg-brand-cream rounded-sm border border-brand-charcoal/5">
-                                                    Size: {item.selectedSize}
-                                                </p>
-                                            )}
                                             <p className="text-brand-charcoal font-medium text-sm">
                                                 {formatPrice(item.discountPrice || item.price)}
                                             </p>
@@ -73,14 +68,14 @@ const Cart = () => {
                                     <div className="flex items-center space-x-6">
                                         <div className="flex items-center border border-brand-charcoal/20 rounded-sm bg-brand-cream/30">
                                             <button 
-                                                onClick={() => updateCartQuantity(item.id, item.quantity - 1, item.selectedSize)}
+                                                onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
                                                 className="p-3 hover:bg-brand-sage/50 text-brand-charcoal/60"
                                             >
                                                 <Minus size={14} />
                                             </button>
                                             <span className="w-10 text-center text-sm font-medium text-brand-charcoal">{item.quantity}</span>
                                             <button 
-                                                onClick={() => updateCartQuantity(item.id, item.quantity + 1, item.selectedSize)}
+                                                onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
                                                 className="p-3 hover:bg-brand-sage/50 text-brand-charcoal/60"
                                             >
                                                 <Plus size={14} />
@@ -88,7 +83,7 @@ const Cart = () => {
                                         </div>
 
                                         <button 
-                                            onClick={() => removeFromCart(item.id, item.selectedSize)}
+                                            onClick={() => removeFromCart(item.id)}
                                             className="text-brand-charcoal/30 hover:text-brand-rose transition-colors p-2"
                                         >
                                             <Trash2 size={18} />

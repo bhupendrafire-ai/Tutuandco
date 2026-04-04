@@ -23,7 +23,6 @@ const migrate = async () => {
                 description TEXT,
                 details JSONB,
                 description_blocks JSONB,
-                size_variants JSONB,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
@@ -85,9 +84,6 @@ const migrate = async () => {
             ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_number TEXT;
             ALTER TABLE orders ADD COLUMN IF NOT EXISTS carrier TEXT;
             ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipped_at TIMESTAMP;
-
-            -- Ensure size_variants column exists
-            ALTER TABLE products ADD COLUMN IF NOT EXISTS size_variants JSONB;
         `);
         console.log('✅ Tables created or already exist.');
 
@@ -99,8 +95,8 @@ const migrate = async () => {
             console.log('📦 Synchronizing products...');
             for (const p of data.products) {
                 await db.query(
-                    `INSERT INTO products (id, name, category, price, discount_price, rating, stock, image_name, images, description, details, description_blocks, size_variants)
-                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                    `INSERT INTO products (id, name, category, price, discount_price, rating, stock, image_name, images, description, details, description_blocks)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
                      ON CONFLICT (id) DO UPDATE SET 
                         name = EXCLUDED.name,
                         category = EXCLUDED.category,
@@ -112,9 +108,8 @@ const migrate = async () => {
                         images = EXCLUDED.images,
                         description = EXCLUDED.description,
                         details = EXCLUDED.details,
-                        description_blocks = EXCLUDED.description_blocks,
-                        size_variants = EXCLUDED.size_variants`,
-                    [p.id, p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks), JSON.stringify(p.sizeVariants || [])]
+                        description_blocks = EXCLUDED.description_blocks`,
+                    [p.id, p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks)]
                 );
             }
 

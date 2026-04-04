@@ -31,8 +31,7 @@ app.get('/api/products', async (req, res) => {
             discountPrice: p.discount_price ? parseFloat(p.discount_price) : null,
             rating: p.rating ? parseFloat(p.rating) : 5,
             imageName: p.image_name,
-            descriptionBlocks: p.description_blocks,
-            sizeVariants: p.size_variants || []
+            descriptionBlocks: p.description_blocks
         }));
         res.json(products);
     } catch (err) {
@@ -45,9 +44,9 @@ app.post('/api/products', async (req, res) => {
     const id = p.id || `prod_${Date.now()}`;
     try {
         const result = await db.query(
-            `INSERT INTO products (id, name, category, price, discount_price, rating, stock, image_name, images, description, details, description_blocks, size_variants)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`,
-            [id, p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks), JSON.stringify(p.sizeVariants || [])]
+            `INSERT INTO products (id, name, category, price, discount_price, rating, stock, image_name, images, description, details, description_blocks)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
+            [id, p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks)]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -59,9 +58,9 @@ app.put('/api/products/:id', async (req, res) => {
     const p = req.body;
     try {
         const result = await db.query(
-            `UPDATE products SET name=$1, category=$2, price=$3, discount_price=$4, rating=$5, stock=$6, image_name=$7, images=$8, description=$9, details=$10, description_blocks=$11, size_variants=$12
-             WHERE id=$13 RETURNING *`,
-            [p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks), JSON.stringify(p.sizeVariants || []), req.params.id]
+            `UPDATE products SET name=$1, category=$2, price=$3, discount_price=$4, rating=$5, stock=$6, image_name=$7, images=$8, description=$9, details=$10, description_blocks=$11
+             WHERE id=$12 RETURNING *`,
+            [p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks), req.params.id]
         );
         if (result.rowCount === 0) return res.status(404).json({ error: "Product not found" });
         res.json(result.rows[0]);

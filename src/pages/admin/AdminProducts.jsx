@@ -23,14 +23,12 @@ const AdminProducts = () => {
     const [productForm, setProductForm] = useState({ 
         name: '', price: 0, discountPrice: null, stock: 0, 
         category: '', description: '', imageName: '',
-        images: [], descriptionBlocks: [],
-        sizeVariants: [] 
+        images: [], descriptionBlocks: [] 
     });
 
     const [mediaPickerConfig, setMediaPickerConfig] = useState({ isOpen: false, multi: false, onSelect: () => {}, selectedItems: [] });
     const [showCategoryManager, setShowCategoryManager] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
-    const [newSizeLabel, setNewSizeLabel] = useState('');
     const [adjustingImageIdx, setAdjustingImageIdx] = useState(null);
     
     const fileInputRef = useRef(null);
@@ -149,11 +147,7 @@ const AdminProducts = () => {
                             setProductForm({ 
                                 name: '', price: 0, discountPrice: null, stock: 0, 
                                 category: '', description: '', imageName: '',
-                                images: [], descriptionBlocks: [],
-                                sizeVariants: [
-                                    { size: 'S', stock: 0 },
-                                    { size: 'M', stock: 0 }
-                                ]
+                                images: [], descriptionBlocks: [] 
                             });
                             setIsEditingProduct('new');
                         }}
@@ -198,22 +192,14 @@ const AdminProducts = () => {
                                         <span className="font-bold text-lg md:text-xl line-clamp-1">{item.name}</span>
                                     </td>
                                     <td className="p-6 text-sm">
-                                        <span className={`px-4 py-1.5 text-[12px] font-bold rounded-full ${Number(item.stock || item.sizeVariants?.reduce((acc, v) => acc + (Number(v.stock) || 0), 0)) < 10 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                                            {Number(item.stock || item.sizeVariants?.reduce((acc, v) => acc + (Number(v.stock) || 0), 0)) || 0} units
+                                        <span className={`px-4 py-1.5 text-[12px] font-bold rounded-full ${Number(item.stock) < 10 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                                            {Number(item.stock) || 0} units
                                         </span>
-                                        {item.sizeVariants?.length > 0 && (
-                                            <div className="text-[10px] opacity-40 mt-1 block font-medium">
-                                                {item.sizeVariants.map(v => `${v.size}:${v.stock}`).join(' | ')}
-                                            </div>
-                                        )}
                                     </td>
                                     <td className="p-6 font-medium text-lg">{settings?.currency?.symbol || '₹'}{Number(item.price || 0).toFixed(2)}</td>
                                     <td className="p-6 text-right space-x-3 text-[#CD664D]">
                                         <button onClick={() => {
-                                            setProductForm({
-                                                ...item,
-                                                sizeVariants: Array.isArray(item.sizeVariants) ? item.sizeVariants : []
-                                            });
+                                            setProductForm(item);
                                             setIsEditingProduct(item.id);
                                         }}><Edit3 size={18} /></button>
                                         <button 
@@ -402,103 +388,15 @@ const AdminProducts = () => {
 
                                     <div className="grid grid-cols-2 gap-8">
                                         <div className="space-y-4">
-                                            <label className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Inventory Status (Price & Base Stock)</label>
+                                            <label className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Inventory Status</label>
                                             <div className="flex items-center space-x-6">
+                                                <div className="flex-grow">
+                                                    <span className="text-xs opacity-40 block mb-1">Units In stock</span>
+                                                    <input type="number" value={productForm.stock} onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} className="w-full bg-brand-cream/20 p-4 rounded-sm text-2xl font-medium outline-none" />
+                                                </div>
                                                 <div className="flex-grow">
                                                     <span className="text-xs opacity-40 block mb-1">Price ({settings?.currency?.symbol || '₹'})</span>
                                                     <input type="number" value={productForm.price} onChange={e => setProductForm({...productForm, price: parseInt(e.target.value)})} className="w-full bg-brand-charcoal text-white p-4 rounded-sm text-2xl font-medium outline-none" />
-                                                </div>
-                                                <div className="flex-grow">
-                                                    <span className="text-xs opacity-40 block mb-1">Global Stock (Fallback)</span>
-                                                    <input type="number" value={productForm.stock} onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} className="w-full bg-brand-cream/20 p-4 rounded-sm text-2xl font-medium outline-none" />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Size & Multi-Inventory Hub */}
-                                        <div className="space-y-4">
-                                            <label className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Size & Inventory Hub</label>
-                                            <div className="bg-white p-6 rounded-sm space-y-6 shadow-sm border border-brand-charcoal/5">
-                                                <div className="flex flex-wrap gap-2">
-                                                    {['S', 'M'].map(sz => {
-                                                        const isActive = productForm.sizeVariants?.some(v => v.size === sz);
-                                                        return (
-                                                            <button 
-                                                                key={sz}
-                                                                onClick={() => {
-                                                                    if (isActive) {
-                                                                        // Remove if active
-                                                                        setProductForm({ ...productForm, sizeVariants: productForm.sizeVariants.filter(v => v.size !== sz) });
-                                                                    } else {
-                                                                        // Add if not active
-                                                                        setProductForm({ ...productForm, sizeVariants: [...(productForm.sizeVariants || []), { size: sz, stock: 0 }] });
-                                                                    }
-                                                                }}
-                                                                className={`px-4 py-2 border rounded-sm text-[10px] font-bold transition-all ${
-                                                                    isActive 
-                                                                        ? 'bg-brand-rose border-brand-rose text-brand-charcoal' 
-                                                                        : 'border-brand-charcoal/10 hover:bg-brand-rose/20'
-                                                                }`}
-                                                            >
-                                                                {sz} {isActive ? 'Selected' : '+ Add'}
-                                                            </button>
-                                                        );
-                                                    })}
-                                                    <div className="flex items-center gap-2">
-                                                        <input 
-                                                            type="text" 
-                                                            placeholder="Add Size..." 
-                                                            value={newSizeLabel}
-                                                            onChange={(e) => setNewSizeLabel(e.target.value)}
-                                                            className="bg-brand-cream/20 px-3 py-2 text-[10px] font-bold outline-none border-none rounded-sm w-24"
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === 'Enter' && newSizeLabel.trim()) {
-                                                                    if (!productForm.sizeVariants?.some(v => v.size === newSizeLabel.trim())) {
-                                                                        setProductForm({ ...productForm, sizeVariants: [...(productForm.sizeVariants || []), { size: newSizeLabel.trim(), stock: 0 }] });
-                                                                        setNewSizeLabel('');
-                                                                    }
-                                                                }
-                                                            }}
-                                                        />
-                                                        <button onClick={() => {
-                                                             if (newSizeLabel.trim()) {
-                                                                if (!productForm.sizeVariants?.some(v => v.size === newSizeLabel.trim())) {
-                                                                    setProductForm({ ...productForm, sizeVariants: [...(productForm.sizeVariants || []), { size: newSizeLabel.trim(), stock: 0 }] });
-                                                                    setNewSizeLabel('');
-                                                                }
-                                                            }
-                                                        }} className="text-brand-rose"><Plus size={16} /></button>
-                                                    </div>
-                                                </div>
-
-                                                <div className="space-y-3">
-                                                    {(productForm.sizeVariants || []).map((variant, idx) => (
-                                                        <div key={idx} className="flex items-center bg-brand-cream/10 p-3 rounded-sm border border-brand-charcoal/5 group">
-                                                            <span className="w-12 font-bold text-sm">{variant.size}</span>
-                                                            <div className="flex-grow flex items-center gap-3">
-                                                                <span className="text-[10px] opacity-40 font-bold uppercase">Stock</span>
-                                                                <input 
-                                                                    type="number" 
-                                                                    value={variant.stock} 
-                                                                    onChange={(e) => {
-                                                                        const nv = [...productForm.sizeVariants];
-                                                                        nv[idx] = { ...nv[idx], stock: parseInt(e.target.value) || 0 };
-                                                                        setProductForm({ ...productForm, sizeVariants: nv });
-                                                                    }}
-                                                                    className="bg-white border-none outline-none font-bold text-sm w-20 px-2 py-1 rounded-sm"
-                                                                />
-                                                            </div>
-                                                            <button 
-                                                                onClick={() => {
-                                                                    const nv = productForm.sizeVariants.filter((_, i) => i !== idx);
-                                                                    setProductForm({ ...productForm, sizeVariants: nv });
-                                                                }}
-                                                                className="text-red-400 opacity-0 group-hover:opacity-100 transition-all ml-2"
-                                                            >
-                                                                <X size={14} />
-                                                            </button>
-                                                        </div>
-                                                    ))}
                                                 </div>
                                             </div>
                                         </div>

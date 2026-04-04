@@ -242,8 +242,7 @@ export const ShopProvider = ({ children }) => {
                 ...prod,
                 price: Number(prod.price) || 0,
                 discountPrice: prod.discountPrice ? Number(prod.discountPrice) : null,
-                rating: Number(prod.rating) || 5,
-                sizeVariants: Array.isArray(prod.sizeVariants) ? prod.sizeVariants : []
+                rating: Number(prod.rating) || 5
             }));
             const b = bannerRes.ok ? await bannerRes.json() : [];
             const m = mediaRes.ok ? await mediaRes.json() : [];
@@ -322,13 +321,7 @@ export const ShopProvider = ({ children }) => {
             const res = await fetch(`${FINAL_API_URL}/api/products`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...product,
-                    sizeVariants: product.sizeVariants || [
-                        { size: 'S', stock: 0 },
-                        { size: 'M', stock: 0 }
-                    ]
-                })
+                body: JSON.stringify(product)
             });
             if (!res.ok) {
                 const errorData = await res.json();
@@ -424,26 +417,26 @@ export const ShopProvider = ({ children }) => {
         }
     };
 
-    const addToCart = (product, quantity = 1, selectedSize = null) => {
+    const addToCart = (product, quantity = 1) => {
         setCart(prev => {
-            const existing = prev.find(item => item.id === product.id && item.selectedSize === selectedSize);
+            const existing = prev.find(item => item.id === product.id);
             if (existing) {
                 return prev.map(item => 
-                    (item.id === product.id && item.selectedSize === selectedSize) ? { ...item, quantity: item.quantity + quantity } : item
+                    item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
                 );
             }
-            return [...prev, { ...product, quantity, selectedSize }];
+            return [...prev, { ...product, quantity }];
         });
     };
 
-    const removeFromCart = (productId, size = null) => {
-        setCart(prev => prev.filter(item => !(item.id === productId && item.selectedSize === size)));
+    const removeFromCart = (productId) => {
+        setCart(prev => prev.filter(item => item.id !== productId));
     };
 
-    const updateCartQuantity = (productId, quantity, size = null) => {
-        if (quantity < 1) return removeFromCart(productId, size);
+    const updateCartQuantity = (productId, quantity) => {
+        if (quantity < 1) return removeFromCart(productId);
         setCart(prev => prev.map(item => 
-            (item.id === productId && item.selectedSize === size) ? { ...item, quantity } : item
+            item.id === productId ? { ...item, quantity } : item
         ));
     };
 
