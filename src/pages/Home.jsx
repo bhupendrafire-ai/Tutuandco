@@ -351,7 +351,7 @@ const Home = () => {
                         {[
                             { name: "Sarah & Oliver", text: "The quality of the bandana is unmatched. Oliver looks so dapper and the fabric is incredibly soft.", rating: 5 },
                             { name: "Michael & Luna", text: "Finally, a brand that cares about sustainability as much as style. The packaging was beautiful too!", rating: 5 },
-                            { name: "Emma & Cooper", text: "The sizing guide was perfect. Cooper's new harness fits like a glove. Highly recommend!", rating: 5 }
+                            { name: "Emma & Cooper", text: "The craftsmanship is beautiful. Cooper's new harness fits perfectly and the aesthetic is simply unmatched.", rating: 5 }
                         ].map((t, i) => (
                             <motion.div 
                                 key={i}

@@ -19,7 +19,6 @@ const Footer = () => {
                     <ul className="space-y-4 text-sm text-[#6f6f6f] font-normal">
                         <li><Link to="/" className="hover:text-[#2f2f2f] transition-colors">All Collections</Link></li>
                         <li><Link to="/collab" className="hover:text-[#2f2f2f] transition-colors">Collaborations</Link></li>
-                        <li><Link to="/sizing" className="hover:text-[#2f2f2f] transition-colors">Sizing Guide</Link></li>
                     </ul>
                 </div>
                 <div>

@@ -238,7 +238,6 @@ const AdminBanners = () => {
                                                 <option value="/" />
                                                 <option value="/blogs" />
                                                 <option value="/collab" />
-                                                <option value="/sizing" />
                                                 <option value="/moments" />
                                                 {(Array.isArray(products) ? products : []).map(p => (
                                                     <option key={p.id} value={`/product/${p.id}`}>{p.name} (₹{p.price})</option>

@@ -320,7 +320,7 @@ const AdminSettings = () => {
                                                 const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
                                                 setNewPolicyData({ ...newPolicyData, title, slug });
                                             }}
-                                            placeholder="e.g. Sizing Help"
+                                            placeholder="e.g. Policy Help"
                                             className="w-full bg-white p-4 font-medium text-sm border-none outline-none focus:ring-1 focus:ring-brand-rose"
                                         />
                                     </div>
@@ -329,7 +329,7 @@ const AdminSettings = () => {
                                         <input 
                                             value={newPolicyData.navLabel}
                                             onChange={e => setNewPolicyData({ ...newPolicyData, navLabel: e.target.value })}
-                                            placeholder="e.g. Sizing Guide"
+                                            placeholder="e.g. Policy Guide"
                                             className="w-full bg-white p-4 font-medium text-sm border-none outline-none focus:ring-1 focus:ring-brand-rose"
                                         />
                                     </div>

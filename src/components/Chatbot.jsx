@@ -12,10 +12,8 @@ const Chatbot = () => {
     const [inputValue, setInputValue] = useState('');
 
     const suggestions = [
-        { label: "Sizing Help", link: "/sizing" },
         { label: "Shipping Info", link: "/policy/shipping" },
-        { label: "Return Policy", link: "/policy/returns" },
-        { label: "How to Measure", link: "/sizing" }
+        { label: "Return Policy", link: "/policy/returns" }
     ];
 
     const handleSend = (e) => {
@@ -30,10 +28,7 @@ const Chatbot = () => {
         setTimeout(() => {
             let botText = "I'm not sure about that, but our team can help! Email us at hello.tutuandco@gmail.com";
             const lower = inputValue.toLowerCase();
-            
-            if (lower.includes('sizing') || lower.includes('measure')) {
-                botText = "I can definitely help with sizing! check out our detailed How to Measure guide here.";
-            } else if (lower.includes('ship') || lower.includes('delivery')) {
+            if (lower.includes('ship') || lower.includes('delivery')) {
                 botText = "We ship worldwide! Orders over ₹999 get free shipping. Standard shipping is ₹89.";
             } else if (lower.includes('return')) {
                 botText = "We have a 30-day return policy. Items must be unused and have tags attached.";

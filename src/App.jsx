@@ -10,7 +10,6 @@ import Checkout from './pages/Checkout';
 import Blogs from './pages/Blogs';
 import BlogPost from './pages/BlogPost';
 import Collab from './pages/Collab';
-import Sizing from './pages/Sizing';
 import Policy from './pages/Policy';
 import Moments from './pages/Moments';
 import { ShopProvider } from './context/ShopContext';
@@ -26,7 +25,6 @@ function App() {
                     <Route path="/blogs" element={<Layout><Blogs /></Layout>} />
                     <Route path="/blogs/:id" element={<Layout><BlogPost /></Layout>} />
                     <Route path="/collab" element={<Layout><Collab /></Layout>} />
-                    <Route path="/sizing" element={<Layout><Sizing /></Layout>} />
                     <Route path="/policy/:section" element={<Layout><Policy /></Layout>} />
                     <Route path="/policies/:section" element={<Layout><Policy /></Layout>} />
                     <Route path="/terms" element={<Navigate to="/policies/terms" replace />} />
