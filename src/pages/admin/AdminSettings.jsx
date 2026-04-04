@@ -221,7 +221,7 @@ const AdminSettings = () => {
                         return (
                             <div key={meta.id} className="space-y-1">
                                 <PolicyEditor 
-                                    label={resolvePolicyLabel(policyData, meta)}
+                                    label={resolvePolicyLabel(meta.id, localSettings)}
                                     value={policyData.content || ''}
                                     onChange={(val) => handlePolicyChange(meta.id, 'content', val)}
                                     onRollback={() => rollbackPolicy(meta.id)}

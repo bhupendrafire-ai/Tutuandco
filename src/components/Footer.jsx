@@ -37,13 +37,11 @@ const Footer = () => {
 
                             return (
                                 <>
-                                    {/* Core Policies (Reflected accurately from Admin) */}
                                     {CORE_POLICY_METADATA.map(core => {
-                                        const policyData = settings.policies?.[core.id];
                                         return (
                                             <li key={core.slug}>
                                                 <Link to={`/policies/${core.slug}`} className="hover:text-[#2f2f2f] transition-colors">
-                                                    {resolvePolicyLabel(policyData, core)}
+                                                    {resolvePolicyLabel(core.id, settings)}
                                                 </Link>
                                             </li>
                                         );

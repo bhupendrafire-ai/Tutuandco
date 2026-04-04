@@ -1,8 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Brand Defaults for legal policies (Hardcoded Fallback Protection)
-export const DEFAULT_POLICIES = {
-    shipping: `<p>All orders are processed within 1–3 business days. Since each piece is carefully prepared, slight delays during high-demand periods may occur.</p>
+// Centralized Policy Defaults (Source of Truth for Fallbacks)
+export const POLICY_DEFAULTS = {
+    shipping: { 
+        id: 'shipping',
+        slug: 'shipping',
+        title: 'Shipping Policy', 
+        navLabel: 'Shipping Info',
+        content: `<p>All orders are processed within 1–3 business days. Since each piece is carefully prepared, slight delays during high-demand periods may occur.</p>
 <p>Once dispatched, orders typically arrive within:</p>
 <ul>
   <li><strong>2–5 business days</strong> for metro cities</li>
@@ -12,21 +17,31 @@ export const DEFAULT_POLICIES = {
 <p>Shipping charges (if applicable) will be calculated at checkout.</p>
 <p>Once your order is shipped, you’ll receive a tracking link via email or SMS to follow its journey.</p>
 <p>While we work with reliable delivery partners, delays can occasionally happen due to factors beyond our control. If your order is significantly delayed, feel free to reach out to us at <strong>hello.tutuandco@gmail.com</strong>.</p>
-<p>Please ensure your shipping details are accurate at checkout. We are not responsible for delays or failed deliveries due to incorrect information.</p>`,
-    
-    refund: `<p>As a small, made-with-care brand, we currently do not offer returns or refunds, unless the item received is damaged or incorrect.</p>
+<p>Please ensure your shipping details are accurate at checkout. We are not responsible for delays or failed deliveries due to incorrect information.</p>`
+    },
+    returns: { 
+        id: 'returns',
+        slug: 'returns',
+        title: 'Refund & Cancellation Policy', 
+        navLabel: 'Returns & Exchanges',
+        content: `<p>As a small, made-with-care brand, we currently do not offer returns or refunds, unless the item received is damaged or incorrect.</p>
 <p><strong>To be eligible for exchange:</strong></p>
 <ul>
   <li>The product must be unused, unwashed, and in original condition</li>
   <li>Free from pet hair, odour, or any signs of wear</li>
   <li>All tags and packaging must be intact</li>
-</ul>
+  </ul>
 <p>Please note: Exchange shipping costs are to be borne by the customer. Check our size guide carefully before purchase for the best fit.</p>
 <p>If you receive a damaged or wrong item, please contact us within 48 hours of delivery with photos, and we’ll make it right.</p>
 <p><strong>Exchange process:</strong> Once your request is approved, the product will need to be shipped back to us. The replacement will be processed after a quality check.</p>
-<p>Each piece is handmade, so slight variations are natural and not considered defects.</p>`,
-    
-    privacy: `<p><strong>1. Information We Collect</strong></p>
+<p>Each piece is handmade, so slight variations are natural and not considered defects.</p>`
+    },
+    privacy: { 
+        id: 'privacy',
+        slug: 'privacy',
+        title: 'Privacy Policy', 
+        navLabel: 'Privacy Policy',
+        content: `<p><strong>1. Information We Collect</strong></p>
 <p>We collect personal information that you voluntarily provide to us when you place an order, sign up for our newsletter, or contact us. This may include your name, email address, phone number, shipping and billing address, and payment details.</p>
 <p><strong>2. How We Use Your Information</strong></p>
 <ul>
@@ -41,9 +56,14 @@ export const DEFAULT_POLICIES = {
 <p><strong>4. Data Security</strong></p>
 <p>We take appropriate measures to protect your personal information. All payment transactions are processed through secure, encrypted gateways.</p>
 <p><strong>5. Cookies</strong></p>
-<p>Our website uses cookies to enhance your browsing experience. These help us understand how you interact with our site and improve functionality.</p>`,
-    
-    terms: `<p><strong>1. Introduction</strong></p>
+<p>Our website uses cookies to enhance your browsing experience. These help us understand how you interact with our site and improve functionality.</p>`
+    },
+    terms: { 
+        id: 'terms',
+        slug: 'terms',
+        title: 'Terms & Conditions', 
+        navLabel: 'Terms & Conditions',
+        content: `<p><strong>1. Introduction</strong></p>
 <p>Welcome to Tutu & Co. By accessing our website and purchasing our products, you agree to comply with and be bound by the following terms and conditions. Please read them carefully.</p>
 <p><strong>2. Use of the Website</strong></p>
 <p>This website is provided for your personal, non-commercial use. You may not use this site for any purpose that is unlawful or prohibited by these terms.</p>
@@ -55,38 +75,21 @@ export const DEFAULT_POLICIES = {
 <p>All content on this website, including designs, text, and images, is the property of Tutu & Co and is protected by copyright and intellectual property laws.</p>
 <p><strong>6. Limitation of Liability</strong></p>
 <p>Tutu & Co shall not be liable for any direct, indirect, or consequential damages resulting from the use of our products or website.</p>`
+    }
 };
 
-// Initial dynamic custom policies (e.g. Product Care)
-export const DEFAULT_CUSTOM_POLICIES = [];
+// Kept for backward compatibility but derived from new source
+export const DEFAULT_POLICIES = Object.keys(POLICY_DEFAULTS).reduce((acc, key) => {
+    acc[key] = POLICY_DEFAULTS[key].content;
+    return acc;
+}, { refund: POLICY_DEFAULTS.returns.content });
 
-// Standardized Core Policy Metadata (Single Source of Truth for Labels/Titles)
-export const CORE_POLICY_METADATA = [
-    { 
-        id: 'shipping', 
-        slug: 'shipping', 
-        defaultTitle: 'Shipping Policy', 
-        defaultNavLabel: 'Shipping Info' 
-    },
-    { 
-        id: 'returns', 
-        slug: 'returns', 
-        defaultTitle: 'Refund & Cancellation Policy', 
-        defaultNavLabel: 'Returns & Exchanges' 
-    },
-    { 
-        id: 'privacy', 
-        slug: 'privacy', 
-        defaultTitle: 'Privacy Policy', 
-        defaultNavLabel: 'Privacy Policy' 
-    },
-    { 
-        id: 'terms', 
-        slug: 'terms', 
-        defaultTitle: 'Terms & Conditions', 
-        defaultNavLabel: 'Terms & Conditions' 
-    }
-];
+export const CORE_POLICY_METADATA = Object.values(POLICY_DEFAULTS).map(p => ({
+    id: p.id,
+    slug: p.slug,
+    defaultTitle: p.title,
+    defaultNavLabel: p.navLabel
+}));
 
 /**
  * Resolves a policy's display label using a hardened fallback chain:
@@ -94,11 +97,17 @@ export const CORE_POLICY_METADATA = [
  * 2. Full official title (title)
  * 3. System-hardcoded fallback (metadata)
  */
-export const resolvePolicyLabel = (policyData, metadata) => {
+export const resolvePolicyLabel = (policyKey, settings) => {
+    const policyData = settings?.policies?.[policyKey];
+    const customPolicy = settings?.customPolicies?.find(p => p.slug === policyKey);
+    const meta = POLICY_DEFAULTS[policyKey];
+
     return (policyData?.navLabel?.trim()) || 
            (policyData?.title?.trim()) || 
-           (metadata?.defaultNavLabel) || 
-           (metadata?.defaultTitle) || 
+           (customPolicy?.navLabel?.trim()) || 
+           (customPolicy?.title?.trim()) || 
+           (meta?.navLabel) || 
+           (meta?.title) || 
            'Policy';
 };
 

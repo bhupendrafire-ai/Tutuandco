@@ -12,7 +12,6 @@ import BlogPost from './pages/BlogPost';
 import Collab from './pages/Collab';
 import Sizing from './pages/Sizing';
 import Policy from './pages/Policy';
-import Terms from './pages/Terms';
 import Moments from './pages/Moments';
 import { ShopProvider } from './context/ShopContext';
 
@@ -31,8 +30,7 @@ function App() {
                     <Route path="/sizing" element={<Layout><Sizing /></Layout>} />
                     <Route path="/policy/:section" element={<Layout><Policy /></Layout>} />
                     <Route path="/policies/:section" element={<Layout><Policy /></Layout>} />
-                    <Route path="/terms" element={<Layout><Terms /></Layout>} />
-                    <Route path="/policies/terms" element={<Layout><Terms /></Layout>} />
+                    <Route path="/terms" element={<Navigate to="/policies/terms" replace />} />
                     <Route path="/moments" element={<Layout><Moments /></Layout>} />
                     <Route path="/admin/login" element={<AdminLogin />} />
                     <Route 
