@@ -1,5 +1,62 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+// Brand Defaults for legal policies (Hardcoded Fallback Protection)
+export const DEFAULT_POLICIES = {
+    shipping: `<p>All orders are processed within 1–3 business days. Since each piece is carefully prepared, slight delays during high-demand periods may occur.</p>
+<p>Once dispatched, orders typically arrive within:</p>
+<ul>
+  <li><strong>2–5 business days</strong> for metro cities</li>
+  <li><strong>3–7 business days</strong> for other locations</li>
+</ul>
+<p>Delivery timelines may vary depending on your location and courier partner.</p>
+<p>Shipping charges (if applicable) will be calculated at checkout.</p>
+<p>Once your order is shipped, you’ll receive a tracking link via email or SMS to follow its journey.</p>
+<p>While we work with reliable delivery partners, delays can occasionally happen due to factors beyond our control. If your order is significantly delayed, feel free to reach out to us at <strong>support@tutuandco.com</strong>.</p>
+<p>Please ensure your shipping details are accurate at checkout. We are not responsible for delays or failed deliveries due to incorrect information.</p>`,
+    
+    refund: `<p>As a small, made-with-care brand, we currently do not offer returns or refunds, unless the item received is damaged or incorrect.</p>
+<p><strong>To be eligible for exchange:</strong></p>
+<ul>
+  <li>The product must be unused, unwashed, and in original condition</li>
+  <li>Free from pet hair, odour, or any signs of wear</li>
+  <li>All tags and packaging must be intact</li>
+</ul>
+<p>Please note: Exchange shipping costs are to be borne by the customer. Check our size guide carefully before purchase for the best fit.</p>
+<p>If you receive a damaged or wrong item, please contact us within 48 hours of delivery with photos, and we’ll make it right.</p>
+<p><strong>Exchange process:</strong> Once your request is approved, the product will need to be shipped back to us. The replacement will be processed after a quality check.</p>
+<p>Each piece is handmade, so slight variations are natural and not considered defects.</p>`,
+    
+    privacy: `<p><strong>1. Information We Collect</strong></p>
+<p>We collect personal information that you voluntarily provide to us when you place an order, sign up for our newsletter, or contact us. This may include your name, email address, phone number, shipping and billing address, and payment details.</p>
+<p><strong>2. How We Use Your Information</strong></p>
+<ul>
+  <li>Process and fulfill your orders</li>
+  <li>Communicate with you regarding your purchases or inquiries</li>
+  <li>Provide customer support</li>
+  <li>Send updates, offers, or newsletters (only if you opt in)</li>
+</ul>
+<p>We only use your information for purposes that improve your experience with our brand.</p>
+<p><strong>3. Information Sharing</strong></p>
+<p>We respect your privacy. Your personal information is never sold, traded, or rented to third parties. We may share necessary details with trusted partners (payment processors, delivery services) strictly to fulfill your orders.</p>
+<p><strong>4. Data Security</strong></p>
+<p>We take appropriate measures to protect your personal information. All payment transactions are processed through secure, encrypted gateways.</p>
+<p><strong>5. Cookies</strong></p>
+<p>Our website uses cookies to enhance your browsing experience. These help us understand how you interact with our site and improve functionality.</p>`,
+    
+    terms: `<p><strong>1. Introduction</strong></p>
+<p>Welcome to Tutu & Co. By accessing our website and purchasing our products, you agree to comply with and be bound by the following terms and conditions. Please read them carefully.</p>
+<p><strong>2. Use of the Website</strong></p>
+<p>This website is provided for your personal, non-commercial use. You may not use this site for any purpose that is unlawful or prohibited by these terms.</p>
+<p><strong>3. Product Information</strong></p>
+<p>We strive to provide accurate descriptions and images of our products. However, due to the handmade nature of our items and variations in screen displays, slight differences may occur. Prices and availability are subject to change without notice.</p>
+<p><strong>4. Orders & Payments</strong></p>
+<p>All orders are subject to acceptance and availability. We reserve the right to refuse or cancel any order. Payments are processed securely through our authorized payment gateways.</p>
+<p><strong>5. Intellectual Property</strong></p>
+<p>All content on this website, including designs, text, and images, is the property of Tutu & Co and is protected by copyright and intellectual property laws.</p>
+<p><strong>6. Limitation of Liability</strong></p>
+<p>Tutu & Co shall not be liable for any direct, indirect, or consequential damages resulting from the use of our products or website.</p>`
+};
+
 const ShopContext = createContext();
 
 export const useShop = () => {
@@ -92,7 +149,11 @@ export const ShopProvider = ({ children }) => {
         currency: { code: 'INR', symbol: '₹', rate: 1 },
         globalDiscount: 0,
         shopName: 'Tutu & Co',
-        categories: ['Accessories', 'Toys', 'Beds']
+        categories: ['Accessories', 'Toys', 'Beds'],
+        shippingPolicy: null,
+        refundPolicy: null,
+        privacyPolicy: null,
+        termsPolicy: null
     });
     const [loading, setLoading] = useState(true);
     const [coupon, setCoupon] = useState(null);

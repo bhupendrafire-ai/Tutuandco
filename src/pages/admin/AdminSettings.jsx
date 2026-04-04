@@ -2,21 +2,59 @@ import React, { useState, useEffect } from 'react';
 import { RefreshCcw } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2 } from 'lucide-react';
+import { X, Plus, Trash2, ShieldCheck, FileCheck } from 'lucide-react';
+import PolicyEditor from '../../components/admin/PolicyEditor';
+import { DEFAULT_POLICIES } from '../../context/ShopContext';
 
 const AdminSettings = () => {
     const { settings, updateSettings } = useShop();
     const [localSettings, setLocalSettings] = useState(settings);
     const [showCategoryManager, setShowCategoryManager] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
+    const [policyChanges, setPolicyChanges] = useState({});
+    const [saveStatus, setSaveStatus] = useState(null);
 
     useEffect(() => {
         setLocalSettings(settings);
     }, [settings]);
 
     const saveSettings = async () => {
-        await updateSettings(localSettings);
-        alert("Universal settings synchronized!");
+        setSaveStatus('saving');
+        const now = new Date().toISOString();
+        const settingsToSave = { ...localSettings };
+        
+        // Add timestamps and versioning for changed policies
+        Object.keys(policyChanges).forEach(key => {
+            if (policyChanges[key] !== settings[key]) {
+                settingsToSave[`${key}_updatedAt`] = now;
+                settingsToSave[`${key}_lastVersion`] = settings[key] || DEFAULT_POLICIES[key.replace('Policy', '')];
+            }
+        });
+
+        await updateSettings(settingsToSave);
+        setPolicyChanges({});
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus(null), 3000);
+    };
+
+    const handlePolicyChange = (key, val) => {
+        setPolicyChanges(prev => ({ ...prev, [key]: val }));
+        setLocalSettings(prev => ({ ...prev, [key]: val }));
+    };
+
+    const rollbackPolicy = (key) => {
+        const dbValue = settings[key] || settings[`${key}_lastVersion`];
+        handlePolicyChange(key, dbValue);
+    };
+
+    const resetPolicyToDefault = (key) => {
+        const type = key.replace('Policy', '');
+        const defaultValue = DEFAULT_POLICIES[type];
+        handlePolicyChange(key, defaultValue);
+    };
+
+    const isPolicyDirty = (key) => {
+        return policyChanges[key] !== undefined && policyChanges[key] !== settings[key];
     };
 
     return (
@@ -41,11 +79,85 @@ const AdminSettings = () => {
                         </button>
                         <button 
                             onClick={saveSettings} 
-                            className="px-10 py-5 bg-brand-rose text-brand-charcoal font-bold uppercase tracking-widest text-[11px] hover:bg-white transition-all shadow-lg"
+                            disabled={saveStatus === 'saving'}
+                            className={`px-10 py-5 font-bold uppercase tracking-widest text-[11px] transition-all shadow-lg flex items-center space-x-3 ${saveStatus === 'saved' ? 'bg-green-500 text-white' : 'bg-brand-rose text-brand-charcoal hover:bg-white'}`}
                         >
-                            Save Settings
+                            {saveStatus === 'saving' ? (
+                                <span>Synchronizing...</span>
+                            ) : saveStatus === 'saved' ? (
+                                <>
+                                    <FileCheck size={16} />
+                                    <span>Settings Saved</span>
+                                </>
+                            ) : (
+                                <span>Save Settings</span>
+                            )}
                         </button>
                     </div>
+                </div>
+            </div>
+
+            {/* Policies Management Section */}
+            <div className="bg-white p-10 rounded-sm shadow-sm border border-brand-charcoal/5 space-y-10">
+                <div className="flex justify-between items-center mb-4">
+                    <div>
+                        <h3 className="text-[11px] font-medium text-brand-charcoal/40 uppercase tracking-widest">Policies Management</h3>
+                        <p className="text-[10px] text-brand-charcoal/30 mt-1">Directly edit legal content with design protection</p>
+                    </div>
+                    {Object.keys(policyChanges).length > 0 && (
+                        <div className="flex items-center space-x-2 text-brand-rose animate-pulse">
+                            <ShieldCheck size={14} />
+                            <span className="text-[10px] font-bold uppercase tracking-widest">Unsaved legal changes</span>
+                        </div>
+                    )}
+                </div>
+
+                <div className="space-y-8">
+                    <PolicyEditor 
+                        label="Shipping Policy"
+                        value={localSettings.shippingPolicy || settings.shippingPolicy || DEFAULT_POLICIES.shipping}
+                        onChange={(val) => handlePolicyChange('shippingPolicy', val)}
+                        onRollback={() => rollbackPolicy('shippingPolicy')}
+                        onReset={() => resetPolicyToDefault('shippingPolicy')}
+                        hasUnsavedChanges={isPolicyDirty('shippingPolicy')}
+                    />
+
+                    <PolicyEditor 
+                        label="Refund & Cancellation Policy"
+                        value={localSettings.refundPolicy || settings.refundPolicy || DEFAULT_POLICIES.refund}
+                        onChange={(val) => handlePolicyChange('refundPolicy', val)}
+                        onRollback={() => rollbackPolicy('refundPolicy')}
+                        onReset={() => resetPolicyToDefault('refundPolicy')}
+                        hasUnsavedChanges={isPolicyDirty('refundPolicy')}
+                    />
+
+                    <PolicyEditor 
+                        label="Privacy Policy"
+                        value={localSettings.privacyPolicy || settings.privacyPolicy || DEFAULT_POLICIES.privacy}
+                        onChange={(val) => handlePolicyChange('privacyPolicy', val)}
+                        onRollback={() => rollbackPolicy('privacyPolicy')}
+                        onReset={() => resetPolicyToDefault('privacyPolicy')}
+                        hasUnsavedChanges={isPolicyDirty('privacyPolicy')}
+                    />
+
+                    <PolicyEditor 
+                        label="Terms & Conditions"
+                        value={localSettings.termsPolicy || settings.termsPolicy || DEFAULT_POLICIES.terms}
+                        onChange={(val) => handlePolicyChange('termsPolicy', val)}
+                        onRollback={() => rollbackPolicy('termsPolicy')}
+                        onReset={() => resetPolicyToDefault('termsPolicy')}
+                        hasUnsavedChanges={isPolicyDirty('termsPolicy')}
+                    />
+                </div>
+                
+                <div className="pt-6 border-t border-brand-charcoal/5 flex justify-end">
+                    <button 
+                        onClick={saveSettings} 
+                        disabled={saveStatus === 'saving' || Object.keys(policyChanges).length === 0}
+                        className={`px-12 py-5 font-bold uppercase tracking-widest text-[11px] transition-all shadow-xl rounded-sm ${saveStatus === 'saved' ? 'bg-green-500 text-white' : Object.keys(policyChanges).length > 0 ? 'bg-brand-charcoal text-white hover:bg-black' : 'bg-brand-charcoal/10 text-brand-charcoal/30 cursor-not-allowed'}`}
+                    >
+                        {saveStatus === 'saved' ? 'Changes Synchronized' : 'Commit Legal Changes'}
+                    </button>
                 </div>
             </div>
 

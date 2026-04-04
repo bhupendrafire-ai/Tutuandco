@@ -30,7 +30,9 @@ function App() {
                     <Route path="/collab" element={<Layout><Collab /></Layout>} />
                     <Route path="/sizing" element={<Layout><Sizing /></Layout>} />
                     <Route path="/policy/:section" element={<Layout><Policy /></Layout>} />
+                    <Route path="/policies/:section" element={<Layout><Policy /></Layout>} />
                     <Route path="/terms" element={<Layout><Terms /></Layout>} />
+                    <Route path="/policies/terms" element={<Layout><Terms /></Layout>} />
                     <Route path="/moments" element={<Layout><Moments /></Layout>} />
                     <Route path="/admin/login" element={<AdminLogin />} />
                     <Route 
