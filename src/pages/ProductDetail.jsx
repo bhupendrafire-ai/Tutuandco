@@ -55,15 +55,15 @@ const ProductDetail = () => {
     };
 
     return (
-        <div className="bg-brand-sage min-h-screen pt-24 pb-32">
+        <div className="bg-brand-sage min-h-screen pt-12 pb-32">
             <div className="max-w-7xl mx-auto px-6">
                 {/* Breadcrumbs */}
-                <Link to="/" className="inline-flex items-center text-brand-charcoal opacity-70 hover:opacity-100 transition-opacity mb-12 group">
+                <Link to="/" className="inline-flex items-center text-brand-charcoal opacity-70 hover:opacity-100 transition-opacity mb-6 group">
                     <ArrowLeft size={18} className="mr-2 group-hover:-translate-x-1 transition-transform" />
                     Back to Collection
                 </Link>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-16 lg:gap-24">
                     {/* Image Gallery */}
                     <div className="space-y-6">
                         <motion.div 
@@ -79,7 +79,7 @@ const ProductDetail = () => {
                             />
                         </motion.div>
                         
-                        <div className="grid grid-cols-5 gap-4">
+                        <div className="grid grid-cols-6 gap-3">
                             {((Array.isArray(product.images) && product.images.length > 0) ? [...product.images].sort((a,b) => a.sequence - b.sequence) : [{url: product.imageName}]).map((imgObj, index) => {
                                 const imgUrl = getProductImage(imgObj?.url, media);
                                 return (
@@ -102,9 +102,9 @@ const ProductDetail = () => {
                             <span className="text-[11px] font-medium text-brand-charcoal opacity-40">Signature collection</span>
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl font-medium text-brand-charcoal mb-10 leading-tight">{product.name}</h1>
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium text-brand-charcoal mb-4 leading-[1.1] tracking-tight">{product.name}</h1>
                         
-                        <div className="flex items-center mb-10">
+                        <div className="flex items-center mb-8">
                             <div className="flex mr-4">
                                 {[...Array(5)].map((_, i) => (
                                     <Star key={i} size={14} fill={i < (Number(product.rating) || 5) ? "#2f2f2f" : "none"} className="text-brand-charcoal" />
@@ -113,8 +113,8 @@ const ProductDetail = () => {
                             <span className="text-brand-charcoal/40 text-[10px] items-center font-medium">({(Array.isArray(reviews) ? reviews : []).length} reviews)</span>
                         </div>
 
-                        <div className="flex items-center space-x-6 mb-12">
-                            <p className="text-3xl font-medium text-brand-charcoal">
+                        <div className="flex items-center space-x-6 mb-10">
+                            <p className="text-4xl font-medium text-brand-charcoal">
                                 {formatPrice(product.discountPrice || product.price)}
                             </p>
                             {product.discountPrice && (
@@ -124,22 +124,22 @@ const ProductDetail = () => {
                             )}
                         </div>
                         
-                        <p className="text-brand-charcoal/90 leading-relaxed mb-8 text-lg font-normal">
+                        <p className="text-brand-charcoal/80 leading-relaxed mb-10 text-lg font-normal max-w-md">
                             {product.description}
                         </p>
 
-                        <div className="mb-6">
+                        <div className="mb-4">
                             <h3 className="text-[18px] font-medium text-brand-charcoal tracking-tight">Product details</h3>
                         </div>
 
-                        <div className="space-y-5 mb-12">
+                        <div className="space-y-4 mb-16">
                             {((Array.isArray(product?.details) && product.details.length > 0) ? product.details : DEFAULT_DETAILS).map((detail, i) => (
-                                <div key={i} className="flex items-start text-[18px] text-brand-charcoal/80 font-medium">
-                                    <Heart size={16} className="text-brand-rose mr-4 mt-1.5 flex-shrink-0" fill="currentColor" />
+                                <div key={i} className="flex items-start text-[16px] text-brand-charcoal/60 font-medium">
+                                    <Heart size={14} className="text-brand-rose mr-4 mt-1 flex-shrink-0" fill="currentColor" />
                                     <span>
                                         {String(detail).includes(':') ? (
                                             <>
-                                                <span className="font-medium">{String(detail).split(':')[0]}:</span>
+                                                <span className="font-bold text-brand-charcoal/80">{String(detail).split(':')[0]}:</span>
                                                 {String(detail).split(':')[1]}
                                             </>
                                         ) : detail}
@@ -148,21 +148,21 @@ const ProductDetail = () => {
                             ))}
                         </div>
 
-                         <div className="flex flex-col sm:flex-row gap-4 mb-16">
+                         <div className="flex flex-col sm:flex-row gap-4 mb-20 mt-4">
                             <button 
                                 onClick={handleAddToCart}
-                                className="flex-1 bg-brand-rose text-brand-charcoal py-7 flex items-center justify-center font-medium text-[18px] hover:bg-white transition-all shadow-lg"
+                                className="bg-brand-rose text-brand-charcoal px-16 py-8 flex items-center justify-center font-medium text-[18px] hover:bg-white transition-all shadow-lg min-w-[240px]"
                             >
                                 <ShoppingBag size={24} className="mr-3" />
                                 Add to cart
                             </button>
-                             <button className="px-8 py-5 border border-brand-charcoal/20 rounded-sm hover:bg-brand-cream/50 transition-colors">
-                                <Heart size={18} className="text-brand-charcoal/60" />
+                             <button className="px-10 py-8 border border-brand-charcoal/10 rounded-sm hover:bg-brand-cream/50 transition-colors">
+                                <Heart size={20} className="text-brand-charcoal/40" />
                             </button>
                         </div>
 
                         {/* Shipping Info */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 border-t border-brand-charcoal/10 pt-12">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 border-t border-brand-charcoal/5 pt-16">
                              <div className="flex flex-col items-center text-center">
                                  <Truck size={20} className="text-brand-charcoal/40 mb-3" />
                                  <span className="text-[11px] tracking-wider font-medium text-brand-charcoal">Fast shipping</span>
