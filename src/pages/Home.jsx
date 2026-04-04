@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useShop, getProductImage } from '../context/ShopContext';
 import logo from '../assets/logo.png';
 import logoWhite from '../assets/logo-white.png';
+import IconCat from '../components/IconCat';
 
 
 const Home = () => {
@@ -211,7 +212,9 @@ const Home = () => {
                                             to={activeBanner.link || "/"}
                                             className="bg-[#2f2f2f] text-[#EADED0] px-12 py-8 text-[18px] font-medium shadow-lg hover:bg-white hover:text-[#2f2f2f] transition-all uppercase tracking-widest active:scale-95 inline-block text-center mr-auto cursor-pointer"
                                         >
-                                            {activeBanner.cta || "Explore collection"}
+                                            <div className="flex items-center gap-2">
+                                                <span>{activeBanner.cta || "Explore collection"}</span>
+                                            </div>
                                         </Link>
                                     </motion.div>
                                 </div>
@@ -326,7 +329,10 @@ const Home = () => {
             <section className="py-32 bg-brand-cream/30 overflow-hidden transition-colors duration-700">
                 <div className="max-w-[1280px] mx-auto px-6">
                     <div className="max-w-[720px] mx-auto text-center mb-16">
-                        <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest mb-3 block">Testimonials</span>
+                        <div className="flex items-center justify-center gap-2 mb-3">
+                            <IconCat size={14} color="#868686" />
+                            <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest">TESTIMONIALS</span>
+                        </div>
                         <h2 className="text-4xl font-medium text-[#6f6f6f] mb-8 tracking-tight">Kind words</h2>
                         <div className="w-12 h-0.5 bg-[#d8b7b1] mx-auto mb-8" />
                         <p className="text-[#9a9a9a] text-xl font-light italic">
@@ -376,14 +382,23 @@ const Home = () => {
                         </p>
                         <Link 
                             to="/moments"
-                            className="inline-flex items-center space-x-8 bg-[#d8b7b1] text-[#2f2f2f] px-12 py-8 text-[18px] font-medium uppercase tracking-widest hover:bg-[#2f2f2f] hover:text-white transition-all shadow-2xl active:scale-95"
+                            className="inline-flex items-center space-x-8 bg-[#d8b7b1] text-[#2f2f2f] px-12 py-8 text-[18px] font-medium uppercase tracking-widest hover:bg-[#2f2f2f] hover:text-white transition-all shadow-2xl active:scale-95 group"
                         >
                             <span>Visit the gallery</span>
-                            <ArrowRight size={24} />
+                            <ArrowRight size={24} className="transition-transform duration-400 group-hover:translate-x-[2px]" />
                         </Link>
                     </div>
                 </div>
             </section>
+
+            {/* Brand Motif Divider (Instance 3/3) */}
+            <div className="max-w-[1280px] mx-auto px-6 py-12 flex items-center justify-center">
+                <div className="flex items-center justify-center w-full max-w-[200px] gap-4">
+                    <div className="h-px bg-[#eaeaea] flex-grow" />
+                    <IconCat size={14} color="#6f6f6f" />
+                    <div className="h-px bg-[#eaeaea] flex-grow" />
+                </div>
+            </div>
 
             {/* Philosophy Flagship (Background Hierarchy: 5xl, #6f6f6f) */}
             <section className="py-32 bg-brand-cream relative overflow-hidden transition-colors duration-700">
