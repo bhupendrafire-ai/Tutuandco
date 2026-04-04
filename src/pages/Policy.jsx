@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, Navigate, useLocation } from 'react-router-dom';
 import { Clock } from 'lucide-react';
-import { useShop, POLICY_DEFAULTS } from '../context/ShopContext';
+import { useShop, POLICY_DEFAULTS, processDualUnits } from '../context/ShopContext';
 import PolicyLayout from '../components/PolicyLayout';
 
 /**
@@ -39,13 +39,17 @@ const Policy = () => {
     let updatedAt = null;
 
     // 1. Check Core Policies (including Migrated Admin Data)
-    const coreDefault = POLICY_DEFAULTS?.[policyKey];
-    const coreAdmin = settings?.policies?.[policyKey];
+    // Find by ID or Slug for maximum compatibility
+    const metaCandidate = Object.values(POLICY_DEFAULTS).find(p => p.id === policyKey || p.slug === policyKey);
+    const resolvedKey = metaCandidate?.id || policyKey;
+    
+    const coreDefault = POLICY_DEFAULTS?.[resolvedKey];
+    const coreAdmin = settings?.policies?.[resolvedKey];
 
     if (coreDefault) {
         displayTitle = coreAdmin?.title || coreDefault.title;
         displayContent = coreAdmin?.content || coreDefault.content;
-        updatedAt = coreAdmin?.updatedAt || settings?.[`${policyKey}Policy_updatedAt`];
+        updatedAt = coreAdmin?.updatedAt || settings?.[`${resolvedKey}Policy_updatedAt`];
     } 
     // 2. Check Custom Policies
     else {
@@ -91,7 +95,9 @@ const Policy = () => {
                 ) : (
                     <div 
                         className="policy-content prose-headings:font-medium prose-p:mb-6 prose-li:mb-2 prose-strong:text-brand-charcoal" 
-                        dangerouslySetInnerHTML={{ __html: displayContent }} 
+                        dangerouslySetInnerHTML={{ 
+                            __html: resolvedKey === 'sizing_guide' ? processDualUnits(displayContent) : displayContent 
+                        }} 
                     />
                 )}
 
@@ -117,6 +123,44 @@ const Policy = () => {
                     </p>
                 </div>
             </div>
+            <style sx>{`
+                .policy-content table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 2.5rem 0;
+                    background: white;
+                    border: 1px solid rgba(0,0,0,0.05);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+                }
+                .policy-content th, .policy-content td {
+                    padding: 1.25rem 1.5rem;
+                    border: 1px solid rgba(0,0,0,0.05);
+                    text-align: left;
+                }
+                .policy-content th {
+                    background: rgba(124, 132, 108, 0.05);
+                    text-transform: uppercase;
+                    font-size: 11px;
+                    font-weight: 700;
+                    letter-spacing: 0.15em;
+                    color: rgba(12, 12, 13, 0.6);
+                }
+                .policy-content td {
+                    font-size: 14px;
+                    color: rgba(12, 12, 13, 0.8);
+                }
+                .policy-content tr:hover {
+                    background: rgba(124, 132, 108, 0.02);
+                }
+                @media (max-width: 768px) {
+                    .policy-content table {
+                        display: block;
+                        overflow-x: auto;
+                        white-space: nowrap;
+                        -webkit-overflow-scrolling: touch;
+                    }
+                }
+            `}</style>
         </PolicyLayout>
     );
 };

@@ -25,17 +25,21 @@ const PolicySidebar = ({ activeKey }) => {
             <h1 className="text-3xl font-medium text-brand-charcoal mb-10 tracking-tight">Customer care</h1>
             <div className="flex flex-col space-y-1">
                 {/* 1. Core Policies */}
-                {coreKeys.map((key) => (
-                    <Link 
-                        key={key}
-                        to={`/policies/${key}`} 
-                        className={`flex items-center px-6 py-4 rounded-sm transition-all duration-300 ${activeKey === key ? 'bg-brand-rose text-brand-charcoal shadow-sm border-l-2 border-brand-charcoal/20' : 'hover:bg-brand-cream text-brand-charcoal/70 hover:text-brand-charcoal'}`}
-                    >
-                        <span className="text-[13px] font-medium tracking-tight">
-                            {resolvePolicyLabel(key, settings)}
-                        </span>
-                    </Link>
-                ))}
+                {coreKeys.map((key) => {
+                    const meta = POLICY_DEFAULTS[key];
+                    const isActive = activeKey === key || activeKey === meta.slug;
+                    return (
+                        <Link 
+                            key={key}
+                            to={`/policies/${meta.slug || key}`} 
+                            className={`flex items-center px-6 py-4 rounded-sm transition-all duration-300 ${isActive ? 'bg-brand-rose text-brand-charcoal shadow-sm border-l-2 border-brand-charcoal/20' : 'hover:bg-brand-cream text-brand-charcoal/70 hover:text-brand-charcoal'}`}
+                        >
+                            <span className="text-[13px] font-medium tracking-tight">
+                                {resolvePolicyLabel(key, settings)}
+                            </span>
+                        </Link>
+                    );
+                })}
                 
                 {/* Divider if custom policies exist */}
                 {customPolicies.length > 0 && (
