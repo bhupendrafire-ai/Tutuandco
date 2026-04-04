@@ -236,89 +236,104 @@ const Home = () => {
             </section>
         </div>
 
-        <section className="max-w-7xl mx-auto px-6 mt-20">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-8">
-                    <div>
-                        <h2 className="text-4xl md:text-5xl font-medium text-brand-charcoal mb-4">Featured Collections</h2>
-                        <p className="text-brand-charcoal/40 text-lg">Hand-picked essentials for the modern pet.</p>
+            {/* Featured Collections Section (Primary Hierarchy: 5xl, #2f2f2f) */}
+            <section className="py-24 bg-brand-sage transition-colors duration-700">
+                <div className="max-w-[1280px] mx-auto px-6">
+                    <div className="max-w-[720px] mx-auto text-center mb-16 md:mb-20">
+                        <span className="text-[11px] font-bold text-[#8C916C] uppercase tracking-[0.3em] mb-4 block">Hand-picked essentials</span>
+                        <h2 className="text-5xl font-medium text-[#2f2f2f] mb-6 tracking-tight">Featured Collections</h2>
+                        <p className="text-[#6f6f6f] text-lg italic leading-relaxed">
+                            Curated selections for the modern companion, blending organic comfort with timeless style.
+                        </p>
                     </div>
-                    <Link to="/" className="text-sm font-medium border-b border-brand-charcoal pb-1 hover:opacity-60 transition-opacity">
-                        View all items
-                    </Link>
-                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
-                    {(Array.isArray(products) ? products : []).map((product) => (
-                        <Link 
-                            to={`/product/${product.id}`}
-                            key={product.id}
-                            className="group"
-                        >
-                            <div className="aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm relative mb-6 shadow-sm hover:shadow-xl transition-shadow duration-500">
-                                <motion.img
-                                    src={getProductImage(Array.isArray(product.images) ? product.images.sort((a,b) => a.sequence - b.sequence)[0]?.url : product.imageName, media)}
-                                    alt={product.name}
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                                />
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
-                            </div>
-                            <div>
-                                <span className="text-[10px] tracking-wider text-[#8C916C] font-medium mb-3 block">{product.category}</span>
-                                <div className="flex flex-col items-start gap-1">
-                                    <h3 className="text-xl font-medium text-brand-charcoal leading-tight">{product.name}</h3>
-                                    <div className="flex items-center space-x-3">
-                                        <span className="text-sm text-brand-charcoal font-medium">
-                                            {formatPrice(product.discountPrice || product.price)}
-                                        </span>
-                                        {product.discountPrice && (
-                                            <span className="text-[10px] opacity-30 line-through">
-                                                {formatPrice(product.price)}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
+                        {(Array.isArray(products) ? products : []).map((product) => (
+                            <Link 
+                                to={`/product/${product.id}`}
+                                key={product.id}
+                                className="group"
+                            >
+                                <div className="aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm relative mb-6 shadow-sm hover:shadow-xl transition-all duration-700 ease-out">
+                                    <motion.img
+                                        src={getProductImage(Array.isArray(product.images) ? product.images.sort((a,b) => a.sequence - b.sequence)[0]?.url : product.imageName, media)}
+                                        alt={product.name}
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                                    />
+                                    <div className="absolute inset-0 bg-transparent group-hover:bg-[#2f2f2f]/5 transition-colors duration-700" />
+                                </div>
+                                <div className="text-center md:text-left px-2">
+                                    <span className="text-[9px] tracking-[0.2em] text-[#8C916C] font-bold uppercase mb-2 block">{product.category}</span>
+                                    <div className="flex flex-col gap-1 items-center md:items-start">
+                                        <h3 className="text-lg font-medium text-[#2f2f2f] leading-tight group-hover:text-brand-rose transition-colors">{product.name}</h3>
+                                        <div className="flex items-center space-x-3">
+                                            <span className="text-[15px] text-[#2f2f2f] font-medium">
+                                                {formatPrice(product.discountPrice || product.price)}
                                             </span>
-                                        )}
+                                            {product.discountPrice && (
+                                                <span className="text-[11px] text-[#9a9a9a] line-through">
+                                                    {formatPrice(product.price)}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-center md:justify-start mt-4">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star key={i} size={10} fill={i < (Number(product.rating) || 5) ? "#95714F" : "none"} className="text-[#95714F] mr-0.5" />
+                                        ))}
+                                        <span className="text-[9px] text-[#95714F] ml-2 font-bold uppercase tracking-widest">Verified quality</span>
                                     </div>
                                 </div>
-                                <div className="flex items-center mt-4">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star key={i} size={11} fill={i < (Number(product.rating) || 5) ? "#95714F" : "none"} className="text-[#95714F] mr-1" />
-                                    ))}
-                                    <span className="text-[10px] text-[#95714F]/60 ml-2 font-medium tracking-wider">Top rated</span>
-                                </div>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-            </section>
-
-            <section className="max-w-7xl mx-auto px-6 mt-20">
-                <div className="flex flex-col items-center mb-10">
-                    <h2 className="text-4xl md:text-5xl font-medium text-brand-charcoal text-center tracking-tight">Our community</h2>
-                </div>
-                
-                <div className="grid grid-cols-2 md:grid-cols-5 auto-rows-[250px] gap-6">
-                    <AnimatePresence mode="popLayout">
-                        {(Array.isArray(galleryImages) ? galleryImages : []).map((img, index) => (
-                            <motion.div 
-                                layout
-                                key={img}
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.8 }}
-                                transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                                className={`relative bg-brand-cream overflow-hidden rounded-sm cursor-pointer group shadow-md ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''} ${index === 4 ? 'md:row-span-2' : ''} ${index === 5 ? 'md:col-span-2' : ''} ${index === 9 ? 'md:col-span-2' : ''}`}
-                            >
-                                <img src={img} alt={`Lifestyle ${index}`} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
-                            </motion.div>
+                            </Link>
                         ))}
-                    </AnimatePresence>
+                    </div>
                 </div>
             </section>
 
-            <section className="py-20 bg-brand-cream/30 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-10">
-                        <h2 className="text-4xl md:text-6xl font-medium text-brand-charcoal mb-6">Kind words</h2>
-                        <div className="w-12 h-1 bg-brand-rose mx-auto opacity-30" />
+            {/* Our Community Section (Tertiary Hierarchy: 4xl, #6f6f6f) */}
+            <section className="py-24 bg-white transition-colors duration-700">
+                <div className="max-w-[1280px] mx-auto px-6">
+                    <div className="max-w-[720px] mx-auto text-center mb-16 md:mb-20">
+                        <span className="text-[11px] font-bold text-[#8C916C] uppercase tracking-[0.3em] mb-4 block">Capturing Joy</span>
+                        <h2 className="text-4xl font-medium text-[#6f6f6f] mb-6 tracking-tight">Our community</h2>
+                        <p className="text-[#9a9a9a] text-lg italic leading-relaxed">
+                            Shared moments of comfort and style from our beloved companions worldwide.
+                        </p>
                     </div>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-5 auto-rows-[280px] gap-6">
+                        <AnimatePresence mode="popLayout">
+                            {(Array.isArray(galleryImages) ? galleryImages : []).map((img, index) => (
+                                <motion.div 
+                                    layout
+                                    key={img}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ type: "spring", stiffness: 100, damping: 20, delay: index * 0.05 }}
+                                    className={`relative bg-brand-cream overflow-hidden rounded-sm cursor-pointer group shadow-sm ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''} ${index === 4 ? 'md:row-span-2' : ''} ${index === 5 ? 'md:col-span-2' : ''} ${index === 9 ? 'md:col-span-2' : ''}`}
+                                >
+                                    <img src={img} alt={`Lifestyle ${index}`} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                                    <div className="absolute inset-0 bg-transparent group-hover:bg-[#2f2f2f]/5 transition-colors duration-700" />
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                    </div>
+                </div>
+            </section>
+
+            {/* Kind Words Tier (Tertiary Hierarchy: 4xl, #6f6f6f) */}
+            <section className="py-32 bg-brand-cream/30 overflow-hidden transition-colors duration-700">
+                <div className="max-w-[1280px] mx-auto px-6">
+                    <div className="max-w-[720px] mx-auto text-center mb-16 md:mb-24">
+                        <span className="text-[11px] font-bold text-[#8C916C] uppercase tracking-[0.3em] mb-4 block">Testimonials</span>
+                        <h2 className="text-4xl font-medium text-[#6f6f6f] mb-8 tracking-tight">Kind words</h2>
+                        <div className="w-12 h-1 bg-[#d8b7b1] mx-auto mb-8" />
+                        <p className="text-[#9a9a9a] text-xl font-light italic">
+                            Heartfelt stories from our community of pet parents.
+                        </p>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                         {[
                             { name: "Sarah & Oliver", text: "The quality of the bandana is unmatched. Oliver looks so dapper and the fabric is incredibly soft.", rating: 5 },
@@ -330,15 +345,16 @@ const Home = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                className="bg-white p-12 rounded-sm shadow-sm border border-[#C7AF94]/10"
+                                transition={{ delay: i * 0.1 }}
+                                className="bg-white p-12 rounded-sm shadow-sm border border-[#C7AF94]/10 hover:shadow-xl transition-shadow duration-700"
                             >
                                 <div className="flex mb-8 text-[#95714F]">
-                                    {[...Array(t.rating)].map((_, j) => <Star key={j} size={16} fill="currentColor" />)}
+                                    {[...Array(t.rating)].map((_, j) => <Star key={j} size={14} fill="currentColor" />)}
                                 </div>
-                                <p className="text-brand-charcoal italic text-lg leading-relaxed mb-10">"{t.text}"</p>
+                                <p className="text-[#2f2f2f] italic text-lg leading-relaxed mb-10">"{t.text}"</p>
                                 <div className="flex items-center space-x-4">
-                                    <div className="w-8 h-px bg-brand-charcoal/20" />
-                                    <p className="text-[10px] font-medium tracking-[0.3em] text-brand-charcoal/60">{t.name}</p>
+                                    <div className="w-8 h-px bg-[#e6dfd4]" />
+                                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#9a9a9a]">{t.name}</p>
                                 </div>
                             </motion.div>
                         ))}
@@ -346,37 +362,47 @@ const Home = () => {
                 </div>
             </section>
 
-            <section className="py-20 bg-white">
-                <div className="max-w-7xl mx-auto px-6 text-center flex flex-col items-center">
-                    <span className="tracking-[0.3em] text-[10px] font-medium text-[#8C916C] mb-6 block">Stay connected</span>
-                    <div className="flex flex-col items-center mb-10">
-                        <img src={logo} alt="Tutu & Co" className="h-16 w-auto mb-2" />
+            {/* Stay Connected (Tertiary Hierarchy: 4xl, #6f6f6f) */}
+            <section className="py-32 bg-white transition-colors duration-700">
+                <div className="max-w-[1280px] mx-auto px-6 text-center flex flex-col items-center">
+                    <div className="max-w-[720px] mx-auto flex flex-col items-center">
+                        <span className="tracking-[0.4em] text-[10px] font-bold text-[#8C916C] uppercase mb-8 block">Stay connected</span>
+                        <div className="flex flex-col items-center mb-10 grayscale brightness-90 hover:grayscale-0 hover:brightness-100 transition-all duration-700">
+                            <img src={logo} alt="Tutu & Co" className="h-20 w-auto mb-2" />
+                        </div>
+                        <h2 className="text-3xl md:text-4xl font-medium text-[#6f6f6f] mb-6">Join the Movement</h2>
+                        <p className="text-[#9a9a9a] mb-12 text-2xl font-light italic leading-relaxed">
+                            Capture the joy. Share your moments with us and be part of our growing story.
+                        </p>
+                        <Link 
+                            to="/moments"
+                            className="inline-flex items-center space-x-8 bg-[#d8b7b1] text-[#2f2f2f] px-20 py-10 text-[18px] font-bold uppercase tracking-[0.2em] hover:bg-[#2f2f2f] hover:text-white transition-all shadow-2xl active:scale-95"
+                        >
+                            <span>Visit the gallery</span>
+                            <ArrowRight size={24} />
+                        </Link>
                     </div>
-                    <p className="text-[#95714F] mb-10 text-xl font-light">Capture the joy. Share your moments with us.</p>
-                    <Link 
-                        to="/moments"
-                        className="inline-flex items-center space-x-6 bg-brand-rose text-brand-charcoal px-16 py-10 text-[18px] font-medium hover:bg-white transition-all shadow-lg"
-                    >
-                        <span>Visit the gallery</span>
-                        <ArrowRight size={24} />
-                    </Link>
                 </div>
             </section>
 
-            <section className="bg-brand-cream mt-20 py-20 px-6 text-center relative overflow-hidden">
-                <div className="max-w-4xl mx-auto relative z-10">
-                    <span className="text-[11px] font-medium text-brand-charcoal opacity-60">Our philosophy</span>
-                    <h2 className="text-5xl md:text-7xl font-medium text-brand-charcoal mt-8 mb-10 leading-tight">Naturally Sourced.<br/>Designed for Movement.</h2>
-                    <p className="text-brand-charcoal/80 leading-relaxed text-2xl italic opacity-80 max-w-2xl mx-auto">
-                        "At Tutu & Co, we believe our pet companions deserve the same quality of organic materials and thoughtful design as we do."
-                    </p>
-                    <div className="mt-16 flex flex-col items-center">
-                        <div className="w-px h-24 bg-brand-charcoal/20 mb-8" />
-                        <Link to="/" className="text-[10px] tracking-[0.3em] font-medium text-brand-charcoal hover:opacity-70 transition-opacity">Discover our story</Link>
+            {/* Philosophy Flagship (Background Hierarchy: 5xl, #9a9a9a) */}
+            <section className="py-32 bg-brand-cream relative overflow-hidden transition-colors duration-700">
+                <div className="max-w-[1280px] mx-auto px-6 text-center relative z-10">
+                    <div className="max-w-[720px] mx-auto">
+                        <span className="text-[11px] font-bold text-[#8C916C] uppercase tracking-[0.4em] mb-10 block">Our philosophy</span>
+                        <h2 className="text-5xl font-medium text-[#9a9a9a] mb-12 tracking-tight leading-none">Naturally Sourcing.<br/>Inspired by Life.</h2>
+                        <p className="text-[#9a9a9a] leading-relaxed text-2xl italic font-light max-w-2xl mx-auto mb-20">
+                            "At Tutu & Co, we believe our pet companions deserve the same quality of organic materials and thoughtful design as we do."
+                        </p>
+                        <div className="flex flex-col items-center">
+                            <div className="w-px h-24 bg-[#2f2f2f]/10 mb-10" />
+                            <Link to="/about" className="text-[11px] tracking-[0.4em] font-bold text-[#9a9a9a] uppercase hover:text-[#2f2f2f] transition-colors duration-500">Discover our story</Link>
+                        </div>
                     </div>
                 </div>
-                <div className="absolute top-0 left-0 w-64 h-64 bg-brand-cream/50 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-30" />
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-brand-sage/50 rounded-full translate-x-1/3 translate-y-1/3 opacity-10" />
+                {/* Decorative Elements */}
+                <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#c5d1c0]/20 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
+                <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-[#d8b7b1]/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl" />
             </section>
         </div>
     );
