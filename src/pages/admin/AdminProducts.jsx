@@ -186,7 +186,8 @@ const AdminProducts = () => {
             return false;
         }
 
-        const newVariants = [...productForm.variants, { size: normalized, stock: 0, price: parseFloat(productForm.price) || 0 }];
+        const variantId = `v_${Math.random().toString(36).substring(2, 7)}`;
+        const newVariants = [...productForm.variants, { id: variantId, size: normalized, stock: 0, price: parseFloat(productForm.price) || 0 }];
         setProductForm({
             ...productForm,
             variants: newVariants

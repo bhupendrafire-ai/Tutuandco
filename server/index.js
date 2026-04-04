@@ -174,86 +174,80 @@ app.post('/api/orders', async (req, res) => {
     try {
         await client.query('BEGIN');
 
-        // 1. Deterministic Batch Locking to avoid deadlocks
-        const uniqueProductIds = [...new Set(o.items.map(item => item.id))].sort();
+        // 1. DETERMINISTIC LOCKING: Unique, sorted product IDs
+        const productIds = [...new Set(o.items.map(i => i.id))].sort();
         
-        // Fetch and lock all relevant products in deterministic order (ASC)
+        // Execute batch lock in deterministic order (ASC) to prevent deadlocks
         const productsRes = await client.query(
-            `SELECT id, variants, name FROM products WHERE id = ANY($1) ORDER BY id ASC FOR UPDATE`,
-            [uniqueProductIds]
+            `SELECT * FROM products WHERE id = ANY($1) ORDER BY id ASC FOR UPDATE`,
+            [productIds]
         );
         
-        const productMap = {};
-        productsRes.rows.forEach(p => { productMap[p.id] = p; });
+        const productsFromDb = {};
+        productsRes.rows.forEach(p => { productsFromDb[p.id] = p; });
 
-        // 2. Validate and Update Variants locally
-        const updatedProducts = {};
-
-        for (const item of o.items) {
-            const product = productMap[item.id];
-            if (!product) throw new Error(`Product ${item.id} not found`);
-
-            // Use modified variants if already processed in this order
-            let variants = updatedProducts[item.id]?.variants || product.variants || [];
-            
-            // Case-insensitive size match
-            const variantIdx = variants.findIndex(v => v.size.toLowerCase() === (item.size || '').toLowerCase());
-
-            if (variantIdx === -1) {
-                throw new Error(`Size "${item.size}" not found for product "${product.name}"`);
-            }
-            
-            if (variants[variantIdx].stock < item.quantity) {
-                throw new Error(`Insufficient stock for ${product.name} (Size: ${item.size}). Available: ${variants[variantIdx].stock}, Requested: ${item.quantity}`);
-            }
-
-            // Deduct stock safely
-            variants[variantIdx].stock -= item.quantity;
-            updatedProducts[item.id] = { id: item.id, variants };
-        }
-
-        // 3. Batch Update modified products
-        for (const pid in updatedProducts) {
-            await client.query(
-                'UPDATE products SET variants = $1 WHERE id = $2',
-                [JSON.stringify(updatedProducts[pid].variants), pid]
-            );
-        }
-
-        // 4. Server-Side Price Verification (CRITICAL)
+        // 2. SERVER-ONLY PRICING & LOGIC (Post-Lock)
         const settingsRes = await client.query('SELECT data FROM settings WHERE id=$1', ['global']);
         const globalSettings = settingsRes.rows[0]?.data || {};
         const globalDiscountPercent = globalSettings.globalDiscount || 0;
 
         let serverSubtotal = 0;
-        const verifiedItems = o.items.map(item => {
-            const product = productMap[item.id];
+        const verifiedItems = [];
+
+        // Validate stock and verify prices AFTER the lock
+        for (const item of o.items) {
+            const product = productsFromDb[item.id];
+            if (!product) throw new Error(`Product ${item.id} no longer available`);
+
             const variants = product.variants || [];
+            // Match using variant size (or ID if we wanted to be even stricter)
             const variant = variants.find(v => v.size.toLowerCase() === (item.size || '').toLowerCase());
             
-            // Priority: Variant Price -> Product Discount Price -> Product Base Price
-            const unitPrice = variant?.price !== undefined ? parseFloat(variant.price) : (product.discount_price ? parseFloat(product.discount_price) : parseFloat(product.price));
-            serverSubtotal += unitPrice * item.quantity;
+            if (!variant) throw new Error(`Size "${item.size}" not found for ${product.name}`);
+            if (variant.stock < item.quantity) {
+                throw new Error(`Insufficient stock for ${product.name} (${item.size}). Requested: ${item.quantity}, Available: ${variant.stock}`);
+            }
+
+            // Price Priority: Variant Specific -> Discount -> Base
+            const serverPrice = variant.price !== undefined ? parseFloat(variant.price) : 
+                              (product.discount_price ? parseFloat(product.discount_price) : parseFloat(product.price));
             
-            return {
+            const lineTotal = serverPrice * item.quantity;
+            serverSubtotal += lineTotal;
+
+            // Update local stock for subsequent items in same order if they share product
+            variant.stock -= item.quantity;
+
+            verifiedItems.push({
                 ...item,
-                price: unitPrice, // Lock in the server-verified price
-                discountPrice: null // Clear frontend discount price to ensure consistency
-            };
-        });
+                unitPrice: serverPrice,
+                lineTotal: lineTotal,
+                price: serverPrice // for UI consistency in order history
+            });
+        }
 
+        // 3. Persist Stock Deductions
+        for (const pid of productIds) {
+            await client.query(
+                'UPDATE products SET variants = $1 WHERE id = $2',
+                [JSON.stringify(productsFromDb[pid].variants), pid]
+            );
+        }
+
+        // 4. Calculate Final Financials
         const serverDiscountAmount = (serverSubtotal * (globalDiscountPercent / 100));
-        const serverShippingCost = (serverSubtotal - serverDiscountAmount) >= 999 ? 0 : 89;
-        const serverTotal = (serverSubtotal - serverDiscountAmount) + serverShippingCost;
+        const finalSubtotal = serverSubtotal - serverDiscountAmount;
+        const serverShippingCost = finalSubtotal >= 999 ? 0 : 89;
+        const serverTotal = finalSubtotal + serverShippingCost;
 
-        // 5. Create Order record using server-calculated values
+        // 5. Create Order Record (Snapshotting all verified values)
         const result = await client.query(
             `INSERT INTO orders (
                 data, status, customer_name, customer_email, customer_phone, 
                 total_amount, shipping_cost, discount_amount, items, shipping_address
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
             [
-                JSON.stringify({ ...o, items: verifiedItems, total: serverTotal, subtotal: serverSubtotal }), 
+                JSON.stringify({ ...o, items: verifiedItems, total: serverTotal, subtotal: serverSubtotal, discountAmount: serverDiscountAmount }), 
                 'Pending', 
                 `${o.firstName} ${o.lastName}`, 
                 o.email, 
@@ -269,8 +263,7 @@ app.post('/api/orders', async (req, res) => {
         await client.query('COMMIT');
         
         const newOrder = result.rows[0];
-        // Trigger async notification (non-blocking)
-        NotificationService.notifyOrdered(newOrder).catch(err => console.error("Initial notification failed:", err));
+        NotificationService.notifyOrdered(newOrder).catch(err => console.error("Notification fail:", err));
         
         res.status(201).json(newOrder);
     } catch (err) {

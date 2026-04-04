@@ -282,11 +282,19 @@ const Home = () => {
                                             <div className="flex items-center space-x-3">
                                                 <span className="text-[15px] text-[#4a4a4a] font-normal">
                                                     {(() => {
-                                                        const prices = (product.variants || []).filter(v => v.price > 0).map(v => v.price);
-                                                        const minPrice = prices.length > 0 ? Math.min(...prices) : (product.discountPrice || product.price);
-                                                        const hasMultiple = new Set(prices).size > 1;
+                                                        const variants = product.variants || [];
+                                                        const allOutOfStock = variants.length > 0 && variants.every(v => (v.stock || 0) <= 0);
+                                                        
+                                                        if (allOutOfStock) {
+                                                            return <span className="text-[10px] font-bold text-brand-rose uppercase tracking-widest bg-brand-rose/5 px-3 py-1 rounded-sm border border-brand-rose/10 animate-pulse">Out of Stock</span>;
+                                                        }
+
+                                                        const inStockPrices = variants.filter(v => (v.stock || 0) > 0 && v.price > 0).map(v => v.price);
+                                                        const minPrice = inStockPrices.length > 0 ? Math.min(...inStockPrices) : (product.discountPrice || product.price);
+                                                        const hasMultiple = new Set(inStockPrices).size > 1;
+                                                        
                                                         return (
-                                                            <span className="flex items-center gap-1.5">
+                                                            <span className="flex items-center gap-1.5 animate-in fade-in duration-500">
                                                                 {hasMultiple && <span className="text-[10px] uppercase opacity-40 font-bold tracking-tighter">From</span>}
                                                                 {formatPrice(minPrice)}
                                                             </span>

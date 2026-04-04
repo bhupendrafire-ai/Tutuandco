@@ -130,13 +130,20 @@ const ProductDetail = () => {
 
                         <div className="flex items-center space-x-6 mb-10">
                             <p className="text-4xl font-medium text-brand-charcoal">
-                                {formatPrice(
-                                    selectedSize 
-                                        ? ((product.variants || []).find(v => v.size === selectedSize)?.price ?? (product.discountPrice || product.price))
-                                        : (product.variants?.length > 0 
-                                            ? Math.min(...product.variants.map(v => v.price ?? (product.discountPrice || product.price)))
-                                            : (product.discountPrice || product.price))
-                                )}
+                                {(() => {
+                                    const variants = product.variants || [];
+                                    const allOutOfStock = variants.length > 0 && variants.every(v => (v.stock || 0) <= 0);
+                                    if (allOutOfStock) {
+                                        return <span className="text-xl md:text-2xl opacity-40 uppercase tracking-widest font-normal">Out of Stock</span>;
+                                    }
+                                    return formatPrice(
+                                        selectedSize 
+                                            ? (variants.find(v => v.size === selectedSize)?.price ?? (product.discountPrice || product.price))
+                                            : (variants.length > 0 
+                                                ? Math.min(...variants.map(v => v.price ?? (product.discountPrice || product.price)))
+                                                : (product.discountPrice || product.price))
+                                    );
+                                })()}
                             </p>
                             {(product.discountPrice || (selectedSize && (product.variants || []).find(v => v.size === selectedSize)?.price < product.price)) && (
                                 <p className="text-lg opacity-20 line-through">
