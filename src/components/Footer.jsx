@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { useShop } from '../context/ShopContext';
+import { useShop, CORE_POLICY_METADATA } from '../context/ShopContext';
 
 const Footer = () => {
     const { settings } = useShop();
@@ -26,34 +26,36 @@ const Footer = () => {
                     <h4 className="font-medium text-[#2f2f2f] text-[11px] uppercase tracking-widest mb-10">Support & Care</h4>
                     <ul className="space-y-4 text-sm text-[#6f6f6f] font-normal">
                         {(() => {
-                            const corePolicies = [
-                                { slug: 'shipping', label: 'Shipping Info' },
-                                { slug: 'returns', label: 'Returns & Exchanges' },
-                                { slug: 'privacy', label: 'Privacy Policy' },
-                                { slug: 'terms', label: 'Terms & Conditions' }
-                            ];
+                            const { loading, settings } = useShop();
+                            
+                            // Prevent rendering until data is fully Hydrated to avoid flickering
+                            if (loading) return <div className="h-40 w-full animate-pulse bg-brand-charcoal/5 rounded-sm" />;
 
                             const customPolicies = (settings.customPolicies || [])
                                 .filter(p => p.isVisible && p.content && p.content.trim() !== "")
                                 .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-                            const allPolicies = [
-                                ...corePolicies.map(p => ({ ...p, isCore: true })),
-                                ...customPolicies.map(p => ({ 
-                                    slug: p.slug, 
-                                    label: p.navLabel || p.title,
-                                    isCore: false,
-                                    id: p.id
-                                }))
-                            ];
+                            return (
+                                <>
+                                    {/* Core Policies (Fixed 1-4) */}
+                                    {CORE_POLICY_METADATA.map(core => (
+                                        <li key={core.slug}>
+                                            <Link to={`/policies/${core.slug}`} className="hover:text-[#2f2f2f] transition-colors">
+                                                {settings[`${core.settingsKey}_navLabel`] || settings[`${core.settingsKey}_title`] || core.defaultNavLabel}
+                                            </Link>
+                                        </li>
+                                    ))}
 
-                            return allPolicies.map((policy) => (
-                                <li key={policy.id || policy.slug}>
-                                    <Link to={`/policies/${policy.slug}`} className="hover:text-[#2f2f2f] transition-colors">
-                                        {policy.label}
-                                    </Link>
-                                </li>
-                            ));
+                                    {/* Custom Policies (Admin Order) */}
+                                    {customPolicies.map((policy) => (
+                                        <li key={policy.id || policy.slug}>
+                                            <Link to={`/policies/${policy.slug}`} className="hover:text-[#2f2f2f] transition-colors">
+                                                {policy.navLabel || policy.title}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </>
+                            );
                         })()}
                     </ul>
                 </div>

@@ -5,15 +5,18 @@ import { Clock } from 'lucide-react';
 
 const Terms = () => {
     const location = useLocation();
-    const { settings } = useShop();
+    const { settings, loading } = useShop();
 
     // Canonical Redirect (SEO & Compliance)
     if (location.pathname === '/terms') {
         return <Navigate to="/policies/terms" replace />;
     }
 
+    if (loading) return null; // Or skeleton
+
     const dynamicContent = settings.termsPolicy;
     const updatedAt = settings.termsPolicy_updatedAt;
+    const displayTitle = settings.termsPolicy_title || 'Terms & Conditions';
 
     return (
         <div className="bg-brand-sage min-h-screen pt-32 pb-32">

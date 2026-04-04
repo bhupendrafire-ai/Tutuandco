@@ -2,46 +2,37 @@
 import React from 'react';
 import { useParams, Link, useLocation, Navigate } from 'react-router-dom';
 import { Shield, RefreshCw, Truck, HeartHandshake, Ruler, Clock } from 'lucide-react';
-import { useShop, DEFAULT_POLICIES } from '../context/ShopContext';
+import { useShop, DEFAULT_POLICIES, CORE_POLICY_METADATA } from '../context/ShopContext';
 /* Icons removed from display per user request */
 
 const Policy = () => {
     const { section } = useParams();
     const location = useLocation();
-    const { settings } = useShop();
+    const { settings, loading } = useShop();
 
     // Canonical Redirect (SEO & Compliance)
     if (location.pathname.startsWith('/policy/')) {
         return <Navigate to={location.pathname.replace('/policy/', '/policies/')} replace />;
     }
 
+    // Prevent rendering until data is fully Hydrated
+    if (loading) {
+        return (
+            <div className="bg-brand-sage min-h-screen pt-32 pb-32 flex items-center justify-center">
+                <div className="animate-pulse flex flex-col items-center space-y-4">
+                    <div className="w-12 h-12 rounded-full border-4 border-brand-rose/20 border-t-brand-rose animate-spin" />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-brand-charcoal/40">Synchronizing Policies...</p>
+                </div>
+            </div>
+        );
+    }
+
     // Strict Core Definitions (Fixed Order 1-4)
-    const coreDefinitions = [
-        { 
-            slug: 'shipping', 
-            title: 'Shipping Policy', 
-            navLabel: 'Shipping Info', 
-            settingsKey: 'shippingPolicy'
-        },
-        { 
-            slug: 'returns', 
-            title: 'Refund & Cancellation Policy', 
-            navLabel: 'Returns & Exchanges', 
-            settingsKey: 'refundPolicy'
-        },
-        { 
-            slug: 'privacy', 
-            title: 'Privacy Policy', 
-            navLabel: 'Privacy Policy', 
-            settingsKey: 'privacyPolicy'
-        },
-        { 
-            slug: 'terms', 
-            title: 'Terms & Conditions', 
-            navLabel: 'Terms & Conditions', 
-            settingsKey: 'termsPolicy'
-        }
-    ];
+    const coreDefinitions = CORE_POLICY_METADATA.map(core => ({
+        ...core,
+        title: settings[`${core.settingsKey}_title`] || core.defaultTitle,
+        navLabel: settings[`${core.settingsKey}_navLabel`] || settings[`${core.settingsKey}_title`] || core.defaultNavLabel
+    }));
 
     // Combine with visible custom policies
     const visibleCustom = (settings.customPolicies || [])

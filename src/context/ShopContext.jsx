@@ -58,38 +58,14 @@ export const DEFAULT_POLICIES = {
 };
 
 // Initial dynamic custom policies (e.g. Product Care)
-export const DEFAULT_CUSTOM_POLICIES = [
-    {
-        id: 'default-care',
-        title: 'Product Care',
-        navLabel: 'Product Care',
-        slug: 'care',
-        content: `<p><em>"Each Tutu & Co piece is thoughtfully made to be worn, loved, and lived in. With a little care, it’ll stay just as special."</em></p>
-<div style="display: grid; grid-template-columns: 1fr; gap: 30px; margin-top: 30px;">
-  <div>
-    <strong>Washing</strong>
-    <p>Machine wash on a gentle cycle with similar colours using mild detergent. Avoid bleach.</p>
-  </div>
-  <div>
-    <strong>Drying</strong>
-    <p>Air dry for best results, or tumble dry on low.</p>
-  </div>
-  <div>
-    <strong>Ironing</strong>
-    <p>If needed, use a low heat setting.</p>
-  </div>
-  <div>
-    <strong>Storage</strong>
-    <p>Store in a clean, dry place when not in use.</p>
-  </div>
-</div>
-<p style="margin-top: 40px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 30px; font-style: italic;">
-  Each piece is handmade, so slight variations are natural. With regular use, some wear is expected — it’s all part of your pet’s adventures.
-</p>`,
-        isVisible: true,
-        order: 1,
-        updatedAt: new Date().toISOString()
-    }
+export const DEFAULT_CUSTOM_POLICIES = [];
+
+// Standardized Core Policy Metadata (Single Source of Truth for Labels/Titles)
+export const CORE_POLICY_METADATA = [
+    { slug: 'shipping', settingsKey: 'shippingPolicy', defaultTitle: 'Shipping Policy', defaultNavLabel: 'Shipping Info' },
+    { slug: 'returns', settingsKey: 'refundPolicy', defaultTitle: 'Refund & Cancellation Policy', defaultNavLabel: 'Returns & Exchanges' },
+    { slug: 'privacy', settingsKey: 'privacyPolicy', defaultTitle: 'Privacy Policy', defaultNavLabel: 'Privacy Policy' },
+    { slug: 'terms', settingsKey: 'termsPolicy', defaultTitle: 'Terms & Conditions', defaultNavLabel: 'Terms & Conditions' }
 ];
 
 const ShopContext = createContext();
@@ -189,7 +165,7 @@ export const ShopProvider = ({ children }) => {
         refundPolicy: null,
         privacyPolicy: null,
         termsPolicy: null,
-        customPolicies: DEFAULT_CUSTOM_POLICIES
+        customPolicies: [] // Initialize empty to prevent flickering of default content
     });
     const [loading, setLoading] = useState(true);
     const [coupon, setCoupon] = useState(null);
@@ -253,7 +229,7 @@ export const ShopProvider = ({ children }) => {
                 currency: { code: 'INR', symbol: '₹', rate: 1 },
                 globalDiscount: 0,
                 shopName: 'Tutu & Co',
-                customPolicies: DEFAULT_CUSTOM_POLICIES
+                customPolicies: []
             });
         } catch (error) {
             console.error("Failed to load shop data from server", error);
