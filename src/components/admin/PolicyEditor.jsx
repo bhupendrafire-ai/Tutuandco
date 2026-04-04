@@ -1,25 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { RotateCcw, Undo2, Bold, List, ChevronDown } from 'lucide-react';
+import { RotateCcw, Undo2, Bold, List, ChevronDown, Heading2, Heading3, Table as TableIcon } from 'lucide-react';
 
 /**
- * PolicyEditor - A strictly controlled minimal HTML editor for legal policies.
- * Enhanced with accordion UI and smart auto-scroll for better usability.
+ * PolicyEditor - A strictly controlled HTML editor for policies.
+ * Enforces a strict tag whitelist and purges all attributes/styles.
  */
 const PolicyEditor = ({ label, value, onChange, onReset, onRollback, hasUnsavedChanges, isExpanded, onToggle }) => {
     const editorRef = useRef(null);
     const containerRef = useRef(null);
 
-    // Initial sync - using a ref-based approach to avoid re-renders during active editing
     useEffect(() => {
         if (editorRef.current && editorRef.current.innerHTML !== value) {
             editorRef.current.innerHTML = value || '';
         }
     }, [value]);
 
-    // Smart Auto-Scroll: When expanded, scroll this section into top of viewport
     useEffect(() => {
         if (isExpanded && containerRef.current) {
-            // Slight delay to allow the accordion opening animation to initiate
             const timer = setTimeout(() => {
                 containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
@@ -28,43 +25,57 @@ const PolicyEditor = ({ label, value, onChange, onReset, onRollback, hasUnsavedC
     }, [isExpanded]);
 
     /**
-     * Sanitizes HTML to only allow specific tags: p, br, strong, ul, ol, li, b
-     * Strips all attributes (styles) and unallowed elements (div, span).
+     * strictNormalizeHTML - Recursively cleans HTML to enforce whitelist and remove all attributes.
      */
-    const sanitizeHTML = (html) => {
+    const strictNormalizeHTML = (html) => {
         const temp = document.createElement('div');
         temp.innerHTML = html;
         
-        const allowedTags = ['P', 'BR', 'STRONG', 'UL', 'OL', 'LI', 'B'];
+        const whitelist = ['H2', 'H3', 'P', 'TABLE', 'THEAD', 'TBODY', 'TR', 'TH', 'TD', 'UL', 'LI', 'STRONG', 'EM', 'B', 'I'];
         
         const clean = (node) => {
             const children = Array.from(node.childNodes);
             for (const child of children) {
-                if (child.nodeType === 1) { // Element node
-                    if (!allowedTags.includes(child.tagName)) {
+                if (child.nodeType === 1) { // Element
+                    if (!whitelist.includes(child.tagName)) {
+                        // Replace unallowed tag with its own children
                         const fragment = document.createDocumentFragment();
                         while (child.firstChild) fragment.appendChild(child.firstChild);
                         node.replaceChild(fragment, child);
                         clean(node);
                     } else {
+                        // Strip all attributes
                         while (child.attributes.length > 0) {
                             child.removeAttribute(child.attributes[0].name);
                         }
-                        clean(child);
+                        // Normalize tag name (e.g., B -> STRONG)
+                        if (child.tagName === 'B') {
+                            const strong = document.createElement('strong');
+                            while (child.firstChild) strong.appendChild(child.firstChild);
+                            node.replaceChild(strong, child);
+                            clean(strong);
+                        } else if (child.tagName === 'I') {
+                            const em = document.createElement('em');
+                            while (child.firstChild) em.appendChild(child.firstChild);
+                            node.replaceChild(em, child);
+                            clean(em);
+                        } else {
+                            clean(child);
+                        }
                     }
                 }
             }
         };
 
         clean(temp);
-        return temp.innerHTML;
+        return temp.innerHTML.replace(/&nbsp;/g, ' ').trim();
     };
 
     const handleInput = () => {
         if (editorRef.current) {
             const raw = editorRef.current.innerHTML;
-            const sanitized = sanitizeHTML(raw);
-            onChange(sanitized);
+            const normalized = strictNormalizeHTML(raw);
+            onChange(normalized);
         }
     };
 
@@ -75,17 +86,32 @@ const PolicyEditor = ({ label, value, onChange, onReset, onRollback, hasUnsavedC
         handleInput();
     };
 
-    const execCommand = (cmd) => {
-        document.execCommand(cmd, false, null);
+    const execCommand = (cmd, val = null) => {
+        document.execCommand(cmd, false, val);
         handleInput();
+    };
+
+    const insertTable = () => {
+        const tableHtml = `
+            <table>
+                <thead>
+                    <tr><th>Size</th><th>Neck (cm)</th><th>Length (cm)</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Small</td><td>20-30</td><td>15</td></tr>
+                    <tr><td>Medium</td><td>30-40</td><td>20</td></tr>
+                </tbody>
+            </table>
+        `;
+        execCommand('insertHTML', tableHtml);
     };
 
     return (
         <div 
             ref={containerRef} 
-            className={`rounded-sm border overflow-hidden transition-all duration-300 ${isExpanded ? 'border-brand-charcoal/20 bg-white shadow-md' : 'border-brand-charcoal/5 bg-brand-cream/10 hover:bg-white'}`}
+            className={`rounded-sm border overflow-hidden transition-all duration-500 ${isExpanded ? 'border-brand-charcoal/20 bg-white shadow-xl translate-y-[-4px]' : 'border-brand-charcoal/5 bg-brand-cream/5 hover:bg-white'}`}
         >
-            {/* Minimal Accordion Header */}
+            {/* Header */}
             <div 
                 onClick={onToggle}
                 className="p-6 flex justify-between items-center cursor-pointer select-none group"
@@ -99,38 +125,26 @@ const PolicyEditor = ({ label, value, onChange, onReset, onRollback, hasUnsavedC
                 </div>
             </div>
 
-            {/* Accordion Content with CSS Grid Animation (Lag-free) */}
-            <div className={`grid transition-all duration-300 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            {/* Content Slot */}
+            <div className={`grid transition-all duration-500 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100 mb-8' : 'grid-rows-[0fr] opacity-0'}`}>
                 <div className="overflow-hidden">
-                    <div className="p-8 pt-0 space-y-6">
-                        {/* Expanded Toolbar Area */}
-                        <div className="flex justify-between items-center pb-4 border-b border-brand-charcoal/5">
-                            <div className="flex flex-col">
-                                <span className="text-[9px] font-bold text-brand-charcoal/20 uppercase tracking-widest">Editing Mode</span>
-                                {hasUnsavedChanges && <span className="text-[9px] font-bold text-brand-rose tracking-widest uppercase">Pending Commits</span>}
+                    <div className="px-8 space-y-6">
+                        {/* Advanced Rich Text Toolbar */}
+                        <div className="flex justify-between items-center py-4 border-b border-brand-charcoal/5">
+                            <div className="flex items-center space-x-1">
+                                <button onClick={() => execCommand('formatBlock', 'h2')} className="p-2.5 hover:bg-brand-sage/20 rounded-sm text-brand-charcoal/60 hover:text-brand-charcoal transition-all" title="Heading 2"><Heading2 size={16} /></button>
+                                <button onClick={() => execCommand('formatBlock', 'h3')} className="p-2.5 hover:bg-brand-sage/20 rounded-sm text-brand-charcoal/60 hover:text-brand-charcoal transition-all" title="Heading 3"><Heading3 size={16} /></button>
+                                <div className="w-px h-4 bg-brand-charcoal/10 mx-1" />
+                                <button onClick={() => execCommand('bold')} className="p-2.5 hover:bg-brand-sage/20 rounded-sm text-brand-charcoal/60 hover:text-brand-charcoal transition-all" title="Bold"><Bold size={16} /></button>
+                                <button onClick={() => execCommand('insertUnorderedList')} className="p-2.5 hover:bg-brand-sage/20 rounded-sm text-brand-charcoal/60 hover:text-brand-charcoal transition-all" title="Bullet List"><List size={16} /></button>
+                                <div className="w-px h-4 bg-brand-charcoal/10 mx-1" />
+                                <button onClick={insertTable} className="p-2.5 hover:bg-brand-sage/20 rounded-sm text-brand-charcoal/60 hover:text-brand-rose transition-all flex items-center gap-2" title="Insert Sizing Table"><TableIcon size={16} /><span className="text-[10px] font-bold uppercase tracking-wider">Sizing Table</span></button>
                             </div>
                             
                             <div className="flex items-center space-x-2">
                                 <button 
-                                    onClick={() => execCommand('bold')}
-                                    className="p-3 hover:bg-brand-cream rounded-sm transition-all text-brand-charcoal/60 hover:text-brand-charcoal"
-                                    title="Bold"
-                                >
-                                    <Bold size={14} />
-                                </button>
-                                <button 
-                                    onClick={() => execCommand('insertUnorderedList')}
-                                    className="p-3 hover:bg-brand-cream rounded-sm transition-all text-brand-charcoal/60 hover:text-brand-charcoal"
-                                    title="Bullet List"
-                                >
-                                    <List size={14} />
-                                </button>
-                                
-                                <div className="w-[1px] h-4 bg-brand-charcoal/10 mx-2" />
-                                
-                                <button 
                                     onClick={onRollback}
-                                    className="flex items-center space-x-2 px-3 py-2 hover:bg-brand-cream rounded-sm transition-all text-brand-charcoal/40 hover:text-brand-charcoal text-[10px] font-bold uppercase tracking-widest group/btn"
+                                    className="flex items-center space-x-2 px-3 py-2 hover:bg-brand-cream rounded-sm transition-all text-brand-charcoal/40 hover:text-brand-charcoal text-[9px] font-bold uppercase tracking-widest group/btn"
                                     title="Rollback to last saved version"
                                 >
                                     <Undo2 size={12} className="group-hover/btn:-rotate-45 transition-transform" />
@@ -139,33 +153,56 @@ const PolicyEditor = ({ label, value, onChange, onReset, onRollback, hasUnsavedC
                                 
                                 <button 
                                     onClick={onReset}
-                                    className="flex items-center space-x-2 px-3 py-2 hover:bg-brand-cream rounded-sm transition-all text-brand-charcoal/40 hover:text-red-500 text-[10px] font-bold uppercase tracking-widest"
-                                    title="Reset to brand original"
+                                    className="flex items-center space-x-2 px-3 py-2 hover:bg-brand-cream rounded-sm transition-all text-brand-charcoal/40 hover:text-red-500 text-[9px] font-bold uppercase tracking-widest"
+                                    title="Reset to original content"
                                 >
                                     <RotateCcw size={12} />
-                                    <span>Reset Default</span>
+                                    <span>Reset</span>
                                 </button>
                             </div>
                         </div>
 
-                        {/* Editor Canvas */}
+                        {/* Editor Surface */}
                         <div 
                             ref={editorRef}
                             contentEditable
                             onInput={handleInput}
                             onPaste={handlePaste}
                             onBlur={handleInput}
-                            className="w-full min-h-[300px] bg-brand-cream/30 p-8 font-normal text-base border-none outline-none focus:ring-1 focus:ring-brand-rose/20 rounded-sm prose prose-sm max-w-none text-brand-charcoal/80"
+                            className="w-full min-h-[400px] bg-brand-sage/5 p-10 font-normal text-base border border-transparent focus:border-brand-rose/10 outline-none transition-all rounded-sm prose prose-sm max-w-none text-brand-charcoal/80 policy-editor-surface"
                             style={{ whiteSpace: 'pre-wrap' }}
                         />
                         
-                        <div className="flex justify-between items-center text-[9px] text-brand-charcoal/20 italic uppercase tracking-widest font-bold pt-4 border-t border-brand-charcoal/5">
-                            <span>Safe Content Layer Active</span>
-                            <span>Design Protection Enforced</span>
+                        <div className="flex justify-between items-center text-[9px] text-brand-charcoal/30 italic uppercase tracking-widest font-bold pb-4 border-t border-brand-charcoal/5 pt-4">
+                            <span>Strict Normalization Active: Whitelisted Tags Only</span>
+                            <span>Purging Attributes & Inline Styles</span>
                         </div>
                     </div>
                 </div>
             </div>
+            
+            <style sx>{`
+                .policy-editor-surface table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 1.5rem 0;
+                    background: white;
+                    border: 1px solid rgba(0,0,0,0.05);
+                }
+                .policy-editor-surface th, .policy-editor-surface td {
+                    padding: 1rem;
+                    border: 1px solid rgba(0,0,0,0.05);
+                    text-align: left;
+                }
+                .policy-editor-surface th {
+                    background: rgba(124, 132, 108, 0.05);
+                    text-transform: uppercase;
+                    font-size: 11px;
+                    letter-spacing: 0.1em;
+                }
+                .policy-editor-surface h2 { margin-top: 2rem; color: #1a1a1a; font-weight: 500; }
+                .policy-editor-surface h3 { margin-top: 1.5rem; color: #1a1a1a; font-weight: 500; }
+            `}</style>
         </div>
     );
 };

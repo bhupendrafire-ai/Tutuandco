@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, ArrowLeft, ShoppingBag, Heart, Shield, Truck, RefreshCcw } from 'lucide-react';
+import { Star, ArrowLeft, ShoppingBag, Heart, Shield, Truck, RefreshCcw, Ruler } from 'lucide-react';
 import { useShop, getProductImage, FINAL_API_URL } from '../context/ShopContext';
 import logo from '../assets/logo.png';
 import logoWhite from '../assets/logo-white.png';
+import SizeGuideModal from '../components/SizeGuideModal';
 
 
 // Import all images from the folder
@@ -27,6 +28,7 @@ const ProductDetail = () => {
     const { products, addToCart, loading, formatPrice, settings, media } = useShop();
     const [selectedImage, setSelectedImage] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
+    const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
     const [reviews, setReviews] = useState([]);
     
     const product = (Array.isArray(products) ? products : []).find(p => String(p.id) === String(id)) || products[0];
@@ -143,6 +145,13 @@ const ProductDetail = () => {
                             <div className="mb-10">
                                 <div className="flex justify-between items-center mb-4">
                                     <h3 className="text-[13px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Select Size</h3>
+                                    <button 
+                                        onClick={() => setIsSizeModalOpen(true)}
+                                        className="flex items-center space-x-2 text-[10px] font-bold text-brand-rose uppercase tracking-widest hover:opacity-70 transition-opacity"
+                                    >
+                                        <Ruler size={12} />
+                                        <span>Size Guide</span>
+                                    </button>
                                 </div>
                                 <div className="flex flex-wrap gap-3">
                                     {(product.variants && product.variants.length > 0 ? product.variants : []).map((variant) => {
@@ -526,6 +535,10 @@ const ProductDetail = () => {
                     </div>
                 </section>
             </div>
+             <SizeGuideModal 
+                isOpen={isSizeModalOpen} 
+                onClose={() => setIsSizeModalOpen(false)} 
+            />
         </div>
     );
 };

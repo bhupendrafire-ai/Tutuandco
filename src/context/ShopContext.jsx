@@ -58,10 +58,10 @@ export const POLICY_DEFAULTS = {
 <p><strong>5. Cookies</strong></p>
 <p>Our website uses cookies to enhance your browsing experience. These help us understand how you interact with our site and improve functionality.</p>`
     },
-    terms: { 
+    terms: {
         id: 'terms',
         slug: 'terms',
-        title: 'Terms & Conditions', 
+        title: 'Terms & Conditions',
         navLabel: 'Terms & Conditions',
         content: `<p><strong>1. Introduction</strong></p>
 <p>Welcome to Tutu & Co. By accessing our website and purchasing our products, you agree to comply with and be bound by the following terms and conditions. Please read them carefully.</p>
@@ -75,6 +75,36 @@ export const POLICY_DEFAULTS = {
 <p>All content on this website, including designs, text, and images, is the property of Tutu & Co and is protected by copyright and intellectual property laws.</p>
 <p><strong>6. Limitation of Liability</strong></p>
 <p>Tutu & Co shall not be liable for any direct, indirect, or consequential damages resulting from the use of our products or website.</p>`
+    },
+    sizing_guide: {
+        id: 'sizing_guide',
+        slug: 'sizing',
+        title: 'Sizing Guide',
+        navLabel: 'Sizing Help',
+        content: `<h2>Measurement Guide</h2>
+<p>To ensure the perfect fit for your companion, please refer to our measurement chart below. We recommend measuring your pet while they are standing.</p>
+<table>
+    <thead>
+        <tr>
+            <th>Size</th>
+            <th>Neck (cm)</th>
+            <th>Length (cm)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Small</td>
+            <td>20-30</td>
+            <td>15</td>
+        </tr>
+        <tr>
+            <td>Medium</td>
+            <td>30-40</td>
+            <td>20</td>
+        </tr>
+    </tbody>
+</table>
+<p><em>Note: If your pet's measurements fall between two sizes, we recommend choosing the larger size for comfort.</em></p>`
     }
 };
 
@@ -110,6 +140,95 @@ export const resolvePolicyLabel = (policyKey, settings) => {
            (meta?.navLabel) || 
            (meta?.title) || 
            'Policy';
+};
+
+/**
+ * usePolicy(key)
+ * Optimized hook for consuming policy data with minimal re-renders.
+ */
+export const usePolicy = (key) => {
+    const { settings, loading } = useShop();
+    const policy = settings?.policies?.[key];
+    return {
+        policy,
+        loading,
+        exists: !!policy
+    };
+};
+
+/**
+ * processDualUnits(html)
+ * Post-processes HTML to inject inch conversions for CM values.
+ */
+export const processDualUnits = (html) => {
+    if (!html) return "";
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+
+    const tables = temp.querySelectorAll('table');
+    tables.forEach(table => {
+        const rows = Array.from(table.querySelectorAll('tr'));
+        if (rows.length === 0) return;
+
+        const headers = Array.from(rows[0].querySelectorAll('th, td')).map(h => h.innerText.toLowerCase());
+        const cmColumns = headers.map((h, i) => h.includes('(cm)') ? i : -1).filter(i => i !== -1);
+
+        if (cmColumns.length === 0) return;
+
+        rows.slice(1).forEach(row => {
+            const cells = Array.from(row.querySelectorAll('td'));
+            cmColumns.forEach(idx => {
+                if (cells[idx]) {
+                    const text = cells[idx].innerText.trim();
+                    // Handle ranges like "20-30" or "20 - 30"
+                    const rangeMatch = text.match(/^(\d+)\s*-\s*(\d+)$/);
+                    if (rangeMatch) {
+                        const low = Math.round(parseFloat(rangeMatch[1]) * 0.393701);
+                        const high = Math.round(parseFloat(rangeMatch[2]) * 0.393701);
+                        cells[idx].innerText = `${text} cm (${low}-${high} inches)`;
+                    } else {
+                        const val = parseFloat(text);
+                        if (!isNaN(val)) {
+                            const inches = Math.round(val * 0.393701);
+                            cells[idx].innerText = `${val} cm (${inches} inches)`;
+                        }
+                    }
+                }
+            });
+        });
+        
+        cmColumns.forEach(idx => {
+            const headerCell = rows[0].querySelectorAll('th, td')[idx];
+            if (headerCell) headerCell.innerText = headerCell.innerText.replace('(cm)', '(cm/inches)');
+        });
+    });
+
+    return temp.innerHTML;
+};
+
+/**
+ * htmlToReadableText(html)
+ * Converts HTML to clean text for Chatbot with Dual Unit Support.
+ */
+export const htmlToReadableText = (html) => {
+    if (!html) return "";
+    // First process dual units to ensure bot sees them
+    const enrichedHtml = processDualUnits(html);
+    const temp = document.createElement('div');
+    temp.innerHTML = enrichedHtml;
+
+    const tables = temp.querySelectorAll('table');
+    tables.forEach(table => {
+        let tableText = "\n";
+        const rows = Array.from(table.querySelectorAll('tr'));
+        rows.forEach(row => {
+            const cells = Array.from(row.querySelectorAll('th, td')).map(c => c.innerText.trim());
+            if (cells.length > 0) tableText += cells.join(': ') + "\n";
+        });
+        table.replaceWith(document.createTextNode(tableText));
+    });
+
+    return temp.innerText.trim().replace(/\n\s*\n/g, '\n\n');
 };
 
 const ShopContext = createContext();

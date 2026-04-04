@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { RefreshCcw } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, ShieldCheck, FileCheck, Type } from 'lucide-react';
+import { X, Plus, Trash2, ShieldCheck, FileCheck, Type, Sparkles } from 'lucide-react';
 import PolicyEditor from '../../components/admin/PolicyEditor';
 import { DEFAULT_POLICIES, CORE_POLICY_METADATA, resolvePolicyLabel } from '../../context/ShopContext';
 
@@ -223,6 +223,20 @@ const AdminSettings = () => {
 
                         return (
                             <div key={meta.id} className="space-y-1">
+                                <div className="flex items-center justify-between px-2 py-1">
+                                    <div className="flex items-center space-x-2">
+                                        <span className="text-[9px] font-bold text-brand-charcoal/20 uppercase tracking-widest">Core System Policy</span>
+                                        {meta.id === 'sizing_guide' && (
+                                            <div className="flex items-center space-x-1 px-2 py-0.5 bg-brand-rose/10 rounded-full border border-brand-rose/20">
+                                                <Sparkles size={8} className="text-brand-rose" />
+                                                <span className="text-[8px] font-bold text-brand-rose uppercase tracking-tighter">Dual-Unit AI Engine Active</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {isPolicyDirty(meta.id) && (
+                                        <span className="text-[8px] font-bold text-brand-rose uppercase tracking-widest animate-pulse">Pending Sync</span>
+                                    )}
+                                </div>
                                 <PolicyEditor 
                                     label={resolvePolicyLabel(meta.id, localSettings)}
                                     value={policyData.content || ''}
