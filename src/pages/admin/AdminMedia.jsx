@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Upload } from 'lucide-react';
 import { upload } from '@vercel/blob/client';
 import { useShop, FINAL_API_URL } from '../../context/ShopContext';
+import { convertHeicToJpeg } from '../../utils/imageUtils';
 
 const AdminMedia = () => {
     const { uploadMedia } = useShop();
@@ -13,7 +14,6 @@ const AdminMedia = () => {
 
         try {
             // Support HEIC (iPhone) photos by converting them on the fly
-            const { convertHeicToJpeg } = await import('../../utils/imageUtils');
             file = await convertHeicToJpeg(file);
 
             const newBlob = await upload(file.name, file, {

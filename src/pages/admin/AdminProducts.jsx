@@ -8,6 +8,7 @@ import { upload } from '@vercel/blob/client';
 import { useShop, getProductImage, FINAL_API_URL } from '../../context/ShopContext';
 import MediaPicker from '../../components/MediaPicker';
 import ImageGridManager from '../../components/ImageGridManager';
+import { convertHeicToJpeg } from '../../utils/imageUtils';
 
 const AdminProducts = () => {
     const { 
@@ -89,7 +90,6 @@ const AdminProducts = () => {
 
         try {
             // Support HEIC (iPhone) photos by converting them on the fly
-            const { convertHeicToJpeg } = await import('../../utils/imageUtils');
             file = await convertHeicToJpeg(file);
 
             const newBlob = await upload(file.name, file, {
