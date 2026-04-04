@@ -306,10 +306,10 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Our Community Section (Tertiary Hierarchy: 4xl, #6f6f6f) */}
-            <section className="py-24 bg-white border-t border-[#eaeaea]">
+            {/* Our Community Section (Refined Editorial Grid) */}
+            <section className="pt-18 pb-12 bg-white border-t border-[#eaeaea]">
                 <div className="max-w-[1280px] mx-auto px-6">
-                    <div className="max-w-[720px] mx-auto text-center mb-16">
+                    <div className="max-w-[720px] mx-auto text-center mb-12">
                         <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest mb-3 block">Capturing Joy</span>
                         <h2 className="text-4xl font-medium text-[#6f6f6f] mb-8 tracking-tight">Our community</h2>
                         <p className="text-[#9a9a9a] text-lg italic leading-relaxed">
@@ -317,23 +317,27 @@ const Home = () => {
                         </p>
                     </div>
                     
-                    <div className="grid grid-cols-2 md:grid-cols-5 auto-rows-[280px] gap-6">
-                        <AnimatePresence mode="popLayout">
-                            {(Array.isArray(galleryImages) ? galleryImages : []).map((img, index) => (
-                                <motion.div 
-                                    layout
-                                    key={img}
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    whileInView={{ opacity: 1, scale: 1 }}
-                                    viewport={{ once: true }}
-                                    transition={{ type: "spring", stiffness: 100, damping: 20, delay: index * 0.05 }}
-                                    className={`relative bg-brand-cream overflow-hidden rounded-sm cursor-pointer group shadow-sm ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''} ${index === 4 ? 'md:row-span-2' : ''} ${index === 5 ? 'md:col-span-2' : ''} ${index === 9 ? 'md:col-span-2' : ''}`}
-                                >
-                                    <img src={img} alt={`Lifestyle ${index}`} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
-                                    <div className="absolute inset-0 bg-transparent group-hover:bg-[#2f2f2f]/5 transition-colors duration-700" />
-                                </motion.div>
-                            ))}
-                        </AnimatePresence>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-[7.5px]">
+                        {(Array.isArray(galleryImages) ? galleryImages.slice(0, 8) : []).map((img, index) => (
+                            <motion.div 
+                                key={img}
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.05 }}
+                                className="relative aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm cursor-pointer group shadow-sm"
+                            >
+                                <img src={img} alt={`Lifestyle ${index}`} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                                <div className="absolute inset-0 bg-transparent group-hover:bg-[#2f2f2f]/5 transition-colors duration-700" />
+                            </motion.div>
+                        ))}
+                    </div>
+
+                    <div className="mt-7 text-left">
+                        <Link to="/moments" className="inline-flex items-center gap-2 text-[12.5px] font-medium text-[#868686] uppercase tracking-normal hover:text-[#2f2f2f] transition-all group">
+                            <span>Visit the gallery</span>
+                            <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-[2px]" />
+                        </Link>
                     </div>
                 </div>
             </section>
@@ -376,24 +380,6 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Our Community (Tertiary Hierarchy: 3xl, #6f6f6f) */}
-            <section className="pt-16 pb-20 bg-white transition-colors duration-700">
-                <div className="max-w-[1280px] mx-auto px-6 text-center flex flex-col items-center">
-                    <div className="max-w-[720px] mx-auto flex flex-col items-center">
-                        <h2 className="text-2xl md:text-3xl font-medium text-[#6f6f6f] mb-3 uppercase tracking-widest">Our community</h2>
-                        <p className="text-[#9a9a9a] mb-7 text-xl font-light italic leading-relaxed">
-                            Share your moments. Be part of our story.
-                        </p>
-                        <Link 
-                            to="/moments"
-                            className="inline-flex items-center space-x-8 bg-[#d8b7b1] text-[#2f2f2f] px-12 py-6 text-[18px] font-medium uppercase tracking-widest hover:bg-[#2f2f2f] hover:text-white transition-all shadow-2xl active:scale-95 group"
-                        >
-                            <span>Visit the gallery</span>
-                            <ArrowRight size={24} className="transition-transform duration-400 group-hover:translate-x-[2px]" />
-                        </Link>
-                    </div>
-                </div>
-            </section>
 
 
             {/* Brand Motto Tier (Final Editorial Tuning) */}
