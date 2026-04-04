@@ -431,29 +431,46 @@ export const ShopProvider = ({ children }) => {
             const m = mediaRes.ok ? await mediaRes.json() : [];
             const o = orderRes.ok ? await orderRes.json() : [];
             const s = settingsRes.ok ? await settingsRes.json() : {};
+            
+            // DEBUG: Trace Policy Data Sources
+            console.log("🛠️ POLICY SYNC START:", { 
+                has_policies_obj: !!s.policies, 
+                policies_count: s.policies ? Object.keys(s.policies).length : 0,
+                legacy_keys: Object.keys(s).filter(k => k.endsWith('Policy') || k.includes('_title'))
+            });
 
             // --- HARDENED POLICY MIGRATION & NORMALIZATION ---
             const normalizedPolicies = { ...(s.policies || {}) };
             
             CORE_POLICY_METADATA.forEach(meta => {
                 const key = meta.id;
-                // Legacy Map: shippingPolicy -> policies.shipping
                 const legacyKey = `${key}Policy`; 
-                
-                if (!normalizedPolicies[key]) {
+                const current = normalizedPolicies[key];
+
+                // 1. Initial State Resolution
+                if (!current) {
+                    // Create from scratch using legacy fallback chain
                     normalizedPolicies[key] = {
                         title: s[`${legacyKey}_title`] || meta.defaultTitle,
                         navLabel: s[`${legacyKey}_navLabel`] || meta.defaultNavLabel,
                         content: s[legacyKey] || DEFAULT_POLICIES[key] || ''
                     };
-                }
-                
-                // Ensure migration of any partial existing data
-                if (typeof normalizedPolicies[key] === 'string') {
+                } 
+                // 2. Migration: String to Object (The "String-Migration Bug" Fix)
+                else if (typeof current === 'string') {
                     normalizedPolicies[key] = {
-                        title: meta.defaultTitle,
-                        navLabel: meta.defaultNavLabel,
-                        content: normalizedPolicies[key]
+                        title: s[`${legacyKey}_title`] || meta.defaultTitle,
+                        navLabel: s[`${legacyKey}_navLabel`] || meta.defaultNavLabel,
+                        content: current // Keep the existing content string
+                    };
+                }
+                // 3. Object Hardening (Filling gaps in existing objects)
+                else if (typeof current === 'object') {
+                    // NEVER overwrite existing valid data
+                    normalizedPolicies[key] = {
+                        title: current.title || s[`${legacyKey}_title`] || meta.defaultTitle,
+                        navLabel: current.navLabel || s[`${legacyKey}_navLabel`] || meta.defaultNavLabel,
+                        content: current.content || s[legacyKey] || DEFAULT_POLICIES[key] || ''
                     };
                 }
             });
@@ -600,15 +617,17 @@ export const ShopProvider = ({ children }) => {
         }
     };
 
-    const addToCart = (product, size, quantity = 1) => {
+    const addToCart = (product, size, quantity = 1, price = null) => {
         setCart(prev => {
             const existing = prev.find(item => item.id === product.id && item.size === size);
+            const finalPrice = price !== null ? price : (product.discountPrice || product.price);
+            
             if (existing) {
                 return prev.map(item => 
-                    (item.id === product.id && item.size === size) ? { ...item, quantity: item.quantity + quantity } : item
+                    (item.id === product.id && item.size === size) ? { ...item, quantity: item.quantity + quantity, price: finalPrice } : item
                 );
             }
-            return [...prev, { ...product, size, quantity }];
+            return [...prev, { ...product, size, quantity, price: finalPrice }];
         });
     };
 
@@ -627,7 +646,8 @@ export const ShopProvider = ({ children }) => {
 
     const getCartTotal = () => {
         const safeCart = Array.isArray(cart) ? cart : [];
-        const subtotal = safeCart.reduce((sum, item) => sum + ((Number(item.discountPrice || item.price) || 0) * (item.quantity || 0)), 0);
+        // Use the price stored in the cart item (which is the variant-specific price)
+        const subtotal = safeCart.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.quantity || 0)), 0);
         const safeSettings = settings || {};
         const globalDiscountAmount = safeSettings.globalDiscount ? subtotal * (safeSettings.globalDiscount / 100) : 0;
         const couponDiscountAmount = coupon ? (subtotal - globalDiscountAmount) * (Number(coupon.discount) || 0) : 0;

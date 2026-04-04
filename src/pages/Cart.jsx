@@ -58,13 +58,8 @@ const Cart = () => {
                                         )}
                                         <div className="flex flex-col items-start gap-1">
                                             <p className="text-brand-charcoal font-medium text-sm">
-                                                {formatPrice(item.discountPrice || item.price)}
+                                                {formatPrice(item.price)}
                                             </p>
-                                            {item.discountPrice && (
-                                                <p className="text-[10px] opacity-20 line-through text-brand-charcoal">
-                                                    {formatPrice(item.price)}
-                                                </p>
-                                            )}
                                         </div>
                                     </div>
 

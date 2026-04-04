@@ -186,7 +186,7 @@ const AdminProducts = () => {
             return false;
         }
 
-        const newVariants = [...productForm.variants, { size: normalized, stock: 0 }];
+        const newVariants = [...productForm.variants, { size: normalized, stock: 0, price: parseFloat(productForm.price) || 0 }];
         setProductForm({
             ...productForm,
             variants: newVariants
@@ -589,6 +589,19 @@ const AdminProducts = () => {
                                                                                 setProductForm({ ...productForm, variants: nv, stock: newTotalStock });
                                                                             }} 
                                                                             className="w-24 bg-transparent text-lg font-medium outline-none border-none p-0" 
+                                                                        />
+                                                                    </div>
+                                                                    <div className="flex flex-col">
+                                                                        <span className="text-[9px] font-bold opacity-30 uppercase tracking-tighter">Price ({settings?.currency?.symbol || '₹'})</span>
+                                                                        <input 
+                                                                            type="number" 
+                                                                            value={variant.price !== undefined ? variant.price : productForm.price} 
+                                                                            onChange={e => {
+                                                                                const nv = [...productForm.variants];
+                                                                                nv[idx] = { ...nv[idx], price: parseFloat(e.target.value) || 0 };
+                                                                                setProductForm({ ...productForm, variants: nv });
+                                                                            }} 
+                                                                            className="w-24 bg-transparent text-lg font-medium outline-none border-none p-0 text-brand-rose" 
                                                                         />
                                                                     </div>
                                                                 </div>

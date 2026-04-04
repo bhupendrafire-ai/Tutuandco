@@ -62,7 +62,10 @@ const ProductDetail = () => {
             alert("Please select a size first!");
             return;
         }
-        addToCart(product, selectedSize);
+        const selectedVariant = (product.variants || []).find(v => v.size === selectedSize);
+        // Use variant-specific price, falling back to product-level price if not set
+        const finalPrice = selectedVariant?.price !== undefined ? selectedVariant.price : (product.discountPrice || product.price);
+        addToCart(product, selectedSize, 1, finalPrice);
         alert(`${product.name} (Size: ${selectedSize}) added to cart!`);
     };
 
@@ -127,9 +130,15 @@ const ProductDetail = () => {
 
                         <div className="flex items-center space-x-6 mb-10">
                             <p className="text-4xl font-medium text-brand-charcoal">
-                                {formatPrice(product.discountPrice || product.price)}
+                                {formatPrice(
+                                    selectedSize 
+                                        ? ((product.variants || []).find(v => v.size === selectedSize)?.price ?? (product.discountPrice || product.price))
+                                        : (product.variants?.length > 0 
+                                            ? Math.min(...product.variants.map(v => v.price ?? (product.discountPrice || product.price)))
+                                            : (product.discountPrice || product.price))
+                                )}
                             </p>
-                            {product.discountPrice && (
+                            {(product.discountPrice || (selectedSize && (product.variants || []).find(v => v.size === selectedSize)?.price < product.price)) && (
                                 <p className="text-lg opacity-20 line-through">
                                     {formatPrice(product.price)}
                                 </p>

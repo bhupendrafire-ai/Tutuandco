@@ -7,13 +7,7 @@ const Footer = () => {
     const { settings } = useShop();
     return (
         <footer className="bg-brand-cream border-t border-brand-charcoal/10 py-16 transition-all duration-700">
-            <div className="max-w-[1280px] mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-16">
-                <div className="space-y-8">
-                    <h3 className="text-2xl font-medium text-[#2f2f2f] tracking-tight">{settings?.shopName}</h3>
-                    <p className="text-[#6f6f6f] text-sm leading-relaxed italic">
-                        Curating organic comfort and timeless style for your most beloved companions. Designed in London, enjoyed worldwide.
-                    </p>
-                </div>
+            <div className="max-w-[1280px] mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-16">
                 <div>
                     <h4 className="font-medium text-[#2f2f2f] text-[11px] uppercase tracking-widest mb-10">Shop Collections</h4>
                     <ul className="space-y-4 text-sm text-[#6f6f6f] font-normal">

@@ -208,7 +208,7 @@ const Checkout = () => {
                                             • Qty {Number(item.quantity) || 1}
                                         </p>
                                         <div className="flex items-center space-x-3 mt-1">
-                                            <span className="text-[11px] font-medium text-brand-charcoal">{formatPrice((Number(item.discountPrice) || Number(item.price) || 0) * (Number(item.quantity) || 1))}</span>
+                                            <span className="text-[11px] font-medium text-brand-charcoal">{formatPrice((Number(item.price) || 0) * (Number(item.quantity) || 1))}</span>
                                         </div>
                                     </div>
                                 </div>

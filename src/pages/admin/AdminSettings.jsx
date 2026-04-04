@@ -30,14 +30,29 @@ const AdminSettings = () => {
         const now = new Date().toISOString();
         const settingsToSave = { ...localSettings };
         
-        // Add timestamps and versioning for core changed policies
-        Object.keys(policyChanges).forEach(key => {
-            if (key.includes('Policy') && policyChanges[key] !== settings?.[key]) {
-                settingsToSave[`${key}_updatedAt`] = now;
-                settingsToSave[`${key}_lastVersion`] = settings?.[key] || DEFAULT_POLICIES?.[key.replace('Policy', '')];
+        // 1. Manage Metadata: core policy changes & timestamps
+        CORE_POLICY_METADATA.forEach(meta => {
+            const key = meta.id;
+            const isDirty = !!(policyChanges[`policy_${key}_title`] || 
+                               policyChanges[`policy_${key}_navLabel`] || 
+                               policyChanges[`policy_${key}_content`]);
+
+            if (isDirty) {
+                // Ensure the individual policy object has an updatedAt field
+                if (!settingsToSave.policies[key]) settingsToSave.policies[key] = {};
+                settingsToSave.policies[key].updatedAt = now;
+                
+                // Maintain legacy tracking if needed, though policies obj is master
+                settingsToSave[`${key}Policy_updatedAt`] = now;
             }
         });
 
+        // 2. Manage Dynamic Categories Metadata
+        if (policyChanges.categories) {
+            settingsToSave.categories_updatedAt = now;
+        }
+
+        // 3. Persist Full Configuration Object (Single Source of Truth)
         await updateSettings(settingsToSave);
         setPolicyChanges({});
         setSaveStatus('saved');

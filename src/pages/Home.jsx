@@ -254,9 +254,6 @@ const Home = () => {
                     <div className="max-w-[720px] mx-auto text-center mb-12">
                         <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest mb-3 block">Hand-picked essentials</span>
                         <h2 className="text-5xl font-medium text-[#2f2f2f] mb-8 tracking-tight">Featured Collections</h2>
-                        <p className="text-[#6f6f6f] text-lg italic leading-relaxed">
-                            Curated selections for the modern companion, blending organic comfort with timeless style.
-                        </p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
@@ -377,17 +374,6 @@ const Home = () => {
 
 
 
-            {/* Brand Motto Tier (Final Editorial Tuning) */}
-            <section className="pt-14 pb-12 md:pt-14 md:pb-12 bg-brand-cream relative overflow-hidden transition-colors duration-700">
-                <div className="max-w-[1280px] mx-auto px-6 text-center relative z-10">
-                    <div className="max-w-[660px] mx-auto">
-                        <h2 className="text-[26px] md:text-[36px] font-medium text-[#4a4a4a] tracking-tight leading-[1.35] text-center">
-                            Because finding beautiful <br className="hidden md:block" />
-                            pet accessories shouldn't be hard.
-                        </h2>
-                    </div>
-                </div>
-            </section>
         </div>
     );
 };
