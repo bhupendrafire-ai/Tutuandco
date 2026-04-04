@@ -327,10 +327,10 @@ const Home = () => {
                         ))}
                     </div>
 
-                    <div className="mt-[10.5px] text-left">
-                        <Link to="/moments" className="inline-flex items-center gap-2 text-sm font-medium text-[#868686] hover:text-[#2f2f2f] transition-all group">
+                    <div className="mt-3 text-left">
+                        <Link to="/moments" className="inline-flex items-center gap-1 text-base font-medium text-[#2f2f2f] hover:text-[#5c5c5c] transition-all group tracking-tight">
                             <span>Visit the gallery</span>
-                            <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-[2px]" />
+                            <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-[2px]" />
                         </Link>
                     </div>
                 </div>
