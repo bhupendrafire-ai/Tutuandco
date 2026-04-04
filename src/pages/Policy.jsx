@@ -172,36 +172,43 @@ const Policy = () => {
                     display: table;
                     width: 100%;
                     border-collapse: collapse;
-                    margin-top: 16px;
-                    margin-bottom: 16px;
+                    margin-top: 2.5rem;
+                    margin-bottom: 2.5rem;
                     font-size: 14px;
                     table-layout: auto;
+                    border-top: 1px solid rgba(0,0,0,0.1);
                 }
                 .policy-content thead {
                     display: table-header-group;
-                    background: rgba(0, 0, 0, 0.03);
+                    background: transparent;
                 }
                 .policy-content tbody {
                     display: table-row-group;
                 }
                 .policy-content tr {
                     display: table-row;
-                    border-bottom: 1px solid rgba(0,0,0,0.06);
+                    border-bottom: 1px solid rgba(0,0,0,0.05);
+                    transition: background 0.3s ease;
+                }
+                .policy-content tr:hover {
+                    background: rgba(0,0,0,0.01);
                 }
                 .policy-content th {
                     display: table-cell;
                     text-align: left;
-                    font-weight: 600;
-                    padding: 12px 16px;
-                    letter-spacing: 0.04em;
-                    font-size: 12px;
+                    font-weight: 500;
+                    padding: 1.25rem 1rem;
+                    letter-spacing: 0.1em;
+                    font-size: 11px;
                     text-transform: uppercase;
-                    background: rgba(0, 0, 0, 0.03);
+                    color: rgba(0,0,0,0.4);
+                    border-bottom: 1px solid rgba(0,0,0,0.1);
                 }
                 .policy-content td {
                     display: table-cell;
-                    padding: 14px 16px;
-                    border-bottom: 1px solid rgba(0,0,0,0.06);
+                    padding: 1.5rem 1rem;
+                    color: rgba(0,0,0,0.7);
+                    font-weight: 400;
                 }
                 @media (max-width: 768px) {
                     .policy-content table {
@@ -209,6 +216,7 @@ const Policy = () => {
                         overflow-x: auto;
                         white-space: nowrap;
                         -webkit-overflow-scrolling: touch;
+                        border-top: none;
                     }
                 }
             `}</style>

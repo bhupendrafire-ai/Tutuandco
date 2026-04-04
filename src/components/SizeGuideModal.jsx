@@ -103,29 +103,39 @@ const SizeGuideModal = ({ isOpen, onClose }) => {
                 .sizing-modal-content table {
                     width: 100%;
                     border-collapse: collapse;
-                    margin: 2rem 0;
+                    margin: 2.5rem 0;
                     font-size: 13px;
+                    border-top: 1px solid rgba(0,0,0,0.1);
                 }
                 .sizing-modal-content th {
                     text-align: left;
-                    padding: 1rem;
-                    border-bottom: 2px solid rgba(0,0,0,0.05);
+                    padding: 1.25rem 1rem;
+                    border-bottom: 1px solid rgba(0,0,0,0.1);
                     text-transform: uppercase;
                     letter-spacing: 0.1em;
+                    font-size: 11px;
+                    font-weight: 500;
                     color: rgba(0,0,0,0.4);
                 }
                 .sizing-modal-content td {
-                    padding: 1rem;
+                    padding: 1.5rem 1rem;
                     border-bottom: 1px solid rgba(0,0,0,0.05);
-                    color: #1a1a1a;
+                    color: rgba(0,0,0,0.7);
                 }
                 .sizing-modal-content tr:last-child td {
                     border-bottom: none;
                 }
+                .sizing-modal-content tr {
+                    transition: background 0.3s ease;
+                }
+                .sizing-modal-content tr:hover {
+                    background: rgba(0,0,0,0.01);
+                }
                 .sizing-modal-content h2 {
-                    font-size: 1.25rem;
+                    font-size: 1.5rem;
+                    font-weight: 500;
                     color: #1a1a1a;
-                    margin-bottom: 1rem;
+                    margin-bottom: 1.5rem;
                 }
                 
                 @media (max-width: 768px) {
