@@ -339,9 +339,9 @@ const Home = () => {
             </section>
 
             {/* Kind Words Tier (Tertiary Hierarchy: 4xl, #6f6f6f) */}
-            <section className="py-32 bg-brand-cream/30 overflow-hidden transition-colors duration-700">
+            <section className="pt-32 pb-24 bg-brand-cream/30 overflow-hidden transition-colors duration-700">
                 <div className="max-w-[1280px] mx-auto px-6">
-                    <div className="max-w-[720px] mx-auto text-center mb-16">
+                    <div className="max-w-[720px] mx-auto text-center mb-11 pt-6">
                         <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest mb-3 block">TESTIMONIALS</span>
                         <h2 className="text-4xl font-medium text-[#6f6f6f] mb-8 tracking-tight">Kind words</h2>
                         <div className="w-12 h-0.5 bg-[#d8b7b1] mx-auto mb-8" />
@@ -350,7 +350,7 @@ const Home = () => {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                         {[
                             { name: "Sarah & Oliver", text: "The quality of the bandana is unmatched. Oliver looks so dapper and the fabric is incredibly soft.", rating: 5 },
                             { name: "Michael & Luna", text: "Finally, a brand that cares about sustainability as much as style. The packaging was beautiful too!", rating: 5 },
@@ -364,13 +364,13 @@ const Home = () => {
                                 transition={{ delay: i * 0.1 }}
                                 className="bg-white p-12 rounded-sm shadow-sm border border-[#eaeaea] hover:shadow-xl transition-shadow duration-700"
                             >
-                                <div className="flex mb-8 text-[#95714F]">
+                                <div className="flex mb-5 text-[#95714F]">
                                     {[...Array(t.rating)].map((_, j) => <Star key={j} size={14} fill="currentColor" />)}
                                 </div>
-                                <p className="text-[#2f2f2f] italic text-lg leading-relaxed mb-10">"{t.text}"</p>
+                                <p className="text-[#2f2f2f] italic text-lg leading-relaxed mb-11 max-w-[92%] mx-auto">"{t.text}"</p>
                                 <div className="flex items-center space-x-4">
                                     <div className="w-8 h-px bg-[#e6dfd4]" />
-                                    <p className="text-[10px] font-medium uppercase tracking-widest text-[#868686]">{t.name}</p>
+                                    <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-[#868686]">{t.name}</p>
                                 </div>
                             </motion.div>
                         ))}
