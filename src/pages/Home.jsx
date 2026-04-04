@@ -396,20 +396,16 @@ const Home = () => {
             </section>
 
 
-            {/* Brand Motto Tier (Refined Editorial Balance) */}
-            <section className="pt-14 pb-10 md:pt-14 md:pb-10 bg-brand-cream relative overflow-hidden transition-colors duration-700">
+            {/* Brand Motto Tier (Final Editorial Tuning) */}
+            <section className="pt-14 pb-12 md:pt-14 md:pb-12 bg-brand-cream relative overflow-hidden transition-colors duration-700">
                 <div className="max-w-[1280px] mx-auto px-6 text-center relative z-10">
-                    <div className="max-w-[640px] mx-auto">
-                        <h2 className="text-[26px] md:text-[36px] font-medium text-[#6f6f6f] tracking-tight leading-[1.4] text-center">
+                    <div className="max-w-[660px] mx-auto">
+                        <h2 className="text-[26px] md:text-[36px] font-medium text-[#4a4a4a] tracking-tight leading-[1.35] text-center">
                             Because finding beautiful <br className="hidden md:block" />
-                            pet accessories <br className="hidden md:block" />
-                            shouldn't be hard.
+                            pet accessories shouldn't be hard.
                         </h2>
                     </div>
                 </div>
-                {/* Decorative Elements */}
-                <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#c5d1c0]/15 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl pointer-events-none" />
-                <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-[#d8b7b1]/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl pointer-events-none" />
             </section>
         </div>
     );
