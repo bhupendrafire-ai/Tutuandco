@@ -120,14 +120,16 @@
       "title": "Sunset Sage Collection",
       "subtitle": "Naturally sourced fabrics for the modern adventurer.",
       "cta": "Shop the Edit",
-      "image": "IMG_6154"
+      "image": "IMG_6154",
+      "mobileImage": ""
     },
     {
       "id": 2,
       "title": "Blossom & Blue",
       "subtitle": "Hand-stitched details in signature seasonal hues.",
       "cta": "Explore Designs",
-      "image": "IMG_6169"
+      "image": "IMG_6169",
+      "mobileImage": ""
     }
   ],
   "settings": {
