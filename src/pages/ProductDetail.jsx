@@ -128,27 +128,8 @@ const ProductDetail = () => {
                             {product.description}
                         </p>
 
-                        <div className="mb-4">
-                            <h3 className="text-[18px] font-medium text-brand-charcoal tracking-tight">Product details</h3>
-                        </div>
-
-                        <div className="space-y-4 mb-16">
-                            {((Array.isArray(product?.details) && product.details.length > 0) ? product.details : DEFAULT_DETAILS).map((detail, i) => (
-                                <div key={i} className="flex items-start text-[16px] text-brand-charcoal/60 font-medium">
-                                    <Heart size={14} className="text-brand-rose mr-4 mt-1 flex-shrink-0" fill="currentColor" />
-                                    <span>
-                                        {String(detail).includes(':') ? (
-                                            <>
-                                                <span className="font-bold text-brand-charcoal/80">{String(detail).split(':')[0]}:</span>
-                                                {String(detail).split(':')[1]}
-                                            </>
-                                        ) : detail}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-
-                         <div className="flex flex-col sm:flex-row gap-4 mb-20 mt-4">
+                        {/* Primary CTA Section - Relocated above details for better conversion flow */}
+                        <div className="flex flex-col sm:flex-row gap-4 mb-12 mt-4">
                             <button 
                                 onClick={handleAddToCart}
                                 className="bg-brand-rose text-brand-charcoal px-16 py-8 flex items-center justify-center font-medium text-[18px] hover:bg-white transition-all shadow-lg min-w-[240px]"
@@ -159,6 +140,27 @@ const ProductDetail = () => {
                              <button className="px-10 py-8 border border-brand-charcoal/10 rounded-sm hover:bg-brand-cream/50 transition-colors">
                                 <Heart size={20} className="text-brand-charcoal/40" />
                             </button>
+                        </div>
+
+                        {/* Refined Product Details Section - Scaled down typography by 10% */}
+                        <div className="mb-4">
+                            <h3 className="text-[16.2px] font-medium text-brand-charcoal tracking-tight">Product details</h3>
+                        </div>
+
+                        <div className="space-y-4 mb-16">
+                            {((Array.isArray(product?.details) && product.details.length > 0) ? product.details : DEFAULT_DETAILS).map((detail, i) => (
+                                <div key={i} className="flex items-start text-[14.4px] text-brand-charcoal/60 font-medium">
+                                    <Heart size={13} className="text-brand-rose mr-4 mt-1 flex-shrink-0" fill="currentColor" />
+                                    <span>
+                                        {String(detail).includes(':') ? (
+                                            <>
+                                                <span className="font-bold text-brand-charcoal/80">{String(detail).split(':')[0]}:</span>
+                                                {String(detail).split(':')[1]}
+                                            </>
+                                        ) : detail}
+                                    </span>
+                                </div>
+                            ))}
                         </div>
 
                         {/* Shipping Info */}
@@ -249,8 +251,8 @@ const ProductDetail = () => {
                                                     <h4 className="text-xl font-medium italic text-brand-charcoal">{item.title}</h4>
                                                     <ul className="space-y-3">
                                                         {item.bullets?.map((bullet, k) => bullet && (
-                                                            <li key={k} className="text-[18px] font-medium text-brand-charcoal opacity-80 flex items-start space-x-3">
-                                                                <Heart size={14} className="text-brand-rose mt-1 flex-shrink-0" fill="currentColor" />
+                                                            <li key={k} className="text-[16.2px] font-medium text-brand-charcoal opacity-80 flex items-start space-x-3">
+                                                                <Heart size={13} className="text-brand-rose mt-1 flex-shrink-0" fill="currentColor" />
                                                                 <span>
                                                                     {bullet.includes(':') ? (
                                                                         <>
@@ -324,8 +326,8 @@ const ProductDetail = () => {
                                         {block.bullets?.length > 0 && (
                                             <ul className="space-y-4">
                                                 {block.bullets.map((bullet, j) => (
-                                                    <li key={j} className="flex items-start text-brand-charcoal/80 text-[18px] italic">
-                                                        <Heart size={16} className="text-brand-rose mr-4 mt-1.5 flex-shrink-0" fill="currentColor" />
+                                                    <li key={j} className="flex items-start text-brand-charcoal/80 text-[16.2px] italic">
+                                                        <Heart size={14} className="text-brand-rose mr-4 mt-1.5 flex-shrink-0" fill="currentColor" />
                                                         <span>
                                                             {bullet.includes(':') ? (
                                                                 <>
