@@ -4,15 +4,31 @@ import { Star, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useShop, getProductImage } from '../context/ShopContext';
 import logo from '../assets/logo.png';
+import logoWhite from '../assets/logo-white.png';
+
 
 const Home = () => {
-    const { products, banners, media, loading, formatPrice } = useShop();
+    console.log("HOME COMPONENT RENDERED");
+
+    const { products, banners, media, loading, formatPrice, settings } = useShop();
     const [currentBanner, setCurrentBanner] = useState(0);
     const [galleryImages, setGalleryImages] = useState([]);
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const heroRef = useRef(null);
+    const [heroSize, setHeroSize] = useState({ w: 0, h: 0 });
 
+    console.log("heroRef current:", heroRef?.current);
+
+    // Handle Hero Resizing for Calibration Parity
     useEffect(() => {
-        const handleResize = () => setWindowWidth(window.innerWidth);
+        const handleResize = () => {
+            if (heroRef.current) {
+                setHeroSize({
+                    w: heroRef.current.clientWidth,
+                    h: heroRef.current.clientHeight
+                });
+            }
+        };
+        handleResize();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
@@ -32,9 +48,11 @@ const Home = () => {
             const shuffled = combinedPool.sort(() => 0.5 - Math.random());
             const resolvedUrls = shuffled.map(name => getProductImage(name, safeMedia));
             
+            // Deduplicate resolved URLs (handles same fallback for multiple names)
             const uniqueUrls = Array.from(new Set(resolvedUrls));
             let finalSelection = uniqueUrls.slice(0, 10);
             
+            // Backfill if needed
             if (finalSelection.length < 10) {
                 const backfill = staticPool
                     .map(name => getProductImage(name, safeMedia))
@@ -50,10 +68,14 @@ const Home = () => {
         return () => clearInterval(interval);
     }, [products, media]);
 
+    // Static banner for now - no automatic timer
+    // Filter and sequence banners based on visibility
     const visibleBanners = useMemo(() => {
         return (banners || []).filter(b => b.isVisible !== false);
     }, [banners]);
 
+    // Banner Auto-Play (7s)
+    // Dependencies on currentBanner ensure the timer resets if you manually navigate
     useEffect(() => {
         if (visibleBanners.length <= 1) return;
         const timer = setInterval(() => {
@@ -62,10 +84,52 @@ const Home = () => {
         return () => clearInterval(timer);
     }, [visibleBanners, currentBanner]);
 
+    // Ensure current banner index stays in bounds when visibility changes
+    useEffect(() => {
+        if (currentBanner >= visibleBanners.length && visibleBanners.length > 0) {
+            setCurrentBanner(0);
+        }
+    }, [visibleBanners, currentBanner]);
+
+    // PARITY CHECK: Log actual numeric values on every render/update (STRICT TOP-LEVEL)
     const activeBanner = visibleBanners[currentBanner];
-    const isMobile = windowWidth < 768;
+    const containerWidth = heroRef.current?.offsetWidth || 0;
+    const containerHeight = heroRef.current?.offsetHeight || 0;
+    const refWidth = activeBanner?.refWidth;
+    const refHeight = activeBanner?.refHeight;
+
+    // Debug check for data presence
+    console.log("BANNER DATA:", activeBanner);
+
+    // Safety Ratio Calculations
+    const ratioX = (activeBanner && refWidth) ? containerWidth / refWidth : 1;
+    const ratioY = (activeBanner && refHeight) ? containerHeight / refHeight : 1;
+    const tx = activeBanner ? (activeBanner.translateX || 0) * ratioX : 0;
+    const ty = activeBanner ? (activeBanner.translateY || 0) * ratioY : 0;
+
+    console.log("PARITY CHECK:", {
+        containerWidth,
+        containerHeight,
+        refWidth,
+        refHeight,
+        ratioX,
+        ratioY,
+        tx,
+        ty
+    });
+
+    // Calculate current hero transform values for parity sync
+    const heroTransform = useMemo(() => {
+        // STRICT: Reference frame must be ready and banner data must exist
+        if (containerHeight === 0 || !activeBanner || !refWidth || !refHeight) {
+            return `scale(${activeBanner?.zoom || 1})`;
+        }
+        
+        return `translate(${tx}px, ${ty}px) scale(${activeBanner.zoom || 1})`;
+    }, [activeBanner, containerWidth, containerHeight, refWidth, refHeight, tx, ty]);
 
     if (loading) {
+        console.log("HOME LOADING...");
         return (
             <div className="min-h-screen flex flex-col items-center justify-center font-medium">
                 <div className="w-12 h-12 border-4 border-brand-charcoal/10 border-t-brand-charcoal rounded-full animate-spin mb-6" />
@@ -75,219 +139,244 @@ const Home = () => {
     }
 
     return (
-        <div className="bg-brand-sage overflow-x-hidden">
-            {/* HERO SECTION - Centered & Stacked */}
-            <section className="page-container section-narrative">
+        <div className="pb-20 bg-brand-sage">
+            {/* Force Gutter System - Aligns with Header Boundaries */}
+            <div className="max-w-7xl mx-auto pt-6 px-4 md:px-0">
+                <section className="relative mx-auto md:mx-6 h-auto md:h-[75vh] overflow-hidden group flex flex-col md:flex-row rounded-sm shadow-2xl ring-1 ring-black/5 bg-white">
                 <AnimatePresence mode="wait">
                     {activeBanner && (
-                        <div key={activeBanner.id || currentBanner} className="flex flex-col items-center">
-                            {/* Narrative Block */}
-                            <motion.div 
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.8 }}
-                                className="text-tight mb-16"
+                        <motion.div
+                            key={activeBanner.id || currentBanner}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 1.2 }}
+                            className="flex flex-col md:flex-row w-full h-full"
+                        >
+                            {/* Left Side: Image (65% on Desktop) */}
+                            <div 
+                                ref={heroRef}
+                                className="relative w-full md:w-[65%] h-[50vh] md:h-full overflow-hidden"
                             >
-                                <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-brand-charcoal opacity-40 mb-6 block">Premium Collection</span>
-                                <h1 className="text-5xl md:text-8xl font-medium text-brand-charcoal leading-[1.1] tracking-tight mb-8">
-                                    {activeBanner.title}
-                                </h1>
-                                <p className="text-xl md:text-2xl text-brand-charcoal/60 italic font-medium mb-12 max-w-2xl mx-auto leading-relaxed">
-                                    "{activeBanner.subtitle}"
-                                </p>
                                 <Link 
                                     to={activeBanner.link || "/"}
-                                    className="bg-brand-charcoal text-[#EADED0] px-16 py-6 text-[14px] font-bold shadow-2xl hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-[0.3em] inline-block"
+                                    className="block w-full h-full"
                                 >
-                                    {activeBanner.cta || "Explore collection"}
-                                </Link>
-                            </motion.div>
-
-                            {/* Art-Directed Image Block */}
-                            <motion.div 
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 1.05 }}
-                                transition={{ duration: 1.2, ease: "easeOut" }}
-                                className="content-wrap"
-                            >
-                                <div className={`relative overflow-hidden rounded-sm shadow-2xl ${isMobile ? 'aspect-[4/5]' : 'aspect-[21/9]'}`}>
                                     <img
-                                        src={getProductImage(isMobile && activeBanner.mobileImage ? activeBanner.mobileImage : activeBanner.image, media)}
+                                        src={getProductImage(activeBanner.image, media)}
                                         alt={activeBanner.title}
-                                        className="w-full h-full object-cover origin-center"
+                                        className="w-full h-full block origin-center"
                                         style={{ 
-                                            transform: !isMobile ? `translate(${activeBanner.translateX || 0}px, ${activeBanner.translateY || 0}px) scale(${activeBanner.zoom || 1})` : 'scale(1)',
+                                            transform: heroTransform,
+                                            objectFit: activeBanner.fitMode || 'cover'
                                         }}
                                     />
-                                    {/* Subtle Ambient Overlay */}
-                                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/5" />
+                                </Link>
+                                {/* Refined Natural Image Fade Divider */}
+                                <div 
+                                    className="absolute top-0 right-0 bottom-0 w-[4%] pointer-events-none z-10"
+                                    style={{
+                                        background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(124, 132, 108, 0.08) 30%, rgba(124, 132, 108, 0.18) 55%, rgba(124, 132, 108, 0.3) 75%, rgba(124, 132, 108, 0.5) 100%)'
+                                    }}
+                                />
+                            </div>
+
+                            {/* Right Side: Content Panel (35% on Desktop) */}
+                            <div className="w-full md:w-[35%] bg-[#7C846C] p-12 md:p-[60px] flex flex-col justify-center min-h-[350px] md:min-h-0 text-white">
+                                <div className="max-w-md w-full mx-auto md:mx-0 flex flex-col gap-y-6">
+                                    <motion.h1
+                                        initial={{ opacity: 0, x: 30 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.8, delay: 0.2 }}
+                                        className="text-4xl md:text-5xl font-medium leading-[1.2]"
+                                    >
+                                        {activeBanner.title}
+                                    </motion.h1>
+                                    
+                                    <motion.p
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.8, delay: 0.4 }}
+                                        className="text-white/80 text-lg italic font-medium"
+                                    >
+                                        {activeBanner.subtitle}
+                                    </motion.p>
+
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.8, delay: 0.6 }}
+                                    >
+                                        <Link 
+                                            to={activeBanner.link || "/"}
+                                            className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-lg hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-[0.2em] active:scale-95 inline-block text-center mr-auto cursor-pointer"
+                                        >
+                                            {activeBanner.cta || "Explore collection"}
+                                        </Link>
+                                    </motion.div>
                                 </div>
-                            </motion.div>
-                        </div>
+                            </div>
+                        </motion.div>
                     )}
                 </AnimatePresence>
+
+                {/* Progress Indicators */}
+                <div className="absolute bottom-10 right-12 z-50 flex items-center gap-4 bg-black/40 backdrop-blur-3xl px-8 py-4 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-4 group-hover:translate-y-0 border border-white/10 shadow-2xl pointer-events-auto">
+                    {(Array.isArray(visibleBanners) ? visibleBanners : []).map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={(e) => { e.stopPropagation(); setCurrentBanner(i); }}
+                            className={`h-[4px] rounded-full transition-all duration-500 cursor-pointer ${currentBanner === i ? 'bg-white w-14 shadow-lg' : 'bg-white/30 w-5 hover:bg-white hover:w-8'}`}
+                            title={`Switch to slide ${i + 1}`}
+                        />
+                    ))}
+                    <div className="w-px h-4 bg-white/10 mx-2" />
+                    <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{currentBanner + 1} / {visibleBanners.length || 1}</span>
+                </div>
             </section>
+        </div>
 
-            {/* FEATURED COLLECTIONS - Consistent Grid */}
-            <section className="bg-white/50 section-dense w-full">
-                <div className="page-container mb-16">
-                    <div className="text-tight">
-                        <h2 className="text-4xl md:text-6xl font-medium text-brand-charcoal tracking-tight mb-6">Featured Collections</h2>
-                        <div className="w-12 h-px bg-brand-charcoal/20 mx-auto mb-6" />
-                        <p className="text-brand-charcoal/50 text-lg md:text-xl font-medium">Curated essentials for the mindful companion.</p>
+        <section className="max-w-7xl mx-auto px-6 mt-20">
+                <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-8">
+                    <div>
+                        <h2 className="text-4xl md:text-5xl font-medium text-brand-charcoal mb-4">Featured Collections</h2>
+                        <p className="text-brand-charcoal/40 text-lg">Hand-picked essentials for the modern pet.</p>
                     </div>
-                </div>
-
-                <div className="page-container mb-16">
-                    <div className="content-wrap">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
-                            {(Array.isArray(products) ? products : []).map((product) => (
-                                <Link to={`/product/${product.id}`} key={product.id} className="group flex flex-col items-center">
-                                    <div className="w-full aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm relative mb-8 shadow-sm group-hover:shadow-2xl transition-all duration-700">
-                                        <motion.img
-                                            src={getProductImage(Array.isArray(product.images) ? product.images.sort((a,b) => a.sequence - b.sequence)[0]?.url : product.imageName, media)}
-                                            alt={product.name}
-                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                                        />
-                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
-                                    </div>
-                                    <div className="text-center w-full">
-                                        <span className="text-[9px] tracking-[0.3em] text-[#8C916C] font-bold mb-4 block uppercase">{product.category}</span>
-                                        <h3 className="text-xl font-medium text-brand-charcoal leading-tight mb-2 px-4">{product.name}</h3>
-                                        <div className="flex items-center justify-center space-x-3 mb-4">
-                                            <span className="text-sm text-brand-charcoal/80 font-bold tracking-wider">
-                                                {formatPrice(product.discountPrice || product.price)}
-                                            </span>
-                                            {product.discountPrice && (
-                                                <span className="text-[10px] opacity-30 line-through font-bold">
-                                                    {formatPrice(product.price)}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="flex items-center justify-center">
-                                            {[...Array(5)].map((_, i) => (
-                                                <Star key={i} size={10} fill={i < (Number(product.rating) || 5) ? "#2f2f2f" : "none"} className="text-brand-charcoal mr-1 opacity-40" />
-                                            ))}
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="text-center">
-                    <Link to="/" className="text-[10px] font-bold border-b-2 border-brand-charcoal pb-2 hover:opacity-60 transition-all uppercase tracking-[0.3em]">
+                    <Link to="/" className="text-sm font-medium border-b border-brand-charcoal pb-1 hover:opacity-60 transition-opacity">
                         View all items
                     </Link>
                 </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+                    {(Array.isArray(products) ? products : []).map((product) => (
+                        <Link 
+                            to={`/product/${product.id}`}
+                            key={product.id}
+                            className="group"
+                        >
+                            <div className="aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm relative mb-6 shadow-sm hover:shadow-xl transition-shadow duration-500">
+                                <motion.img
+                                    src={getProductImage(Array.isArray(product.images) ? product.images.sort((a,b) => a.sequence - b.sequence)[0]?.url : product.imageName, media)}
+                                    alt={product.name}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
+                            </div>
+                            <div>
+                                <span className="text-[10px] tracking-wider text-[#8C916C] font-medium mb-3 block">{product.category}</span>
+                                <div className="flex flex-col items-start gap-1">
+                                    <h3 className="text-xl font-medium text-brand-charcoal leading-tight">{product.name}</h3>
+                                    <div className="flex items-center space-x-3">
+                                        <span className="text-sm text-brand-charcoal font-medium">
+                                            {formatPrice(product.discountPrice || product.price)}
+                                        </span>
+                                        {product.discountPrice && (
+                                            <span className="text-[10px] opacity-30 line-through">
+                                                {formatPrice(product.price)}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="flex items-center mt-4">
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star key={i} size={11} fill={i < (Number(product.rating) || 5) ? "#95714F" : "none"} className="text-[#95714F] mr-1" />
+                                    ))}
+                                    <span className="text-[10px] text-[#95714F]/60 ml-2 font-medium tracking-wider">Top rated</span>
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
             </section>
 
-            {/* COMMUNITY GALLERY - Structured Grid */}
-            <section className="page-container section-dense">
-                <div className="text-tight mb-16">
-                    <h2 className="text-4xl md:text-6xl font-medium text-brand-charcoal tracking-tight mb-4">Our community</h2>
-                    <span className="text-[10px] font-bold text-brand-charcoal/30 uppercase tracking-[0.4em]">Life in Tutu & Co</span>
+            <section className="max-w-7xl mx-auto px-6 mt-20">
+                <div className="flex flex-col items-center mb-10">
+                    <h2 className="text-4xl md:text-5xl font-medium text-brand-charcoal text-center tracking-tight">Our community</h2>
                 </div>
                 
-                <div className="content-wrap">
-                    <div className="grid grid-cols-2 md:grid-cols-5 auto-rows-[250px] md:auto-rows-[300px] gap-8">
-                        <AnimatePresence mode="popLayout">
-                            {(Array.isArray(galleryImages) ? galleryImages : []).map((img, index) => (
-                                <motion.div 
-                                    layout
-                                    key={img}
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.8 }}
-                                    className={`relative bg-brand-cream overflow-hidden rounded-sm group shadow-sm ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''} ${index === 4 ? 'md:row-span-2' : ''} ${index === 5 ? 'md:col-span-2' : ''} ${index === 9 ? 'md:col-span-2' : ''}`}
-                                >
-                                    <img src={img} alt={`Lifestyle ${index}`} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
-                                </motion.div>
-                            ))}
-                        </AnimatePresence>
+                <div className="grid grid-cols-2 md:grid-cols-5 auto-rows-[250px] gap-6">
+                    <AnimatePresence mode="popLayout">
+                        {(Array.isArray(galleryImages) ? galleryImages : []).map((img, index) => (
+                            <motion.div 
+                                layout
+                                key={img}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.8 }}
+                                transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                                className={`relative bg-brand-cream overflow-hidden rounded-sm cursor-pointer group shadow-md ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''} ${index === 4 ? 'md:row-span-2' : ''} ${index === 5 ? 'md:col-span-2' : ''} ${index === 9 ? 'md:col-span-2' : ''}`}
+                            >
+                                <img src={img} alt={`Lifestyle ${index}`} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </div>
+            </section>
+
+            <section className="py-20 bg-brand-cream/30 overflow-hidden">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="text-center mb-10">
+                        <h2 className="text-4xl md:text-6xl font-medium text-brand-charcoal mb-6">Kind words</h2>
+                        <div className="w-12 h-1 bg-brand-rose mx-auto opacity-30" />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                        {[
+                            { name: "Sarah & Oliver", text: "The quality of the bandana is unmatched. Oliver looks so dapper and the fabric is incredibly soft.", rating: 5 },
+                            { name: "Michael & Luna", text: "Finally, a brand that cares about sustainability as much as style. The packaging was beautiful too!", rating: 5 },
+                            { name: "Emma & Cooper", text: "The sizing guide was perfect. Cooper's new harness fits like a glove. Highly recommend!", rating: 5 }
+                        ].map((t, i) => (
+                            <motion.div 
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                className="bg-white p-12 rounded-sm shadow-sm border border-[#C7AF94]/10"
+                            >
+                                <div className="flex mb-8 text-[#95714F]">
+                                    {[...Array(t.rating)].map((_, j) => <Star key={j} size={16} fill="currentColor" />)}
+                                </div>
+                                <p className="text-brand-charcoal italic text-lg leading-relaxed mb-10">"{t.text}"</p>
+                                <div className="flex items-center space-x-4">
+                                    <div className="w-8 h-px bg-brand-charcoal/20" />
+                                    <p className="text-[10px] font-medium tracking-[0.3em] text-brand-charcoal/60">{t.name}</p>
+                                </div>
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* TESTIMONIALS - Calm Balanced Rhythm */}
-            <section className="bg-white/30 section-narrative">
-                <div className="page-container">
-                    <div className="text-tight mb-20 text-center">
-                        <h2 className="text-4xl md:text-6xl font-medium text-brand-charcoal mb-8">Kind words</h2>
-                        <div className="w-16 h-1 bg-brand-rose mx-auto opacity-40 rounded-full" />
+            <section className="py-20 bg-white">
+                <div className="max-w-7xl mx-auto px-6 text-center flex flex-col items-center">
+                    <span className="tracking-[0.3em] text-[10px] font-medium text-[#8C916C] mb-6 block">Stay connected</span>
+                    <div className="flex flex-col items-center mb-10">
+                        <img src={logo} alt="Tutu & Co" className="h-16 w-auto mb-2" />
                     </div>
-                    
-                    <div className="content-wrap">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
-                            {[
-                                { name: "Sarah & Oliver", text: "The quality of the bandana is unmatched. Oliver looks so dapper and the fabric is incredibly soft.", rating: 5 },
-                                { name: "Michael & Luna", text: "Finally, a brand that cares about sustainability as much as style. The packaging was beautiful too!", rating: 5 },
-                                { name: "Emma & Cooper", text: "The sizing guide was perfect. Cooper's new harness fits like a glove. Highly recommend!", rating: 5 }
-                            ].map((t, i) => (
-                                <motion.div 
-                                    key={i}
-                                    initial={{ opacity: 0, y: 30 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    className="bg-white p-16 rounded-sm shadow-2xl border border-brand-charcoal/5 flex flex-col items-center text-center"
-                                >
-                                    <div className="flex mb-10 text-brand-charcoal opacity-30">
-                                        {[...Array(t.rating)].map((_, j) => <Star key={j} size={14} fill="currentColor" />)}
-                                    </div>
-                                    <p className="text-brand-charcoal italic text-xl leading-relaxed mb-12">"{t.text}"</p>
-                                    <div className="flex flex-col items-center space-y-4">
-                                        <div className="w-12 h-px bg-brand-charcoal/10" />
-                                        <p className="text-[9px] font-bold tracking-[0.4em] text-brand-charcoal/40 uppercase">{t.name}</p>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* PHILOSOPHY - Pure Storytelling */}
-            <section className="section-narrative bg-brand-cream relative overflow-hidden">
-                <div className="page-container relative z-10">
-                    <div className="text-tight">
-                        <span className="text-[10px] font-bold text-brand-charcoal/40 uppercase tracking-[0.4em] mb-12 block">Our philosophy</span>
-                        <h2 className="text-5xl md:text-8xl font-medium text-brand-charcoal mb-12 leading-[1.1] tracking-tight">Naturally Sourced.<br/>Designed for Movement.</h2>
-                        <p className="text-brand-charcoal/70 leading-relaxed text-2xl md:text-3xl italic opacity-80 mb-16 font-medium">
-                            "At Tutu & Co, we believe our pet companions deserve the same quality of organic materials and thoughtful design as we do."
-                        </p>
-                        <div className="flex flex-col items-center">
-                            <div className="w-px h-24 bg-brand-charcoal/20 mb-8" />
-                            <Link to="/" className="text-[10px] tracking-[0.4em] font-bold text-brand-charcoal hover:opacity-60 transition-all uppercase border-b-2 border-brand-charcoal pb-2">Discover our story</Link>
-                        </div>
-                    </div>
-                </div>
-                {/* Dynamic Architectural Accents */}
-                <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/30 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl opacity-40" />
-                <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-brand-sage/20 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl opacity-20" />
-            </section>
-
-            {/* STAY CONNECTED - Final Signature */}
-            <section className="section-narrative bg-white">
-                <div className="page-container text-center flex flex-col items-center">
-                    <motion.div 
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        className="mb-16"
-                    >
-                        <img src={logo} alt="Tutu & Co" className="h-20 w-auto grayscale" />
-                    </motion.div>
-                    <p className="text-brand-charcoal/40 mb-16 text-2xl font-light italic tracking-tight">Capture the joy. Share your moments with us.</p>
+                    <p className="text-[#95714F] mb-10 text-xl font-light">Capture the joy. Share your moments with us.</p>
                     <Link 
                         to="/moments"
-                        className="group inline-flex items-center space-x-8 bg-brand-charcoal text-[#EADED0] px-20 py-8 text-[16px] font-bold hover:bg-brand-rose hover:text-brand-charcoal transition-all shadow-2xl uppercase tracking-[0.3em]"
+                        className="inline-flex items-center space-x-6 bg-brand-rose text-brand-charcoal px-16 py-10 text-[18px] font-medium hover:bg-white transition-all shadow-lg"
                     >
                         <span>Visit the gallery</span>
-                        <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+                        <ArrowRight size={24} />
                     </Link>
                 </div>
+            </section>
+
+            <section className="bg-brand-cream mt-20 py-20 px-6 text-center relative overflow-hidden">
+                <div className="max-w-4xl mx-auto relative z-10">
+                    <span className="text-[11px] font-medium text-brand-charcoal opacity-60">Our philosophy</span>
+                    <h2 className="text-5xl md:text-7xl font-medium text-brand-charcoal mt-8 mb-10 leading-tight">Naturally Sourced.<br/>Designed for Movement.</h2>
+                    <p className="text-brand-charcoal/80 leading-relaxed text-2xl italic opacity-80 max-w-2xl mx-auto">
+                        "At Tutu & Co, we believe our pet companions deserve the same quality of organic materials and thoughtful design as we do."
+                    </p>
+                    <div className="mt-16 flex flex-col items-center">
+                        <div className="w-px h-24 bg-brand-charcoal/20 mb-8" />
+                        <Link to="/" className="text-[10px] tracking-[0.3em] font-medium text-brand-charcoal hover:opacity-70 transition-opacity">Discover our story</Link>
+                    </div>
+                </div>
+                <div className="absolute top-0 left-0 w-64 h-64 bg-brand-cream/50 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-30" />
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-brand-sage/50 rounded-full translate-x-1/3 translate-y-1/3 opacity-10" />
             </section>
         </div>
     );

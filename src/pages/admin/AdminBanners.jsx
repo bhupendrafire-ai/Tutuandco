@@ -96,8 +96,7 @@ const AdminBanners = () => {
                             translateY: 0,
                             refWidth: 1920,
                             refHeight: 1080,
-                            fitMode: 'cover',
-                            mobileImage: ''
+                            fitMode: 'cover'
                         }])} 
                         className="bg-brand-rose text-brand-charcoal px-8 py-4 rounded-sm text-[11px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-xl flex items-center space-x-3"
                     >
@@ -159,42 +158,8 @@ const AdminBanners = () => {
                                 </div>
                             </div>
 
-                            {/* Mobile Banner Preview - Vertical Art Direction */}
-                            <div className="w-full md:w-[250px] aspect-[4/5] bg-brand-cream relative group cursor-pointer overflow-hidden border-l border-brand-charcoal/10 flex-shrink-0">
-                                {banner.mobileImage ? (
-                                    <img 
-                                        src={getProductImage(banner.mobileImage, media)} 
-                                        className="w-full h-full object-cover transition-transform duration-500"
-                                        alt="Mobile preview"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex flex-col items-center justify-center text-brand-charcoal/20 p-4 text-center">
-                                        <ImageIcon size={32} className="mb-2" />
-                                        <span className="text-[8px] font-bold uppercase tracking-widest leading-tight">No Mobile Asset<br/>Selected</span>
-                                    </div>
-                                )}
-                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4">
-                                    <span className="text-[8px] font-bold text-white uppercase tracking-widest mb-4">Mobile Art Direction (4:5)</span>
-                                    <button 
-                                        onClick={() => {
-                                            openMediaPicker({
-                                                multi: false,
-                                                onSelect: (item) => {
-                                                    const nb = [...banners];
-                                                    nb[index] = { ...nb[index], mobileImage: typeof item === 'string' ? item : item.url };
-                                                    updateBanners(nb);
-                                                }
-                                            });
-                                        }}
-                                        className="w-full py-2 bg-white text-brand-charcoal text-[8px] font-bold uppercase tracking-widest rounded-sm hover:bg-brand-rose transition-all"
-                                    >
-                                        Pick Mobile Image
-                                    </button>
-                                </div>
-                            </div>
-
                             {/* Banner Form */}
-                            <div className="flex-grow p-10 space-y-8 flex flex-col justify-between bg-[#7C846C] text-white">
+                            <div className="w-full md:w-[35%] p-10 space-y-8 flex flex-col justify-between bg-[#7C846C] text-white">
                                 <div className="space-y-6">
                                     <div className="flex justify-between items-start">
                                         <input 
@@ -468,23 +433,6 @@ const AdminBanners = () => {
                                             >
                                                 <ImageIcon size={14} />
                                                 <span>Change Identity Asset</span>
-                                            </button>
-
-                                            <button 
-                                                onClick={() => {
-                                                    openMediaPicker({
-                                                        multi: false,
-                                                        onSelect: (item) => {
-                                                            const nb = [...banners];
-                                                            nb[adjustingBannerIdx] = { ...nb[adjustingBannerIdx], mobileImage: typeof item === 'string' ? item : item.url };
-                                                            updateBanners(nb);
-                                                        }
-                                                    });
-                                                }}
-                                                className="w-full py-4 border-2 border-dashed border-white/10 rounded-sm text-[9px] font-bold uppercase tracking-widest opacity-60 hover:opacity-100 transition-all flex items-center justify-center space-x-2"
-                                            >
-                                                <ImageIcon size={14} />
-                                                <span>Change Mobile Identity Asset</span>
                                             </button>
                                         </div>
 
