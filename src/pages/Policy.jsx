@@ -94,7 +94,7 @@ const Policy = () => {
                     </div>
                 ) : (
                     <div 
-                        className="policy-content prose-headings:font-medium prose-p:mb-6 prose-li:mb-2 prose-strong:text-brand-charcoal" 
+                        className="policy-content" 
                         dangerouslySetInnerHTML={{ 
                             __html: resolvedKey === 'sizing_guide' ? processDualUnits(displayContent) : displayContent 
                         }} 
@@ -124,27 +124,81 @@ const Policy = () => {
                 </div>
             </div>
             <style sx>{`
+                .policy-content {
+                    all: initial;
+                    display: block;
+                    font-family: 'Avenir Next Rounded Pro', system-ui, sans-serif;
+                    line-height: 1.6;
+                    color: #2f2f2f;
+                    text-align: left;
+                }
+                .policy-content h2 { 
+                    display: block;
+                    font-size: 1.5rem;
+                    font-weight: 500;
+                    margin-top: 2rem;
+                    margin-bottom: 1rem;
+                    color: #1a1a1a;
+                }
+                .policy-content h3 { 
+                    display: block;
+                    font-size: 1.25rem;
+                    font-weight: 500;
+                    margin-top: 1.5rem;
+                    margin-bottom: 0.75rem;
+                    color: #1a1a1a;
+                }
+                .policy-content p { 
+                    display: block;
+                    margin-bottom: 1rem;
+                }
+                .policy-content ul {
+                    display: block;
+                    list-style-type: disc;
+                    margin-bottom: 1rem;
+                    padding-left: 2rem;
+                }
+                .policy-content li {
+                    display: list-item;
+                    margin-bottom: 0.5rem;
+                }
+                .policy-content strong { font-weight: 700; color: #000; }
+                .policy-content em { font-style: italic; }
+
                 .policy-content table {
+                    all: revert;
+                    display: table;
                     width: 100%;
                     border-collapse: collapse;
                     margin-top: 16px;
+                    margin-bottom: 16px;
                     font-size: 14px;
+                    table-layout: auto;
                 }
                 .policy-content thead {
+                    display: table-header-group;
                     background: rgba(0, 0, 0, 0.03);
                 }
+                .policy-content tbody {
+                    display: table-row-group;
+                }
+                .policy-content tr {
+                    display: table-row;
+                    border-bottom: 1px solid rgba(0,0,0,0.06);
+                }
                 .policy-content th {
+                    display: table-cell;
                     text-align: left;
-                    font-weight: 500;
+                    font-weight: 600;
                     padding: 12px 16px;
                     letter-spacing: 0.04em;
                     font-size: 12px;
                     text-transform: uppercase;
+                    background: rgba(0, 0, 0, 0.03);
                 }
                 .policy-content td {
+                    display: table-cell;
                     padding: 14px 16px;
-                }
-                .policy-content tr {
                     border-bottom: 1px solid rgba(0,0,0,0.06);
                 }
                 @media (max-width: 768px) {
