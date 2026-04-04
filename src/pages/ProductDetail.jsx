@@ -26,6 +26,7 @@ const ProductDetail = () => {
     const { id } = useParams();
     const { products, addToCart, loading, formatPrice, settings, media } = useShop();
     const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedSize, setSelectedSize] = useState(null);
     const [reviews, setReviews] = useState([]);
     
     const product = (Array.isArray(products) ? products : []).find(p => String(p.id) === String(id)) || products[0];
@@ -36,6 +37,12 @@ const ProductDetail = () => {
             const mainImg = safeImages.length > 0 ? safeImages.sort((a,b) => a.sequence - b.sequence)[0]?.url : product?.imageName;
             setSelectedImage(getProductImage(mainImg, media));
             
+            // Set default size (first one with stock)
+            if (product.sizeVariants?.length > 0) {
+                const firstInStock = product.sizeVariants.find(v => (v.stock || 0) > 0) || product.sizeVariants[0];
+                setSelectedSize(firstInStock.size);
+            }
+
             // Load reviews from real API
             if (FINAL_API_URL && product.id) {
                 fetch(`${FINAL_API_URL}/api/reviews/${product.id}`)
@@ -50,8 +57,11 @@ const ProductDetail = () => {
     if (loading || !product || !settings) return <div className="min-h-screen flex items-center justify-center font-medium bg-brand-sage">Synchronizing product data...</div>;
 
     const handleAddToCart = () => {
-        addToCart(product);
-        alert(`${product.name} added to cart!`);
+        if (product.sizeVariants?.length > 0 && !selectedSize) {
+            return alert("Please select a size first!");
+        }
+        addToCart(product, 1, selectedSize);
+        alert(`${product.name}${selectedSize ? ` (${selectedSize})` : ''} added to cart!`);
     };
 
     return (
@@ -127,6 +137,45 @@ const ProductDetail = () => {
                         <p className="text-brand-charcoal/80 leading-relaxed mb-10 text-lg font-normal max-w-md">
                             {product.description}
                         </p>
+
+                        {/* Size Selector */}
+                        {product.sizeVariants?.length > 0 && (
+                            <div className="mb-10">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-[0.2em]">Select Size</h3>
+                                    <button className="text-[10px] font-bold text-brand-rose uppercase border-b border-brand-rose/20 pb-0.5 hover:border-brand-rose transition-all">Size Guide</button>
+                                </div>
+                                <div className="flex flex-wrap gap-3">
+                                    {product.sizeVariants.map((variant) => {
+                                        const isOutOfStock = (variant.stock || 0) <= 0;
+                                        const isSelected = selectedSize === variant.size;
+                                        
+                                        return (
+                                            <button
+                                                key={variant.size}
+                                                disabled={isOutOfStock}
+                                                onClick={() => setSelectedSize(variant.size)}
+                                                className={`
+                                                    min-w-[56px] h-14 flex items-center justify-center text-xs font-bold transition-all border
+                                                    ${isSelected 
+                                                        ? 'bg-brand-charcoal text-white border-brand-charcoal shadow-md' 
+                                                        : 'bg-white text-brand-charcoal border-brand-charcoal/10 hover:border-brand-charcoal/40'
+                                                    }
+                                                    ${isOutOfStock ? 'opacity-20 cursor-not-allowed line-through' : ''}
+                                                `}
+                                            >
+                                                {variant.size}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                {product.sizeVariants.find(v => v.size === selectedSize)?.stock <= 5 && product.sizeVariants.find(v => v.size === selectedSize)?.stock > 0 && (
+                                    <p className="text-[10px] text-brand-rose font-bold uppercase mt-3 animate-pulse">
+                                        Only {product.sizeVariants.find(v => v.size === selectedSize).stock} left in stock!
+                                    </p>
+                                )}
+                            </div>
+                        )}
 
                         {/* Primary CTA Section - Relocated above details for better conversion flow */}
                         <div className="flex flex-col sm:flex-row gap-4 mb-12 mt-4">
