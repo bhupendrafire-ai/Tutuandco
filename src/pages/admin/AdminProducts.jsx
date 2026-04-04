@@ -193,10 +193,30 @@ const AdminProducts = () => {
                                         <img src={getProductImage(item.images?.[0]?.url || item.imageName, media)} className="w-24 h-24 object-cover rounded-sm border border-brand-charcoal/10 shadow-sm" alt="" />
                                         <span className="font-bold text-lg md:text-xl line-clamp-1">{item.name}</span>
                                     </td>
-                                    <td className="p-6 text-sm">
-                                        <span className={`px-4 py-1.5 text-[12px] font-bold rounded-full ${Number(item.stock) < 10 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                                            {Number(item.stock) || 0} units
-                                        </span>
+                                    <td className="p-6 text-sm min-w-[200px]">
+                                        <div className="flex flex-wrap gap-2" title={(item.variants || []).map(v => `${v.size}: ${v.stock} units`).join(', ')}>
+                                            {(item.variants && item.variants.length === 1 && item.variants[0].size.toLowerCase() === 'standard') ? (
+                                                <span className={`px-4 py-1.5 text-[11px] font-bold rounded-full shadow-sm ${Number(item.variants[0].stock) <= 3 ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'}`}>
+                                                    {item.variants[0].stock} units
+                                                </span>
+                                            ) : (
+                                                <>
+                                                    {(item.variants || []).slice(0, 3).map((v, i) => (
+                                                        <span key={i} className={`px-2.5 py-1 text-[10px] font-bold rounded-sm border transition-all hover:scale-105 ${Number(v.stock) <= 3 ? 'bg-red-50 border-red-100 text-red-600 shadow-[0_2px_4px_rgba(220,38,38,0.05)]' : 'bg-green-50 border-green-100 text-green-600 shadow-[0_2px_4px_rgba(22,163,74,0.05)]'}`}>
+                                                            {v.size}: {v.stock}
+                                                        </span>
+                                                    ))}
+                                                    {item.variants && item.variants.length > 3 && (
+                                                        <span className="text-[10px] font-bold text-brand-charcoal/40 bg-brand-cream/50 px-2 py-1 rounded-sm border border-brand-charcoal/5">
+                                                            +{item.variants.length - 3}
+                                                        </span>
+                                                    )}
+                                                    {(!item.variants || item.variants.length === 0) && (
+                                                        <span className="text-[10px] font-bold text-brand-charcoal/20 italic bg-brand-cream/30 px-3 py-1 rounded-full">No stock tracking</span>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="p-6 font-medium text-lg">{settings?.currency?.symbol || '₹'}{Number(item.price || 0).toFixed(2)}</td>
                                     <td className="p-6 text-right space-x-3 text-[#CD664D]">
