@@ -15,6 +15,7 @@ export default {
                 'brand-sage': '#c5d1c0',
                 'brand-charcoal': '#2f2f2f',
                 'brand-rose': '#d8b7b1',
+                'brand-rose-dark': '#A66B5B',
                 'brand-cream': '#e6dfd4',
                 'brand-gray': '#868686',
             },

@@ -143,7 +143,7 @@ const ProductDetail = () => {
                             <div className="mb-10">
                                 <div className="flex justify-between items-center mb-4">
                                     <h3 className="text-[13px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Select Size</h3>
-                                    <Link to="/sizing" className="text-[11px] font-bold text-brand-rose border-b border-brand-rose/20 hover:border-brand-rose transition-all">Size Guide</Link>
+                                    <Link to="/sizing" className="text-[11px] font-bold text-brand-rose-dark border-b border-brand-rose-dark/20 hover:border-brand-rose-dark transition-all">Size Guide</Link>
                                 </div>
                                 <div className="flex flex-wrap gap-3">
                                     {(product.variants && product.variants.length > 0 ? product.variants : []).map((variant) => {

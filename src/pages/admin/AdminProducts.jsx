@@ -472,7 +472,7 @@ const AdminProducts = () => {
                                                 <div className="relative size-dropdown-container">
                                                     <button 
                                                         onClick={() => setShowSizeDropdown(!showSizeDropdown)}
-                                                        className="text-[10px] font-bold text-brand-rose uppercase border-b border-brand-rose hover:opacity-60 transition-all flex items-center gap-1"
+                                                        className="text-[10px] font-bold text-brand-rose-dark uppercase border-b border-brand-rose-dark hover:opacity-60 transition-all flex items-center gap-1"
                                                     >
                                                         <Plus size={10} /> Add Size
                                                     </button>
