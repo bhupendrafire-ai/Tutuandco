@@ -309,15 +309,9 @@ const Home = () => {
             {/* Our Community Section (Refined Editorial Grid) */}
             <section className="pt-[72px] pb-[48px] bg-white border-t border-[#eaeaea]">
                 <div className="max-w-[1280px] mx-auto px-6">
-                    <div className="max-w-[640px] text-left mb-9">
-                        <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest mb-1.5 block">Capturing Joy</span>
-                        <h2 className="text-4xl font-medium text-[#6f6f6f] mb-4 tracking-tight">Our community</h2>
-                        <p className="text-[#9a9a9a] text-lg italic leading-relaxed">
-                            Shared moments of comfort and style from our beloved companions worldwide.
-                        </p>
-                    </div>
+                    <h2 className="text-4xl font-medium text-[#6f6f6f] mb-4 tracking-tight text-center">Our community</h2>
                     
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-[7.5px]">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-[7px]">
                         {(Array.isArray(galleryImages) ? galleryImages.slice(0, 8) : []).map((img, index) => (
                             <motion.div 
                                 key={img}
@@ -333,8 +327,8 @@ const Home = () => {
                         ))}
                     </div>
 
-                    <div className="mt-4 text-left">
-                        <Link to="/moments" className="inline-flex items-center gap-2 text-[12.5px] font-medium text-[#868686] uppercase tracking-normal hover:text-[#2f2f2f] transition-all group">
+                    <div className="mt-[10.5px] text-left">
+                        <Link to="/moments" className="inline-flex items-center gap-2 text-sm font-medium text-[#868686] hover:text-[#2f2f2f] transition-all group">
                             <span>Visit the gallery</span>
                             <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-[2px]" />
                         </Link>
