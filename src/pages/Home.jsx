@@ -339,13 +339,11 @@ const Home = () => {
             </section>
 
             {/* Kind Words Tier (Tertiary Hierarchy: 4xl, #6f6f6f) */}
-            <section className="pt-32 pb-24 bg-brand-cream/30 overflow-hidden transition-colors duration-700">
+            <section className="pt-16 pb-24 bg-brand-cream/30 overflow-hidden transition-colors duration-700">
                 <div className="max-w-[1280px] mx-auto px-6">
-                    <div className="max-w-[720px] mx-auto text-center mb-11 pt-6">
-                        <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest mb-3 block">TESTIMONIALS</span>
-                        <h2 className="text-4xl font-medium text-[#6f6f6f] mb-8 tracking-tight">Kind words</h2>
-                        <div className="w-12 h-0.5 bg-[#d8b7b1] mx-auto mb-8" />
-                        <p className="text-[#9a9a9a] text-xl font-light italic">
+                    <div className="max-w-[720px] mx-auto text-center mb-9">
+                        <h2 className="text-4xl font-medium text-[#6f6f6f] mb-4 tracking-tight">Kind words</h2>
+                        <p className="text-[#868686] text-xl font-light italic">
                             Heartfelt stories from our community of pet parents.
                         </p>
                     </div>
