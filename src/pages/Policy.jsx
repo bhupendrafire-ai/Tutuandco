@@ -65,7 +65,6 @@ const Policy = () => {
 
     // --- Conditional Meta Injection ---
     // Ensure consistent business address and GST across all policies
-    const showBusinessInfo = settings?.gstin || settings?.address;
 
     return (
         <PolicyLayout activeKey={policyKey}>
@@ -96,41 +95,26 @@ const Policy = () => {
                     />
                 )}
 
-                {/* Persistent Editorial Footer */}
-                <div className="pt-16 border-t border-brand-charcoal/5 space-y-12">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div className="space-y-4">
-                            <p className="text-xs font-bold uppercase tracking-widest text-brand-charcoal/40">Contact protection</p>
-                            <p className="text-sm font-medium">hello.tutuandco@gmail.com</p>
-                            <p className="text-xs text-brand-charcoal/60">Monday – Friday, 9:00 AM – 6:00 PM IST</p>
-                        </div>
-                        
-                        <div className="text-xs text-brand-charcoal/60 leading-relaxed italic">
-                            Our team is dedicated to providing the best experience for both you and your furry companion. 
-                            If you have specific questions not addressed above, reach out to us.
-                        </div>
-                    </div>
+                {/* Natural Content Closing */}
+                <div className="text-brand-charcoal/80">
+                    <p className="mt-8">
+                        For any questions, contact us at{" "}
+                        <a href="mailto:hello.tutuandco@gmail.com" className="underline underline-offset-2 hover:text-brand-rose transition-colors duration-300">
+                            hello.tutuandco@gmail.com
+                        </a>.
+                    </p>
 
-                    {/* Legal Entity block - Only if data exists */}
-                    {showBusinessInfo && (
-                        <div className="pt-12 border-t border-brand-charcoal/5 text-[11px] text-brand-charcoal/60 uppercase tracking-widest leading-relaxed">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                                <div>
-                                    <p className="mb-2 font-bold">{settings?.shopName || 'Tutu & Co'}</p>
-                                    <p className="opacity-70">Operated by {settings?.proprietorshipName || 'Filter Works (Proprietorship)'}</p>
-                                    {settings?.gstin && <p className="opacity-70">GSTIN: {settings.gstin}</p>}
-                                </div>
-                                {settings?.address && (
-                                    <div className="opacity-70">
-                                        <p>{settings.address?.line1}</p>
-                                        <p>{settings.address?.line2}</p>
-                                        <p>{settings.address?.city}, {settings.address?.state} {settings.address?.pincode}</p>
-                                        <p>{settings.address?.country || 'India'}</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
+                    <p className="mt-4">
+                        Tutu & Co · Operated by Filter Works (Proprietorship) · GSTIN: 27ABYPW0381K1ZQ
+                    </p>
+
+                    <p className="mt-4 leading-relaxed">
+                        Filter Works (Proprietorship)<br />
+                        S No 879, Siddhivinayak Industrial Estate, Shed No-01<br />
+                        Kudalwadi, Chikhali<br />
+                        Pune, Maharashtra 411062<br />
+                        India
+                    </p>
                 </div>
             </div>
         </PolicyLayout>
