@@ -58,6 +58,9 @@ const Footer = () => {
                 <p className="text-[10px] text-brand-charcoal/60 uppercase tracking-widest leading-relaxed">
                     Tutu & Co · Operated by Filter Works (Proprietorship) · GSTIN: 27ABYPW0381K1ZQ
                 </p>
+                <p className="text-[10px] text-brand-charcoal/60 uppercase tracking-widest leading-relaxed mt-2">
+                    Pune, Maharashtra, India
+                </p>
             </div>
         </footer>
     );
