@@ -46,7 +46,7 @@ const Footer = () => {
                 </div>
             </div>
             <div className="max-w-[1280px] mx-auto px-6 mt-20 pt-12 border-t border-[#2f2f2f]/5 flex flex-col md:flex-row justify-between items-center text-[10px] text-[#868686] font-normal uppercase tracking-widest">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
                     <span>{settings.footerText || `© 2026 ${settings.shopName}. Crafted with care.`}</span>
                     <IconCat size={12} color="#bdbdbd" />
                 </div>
