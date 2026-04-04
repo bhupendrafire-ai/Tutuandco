@@ -29,6 +29,7 @@ const Footer = () => {
                         <li><Link to="/policy/returns" className="hover:text-[#2f2f2f] transition-colors">Returns & Exchanges</Link></li>
                         <li><Link to="/policy/care" className="hover:text-[#2f2f2f] transition-colors">Product Care</Link></li>
                         <li><Link to="/policy/privacy" className="hover:text-[#2f2f2f] transition-colors">Privacy Policy</Link></li>
+                        <li><Link to="/terms" className="hover:text-[#2f2f2f] transition-colors">Terms & Conditions</Link></li>
                     </ul>
                 </div>
                 <div>
@@ -52,6 +53,11 @@ const Footer = () => {
                     <Link to="/moments" className="hover:text-[#2f2f2f] transition-colors tracking-widest">User Gallery</Link>
                     <Link to="/blogs" className="hover:text-[#2f2f2f] transition-colors tracking-widest">Journal</Link>
                 </div>
+            </div>
+            <div className="max-w-[1280px] mx-auto px-6 mt-16 text-center md:text-left">
+                <p className="text-[10px] text-brand-charcoal/60 uppercase tracking-widest leading-relaxed">
+                    Tutu & Co · Operated by Filter Works (Proprietorship) · GSTIN: 27ABYPW0381K1ZQ
+                </p>
             </div>
         </footer>
     );

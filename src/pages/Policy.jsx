@@ -197,6 +197,11 @@ const Policy = () => {
                              <p className="text-sm font-medium text-brand-charcoal mb-4">Contact support</p>
                              <p className="text-sm">support@tutuandco.com</p>
                              <p className="text-sm">Mon - Fri: 9am - 6pm EST</p>
+                             <div className="pt-10 border-t border-brand-charcoal/10 mt-10">
+                                 <p className="text-sm text-brand-charcoal/80">
+                                     Tutu & Co · Operated by Filter Works (Proprietorship) · GSTIN: 27ABYPW0381K1ZQ
+                                 </p>
+                             </div>
                          </div>
                      </div>
                 </main>
