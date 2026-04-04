@@ -34,6 +34,15 @@ const AdminProducts = () => {
     
     const fileInputRef = useRef(null);
     const uploadTargetIdx = useRef(null);
+    const stockInputRefs = useRef([]);
+
+    // Size Selection State
+    const [showSizeDropdown, setShowSizeDropdown] = useState(false);
+    const [isEnteringCustomSize, setIsEnteringCustomSize] = useState(false);
+    const [customSizeValue, setCustomSizeValue] = useState('');
+    const [lastAddedIdx, setLastAddedIdx] = useState(null);
+
+    const SIZE_PRESETS = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
     const handleToggleSelect = (id) => {
         setSelectedProductIds(prev => 
@@ -136,6 +145,54 @@ const AdminProducts = () => {
         const nb = [...(productForm.images || [])];
         nb[adjustingImageIdx] = { ...nb[adjustingImageIdx], focalPoint: { x, y } };
         setProductForm({ ...productForm, images: nb });
+    };
+
+    // Close dropdown on click outside or ESC
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') setShowSizeDropdown(false);
+        };
+        const handleClickOutside = (e) => {
+            if (showSizeDropdown && !e.target.closest('.size-dropdown-container')) {
+                setShowSizeDropdown(false);
+            }
+        };
+        if (showSizeDropdown) {
+            window.addEventListener('keydown', handleKeyDown);
+            window.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showSizeDropdown]);
+
+    // Auto-focus newly added variant
+    useEffect(() => {
+        if (lastAddedIdx !== null && stockInputRefs.current[lastAddedIdx]) {
+            stockInputRefs.current[lastAddedIdx].focus();
+            setLastAddedIdx(null);
+        }
+    }, [lastAddedIdx, productForm.variants]);
+
+    const handleAddSizeVariant = (sizeLabel) => {
+        const trimmed = sizeLabel.trim();
+        if (!trimmed) return;
+        const normalized = trimmed.toUpperCase();
+
+        // Case-insensitive duplicate check
+        if (productForm.variants.find(v => v.size.toLowerCase() === trimmed.toLowerCase())) {
+            alert(`Size "${trimmed}" already exists!`);
+            return false;
+        }
+
+        const newVariants = [...productForm.variants, { size: normalized, stock: 0 }];
+        setProductForm({
+            ...productForm,
+            variants: newVariants
+        });
+        setLastAddedIdx(newVariants.length - 1);
+        return true;
     };
 
     return (
@@ -412,33 +469,108 @@ const AdminProducts = () => {
                                         <div className="space-y-6">
                                             <div className="flex justify-between items-center">
                                                 <label className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Sizes & Inventory</label>
-                                                <button 
-                                                    onClick={() => {
-                                                        const size = prompt("Enter size label (e.g. S, M, L, XL):");
-                                                        if (size) {
-                                                            const trimmed = size.trim();
-                                                            const normalized = trimmed.toUpperCase();
-                                                            // Case-insensitive duplicate check
-                                                            if (productForm.variants.find(v => v.size.toLowerCase() === trimmed.toLowerCase())) {
-                                                                return alert(`Size "${trimmed}" already exists (case-insensitive)!`);
-                                                            }
-                                                            setProductForm({
-                                                                ...productForm,
-                                                                variants: [...productForm.variants, { size: normalized, stock: 0 }]
-                                                            });
-                                                        }
-                                                    }}
-                                                    className="text-[10px] font-bold text-brand-rose uppercase border-b border-brand-rose hover:opacity-60 transition-all"
-                                                >
-                                                    + Add Size
-                                                </button>
+                                                <div className="relative size-dropdown-container">
+                                                    <button 
+                                                        onClick={() => setShowSizeDropdown(!showSizeDropdown)}
+                                                        className="text-[10px] font-bold text-brand-rose uppercase border-b border-brand-rose hover:opacity-60 transition-all flex items-center gap-1"
+                                                    >
+                                                        <Plus size={10} /> Add Size
+                                                    </button>
+                                                    <AnimatePresence>
+                                                        {showSizeDropdown && (
+                                                            <motion.div 
+                                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                                className="absolute right-0 top-full mt-2 bg-brand-cream border border-brand-charcoal/10 rounded-sm shadow-xl z-[200] min-w-[120px] overflow-hidden"
+                                                            >
+                                                                <div className="p-2 grid grid-cols-2 gap-1 bg-white/50">
+                                                                    {SIZE_PRESETS.map(size => (
+                                                                        <button 
+                                                                            key={size}
+                                                                            onClick={() => {
+                                                                                if (handleAddSizeVariant(size)) setShowSizeDropdown(false);
+                                                                            }}
+                                                                            className="px-3 py-2 text-[10px] font-bold text-brand-charcoal hover:bg-brand-rose hover:text-brand-charcoal transition-all rounded-sm uppercase"
+                                                                        >
+                                                                            {size}
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                                <button 
+                                                                    onClick={() => {
+                                                                        setShowSizeDropdown(false);
+                                                                        setIsEnteringCustomSize(true);
+                                                                    }}
+                                                                    className="w-full text-left px-4 py-3 text-[9px] font-bold text-brand-charcoal/60 hover:bg-brand-sage/20 transition-all border-t border-brand-charcoal/5 uppercase tracking-widest"
+                                                                >
+                                                                    Custom...
+                                                                </button>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
                                             </div>
+
+                                            <AnimatePresence>
+                                                {isEnteringCustomSize && (
+                                                    <motion.div 
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        className="overflow-hidden"
+                                                    >
+                                                        <div className="flex items-center gap-2 p-4 bg-brand-sage/5 border border-brand-sage/20 rounded-sm mb-4">
+                                                            <input 
+                                                                autoFocus
+                                                                value={customSizeValue}
+                                                                onChange={e => setCustomSizeValue(e.target.value)}
+                                                                onKeyDown={e => {
+                                                                    if (e.key === 'Enter') {
+                                                                        if (handleAddSizeVariant(customSizeValue)) {
+                                                                            setIsEnteringCustomSize(false);
+                                                                            setCustomSizeValue('');
+                                                                        }
+                                                                    } else if (e.key === 'Escape') {
+                                                                        setIsEnteringCustomSize(false);
+                                                                    }
+                                                                }}
+                                                                className="flex-grow bg-transparent text-sm font-bold uppercase outline-none border-b border-brand-charcoal/10 focus:border-brand-rose p-1"
+                                                                placeholder="Enter size..."
+                                                            />
+                                                            <button 
+                                                                onClick={() => {
+                                                                    if (handleAddSizeVariant(customSizeValue)) {
+                                                                        setIsEnteringCustomSize(false);
+                                                                        setCustomSizeValue('');
+                                                                    }
+                                                                }}
+                                                                className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-all"
+                                                            >
+                                                                <Check size={16} />
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => setIsEnteringCustomSize(false)}
+                                                                className="p-2 text-brand-charcoal/40 hover:bg-red-50 hover:text-red-500 rounded-full transition-all"
+                                                            >
+                                                                <X size={16} />
+                                                            </button>
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
                                             
                                             <div className="bg-brand-cream/30 rounded-sm border border-brand-charcoal/5 overflow-hidden">
                                                 {productForm.variants.length > 0 ? (
                                                     <div className="divide-y divide-brand-charcoal/5">
                                                         {productForm.variants.map((variant, idx) => (
-                                                            <div key={idx} className="p-4 flex items-center justify-between group">
+                                                            <motion.div 
+                                                                layout
+                                                                initial={{ opacity: 0, x: -10 }}
+                                                                animate={{ opacity: 1, x: 0 }}
+                                                                key={variant.size} 
+                                                                className="p-4 flex items-center justify-between group hover:bg-white transition-colors"
+                                                            >
                                                                 <div className="flex items-center space-x-4">
                                                                     <div className="w-10 h-10 bg-brand-charcoal text-white flex items-center justify-center rounded-sm font-bold text-xs uppercase">
                                                                         {variant.size}
@@ -447,6 +579,7 @@ const AdminProducts = () => {
                                                                         <span className="text-[9px] font-bold opacity-30 uppercase tracking-tighter">Units In stock</span>
                                                                         <input 
                                                                             type="number" 
+                                                                            ref={el => stockInputRefs.current[idx] = el}
                                                                             value={variant.stock} 
                                                                             onChange={e => {
                                                                                 const nv = [...productForm.variants];
@@ -469,7 +602,7 @@ const AdminProducts = () => {
                                                                 >
                                                                     <Trash2 size={16} />
                                                                 </button>
-                                                            </div>
+                                                            </motion.div>
                                                         ))}
                                                     </div>
                                                 ) : (
