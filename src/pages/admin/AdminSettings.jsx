@@ -14,6 +14,9 @@ const AdminSettings = () => {
     const [policyChanges, setPolicyChanges] = useState({});
     const [saveStatus, setSaveStatus] = useState(null);
     const [activePolicyId, setActivePolicyId] = useState(null);
+    const [unlockedSlugs, setUnlockedSlugs] = useState([]);
+    const [showNewPolicyForm, setShowNewPolicyForm] = useState(false);
+    const [newPolicyData, setNewPolicyData] = useState({ title: '', navLabel: '', slug: '' });
 
     useEffect(() => {
         setLocalSettings(settings);
@@ -24,9 +27,9 @@ const AdminSettings = () => {
         const now = new Date().toISOString();
         const settingsToSave = { ...localSettings };
         
-        // Add timestamps and versioning for changed policies
+        // Add timestamps and versioning for core changed policies
         Object.keys(policyChanges).forEach(key => {
-            if (policyChanges[key] !== settings[key]) {
+            if (key.includes('Policy') && policyChanges[key] !== settings[key]) {
                 settingsToSave[`${key}_updatedAt`] = now;
                 settingsToSave[`${key}_lastVersion`] = settings[key] || DEFAULT_POLICIES[key.replace('Policy', '')];
             }
@@ -60,6 +63,61 @@ const AdminSettings = () => {
 
     const togglePolicySection = (id) => {
         setActivePolicyId(prev => prev === id ? null : id);
+    };
+
+    const handleCustomPolicyChange = (id, field, value) => {
+        setLocalSettings(prev => ({
+            ...prev,
+            customPolicies: (prev.customPolicies || []).map(p => 
+                p.id === id ? { ...p, [field]: value, updatedAt: new Date().toISOString() } : p
+            )
+        }));
+        setPolicyChanges(prev => ({ ...prev, [`custom_${id}`]: true }));
+    };
+
+    const deleteCustomPolicy = (id) => {
+        if (window.confirm("Are you sure you want to delete this custom policy? This action cannot be undone.")) {
+            setLocalSettings(prev => ({
+                ...prev,
+                customPolicies: (prev.customPolicies || []).filter(p => p.id !== id)
+            }));
+            setPolicyChanges(prev => ({ ...prev, [`custom_${id}_deleted`]: true }));
+        }
+    };
+
+    const addCustomPolicy = () => {
+        const newPolicy = {
+            id: `p-${Date.now()}`,
+            title: newPolicyData.title,
+            navLabel: newPolicyData.navLabel || newPolicyData.title,
+            slug: newPolicyData.slug || newPolicyData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+            content: '',
+            isVisible: true,
+            order: (localSettings.customPolicies || []).length + 1,
+            updatedAt: new Date().toISOString()
+        };
+
+        // Check for slug uniqueness
+        const reservedSlugs = ['shipping', 'returns', 'refund', 'privacy', 'terms'];
+        if (reservedSlugs.includes(newPolicy.slug) || (localSettings.customPolicies || []).some(p => p.slug === newPolicy.slug)) {
+            alert("Slug already exists or is reserved. Please choose a unique title/slug.");
+            return;
+        }
+
+        setLocalSettings(prev => ({
+            ...prev,
+            customPolicies: [...(prev.customPolicies || []), newPolicy]
+        }));
+        setPolicyChanges(prev => ({ ...prev, [`custom_${newPolicy.id}_added`]: true }));
+        setNewPolicyData({ title: '', navLabel: '', slug: '' });
+        setShowNewPolicyForm(false);
+        setActivePolicyId(newPolicy.id);
+    };
+
+    const toggleSlugLock = (id) => {
+        setUnlockedSlugs(prev => 
+            prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+        );
     };
 
     return (
@@ -161,6 +219,160 @@ const AdminSettings = () => {
                         isExpanded={activePolicyId === 'terms'}
                         onToggle={() => togglePolicySection('terms')}
                     />
+
+                    {/* Custom Policies Divider */}
+                    <div className="pt-10 pb-4 border-t border-brand-charcoal/5 flex justify-between items-center">
+                        <div>
+                            <h4 className="text-[10px] font-bold text-brand-charcoal/40 uppercase tracking-[0.2em]">Custom Policies & Content</h4>
+                            <p className="text-[9px] text-brand-charcoal/30 mt-1 italic uppercase">Ordered below core legal sections</p>
+                        </div>
+                        <button 
+                            onClick={() => setShowNewPolicyForm(true)}
+                            className="bg-brand-charcoal text-white px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-black transition-all flex items-center space-x-2"
+                        >
+                            <Plus size={14} />
+                            <span>Add New Policy</span>
+                        </button>
+                    </div>
+
+                    {/* New Policy Form */}
+                    <AnimatePresence>
+                        {showNewPolicyForm && (
+                            <motion.div 
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="bg-brand-cream/20 p-8 rounded-sm border border-brand-charcoal/10 space-y-6 overflow-hidden"
+                            >
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Policy Title</label>
+                                        <input 
+                                            value={newPolicyData.title}
+                                            onChange={e => {
+                                                const title = e.target.value;
+                                                const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                                                setNewPolicyData({ ...newPolicyData, title, slug });
+                                            }}
+                                            placeholder="e.g. Sizing Help"
+                                            className="w-full bg-white p-4 font-medium text-sm border-none outline-none focus:ring-1 focus:ring-brand-rose"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Navigation Label (Optional)</label>
+                                        <input 
+                                            value={newPolicyData.navLabel}
+                                            onChange={e => setNewPolicyData({ ...newPolicyData, navLabel: e.target.value })}
+                                            placeholder="e.g. Sizing Guide"
+                                            className="w-full bg-white p-4 font-medium text-sm border-none outline-none focus:ring-1 focus:ring-brand-rose"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-center pt-2">
+                                    <p className="text-[10px] text-brand-charcoal/40 italic">
+                                        URL Slug: <span className="text-brand-rose font-medium">/policies/{newPolicyData.slug || '...'}</span>
+                                    </p>
+                                    <div className="flex space-x-3">
+                                        <button onClick={() => setShowNewPolicyForm(false)} className="px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-brand-charcoal/40 hover:text-brand-charcoal transition-all">Cancel</button>
+                                        <button 
+                                            onClick={addCustomPolicy}
+                                            disabled={!newPolicyData.title.trim()}
+                                            className="px-8 py-3 bg-brand-charcoal text-white text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-black disabled:opacity-30 transition-all"
+                                        >
+                                            Create Policy Section
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Custom Policies List */}
+                    <div className="space-y-6">
+                        {(localSettings.customPolicies || [])
+                            .sort((a, b) => (a.order || 0) - (b.order || 0))
+                            .map((policy) => (
+                                <div key={policy.id} className="relative group/policy">
+                                    <div className="absolute right-[-5px] top-6 z-10 flex flex-col space-y-2 group-hover/policy:right-[5px] transition-all opacity-0 group-hover/policy:opacity-100">
+                                        <button 
+                                            onClick={() => deleteCustomPolicy(policy.id)}
+                                            className="p-3 bg-white text-brand-charcoal/40 hover:text-red-500 shadow-xl rounded-sm border border-brand-charcoal/5 transition-all"
+                                            title="Delete Policy"
+                                        >
+                                            <Trash2 size={14} strokeWidth={2.5} />
+                                        </button>
+                                    </div>
+                                    
+                                    <PolicyEditor 
+                                        label={policy.title}
+                                        value={policy.content || ''}
+                                        onChange={(val) => handleCustomPolicyChange(policy.id, 'content', val)}
+                                        onRollback={() => {}}
+                                        onReset={() => handleCustomPolicyChange(policy.id, 'content', '')}
+                                        hasUnsavedChanges={policyChanges[`custom_${policy.id}`]}
+                                        isExpanded={activePolicyId === policy.id}
+                                        onToggle={() => togglePolicySection(policy.id)}
+                                    />
+
+                                    {/* Additional Custom Controls inside Expanded Panel (if PolicyEditor supported custom slots, but we'll overlay for now as we control it) */}
+                                    <AnimatePresence>
+                                        {activePolicyId === policy.id && (
+                                            <motion.div 
+                                                initial={{ opacity: 0, y: -20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="bg-brand-cream/10 p-8 pt-4 rounded-b-sm border-x border-b border-brand-charcoal/5 space-y-8"
+                                            >
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                                    <div className="space-y-2">
+                                                        <label className="text-[9px] font-bold text-brand-charcoal/40 uppercase tracking-widest flex justify-between">
+                                                            Slug Stability 
+                                                            <button onClick={() => toggleSlugLock(policy.id)} className="text-brand-rose hover:underline">
+                                                                {unlockedSlugs.includes(policy.id) ? 'Lock' : 'Unlock Link'}
+                                                            </button>
+                                                        </label>
+                                                        <input 
+                                                            value={policy.slug}
+                                                            disabled={!unlockedSlugs.includes(policy.id)}
+                                                            onChange={e => handleCustomPolicyChange(policy.id, 'slug', e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}
+                                                            className={`w-full bg-white p-3 text-sm font-medium border-none outline-none focus:ring-1 focus:ring-brand-rose transition-opacity ${unlockedSlugs.includes(policy.id) ? 'opacity-100' : 'opacity-40 cursor-not-allowed'}`}
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <label className="text-[9px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Navigation Label</label>
+                                                        <input 
+                                                            value={policy.navLabel || ''}
+                                                            onChange={e => handleCustomPolicyChange(policy.id, 'navLabel', e.target.value)}
+                                                            placeholder={policy.title}
+                                                            className="w-full bg-white p-3 text-sm font-medium border-none outline-none focus:ring-1 focus:ring-brand-rose"
+                                                        />
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div className="space-y-2">
+                                                            <label className="text-[9px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Order</label>
+                                                            <input 
+                                                                type="number"
+                                                                value={policy.order || 0}
+                                                                onChange={e => handleCustomPolicyChange(policy.id, 'order', parseInt(e.target.value))}
+                                                                className="w-full bg-white p-3 text-sm font-medium border-none outline-none focus:ring-1 focus:ring-brand-rose"
+                                                            />
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <label className="text-[9px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Visibility</label>
+                                                            <button 
+                                                                onClick={() => handleCustomPolicyChange(policy.id, 'isVisible', !policy.isVisible)}
+                                                                className={`w-full p-3 text-[10px] font-bold uppercase tracking-widest rounded-sm transition-all ${policy.isVisible ? 'bg-brand-charcoal text-white hover:bg-black' : 'bg-brand-rose text-brand-charcoal hover:bg-white border border-brand-rose/20'}`}
+                                                            >
+                                                                {policy.isVisible ? 'Visible' : 'Hidden'}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            ))}
+                    </div>
                 </div>
                 
                 <div className="pt-6 border-t border-brand-charcoal/5 flex justify-end">

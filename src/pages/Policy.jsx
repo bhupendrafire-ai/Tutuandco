@@ -15,64 +15,54 @@ const Policy = () => {
         return <Navigate to={location.pathname.replace('/policy/', '/policies/')} replace />;
     }
 
-    const sections = {
+    // Core fixed policy sections
+    const coreSections = {
         'shipping': {
             title: 'Shipping Policy',
-            icon: Truck,
+            navLabel: 'Shipping Info',
             content: (
-                <div className="space-y-8" dangerouslySetInnerHTML={{ __html: DEFAULT_POLICIES.shipping }} />
-            )
+                <div key="shipping" className="space-y-8" dangerouslySetInnerHTML={{ __html: settings.shippingPolicy || DEFAULT_POLICIES.shipping }} />
+            ),
+            updatedAt: settings.shippingPolicy_updatedAt
         },
         'returns': {
             title: 'Refund & Cancellation Policy',
-            icon: RefreshCw,
+            navLabel: 'Returns & Exchanges',
             content: (
-                <div className="space-y-12" dangerouslySetInnerHTML={{ __html: DEFAULT_POLICIES.refund }} />
-            )
+                <div key="returns" className="space-y-12" dangerouslySetInnerHTML={{ __html: settings.refundPolicy || DEFAULT_POLICIES.refund }} />
+            ),
+            updatedAt: settings.refundPolicy_updatedAt
         },
         'privacy': {
             title: 'Privacy Policy',
-            icon: HeartHandshake,
+            navLabel: 'Privacy Policy',
             content: (
-                <div className="space-y-6" dangerouslySetInnerHTML={{ __html: DEFAULT_POLICIES.privacy }} />
-            )
-        },
-        'care': {
-            title: 'Product Care',
-            icon: Shield,
-            content: (
-                <div className="space-y-8">
-                    <p className="text-xl italic font-medium text-brand-charcoal leading-relaxed">"Each Tutu & Co piece is thoughtfully made to be worn, loved, and lived in. With a little care, it’ll stay just as special."</p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8">
-                        <div>
-                            <h3 className="text-sm font-medium text-brand-charcoal mb-4">Washing</h3>
-                            <p>Machine wash on a gentle cycle with similar colours using mild detergent. Avoid bleach.</p>
-                        </div>
-                        <div>
-                            <h3 className="text-sm font-medium text-brand-charcoal mb-4">Drying</h3>
-                            <p>Air dry for best results, or tumble dry on low.</p>
-                        </div>
-                        <div>
-                            <h3 className="text-sm font-medium text-brand-charcoal mb-4">Ironing</h3>
-                            <p>If needed, use a low heat setting.</p>
-                        </div>
-                        <div>
-                            <h3 className="text-sm font-medium text-brand-charcoal mb-4">Storage</h3>
-                            <p>Store in a clean, dry place when not in use.</p>
-                        </div>
-                    </div>
-
-                    <div className="pt-10 border-t border-brand-charcoal/10 mt-12">
-                        <h3 className="text-sm font-medium text-brand-charcoal mb-4">A small note</h3>
-                        <p className="italic">Each piece is handmade, so slight variations are natural. With regular use, some wear is expected — it’s all part of your pet’s adventures.</p>
-                    </div>
-                </div>
-            )
+                <div key="privacy" className="space-y-6" dangerouslySetInnerHTML={{ __html: settings.privacyPolicy || DEFAULT_POLICIES.privacy }} />
+            ),
+            updatedAt: settings.privacyPolicy_updatedAt
         }
     };
 
-    const active = sections[section] || sections['shipping'];
+    // Combine with visible custom policies
+    const visibleCustom = (settings.customPolicies || [])
+        .filter(p => p.isVisible && p.content && p.content.trim() !== "")
+        .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    // Resolve active policy
+    let active = null;
+    let isCustom = false;
+
+    if (coreSections[section]) {
+        active = coreSections[section];
+    } else {
+        const found = visibleCustom.find(p => p.slug === section);
+        if (found) {
+            active = found;
+            isCustom = true;
+        } else {
+            active = coreSections['shipping']; // Default fallback
+        }
+    }
 
     return (
         <div className="bg-brand-sage min-h-screen pt-32 pb-32">
@@ -81,15 +71,35 @@ const Policy = () => {
                 <nav className="lg:col-span-4 space-y-8">
                     <h1 className="text-4xl font-medium text-brand-charcoal mb-12">Customer care</h1>
                     <div className="flex flex-col space-y-2">
-                        {Object.keys(sections).map((key) => (
+                        {/* Core Links */}
+                        {Object.keys(coreSections).map((key) => (
                             <Link 
                                 key={key}
                                 to={`/policies/${key}`} 
                                 className={`flex items-center space-x-4 p-6 rounded-sm transition-all ${section === key ? 'bg-brand-rose text-brand-charcoal shadow-md' : 'hover:bg-brand-cream/50 text-brand-charcoal'}`}
                             >
-                                <span className="text-[11px] font-medium tracking-wide uppercase">{sections[key].title}</span>
+                                <span className="text-[11px] font-medium tracking-wide uppercase">{coreSections[key].navLabel || coreSections[key].title}</span>
                             </Link>
                         ))}
+                        
+                        {/* Custom Links */}
+                        {visibleCustom.map((policy) => (
+                            <Link 
+                                key={policy.slug}
+                                to={`/policies/${policy.slug}`} 
+                                className={`flex items-center space-x-4 p-6 rounded-sm transition-all ${section === policy.slug ? 'bg-brand-rose text-brand-charcoal shadow-md' : 'hover:bg-brand-cream/50 text-brand-charcoal'}`}
+                            >
+                                <span className="text-[11px] font-medium tracking-wide uppercase">{policy.navLabel || policy.title}</span>
+                            </Link>
+                        ))}
+
+                        {/* Special Case: Terms sidebar link (always at bottom) */}
+                        <Link 
+                            to="/policies/terms" 
+                            className={`flex items-center space-x-4 p-6 rounded-sm transition-all ${section === 'terms' ? 'bg-brand-rose text-brand-charcoal shadow-md' : 'hover:bg-brand-cream/50 text-brand-charcoal'}`}
+                        >
+                            <span className="text-[11px] font-medium tracking-wide uppercase">Terms & Conditions</span>
+                        </Link>
                     </div>
                 </nav>
 
@@ -97,35 +107,20 @@ const Policy = () => {
                 <main className="lg:col-span-8 bg-brand-cream p-12 lg:p-20 rounded-sm shadow-sm">
                      <h2 className="text-4xl font-medium text-brand-charcoal mb-10">{active.title}</h2>
                      <div className="prose prose-lg text-brand-charcoal/80 leading-relaxed space-y-8">
-                         {(() => {
-                             const settingsKeyMap = {
-                                 'shipping': 'shippingPolicy',
-                                 'returns': 'refundPolicy',
-                                 'privacy': 'privacyPolicy'
-                             };
-                             const dynamicKey = settingsKeyMap[section];
-                             const dynamicContent = dynamicKey ? settings[dynamicKey] : null;
-                             const updatedAt = dynamicKey ? settings[`${dynamicKey}_updatedAt`] : null;
+                         {isCustom ? (
+                             <div className="space-y-6" dangerouslySetInnerHTML={{ __html: active.content }} />
+                         ) : (
+                             active.content
+                         )}
 
-                             return (
-                                 <>
-                                     {dynamicContent ? (
-                                         <div className="space-y-6" dangerouslySetInnerHTML={{ __html: dynamicContent }} />
-                                     ) : (
-                                         active.content
-                                     )}
-
-                                     {updatedAt && (
-                                         <div className="pt-12 border-t border-brand-charcoal/5 flex items-center space-x-3 text-brand-charcoal/30">
-                                             <Clock size={12} />
-                                             <p className="text-[10px] font-bold uppercase tracking-widest">
-                                                 Last updated: {new Date(updatedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
-                                             </p>
-                                         </div>
-                                     )}
-                                 </>
-                             );
-                         })()}
+                         {active.updatedAt && (
+                             <div className="pt-12 border-t border-brand-charcoal/5 flex items-center space-x-3 text-brand-charcoal/30">
+                                 <Clock size={12} />
+                                 <p className="text-[10px] font-bold uppercase tracking-widest">
+                                     Last updated: {new Date(active.updatedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                 </p>
+                             </div>
+                         )}
                          
                          <p className="pt-8 border-t border-brand-charcoal/5 italic">
                              Our team is dedicated to providing the best experience for both you and your furry companion. 
