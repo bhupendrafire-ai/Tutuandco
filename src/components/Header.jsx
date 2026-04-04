@@ -11,7 +11,7 @@ const Header = () => {
 
     return (
         <header className="sticky top-0 z-50 bg-brand-sage/80 backdrop-blur-md border-b border-brand-charcoal/10">
-            <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto px-6 h-[84px] flex items-center justify-between">
                 {/* Left: Nav Links (Desktop) or Menu (Mobile) */}
                 <div className="flex-1 flex items-center">
                     <nav className="hidden md:flex items-center space-x-8 text-brand-charcoal font-medium text-sm">
@@ -27,7 +27,7 @@ const Header = () => {
                 {/* Center: Logo */}
                 <div className="flex-shrink-0">
                     <Link to="/" className="flex flex-col items-center">
-                        <img src={logo} alt="Tutu & Co" className="h-8 md:h-12 w-auto object-contain" />
+                        <img src={logo} alt="Tutu & Co" className="h-8 md:h-12 w-auto object-contain -mt-[2px]" />
                     </Link>
                 </div>
 

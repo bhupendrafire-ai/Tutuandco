@@ -108,10 +108,10 @@ const Chatbot = () => {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => setIsOpen(true)}
-                        className="bg-brand-charcoal text-white p-5 rounded-full shadow-2xl flex items-center justify-center hover:opacity-90 transition-opacity relative"
+                        className="bg-[#6f6f6f] text-white p-4 rounded-full shadow-lg flex items-center justify-center hover:opacity-90 transition-all relative"
                     >
-                        <MessageSquare size={24} />
-                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand-rose rounded-full border-2 border-white" />
+                        <MessageSquare size={22} />
+                        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-brand-rose rounded-full border-2 border-white" />
                     </motion.button>
                 )}
             </AnimatePresence>

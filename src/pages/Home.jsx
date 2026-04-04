@@ -173,40 +173,43 @@ const Home = () => {
                                         }}
                                     />
                                 </Link>
-                                {/* Refined Natural Image Fade Divider */}
+                                {/* Refined Natural Image Fade Divider (Editorial Haze) */}
                                 <div 
                                     className="absolute top-0 right-0 bottom-0 w-[4%] pointer-events-none z-10"
                                     style={{
-                                        background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(124, 132, 108, 0.08) 30%, rgba(124, 132, 108, 0.18) 55%, rgba(124, 132, 108, 0.3) 75%, rgba(124, 132, 108, 0.5) 100%)'
+                                        background: 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(124, 132, 108, 0.07) 30%, rgba(124, 132, 108, 0.16) 55%, rgba(124, 132, 108, 0.27) 75%, rgba(124, 132, 108, 0.46) 100%)'
                                     }}
                                 />
                             </div>
 
                             {/* Right Side: Content Panel (35% on Desktop) */}
                             <div className="w-full md:w-[35%] bg-[#7C846C] p-12 md:p-[60px] flex flex-col justify-center min-h-[350px] md:min-h-0">
-                                <div className="max-w-md w-full mx-auto md:mx-0 flex flex-col gap-y-6 text-[#2f2f2f]">
-                                    <motion.h1
-                                        initial={{ opacity: 0, x: 30 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ duration: 0.8, delay: 0.2 }}
-                                        className="text-4xl md:text-5xl font-medium leading-[1.2]"
-                                    >
-                                        {activeBanner.title}
-                                    </motion.h1>
-                                    
-                                    <motion.p
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.8, delay: 0.4 }}
-                                        className="text-[#6f6f6f] text-lg italic font-medium"
-                                    >
-                                        {activeBanner.subtitle}
-                                    </motion.p>
+                                <div className="max-w-[380px] w-full mx-auto md:mx-0 flex flex-col gap-y-7 transition-all duration-700">
+                                    <div className="flex flex-col gap-y-5 text-[#1a1a1a]">
+                                        <motion.h1
+                                            key={`title-${activeIndex}`}
+                                            initial={{ opacity: 0, x: 20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            className="text-4xl md:text-5xl font-medium leading-[1.15]"
+                                        >
+                                            {activeBanner.title}
+                                        </motion.h1>
+                                        
+                                        <motion.p
+                                            key={`subtitle-${activeIndex}`}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: 0.2 }}
+                                            className="text-[#5c5c5c] text-lg italic font-medium leading-relaxed"
+                                        >
+                                            {activeBanner.subtitle}
+                                        </motion.p>
+                                    </div>
 
                                     <motion.div
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.8, delay: 0.6 }}
+                                        transition={{ duration: 0.8, delay: 0.4 }}
                                     >
                                         <Link 
                                             to={activeBanner.link || "/"}
@@ -217,6 +220,13 @@ const Home = () => {
                                             </div>
                                         </Link>
                                     </motion.div>
+
+                                    {/* Minimal Text Indicator (Instance 1/3 Alignment Edge) */}
+                                    <div className="mt-4 flex items-center gap-4 text-[11px] text-[#5c5c5c]/80 uppercase tracking-[0.2em] font-normal">
+                                        <span>0{activeIndex + 1}</span>
+                                        <div className="w-8 h-px bg-[#1a1a1a]/10" />
+                                        <span>0{banners.length}</span>
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>
@@ -261,7 +271,11 @@ const Home = () => {
                                     <motion.img
                                         src={getProductImage(Array.isArray(product.images) ? product.images.sort((a,b) => a.sequence - b.sequence)[0]?.url : product.imageName, media)}
                                         alt={product.name}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                                        className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ${
+                                            (product.id % 3 === 0) ? 'object-[70%_center]' : 
+                                            (product.id % 3 === 1) ? 'object-[80%_center]' : 
+                                            'object-[75%_center]'
+                                        }`}
                                     />
                                     <div className="absolute inset-0 bg-transparent group-hover:bg-[#2f2f2f]/5 transition-colors duration-700" />
                                 </div>
