@@ -127,30 +127,25 @@ const Policy = () => {
                 .policy-content table {
                     width: 100%;
                     border-collapse: collapse;
-                    margin: 2.5rem 0;
-                    background: white;
-                    border: 1px solid rgba(0,0,0,0.05);
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+                    margin-top: 16px;
+                    font-size: 14px;
                 }
-                .policy-content th, .policy-content td {
-                    padding: 1.25rem 1.5rem;
-                    border: 1px solid rgba(0,0,0,0.05);
-                    text-align: left;
+                .policy-content thead {
+                    background: rgba(0, 0, 0, 0.03);
                 }
                 .policy-content th {
-                    background: rgba(124, 132, 108, 0.05);
+                    text-align: left;
+                    font-weight: 500;
+                    padding: 12px 16px;
+                    letter-spacing: 0.04em;
+                    font-size: 12px;
                     text-transform: uppercase;
-                    font-size: 11px;
-                    font-weight: 700;
-                    letter-spacing: 0.15em;
-                    color: rgba(12, 12, 13, 0.6);
                 }
                 .policy-content td {
-                    font-size: 14px;
-                    color: rgba(12, 12, 13, 0.8);
+                    padding: 14px 16px;
                 }
-                .policy-content tr:hover {
-                    background: rgba(124, 132, 108, 0.02);
+                .policy-content tr {
+                    border-bottom: 1px solid rgba(0,0,0,0.06);
                 }
                 @media (max-width: 768px) {
                     .policy-content table {

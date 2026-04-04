@@ -169,7 +169,7 @@ const PolicyEditor = ({ label, value, onChange, onReset, onRollback, hasUnsavedC
                             onInput={handleInput}
                             onPaste={handlePaste}
                             onBlur={handleInput}
-                            className="w-full min-h-[400px] bg-brand-sage/5 p-10 font-normal text-base border border-transparent focus:border-brand-rose/10 outline-none transition-all rounded-sm prose prose-sm max-w-none text-brand-charcoal/80 policy-editor-surface"
+                            className="w-full min-h-[400px] bg-brand-sage/5 p-10 font-normal text-base border border-transparent focus:border-brand-rose/10 outline-none transition-all rounded-sm prose prose-sm max-w-none text-brand-charcoal/80 policy-editor-surface policy-content"
                             style={{ whiteSpace: 'pre-wrap' }}
                         />
                         
@@ -182,26 +182,31 @@ const PolicyEditor = ({ label, value, onChange, onReset, onRollback, hasUnsavedC
             </div>
             
             <style sx>{`
-                .policy-editor-surface table {
+                .policy-content table {
                     width: 100%;
                     border-collapse: collapse;
-                    margin: 1.5rem 0;
-                    background: white;
-                    border: 1px solid rgba(0,0,0,0.05);
+                    margin-top: 16px;
+                    font-size: 14px;
                 }
-                .policy-editor-surface th, .policy-editor-surface td {
-                    padding: 1rem;
-                    border: 1px solid rgba(0,0,0,0.05);
+                .policy-content thead {
+                    background: rgba(0, 0, 0, 0.03);
+                }
+                .policy-content th {
                     text-align: left;
-                }
-                .policy-editor-surface th {
-                    background: rgba(124, 132, 108, 0.05);
+                    font-weight: 500;
+                    padding: 12px 16px;
+                    letter-spacing: 0.04em;
+                    font-size: 12px;
                     text-transform: uppercase;
-                    font-size: 11px;
-                    letter-spacing: 0.1em;
                 }
-                .policy-editor-surface h2 { margin-top: 2rem; color: #1a1a1a; font-weight: 500; }
-                .policy-editor-surface h3 { margin-top: 1.5rem; color: #1a1a1a; font-weight: 500; }
+                .policy-content td {
+                    padding: 14px 16px;
+                }
+                .policy-content tr {
+                    border-bottom: 1px solid rgba(0,0,0,0.06);
+                }
+                .policy-content h2 { margin-top: 2rem; color: #1a1a1a; font-weight: 500; }
+                .policy-content h3 { margin-top: 1.5rem; color: #1a1a1a; font-weight: 500; }
             `}</style>
         </div>
     );
