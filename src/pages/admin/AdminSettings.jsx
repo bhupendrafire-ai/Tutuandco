@@ -13,6 +13,7 @@ const AdminSettings = () => {
     const [newCategoryName, setNewCategoryName] = useState('');
     const [policyChanges, setPolicyChanges] = useState({});
     const [saveStatus, setSaveStatus] = useState(null);
+    const [activePolicyId, setActivePolicyId] = useState(null);
 
     useEffect(() => {
         setLocalSettings(settings);
@@ -55,6 +56,10 @@ const AdminSettings = () => {
 
     const isPolicyDirty = (key) => {
         return policyChanges[key] !== undefined && policyChanges[key] !== settings[key];
+    };
+
+    const togglePolicySection = (id) => {
+        setActivePolicyId(prev => prev === id ? null : id);
     };
 
     return (
@@ -120,6 +125,8 @@ const AdminSettings = () => {
                         onRollback={() => rollbackPolicy('shippingPolicy')}
                         onReset={() => resetPolicyToDefault('shippingPolicy')}
                         hasUnsavedChanges={isPolicyDirty('shippingPolicy')}
+                        isExpanded={activePolicyId === 'shipping'}
+                        onToggle={() => togglePolicySection('shipping')}
                     />
 
                     <PolicyEditor 
@@ -129,6 +136,8 @@ const AdminSettings = () => {
                         onRollback={() => rollbackPolicy('refundPolicy')}
                         onReset={() => resetPolicyToDefault('refundPolicy')}
                         hasUnsavedChanges={isPolicyDirty('refundPolicy')}
+                        isExpanded={activePolicyId === 'refund'}
+                        onToggle={() => togglePolicySection('refund')}
                     />
 
                     <PolicyEditor 
@@ -138,6 +147,8 @@ const AdminSettings = () => {
                         onRollback={() => rollbackPolicy('privacyPolicy')}
                         onReset={() => resetPolicyToDefault('privacyPolicy')}
                         hasUnsavedChanges={isPolicyDirty('privacyPolicy')}
+                        isExpanded={activePolicyId === 'privacy'}
+                        onToggle={() => togglePolicySection('privacy')}
                     />
 
                     <PolicyEditor 
@@ -147,6 +158,8 @@ const AdminSettings = () => {
                         onRollback={() => rollbackPolicy('termsPolicy')}
                         onReset={() => resetPolicyToDefault('termsPolicy')}
                         hasUnsavedChanges={isPolicyDirty('termsPolicy')}
+                        isExpanded={activePolicyId === 'terms'}
+                        onToggle={() => togglePolicySection('terms')}
                     />
                 </div>
                 
