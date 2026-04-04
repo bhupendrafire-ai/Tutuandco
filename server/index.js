@@ -174,32 +174,53 @@ app.post('/api/orders', async (req, res) => {
     try {
         await client.query('BEGIN');
 
-        // 1. Validate and Deduct Stock
+        // 1. Deterministic Batch Locking to avoid deadlocks
+        const uniqueProductIds = [...new Set(o.items.map(item => item.id))].sort();
+        
+        // Fetch and lock all relevant products in deterministic order (ASC)
+        const productsRes = await client.query(
+            `SELECT id, variants, name FROM products WHERE id = ANY($1) ORDER BY id ASC FOR UPDATE`,
+            [uniqueProductIds]
+        );
+        
+        const productMap = {};
+        productsRes.rows.forEach(p => { productMap[p.id] = p; });
+
+        // 2. Validate and Update Variants locally
+        const updatedProducts = {};
+
         for (const item of o.items) {
-            const productRes = await client.query('SELECT variants, name FROM products WHERE id = $1 FOR UPDATE', [item.id]);
-            if (productRes.rowCount === 0) throw new Error(`Product ${item.id} not found`);
+            const product = productMap[item.id];
+            if (!product) throw new Error(`Product ${item.id} not found`);
 
-            const product = productRes.rows[0];
-            let variants = product.variants || [];
-            const variantIdx = variants.findIndex(v => v.size === item.size);
+            // Use modified variants if already processed in this order
+            let variants = updatedProducts[item.id]?.variants || product.variants || [];
+            
+            // Case-insensitive size match
+            const variantIdx = variants.findIndex(v => v.size.toLowerCase() === (item.size || '').toLowerCase());
 
-            if (variantIdx === -1) throw new Error(`Size ${item.size} not found for product ${product.name}`);
+            if (variantIdx === -1) {
+                throw new Error(`Size "${item.size}" not found for product "${product.name}"`);
+            }
             
             if (variants[variantIdx].stock < item.quantity) {
                 throw new Error(`Insufficient stock for ${product.name} (Size: ${item.size}). Available: ${variants[variantIdx].stock}, Requested: ${item.quantity}`);
             }
 
-            // Deduct stock
+            // Deduct stock safely
             variants[variantIdx].stock -= item.quantity;
-            
-            // Also update the global 'stock' field for backward compatibility/legacy views
-            const newGlobalStock = variants.reduce((sum, v) => sum + (v.stock || 0), 0);
+            updatedProducts[item.id] = { id: item.id, variants };
+        }
 
+        // 3. Batch Update modified products
+        for (const pid in updatedProducts) {
             await client.query(
-                'UPDATE products SET variants = $1, stock = $2 WHERE id = $3',
-                [JSON.stringify(variants), newGlobalStock, item.id]
+                'UPDATE products SET variants = $1 WHERE id = $2',
+                [JSON.stringify(updatedProducts[pid].variants), pid]
             );
         }
+
+        // 4. Create Order record
 
         // 2. Create Order
         const result = await client.query(

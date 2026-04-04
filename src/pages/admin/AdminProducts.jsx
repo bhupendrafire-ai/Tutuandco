@@ -396,9 +396,11 @@ const AdminProducts = () => {
                                                     onClick={() => {
                                                         const size = prompt("Enter size label (e.g. S, M, L, XL):");
                                                         if (size) {
-                                                            const normalized = size.trim().toUpperCase();
-                                                            if (productForm.variants.find(v => v.size === normalized)) {
-                                                                return alert("This size already exists!");
+                                                            const trimmed = size.trim();
+                                                            const normalized = trimmed.toUpperCase();
+                                                            // Case-insensitive duplicate check
+                                                            if (productForm.variants.find(v => v.size.toLowerCase() === trimmed.toLowerCase())) {
+                                                                return alert(`Size "${trimmed}" already exists (case-insensitive)!`);
                                                             }
                                                             setProductForm({
                                                                 ...productForm,

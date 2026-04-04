@@ -53,7 +53,9 @@ const Cart = () => {
                                     <div className="flex-grow text-center sm:text-left">
                                         <span className="text-[11px] font-medium text-brand-charcoal opacity-40 mb-1 block">{item.category}</span>
                                         <h3 className="text-xl font-medium text-brand-charcoal mb-1">{item.name}</h3>
-                                        <p className="text-[10px] font-bold text-brand-rose uppercase tracking-widest mb-3">Size: {item.size}</p>
+                                        {item.size && item.size.toLowerCase() !== 'standard' && (
+                                            <p className="text-[10px] font-bold text-brand-rose uppercase tracking-widest mb-3">Size: {item.size}</p>
+                                        )}
                                         <div className="flex flex-col items-start gap-1">
                                             <p className="text-brand-charcoal font-medium text-sm">
                                                 {formatPrice(item.discountPrice || item.price)}
