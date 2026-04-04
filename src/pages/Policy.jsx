@@ -15,52 +15,69 @@ const Policy = () => {
         return <Navigate to={location.pathname.replace('/policy/', '/policies/')} replace />;
     }
 
-    // Core fixed policy sections
-    const coreSections = {
-        'shipping': {
-            title: 'Shipping Policy',
-            navLabel: 'Shipping Info',
-            content: (
-                <div key="shipping" className="space-y-8" dangerouslySetInnerHTML={{ __html: settings.shippingPolicy || DEFAULT_POLICIES.shipping }} />
-            ),
-            updatedAt: settings.shippingPolicy_updatedAt
+    // Strict Core Definitions (Fixed Order 1-4)
+    const coreDefinitions = [
+        { 
+            slug: 'shipping', 
+            title: 'Shipping Policy', 
+            navLabel: 'Shipping Info', 
+            settingsKey: 'shippingPolicy'
         },
-        'returns': {
-            title: 'Refund & Cancellation Policy',
-            navLabel: 'Returns & Exchanges',
-            content: (
-                <div key="returns" className="space-y-12" dangerouslySetInnerHTML={{ __html: settings.refundPolicy || DEFAULT_POLICIES.refund }} />
-            ),
-            updatedAt: settings.refundPolicy_updatedAt
+        { 
+            slug: 'returns', 
+            title: 'Refund & Cancellation Policy', 
+            navLabel: 'Returns & Exchanges', 
+            settingsKey: 'refundPolicy'
         },
-        'privacy': {
-            title: 'Privacy Policy',
-            navLabel: 'Privacy Policy',
-            content: (
-                <div key="privacy" className="space-y-6" dangerouslySetInnerHTML={{ __html: settings.privacyPolicy || DEFAULT_POLICIES.privacy }} />
-            ),
-            updatedAt: settings.privacyPolicy_updatedAt
+        { 
+            slug: 'privacy', 
+            title: 'Privacy Policy', 
+            navLabel: 'Privacy Policy', 
+            settingsKey: 'privacyPolicy'
+        },
+        { 
+            slug: 'terms', 
+            title: 'Terms & Conditions', 
+            navLabel: 'Terms & Conditions', 
+            settingsKey: 'termsPolicy'
         }
-    };
+    ];
 
     // Combine with visible custom policies
     const visibleCustom = (settings.customPolicies || [])
         .filter(p => p.isVisible && p.content && p.content.trim() !== "")
         .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-    // Resolve active policy
+    // Resolve active policy content
     let active = null;
     let isCustom = false;
+    let displayTitle = '';
+    let displayContent = '';
+    let updatedAt = null;
 
-    if (coreSections[section]) {
-        active = coreSections[section];
+    const coreMatch = coreDefinitions.find(d => d.slug === section);
+    if (coreMatch) {
+        displayTitle = coreMatch.title;
+        // Strict Fallback: only if null or undefined
+        const adminContent = settings[coreMatch.settingsKey];
+        displayContent = (adminContent !== null && adminContent !== undefined) 
+            ? adminContent 
+            : DEFAULT_POLICIES[coreMatch.slug === 'returns' ? 'refund' : coreMatch.slug];
+            
+        updatedAt = settings[`${coreMatch.settingsKey}_updatedAt`];
     } else {
-        const found = visibleCustom.find(p => p.slug === section);
-        if (found) {
-            active = found;
+        const customMatch = visibleCustom.find(p => p.slug === section);
+        if (customMatch) {
+            displayTitle = customMatch.title;
+            displayContent = customMatch.content;
+            updatedAt = customMatch.updatedAt;
             isCustom = true;
         } else {
-            active = coreSections['shipping']; // Default fallback
+            // Default Fallback to Shipping
+            const fallback = coreDefinitions[0];
+            displayTitle = fallback.title;
+            const adminContent = settings[fallback.settingsKey];
+            displayContent = (adminContent !== null && adminContent !== undefined) ? adminContent : DEFAULT_POLICIES.shipping;
         }
     }
 
@@ -71,53 +88,41 @@ const Policy = () => {
                 <nav className="lg:col-span-4 space-y-8">
                     <h1 className="text-4xl font-medium text-brand-charcoal mb-12">Customer care</h1>
                     <div className="flex flex-col space-y-2">
-                        {/* Core Links */}
-                        {Object.keys(coreSections).map((key) => (
+                        {/* 1. Core Policies (Fixed 1-4 Order) */}
+                        {coreDefinitions.map((core) => (
                             <Link 
-                                key={key}
-                                to={`/policies/${key}`} 
-                                className={`flex items-center space-x-4 p-6 rounded-sm transition-all ${section === key ? 'bg-brand-rose text-brand-charcoal shadow-md' : 'hover:bg-brand-cream/50 text-brand-charcoal'}`}
+                                key={core.slug}
+                                to={`/policies/${core.slug}`} 
+                                className={`flex items-center space-x-4 p-6 rounded-sm transition-all ${section === core.slug ? 'bg-brand-rose text-brand-charcoal shadow-md border-l-4 border-brand-charcoal/20' : 'hover:bg-brand-cream/50 text-brand-charcoal'}`}
                             >
-                                <span className="text-[11px] font-medium tracking-wide uppercase">{coreSections[key].navLabel || coreSections[key].title}</span>
+                                <span className="text-[11px] font-medium tracking-wide uppercase">{core.navLabel}</span>
                             </Link>
                         ))}
                         
-                        {/* Custom Links */}
+                        {/* 2. Custom Policies (Dynamic Order after Core) */}
                         {visibleCustom.map((policy) => (
                             <Link 
                                 key={policy.slug}
                                 to={`/policies/${policy.slug}`} 
-                                className={`flex items-center space-x-4 p-6 rounded-sm transition-all ${section === policy.slug ? 'bg-brand-rose text-brand-charcoal shadow-md' : 'hover:bg-brand-cream/50 text-brand-charcoal'}`}
+                                className={`flex items-center space-x-4 p-6 rounded-sm transition-all ${section === policy.slug ? 'bg-brand-rose text-brand-charcoal shadow-md border-l-4 border-brand-charcoal/20' : 'hover:bg-brand-cream/50 text-brand-charcoal'}`}
                             >
                                 <span className="text-[11px] font-medium tracking-wide uppercase">{policy.navLabel || policy.title}</span>
                             </Link>
                         ))}
-
-                        {/* Special Case: Terms sidebar link (always at bottom) */}
-                        <Link 
-                            to="/policies/terms" 
-                            className={`flex items-center space-x-4 p-6 rounded-sm transition-all ${section === 'terms' ? 'bg-brand-rose text-brand-charcoal shadow-md' : 'hover:bg-brand-cream/50 text-brand-charcoal'}`}
-                        >
-                            <span className="text-[11px] font-medium tracking-wide uppercase">Terms & Conditions</span>
-                        </Link>
                     </div>
                 </nav>
 
                 {/* Content Area */}
                 <main className="lg:col-span-8 bg-brand-cream p-12 lg:p-20 rounded-sm shadow-sm">
-                     <h2 className="text-4xl font-medium text-brand-charcoal mb-10">{active.title}</h2>
+                     <h2 className="text-4xl font-medium text-brand-charcoal mb-10">{displayTitle}</h2>
                      <div className="prose prose-lg text-brand-charcoal/80 leading-relaxed space-y-8">
-                         {isCustom ? (
-                             <div className="space-y-6" dangerouslySetInnerHTML={{ __html: active.content }} />
-                         ) : (
-                             active.content
-                         )}
+                         <div className="policy-content" dangerouslySetInnerHTML={{ __html: displayContent }} />
 
-                         {active.updatedAt && (
+                         {updatedAt && (
                              <div className="pt-12 border-t border-brand-charcoal/5 flex items-center space-x-3 text-brand-charcoal/30">
                                  <Clock size={12} />
                                  <p className="text-[10px] font-bold uppercase tracking-widest">
-                                     Last updated: {new Date(active.updatedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                     Last updated: {new Date(updatedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
                                  </p>
                              </div>
                          )}

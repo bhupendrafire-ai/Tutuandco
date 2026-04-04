@@ -220,6 +220,8 @@ const AdminSettings = () => {
                         onToggle={() => togglePolicySection('terms')}
                     />
 
+                    {/* Safeguard: Core policies are always visible and cannot be deleted */}
+
                     {/* Custom Policies Divider */}
                     <div className="pt-10 pb-4 border-t border-brand-charcoal/5 flex justify-between items-center">
                         <div>

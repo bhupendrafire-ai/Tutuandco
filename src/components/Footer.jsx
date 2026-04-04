@@ -25,23 +25,36 @@ const Footer = () => {
                 <div>
                     <h4 className="font-medium text-[#2f2f2f] text-[11px] uppercase tracking-widest mb-10">Support & Care</h4>
                     <ul className="space-y-4 text-sm text-[#6f6f6f] font-normal">
-                        <li><Link to="/policies/shipping" className="hover:text-[#2f2f2f] transition-colors">Shipping Info</Link></li>
-                        <li><Link to="/policies/returns" className="hover:text-[#2f2f2f] transition-colors">Returns & Exchanges</Link></li>
-                        <li><Link to="/policies/privacy" className="hover:text-[#2f2f2f] transition-colors">Privacy Policy</Link></li>
-                        <li><Link to="/policies/terms" className="hover:text-[#2f2f2f] transition-colors">Terms & Conditions</Link></li>
-                        
-                        {/* Dynamic Custom Policies */}
-                        {(settings.customPolicies || [])
-                            .filter(p => p.isVisible && p.content && p.content.trim() !== "")
-                            .sort((a, b) => (a.order || 0) - (b.order || 0))
-                            .map((policy) => (
+                        {(() => {
+                            const corePolicies = [
+                                { slug: 'shipping', label: 'Shipping Info' },
+                                { slug: 'returns', label: 'Returns & Exchanges' },
+                                { slug: 'privacy', label: 'Privacy Policy' },
+                                { slug: 'terms', label: 'Terms & Conditions' }
+                            ];
+
+                            const customPolicies = (settings.customPolicies || [])
+                                .filter(p => p.isVisible && p.content && p.content.trim() !== "")
+                                .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+                            const allPolicies = [
+                                ...corePolicies.map(p => ({ ...p, isCore: true })),
+                                ...customPolicies.map(p => ({ 
+                                    slug: p.slug, 
+                                    label: p.navLabel || p.title,
+                                    isCore: false,
+                                    id: p.id
+                                }))
+                            ];
+
+                            return allPolicies.map((policy) => (
                                 <li key={policy.id || policy.slug}>
                                     <Link to={`/policies/${policy.slug}`} className="hover:text-[#2f2f2f] transition-colors">
-                                        {policy.navLabel || policy.title}
+                                        {policy.label}
                                     </Link>
                                 </li>
-                            ))
-                        }
+                            ));
+                        })()}
                     </ul>
                 </div>
                 <div>

@@ -22,11 +22,14 @@ const Terms = () => {
                     <h1 className="text-4xl font-medium text-brand-charcoal mb-12">Terms & Conditions</h1>
                     
                     <div className="prose prose-lg text-brand-charcoal/80 leading-relaxed space-y-10">
-                        {dynamicContent ? (
-                            <div className="space-y-6" dangerouslySetInnerHTML={{ __html: dynamicContent }} />
-                        ) : (
-                            <div className="space-y-6" dangerouslySetInnerHTML={{ __html: DEFAULT_POLICIES.terms }} />
-                        )}
+                        <div 
+                            className="space-y-6" 
+                            dangerouslySetInnerHTML={{ 
+                                __html: (settings.termsPolicy !== null && settings.termsPolicy !== undefined) 
+                                    ? settings.termsPolicy 
+                                    : DEFAULT_POLICIES.terms 
+                            }} 
+                        />
 
                         {updatedAt && (
                             <div className="pt-12 border-t border-brand-charcoal/5 flex items-center space-x-3 text-brand-charcoal/30">
