@@ -14,11 +14,15 @@ import Sizing from './pages/Sizing';
 import Policy from './pages/Policy';
 import Moments from './pages/Moments';
 import { ShopProvider } from './context/ShopContext';
+import ScrollToTop from './components/ScrollToTop';
+
 
 function App() {
     return (
         <Router>
+            <ScrollToTop />
                 <Routes>
+
                     <Route path="/" element={<Layout><Home /></Layout>} />
                     <Route path="/product/:id" element={<Layout><ProductDetail /></Layout>} />
                     <Route path="/cart" element={<Layout><Cart /></Layout>} />

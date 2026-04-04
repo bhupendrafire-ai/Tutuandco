@@ -44,8 +44,8 @@ const ProductDetail = () => {
                     .catch(err => console.error("Error loading reviews:", err));
             }
         }
-        window.scrollTo(0, 0);
     }, [product, FINAL_API_URL, media]);
+
 
     if (loading || !product || !settings) return <div className="min-h-screen flex items-center justify-center font-medium bg-brand-sage">Synchronizing product data...</div>;
 
