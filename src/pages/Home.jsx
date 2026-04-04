@@ -209,7 +209,7 @@ const Home = () => {
                                     >
                                         <Link 
                                             to={activeBanner.link || "/"}
-                                            className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-bold shadow-lg hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-[0.2em] active:scale-95 inline-block text-center mr-auto cursor-pointer"
+                                            className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-medium shadow-lg hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-widest active:scale-95 inline-block text-center mr-auto cursor-pointer"
                                         >
                                             {activeBanner.cta || "Explore collection"}
                                         </Link>
@@ -231,7 +231,7 @@ const Home = () => {
                         />
                     ))}
                     <div className="w-px h-4 bg-white/10 mx-2" />
-                    <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{currentBanner + 1} / {visibleBanners.length || 1}</span>
+                    <span className="text-[10px] font-medium text-white/40 uppercase tracking-widest">{currentBanner + 1} / {visibleBanners.length || 1}</span>
                 </div>
             </section>
         </div>
@@ -239,9 +239,9 @@ const Home = () => {
             {/* Featured Collections Section (Primary Hierarchy: 5xl, #2f2f2f) */}
             <section className="py-24 bg-brand-sage transition-colors duration-700">
                 <div className="max-w-[1280px] mx-auto px-6">
-                    <div className="max-w-[720px] mx-auto text-center mb-16 md:mb-20">
-                        <span className="text-[11px] font-bold text-[#8C916C] uppercase tracking-[0.3em] mb-4 block">Hand-picked essentials</span>
-                        <h2 className="text-5xl font-medium text-[#2f2f2f] mb-6 tracking-tight">Featured Collections</h2>
+                    <div className="max-w-[720px] mx-auto text-center mb-16">
+                        <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest mb-3 block">Hand-picked essentials</span>
+                        <h2 className="text-5xl font-medium text-[#2f2f2f] mb-8 tracking-tight">Featured Collections</h2>
                         <p className="text-[#6f6f6f] text-lg italic leading-relaxed">
                             Curated selections for the modern companion, blending organic comfort with timeless style.
                         </p>
@@ -254,7 +254,7 @@ const Home = () => {
                                 key={product.id}
                                 className="group"
                             >
-                                <div className="aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm relative mb-6 shadow-sm hover:shadow-xl transition-all duration-700 ease-out">
+                                <div className="aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm relative mb-6 shadow-sm hover:shadow-xl transition-all duration-300 ease-out group-hover:scale-[1.01]">
                                     <motion.img
                                         src={getProductImage(Array.isArray(product.images) ? product.images.sort((a,b) => a.sequence - b.sequence)[0]?.url : product.imageName, media)}
                                         alt={product.name}
@@ -263,15 +263,15 @@ const Home = () => {
                                     <div className="absolute inset-0 bg-transparent group-hover:bg-[#2f2f2f]/5 transition-colors duration-700" />
                                 </div>
                                 <div className="text-center md:text-left px-2">
-                                    <span className="text-[9px] tracking-[0.2em] text-[#8C916C] font-bold uppercase mb-2 block">{product.category}</span>
+                                    <span className="text-[9px] tracking-widest text-[#868686] font-normal uppercase mb-3 block">{product.category}</span>
                                     <div className="flex flex-col gap-1 items-center md:items-start">
                                         <h3 className="text-lg font-medium text-[#2f2f2f] leading-tight group-hover:text-brand-rose transition-colors">{product.name}</h3>
                                         <div className="flex items-center space-x-3">
-                                            <span className="text-[15px] text-[#2f2f2f] font-medium">
+                                            <span className="text-[15px] text-[#2f2f2f] font-normal">
                                                 {formatPrice(product.discountPrice || product.price)}
                                             </span>
                                             {product.discountPrice && (
-                                                <span className="text-[11px] text-[#9a9a9a] line-through">
+                                                <span className="text-[11px] text-[#868686] line-through">
                                                     {formatPrice(product.price)}
                                                 </span>
                                             )}
@@ -281,7 +281,7 @@ const Home = () => {
                                         {[...Array(5)].map((_, i) => (
                                             <Star key={i} size={10} fill={i < (Number(product.rating) || 5) ? "#95714F" : "none"} className="text-[#95714F] mr-0.5" />
                                         ))}
-                                        <span className="text-[9px] text-[#95714F] ml-2 font-bold uppercase tracking-widest">Verified quality</span>
+                                        <span className="text-[9px] text-[#868686] ml-2 font-normal uppercase tracking-widest">Verified quality</span>
                                     </div>
                                 </div>
                             </Link>
@@ -293,9 +293,9 @@ const Home = () => {
             {/* Our Community Section (Tertiary Hierarchy: 4xl, #6f6f6f) */}
             <section className="py-24 bg-white transition-colors duration-700">
                 <div className="max-w-[1280px] mx-auto px-6">
-                    <div className="max-w-[720px] mx-auto text-center mb-16 md:mb-20">
-                        <span className="text-[11px] font-bold text-[#8C916C] uppercase tracking-[0.3em] mb-4 block">Capturing Joy</span>
-                        <h2 className="text-4xl font-medium text-[#6f6f6f] mb-6 tracking-tight">Our community</h2>
+                    <div className="max-w-[720px] mx-auto text-center mb-16">
+                        <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest mb-3 block">Capturing Joy</span>
+                        <h2 className="text-4xl font-medium text-[#6f6f6f] mb-8 tracking-tight">Our community</h2>
                         <p className="text-[#9a9a9a] text-lg italic leading-relaxed">
                             Shared moments of comfort and style from our beloved companions worldwide.
                         </p>
@@ -325,10 +325,10 @@ const Home = () => {
             {/* Kind Words Tier (Tertiary Hierarchy: 4xl, #6f6f6f) */}
             <section className="py-32 bg-brand-cream/30 overflow-hidden transition-colors duration-700">
                 <div className="max-w-[1280px] mx-auto px-6">
-                    <div className="max-w-[720px] mx-auto text-center mb-16 md:mb-24">
-                        <span className="text-[11px] font-bold text-[#8C916C] uppercase tracking-[0.3em] mb-4 block">Testimonials</span>
+                    <div className="max-w-[720px] mx-auto text-center mb-16">
+                        <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest mb-3 block">Testimonials</span>
                         <h2 className="text-4xl font-medium text-[#6f6f6f] mb-8 tracking-tight">Kind words</h2>
-                        <div className="w-12 h-1 bg-[#d8b7b1] mx-auto mb-8" />
+                        <div className="w-12 h-0.5 bg-[#d8b7b1] mx-auto mb-8" />
                         <p className="text-[#9a9a9a] text-xl font-light italic">
                             Heartfelt stories from our community of pet parents.
                         </p>
@@ -354,7 +354,7 @@ const Home = () => {
                                 <p className="text-[#2f2f2f] italic text-lg leading-relaxed mb-10">"{t.text}"</p>
                                 <div className="flex items-center space-x-4">
                                     <div className="w-8 h-px bg-[#e6dfd4]" />
-                                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#9a9a9a]">{t.name}</p>
+                                    <p className="text-[10px] font-medium uppercase tracking-widest text-[#868686]">{t.name}</p>
                                 </div>
                             </motion.div>
                         ))}
@@ -366,17 +366,17 @@ const Home = () => {
             <section className="py-32 bg-white transition-colors duration-700">
                 <div className="max-w-[1280px] mx-auto px-6 text-center flex flex-col items-center">
                     <div className="max-w-[720px] mx-auto flex flex-col items-center">
-                        <span className="tracking-[0.4em] text-[10px] font-bold text-[#8C916C] uppercase mb-8 block">Stay connected</span>
-                        <div className="flex flex-col items-center mb-10 grayscale brightness-90 hover:grayscale-0 hover:brightness-100 transition-all duration-700">
+                        <span className="tracking-widest text-[10px] font-normal text-[#868686] uppercase mb-3 block">Stay connected</span>
+                        <div className="flex flex-col items-center mb-10 grayscale brightness-95 hover:grayscale-0 hover:brightness-100 transition-all duration-700">
                             <img src={logo} alt="Tutu & Co" className="h-20 w-auto mb-2" />
                         </div>
-                        <h2 className="text-3xl md:text-4xl font-medium text-[#6f6f6f] mb-6">Join the Movement</h2>
+                        <h2 className="text-3xl md:text-4xl font-medium text-[#6f6f6f] mb-8">Join the Movement</h2>
                         <p className="text-[#9a9a9a] mb-12 text-2xl font-light italic leading-relaxed">
                             Capture the joy. Share your moments with us and be part of our growing story.
                         </p>
                         <Link 
                             to="/moments"
-                            className="inline-flex items-center space-x-8 bg-[#d8b7b1] text-[#2f2f2f] px-20 py-10 text-[18px] font-bold uppercase tracking-[0.2em] hover:bg-[#2f2f2f] hover:text-white transition-all shadow-2xl active:scale-95"
+                            className="inline-flex items-center space-x-8 bg-[#d8b7b1] text-[#2f2f2f] px-20 py-10 text-[18px] font-medium uppercase tracking-widest hover:bg-[#2f2f2f] hover:text-white transition-all shadow-2xl active:scale-95"
                         >
                             <span>Visit the gallery</span>
                             <ArrowRight size={24} />
@@ -385,18 +385,18 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Philosophy Flagship (Background Hierarchy: 5xl, #9a9a9a) */}
+            {/* Philosophy Flagship (Background Hierarchy: 5xl, #868686) */}
             <section className="py-32 bg-brand-cream relative overflow-hidden transition-colors duration-700">
                 <div className="max-w-[1280px] mx-auto px-6 text-center relative z-10">
                     <div className="max-w-[720px] mx-auto">
-                        <span className="text-[11px] font-bold text-[#8C916C] uppercase tracking-[0.4em] mb-10 block">Our philosophy</span>
-                        <h2 className="text-5xl font-medium text-[#9a9a9a] mb-12 tracking-tight leading-none">Naturally Sourcing.<br/>Inspired by Life.</h2>
+                        <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest mb-3 block">Our philosophy</span>
+                        <h2 className="text-5xl font-medium text-[#868686] mb-8 tracking-tight leading-none">Naturally Sourcing.<br/>Inspired by Life.</h2>
                         <p className="text-[#9a9a9a] leading-relaxed text-2xl italic font-light max-w-2xl mx-auto mb-20">
                             "At Tutu & Co, we believe our pet companions deserve the same quality of organic materials and thoughtful design as we do."
                         </p>
                         <div className="flex flex-col items-center">
                             <div className="w-px h-24 bg-[#2f2f2f]/10 mb-10" />
-                            <Link to="/about" className="text-[11px] tracking-[0.4em] font-bold text-[#9a9a9a] uppercase hover:text-[#2f2f2f] transition-colors duration-500">Discover our story</Link>
+                            <Link to="/about" className="text-[11px] tracking-widest font-medium text-[#868686] uppercase hover:text-[#2f2f2f] transition-colors duration-500">Discover our story</Link>
                         </div>
                     </div>
                 </div>
