@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { upload } from '@vercel/blob/client';
 import { useShop, getProductImage, FINAL_API_URL } from '../../context/ShopContext';
 import MediaPicker from '../../components/MediaPicker';
+import ImageGridManager from '../../components/ImageGridManager';
 
 const AdminProducts = () => {
     const { 
@@ -290,68 +291,29 @@ const AdminProducts = () => {
                             <div className="flex-grow overflow-y-auto flex flex-col md:flex-row custom-scrollbar">
                                 {/* Media Hub Left Panel */}
                                 <div className="w-full md:w-[45%] bg-[#F4F1EA]/60 border-r border-brand-charcoal/5 flex flex-col p-6 md:p-10">
-                                    <h3 className="text-[12px] font-bold text-brand-charcoal/70 uppercase tracking-widest mb-6">Media Hub</h3>
-                                    <div className="grid grid-cols-2 gap-4 mb-8">
-                                        {[0, 1, 2, 3].map((idx) => (
-                                            <div key={idx} className="relative aspect-[4/5] rounded-sm border border-brand-charcoal/10 overflow-hidden group shadow-sm bg-white/50">
-                                                {productForm.images?.[idx]?.url ? (
-                                                    <>
-                                                        <img src={getProductImage(productForm.images[idx].url, media)} className="w-full h-full object-cover" alt="" />
-                                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col p-2 space-y-2">
-                                                            <button onClick={() => setAdjustingImageIdx(idx)} className="bg-white text-brand-charcoal p-2 rounded-sm text-[10px] font-bold uppercase"><Crosshair size={14} className="inline mr-2" /> Calibration</button>
-                                                            <button onClick={() => {
-                                                                openMediaPicker({
-                                                                    multi: false,
-                                                                    onSelect: (item) => {
-                                                                        const url = typeof item === 'string' ? item : item.url;
-                                                                        const ni = [...productForm.images];
-                                                                        ni[idx] = { ...ni[idx], url };
-                                                                        setProductForm({ ...productForm, images: ni });
-                                                                    }
-                                                                });
-                                                            }} className="bg-brand-rose text-brand-charcoal p-2 rounded-sm text-[10px] font-bold uppercase">Replace</button>
-                                                            <button onClick={() => {
-                                                                const ni = productForm.images.filter((_, i) => i !== idx);
-                                                                setProductForm({...productForm, images: ni});
-                                                            }} className="bg-red-500 text-white p-2 rounded-sm text-[10px] font-bold uppercase">Purge</button>
-                                                        </div>
-                                                    </>
-                                                ) : (
-                                                    <div className="w-full h-full flex flex-col items-center justify-center p-4">
-                                                        <div className="flex flex-col gap-2 w-full">
-                                                            <button 
-                                                                onClick={() => triggerUpload(idx)} 
-                                                                className="w-full py-3 bg-brand-charcoal/5 hover:bg-brand-sage text-brand-charcoal rounded-sm flex flex-col items-center justify-center transition-all"
-                                                            >
-                                                                <Upload size={16} className="mb-1" />
-                                                                <span className="text-[9px] font-bold uppercase">Upload</span>
-                                                            </button>
-                                                            <button 
-                                                                onClick={() => {
-                                                                    openMediaPicker({
-                                                                        multi: false,
-                                                                        onSelect: (item) => {
-                                                                            const url = typeof item === 'string' ? item : item.url;
-                                                                            const ni = [...(productForm.images || [])];
-                                                                            ni[idx] = { url, fitMode: 'cover', focalPoint: { x: 50, y: 50 } };
-                                                                            setProductForm({ ...productForm, images: ni });
-                                                                        }
-                                                                    });
-                                                                }} 
-                                                                className="w-full py-3 bg-brand-rose text-brand-charcoal rounded-sm flex flex-col items-center justify-center transition-all shadow-sm"
-                                                            >
-                                                                <ImageIcon size={16} className="mb-1" />
-                                                                <span className="text-[9px] font-bold uppercase">Library</span>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
+                                    <h3 className="text-[12px] font-bold text-brand-charcoal/70 uppercase tracking-widest mb-6 font-medium">Digital Narrative Flow</h3>
                                     
-                                    <div className="space-y-6">
-                                        <h3 className="text-[12px] font-bold text-brand-charcoal/70 uppercase tracking-widest mb-4">Narrative Blocks</h3>
+                                    <ImageGridManager 
+                                        images={productForm.images || []}
+                                        media={media}
+                                        onChange={(newImages) => setProductForm({ ...productForm, images: newImages })}
+                                        onUpload={(idx) => triggerUpload(idx)}
+                                        onMediaPicker={(idx) => {
+                                            openMediaPicker({
+                                                multi: false,
+                                                onSelect: (item) => {
+                                                    const url = typeof item === 'string' ? item : item.url;
+                                                    const ni = [...(productForm.images || [])];
+                                                    ni[idx] = { ...ni[idx], url };
+                                                    setProductForm({ ...productForm, images: ni });
+                                                }
+                                            });
+                                        }}
+                                        onCalibrate={(idx) => setAdjustingImageIdx(idx)}
+                                    />
+                                    
+                                    <div className="mt-12">
+                                        <h3 className="text-[12px] font-bold text-brand-charcoal/70 uppercase tracking-widest mb-4 font-medium">Narrative Blocks</h3>
                                         <div className="space-y-4">
                                             {(productForm.descriptionBlocks || []).map((block, idx) => (
                                                 <div key={idx} className="bg-white p-4 rounded-sm border border-brand-charcoal/5 group">
