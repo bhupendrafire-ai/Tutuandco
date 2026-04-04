@@ -277,19 +277,29 @@ const Home = () => {
                                 </div>
                                 <div className="text-center md:text-left px-2">
                                     <span className="text-[9px] tracking-widest text-[#868686] font-normal uppercase mb-3 block">{product.category}</span>
-                                    <div className="flex flex-col gap-1 items-center md:items-start">
-                                        <h3 className="text-lg font-medium text-[#2f2f2f] leading-tight group-hover:text-brand-rose transition-colors">{product.name}</h3>
-                                        <div className="flex items-center space-x-3">
-                                            <span className="text-[15px] text-[#4a4a4a] font-normal">
-                                                {formatPrice(product.discountPrice || product.price)}
-                                            </span>
-                                            {product.discountPrice && (
-                                                <span className="text-[11px] text-[#868686] line-through">
-                                                    {formatPrice(product.price)}
+                                        <div className="flex flex-col gap-0.5 items-center md:items-start">
+                                            <h3 className="text-lg font-medium text-[#2f2f2f] leading-tight group-hover:text-brand-rose transition-colors">{product.name}</h3>
+                                            <div className="flex items-center space-x-3">
+                                                <span className="text-[15px] text-[#4a4a4a] font-normal">
+                                                    {(() => {
+                                                        const prices = (product.variants || []).filter(v => v.price > 0).map(v => v.price);
+                                                        const minPrice = prices.length > 0 ? Math.min(...prices) : (product.discountPrice || product.price);
+                                                        const hasMultiple = new Set(prices).size > 1;
+                                                        return (
+                                                            <span className="flex items-center gap-1.5">
+                                                                {hasMultiple && <span className="text-[10px] uppercase opacity-40 font-bold tracking-tighter">From</span>}
+                                                                {formatPrice(minPrice)}
+                                                            </span>
+                                                        );
+                                                    })()}
                                                 </span>
-                                            )}
+                                                {product.discountPrice && (
+                                                    <span className="text-[11px] text-[#868686] line-through">
+                                                        {formatPrice(product.price)}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
                                     <div className="flex items-center justify-center md:justify-start mt-4">
                                         {[...Array(5)].map((_, i) => (
                                             <Star key={i} size={10} fill={i < (Number(product.rating) || 5) ? "#95714F" : "none"} className="text-[#95714F] mr-0.5" />

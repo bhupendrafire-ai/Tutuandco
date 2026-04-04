@@ -21,7 +21,8 @@ const migrateVariantPrices = async () => {
 
             let needsUpdate = false;
             const updatedVariants = variants.map(v => {
-                if (v.price === undefined || v.price === null) {
+                // Only set price if it does not already exist OR is 0 (assumed uninitialized)
+                if (v.price === undefined || v.price === null || v.price === 0) {
                     needsUpdate = true;
                     return { ...v, price: parseFloat(product.price) };
                 }

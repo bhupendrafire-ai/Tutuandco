@@ -6,8 +6,18 @@ import { CheckCircle, Truck, FileText, CreditCard, ChevronRight, ArrowLeft, Arro
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Checkout = () => {
-    const { cart, getCartTotal, checkout, formatPrice, settings, media } = useShop();
+    const { cart, getCartTotal, checkout, formatPrice, settings, media, refreshCartPrices } = useShop();
     
+    React.useEffect(() => {
+        const checkPrices = async () => {
+            const result = await refreshCartPrices();
+            if (result.updated) {
+                alert(result.message);
+            }
+        };
+        checkPrices();
+    }, []);
+
     if (!settings) return null; // Safe guard for initialization
 
     const { subtotal, discountAmount, shipping, total } = getCartTotal();

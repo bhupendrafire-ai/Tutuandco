@@ -657,6 +657,37 @@ export const ShopProvider = ({ children }) => {
         return { subtotal, discountAmount: totalDiscount, shipping, total: total + shipping };
     };
 
+    const refreshCartPrices = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`);
+            const latestProducts = await response.json();
+            
+            let hasChanges = false;
+            const updatedCart = cart.map(item => {
+                const latestProduct = latestProducts.find(p => p.id === item.id);
+                if (!latestProduct) return item;
+                
+                const latestVariant = (latestProduct.variants || []).find(v => v.size === item.size);
+                const latestPrice = latestVariant?.price !== undefined ? latestVariant.price : (latestProduct.discountPrice || latestProduct.price);
+                
+                if (latestPrice !== item.price) {
+                    hasChanges = true;
+                    return { ...item, price: latestPrice };
+                }
+                return item;
+            });
+            
+            if (hasChanges) {
+                setCart(updatedCart);
+                return { updated: true, message: "Some prices in your cart have been updated to reflect current values." };
+            }
+            return { updated: false };
+        } catch (error) {
+            console.error("Failed to refresh cart prices:", error);
+            return { updated: false, error };
+        }
+    };
+
     const applyCoupon = async (code) => {
         // Simplified coupon logic for phase 2 - still client side but matching structure
         const coupons = [{ code: 'TUTU10', discount: 0.1, minSpend: 500 }];

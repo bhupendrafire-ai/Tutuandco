@@ -588,6 +588,13 @@ const AdminProducts = () => {
                                                                                 const newTotalStock = nv.reduce((sum, v) => sum + (v.stock || 0), 0);
                                                                                 setProductForm({ ...productForm, variants: nv, stock: newTotalStock });
                                                                             }} 
+                                                                            onKeyDown={(e) => {
+                                                                                if (e.key === 'Enter') {
+                                                                                    e.preventDefault();
+                                                                                    const nextInput = e.currentTarget.parentElement?.nextElementSibling?.querySelector('input');
+                                                                                    if (nextInput) nextInput.focus();
+                                                                                }
+                                                                            }}
                                                                             className="w-24 bg-transparent text-lg font-medium outline-none border-none p-0" 
                                                                         />
                                                                     </div>

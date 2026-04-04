@@ -220,24 +220,48 @@ app.post('/api/orders', async (req, res) => {
             );
         }
 
-        // 4. Create Order record
+        // 4. Server-Side Price Verification (CRITICAL)
+        const settingsRes = await client.query('SELECT data FROM settings WHERE id=$1', ['global']);
+        const globalSettings = settingsRes.rows[0]?.data || {};
+        const globalDiscountPercent = globalSettings.globalDiscount || 0;
 
-        // 2. Create Order
+        let serverSubtotal = 0;
+        const verifiedItems = o.items.map(item => {
+            const product = productMap[item.id];
+            const variants = product.variants || [];
+            const variant = variants.find(v => v.size.toLowerCase() === (item.size || '').toLowerCase());
+            
+            // Priority: Variant Price -> Product Discount Price -> Product Base Price
+            const unitPrice = variant?.price !== undefined ? parseFloat(variant.price) : (product.discount_price ? parseFloat(product.discount_price) : parseFloat(product.price));
+            serverSubtotal += unitPrice * item.quantity;
+            
+            return {
+                ...item,
+                price: unitPrice, // Lock in the server-verified price
+                discountPrice: null // Clear frontend discount price to ensure consistency
+            };
+        });
+
+        const serverDiscountAmount = (serverSubtotal * (globalDiscountPercent / 100));
+        const serverShippingCost = (serverSubtotal - serverDiscountAmount) >= 999 ? 0 : 89;
+        const serverTotal = (serverSubtotal - serverDiscountAmount) + serverShippingCost;
+
+        // 5. Create Order record using server-calculated values
         const result = await client.query(
             `INSERT INTO orders (
                 data, status, customer_name, customer_email, customer_phone, 
                 total_amount, shipping_cost, discount_amount, items, shipping_address
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
             [
-                JSON.stringify(o), 
+                JSON.stringify({ ...o, items: verifiedItems, total: serverTotal, subtotal: serverSubtotal }), 
                 'Pending', 
                 `${o.firstName} ${o.lastName}`, 
                 o.email, 
                 o.phone, 
-                o.total, 
-                o.shipping, 
-                o.discountAmount, 
-                JSON.stringify(o.items), 
+                serverTotal, 
+                serverShippingCost, 
+                serverDiscountAmount, 
+                JSON.stringify(verifiedItems), 
                 JSON.stringify({ address: o.address, city: o.city, state: o.state, zip: o.zip })
             ]
         );

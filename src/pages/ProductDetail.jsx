@@ -173,16 +173,21 @@ const ProductDetail = () => {
                                                 disabled={isOutOfStock}
                                                 onClick={() => setSelectedSize(variant.size)}
                                                 className={`
-                                                    px-8 py-4 rounded-sm border-2 text-sm font-bold transition-all min-w-[70px]
+                                                    px-8 py-4 rounded-sm border-2 text-[11px] font-bold transition-all min-w-[80px] uppercase tracking-widest relative overflow-hidden
                                                     ${isSelected 
-                                                        ? 'border-brand-charcoal bg-brand-charcoal text-white shadow-lg scale-105' 
+                                                        ? 'border-brand-charcoal bg-brand-charcoal text-white shadow-xl scale-105' 
                                                         : isOutOfStock 
-                                                            ? 'border-brand-charcoal/5 bg-brand-charcoal/5 text-brand-charcoal/20 cursor-not-allowed line-through' 
-                                                            : 'border-brand-charcoal/10 hover:border-brand-charcoal/30'
+                                                            ? 'border-brand-charcoal/5 bg-transparent text-brand-charcoal/20 cursor-not-allowed opacity-40' 
+                                                            : 'border-brand-charcoal/10 hover:border-brand-charcoal/30 bg-white shadow-sm'
                                                     }
                                                 `}
                                             >
                                                 {variant.size}
+                                                {isOutOfStock && (
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        <div className="w-[120%] h-px bg-brand-charcoal/20 rotate-[-15deg] pointer-events-none" />
+                                                    </div>
+                                                )}
                                             </button>
                                         );
                                     })}
