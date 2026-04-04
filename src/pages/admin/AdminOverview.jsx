@@ -9,7 +9,8 @@ import {
 import { useShop } from '../../context/ShopContext';
 
 const AdminOverview = () => {
-    const { orders, products } = useShop();
+    const { orders, products, settings } = useShop();
+    const currencySymbol = settings?.currency?.symbol || '₹';
 
     // Calculate real-time stats
     const totalSales = orders.reduce((sum, order) => sum + (Number(order.total_amount) || 0), 0);
@@ -28,7 +29,7 @@ const AdminOverview = () => {
     ];
 
     const stats_grid = [
-        { label: 'Total Sales', val: `₹${totalSales.toLocaleString()}`, trend: '+12.5%', icon: DollarSign, color: '#CD664D' },
+        { label: 'Total Sales', val: `${currencySymbol}${totalSales.toLocaleString()}`, trend: '+12.5%', icon: DollarSign, color: '#CD664D' },
         { label: 'Active Orders', val: totalOrders, trend: '+4 today', icon: ShoppingCart, color: '#9FA993' },
         { label: 'Customers', val: totalCustomers, trend: '+18%', icon: Users, color: '#DED6C4' },
         { label: 'Site Health', val: `${health}%`, trend: 'Optimal', icon: TrendingUp, color: '#3E362E' }

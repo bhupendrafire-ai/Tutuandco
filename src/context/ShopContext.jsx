@@ -77,10 +77,10 @@ export const getProductImage = (namePart, customMedia = []) => {
 
 export const formatPrice = (amount, settings) => {
     const val = Number(amount) || 0;
-    if (!settings || !settings.currency) return `$${val.toFixed(2)}`;
+    if (!settings || !settings.currency) return `₹${val.toFixed(2)}`;
     const { symbol, rate } = settings.currency;
     const safeRate = Number(rate) || 1;
-    return `${symbol || '$'}${(val * safeRate).toFixed(2)}`;
+    return `${symbol || '₹'}${(val * safeRate).toFixed(2)}`;
 };
 
 export const ShopProvider = ({ children }) => {
@@ -89,7 +89,7 @@ export const ShopProvider = ({ children }) => {
     const [media, setMedia] = useState([]);
     const [cart, setCart] = useState([]);
     const [settings, setSettings] = useState({
-        currency: { code: 'USD', symbol: '$', rate: 1 },
+        currency: { code: 'INR', symbol: '₹', rate: 1 },
         globalDiscount: 0,
         shopName: 'Tutu & Co',
         categories: ['Accessories', 'Toys', 'Beds']
@@ -143,7 +143,7 @@ export const ShopProvider = ({ children }) => {
             const m = mediaRes.ok ? await mediaRes.json() : [];
             const o = orderRes.ok ? await orderRes.json() : [];
             const s = settingsRes.ok ? await settingsRes.json() : {
-                currency: { code: 'USD', symbol: '$', rate: 1 },
+                currency: { code: 'INR', symbol: '₹', rate: 1 },
                 globalDiscount: 0,
                 shopName: 'Tutu & Co'
             };
@@ -153,7 +153,7 @@ export const ShopProvider = ({ children }) => {
             setMedia(m || []);
             setOrders(Array.isArray(o) ? o : []);
             setSettings(s || {
-                currency: { code: 'USD', symbol: '$', rate: 1 },
+                currency: { code: 'INR', symbol: '₹', rate: 1 },
                 globalDiscount: 0,
                 shopName: 'Tutu & Co'
             });

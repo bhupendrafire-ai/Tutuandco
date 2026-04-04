@@ -190,7 +190,7 @@ const AdminProducts = () => {
                                             {Number(item.stock) || 0} units
                                         </span>
                                     </td>
-                                    <td className="p-6 font-medium text-lg">₹{Number(item.price || 0).toFixed(2)}</td>
+                                    <td className="p-6 font-medium text-lg">{settings?.currency?.symbol || '₹'}{Number(item.price || 0).toFixed(2)}</td>
                                     <td className="p-6 text-right space-x-3 text-[#CD664D]">
                                         <button onClick={() => {
                                             setProductForm(item);
@@ -389,7 +389,7 @@ const AdminProducts = () => {
                                                     <input type="number" value={productForm.stock} onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} className="w-full bg-brand-cream/20 p-4 rounded-sm text-2xl font-medium outline-none" />
                                                 </div>
                                                 <div className="flex-grow">
-                                                    <span className="text-xs opacity-40 block mb-1">Price (₹)</span>
+                                                    <span className="text-xs opacity-40 block mb-1">Price ({settings?.currency?.symbol || '₹'})</span>
                                                     <input type="number" value={productForm.price} onChange={e => setProductForm({...productForm, price: parseInt(e.target.value)})} className="w-full bg-brand-charcoal text-white p-4 rounded-sm text-2xl font-medium outline-none" />
                                                 </div>
                                             </div>

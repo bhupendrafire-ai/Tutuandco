@@ -132,8 +132,8 @@
   ],
   "settings": {
     "currency": {
-      "code": "USD",
-      "symbol": "$",
+      "code": "INR",
+      "symbol": "₹",
       "rate": 1
     },
     "globalDiscount": 0,
