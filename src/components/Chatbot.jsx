@@ -28,7 +28,7 @@ const Chatbot = () => {
 
         // Automated responses
         setTimeout(() => {
-            let botText = "I'm not sure about that, but our team can help! Email us at support@tutuandco.com";
+            let botText = "I'm not sure about that, but our team can help! Email us at hello.tutuandco@gmail.com";
             const lower = inputValue.toLowerCase();
             
             if (lower.includes('sizing') || lower.includes('measure')) {

@@ -11,7 +11,7 @@ export const DEFAULT_POLICIES = {
 <p>Delivery timelines may vary depending on your location and courier partner.</p>
 <p>Shipping charges (if applicable) will be calculated at checkout.</p>
 <p>Once your order is shipped, you’ll receive a tracking link via email or SMS to follow its journey.</p>
-<p>While we work with reliable delivery partners, delays can occasionally happen due to factors beyond our control. If your order is significantly delayed, feel free to reach out to us at <strong>support@tutuandco.com</strong>.</p>
+<p>While we work with reliable delivery partners, delays can occasionally happen due to factors beyond our control. If your order is significantly delayed, feel free to reach out to us at <strong>hello.tutuandco@gmail.com</strong>.</p>
 <p>Please ensure your shipping details are accurate at checkout. We are not responsible for delays or failed deliveries due to incorrect information.</p>`,
     
     refund: `<p>As a small, made-with-care brand, we currently do not offer returns or refunds, unless the item received is damaged or incorrect.</p>

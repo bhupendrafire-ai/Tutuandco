@@ -37,15 +37,21 @@ const Terms = () => {
                             </div>
                         )}
 
-                        <div className="mt-16 text-sm text-brand-charcoal/80 leading-relaxed border-t border-brand-charcoal/10 pt-10">
-                            <p className="mb-4">Tutu & Co · Operated by Filter Works (Proprietorship) · GSTIN: 27ABYPW0381K1ZQ</p>
+                        <div className="mt-16 pt-10 border-t border-brand-charcoal/10">
+                            <p className="text-sm font-medium text-brand-charcoal mb-4">Contact support</p>
+                            <p className="text-sm">hello.tutuandco@gmail.com</p>
+                            <p className="text-sm">Monday – Friday, 9:00 AM – 6:00 PM IST</p>
+                            
+                            <div className="mt-12 text-sm text-brand-charcoal/80 leading-relaxed font-normal">
+                                <p className="mb-4">Tutu & Co · Operated by Filter Works (Proprietorship) · GSTIN: 27ABYPW0381K1ZQ</p>
 
-                            <div className="mt-4">
-                                <p>Filter Works (Proprietorship)</p>
-                                <p>S No 879, Siddhivinayak Industrial Estate, Shed No-01</p>
-                                <p>Kudalwadi, Chikhali</p>
-                                <p>Pune, Maharashtra 411062</p>
-                                <p>India</p>
+                                <div className="mt-4">
+                                    <p>Filter Works (Proprietorship)</p>
+                                    <p>S No 879, Siddhivinayak Industrial Estate, Shed No-01</p>
+                                    <p>Kudalwadi, Chikhali</p>
+                                    <p>Pune, Maharashtra 411062</p>
+                                    <p>India</p>
+                                </div>
                             </div>
                         </div>
                     </div>
