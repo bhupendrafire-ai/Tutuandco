@@ -377,14 +377,11 @@ const Home = () => {
             </section>
 
             {/* Our Community (Tertiary Hierarchy: 3xl, #6f6f6f) */}
-            <section className="py-32 bg-white transition-colors duration-700">
+            <section className="pt-16 pb-20 bg-white transition-colors duration-700">
                 <div className="max-w-[1280px] mx-auto px-6 text-center flex flex-col items-center">
                     <div className="max-w-[720px] mx-auto flex flex-col items-center">
-                        <div className="flex flex-col items-center mb-6 grayscale brightness-95 hover:grayscale-0 hover:brightness-100 transition-all duration-700">
-                            <img src={logo} alt="Tutu & Co" className="h-20 w-auto mb-2" />
-                        </div>
-                        <h2 className="text-2xl md:text-3xl font-medium text-[#6f6f6f] mb-5 uppercase tracking-widest">Our community</h2>
-                        <p className="text-[#9a9a9a] mb-8 text-xl font-light italic leading-relaxed">
+                        <h2 className="text-2xl md:text-3xl font-medium text-[#6f6f6f] mb-3 uppercase tracking-widest">Our community</h2>
+                        <p className="text-[#9a9a9a] mb-7 text-xl font-light italic leading-relaxed">
                             Share your moments. Be part of our story.
                         </p>
                         <Link 
