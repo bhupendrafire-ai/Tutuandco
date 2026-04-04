@@ -96,6 +96,10 @@ const SizeGuideModal = ({ isOpen, onClose }) => {
             </div>
 
             <style sx>{`
+                .sizing-modal-content {
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                }
                 .sizing-modal-content table {
                     width: 100%;
                     border-collapse: collapse;
@@ -126,9 +130,7 @@ const SizeGuideModal = ({ isOpen, onClose }) => {
                 
                 @media (max-width: 768px) {
                     .sizing-modal-content table {
-                        display: block;
-                        overflow-x: auto;
-                        white-space: nowrap;
+                        min-width: 500px;
                     }
                 }
             `}</style>

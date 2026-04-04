@@ -131,6 +131,8 @@ const Policy = () => {
                     line-height: 1.6;
                     color: #2f2f2f;
                     text-align: left;
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
                 }
                 .policy-content h2 { 
                     display: block;
