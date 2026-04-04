@@ -376,21 +376,20 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Stay Connected (Tertiary Hierarchy: 4xl, #6f6f6f) */}
+            {/* Our Community (Tertiary Hierarchy: 3xl, #6f6f6f) */}
             <section className="py-32 bg-white transition-colors duration-700">
                 <div className="max-w-[1280px] mx-auto px-6 text-center flex flex-col items-center">
                     <div className="max-w-[720px] mx-auto flex flex-col items-center">
-                        <span className="tracking-widest text-[10px] font-normal text-[#868686] uppercase mb-3 block">Stay connected</span>
-                        <div className="flex flex-col items-center mb-10 grayscale brightness-95 hover:grayscale-0 hover:brightness-100 transition-all duration-700">
+                        <div className="flex flex-col items-center mb-6 grayscale brightness-95 hover:grayscale-0 hover:brightness-100 transition-all duration-700">
                             <img src={logo} alt="Tutu & Co" className="h-20 w-auto mb-2" />
                         </div>
-                        <h2 className="text-3xl md:text-4xl font-medium text-[#6f6f6f] mb-8">Join the Movement</h2>
-                        <p className="text-[#9a9a9a] mb-12 text-2xl font-light italic leading-relaxed">
-                            Capture the joy. Share your moments with us and be part of our growing story.
+                        <h2 className="text-2xl md:text-3xl font-medium text-[#6f6f6f] mb-5 uppercase tracking-widest">Our community</h2>
+                        <p className="text-[#9a9a9a] mb-8 text-xl font-light italic leading-relaxed">
+                            Share your moments. Be part of our story.
                         </p>
                         <Link 
                             to="/moments"
-                            className="inline-flex items-center space-x-8 bg-[#d8b7b1] text-[#2f2f2f] px-12 py-8 text-[18px] font-medium uppercase tracking-widest hover:bg-[#2f2f2f] hover:text-white transition-all shadow-2xl active:scale-95 group"
+                            className="inline-flex items-center space-x-8 bg-[#d8b7b1] text-[#2f2f2f] px-12 py-6 text-[18px] font-medium uppercase tracking-widest hover:bg-[#2f2f2f] hover:text-white transition-all shadow-2xl active:scale-95 group"
                         >
                             <span>Visit the gallery</span>
                             <ArrowRight size={24} className="transition-transform duration-400 group-hover:translate-x-[2px]" />
