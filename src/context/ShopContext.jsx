@@ -158,7 +158,8 @@ export const usePolicy = (key) => {
 
 /**
  * processDualUnits(html)
- * Post-processes HTML to inject inch conversions for CM values.
+ * Post-processes HTML to insert Inch columns for CM values.
+ * Result: Separate columns (Size | Neck (cm) | Neck (inches))
  */
 export const processDualUnits = (html) => {
     if (!html) return "";
@@ -170,36 +171,58 @@ export const processDualUnits = (html) => {
         const rows = Array.from(table.querySelectorAll('tr'));
         if (rows.length === 0) return;
 
-        const headers = Array.from(rows[0].querySelectorAll('th, td')).map(h => h.innerText.toLowerCase());
-        const cmColumns = headers.map((h, i) => h.includes('(cm)') ? i : -1).filter(i => i !== -1);
+        const headerRow = rows[0];
+        const headers = Array.from(headerRow.querySelectorAll('th, td'));
+        const headerTexts = headers.map(h => h.innerText.toLowerCase());
+        
+        // Find CM columns that don't already have an adjacent Inch column
+        const cmColumns = [];
+        headerTexts.forEach((text, i) => {
+            if (text.includes('(cm)')) {
+                const nextText = headerTexts[i + 1] || "";
+                if (!nextText.includes('inch')) {
+                    cmColumns.push(i);
+                }
+            }
+        });
 
         if (cmColumns.length === 0) return;
 
-        rows.slice(1).forEach(row => {
-            const cells = Array.from(row.querySelectorAll('td'));
-            cmColumns.forEach(idx => {
-                if (cells[idx]) {
-                    const text = cells[idx].innerText.trim();
-                    // Handle ranges like "20-30" or "20 - 30"
+        // Process in reverse to avoid index shifting when inserting after
+        cmColumns.reverse().forEach(idx => {
+            // 1. Insert header cell
+            const headerCell = headers[idx];
+            const newHeader = document.createElement(headerCell.tagName);
+            newHeader.innerText = headerCell.innerText.replace('(cm)', '(inches)');
+            headerCell.after(newHeader);
+
+            // 2. Insert data cells for each row
+            rows.slice(1).forEach(row => {
+                const cells = Array.from(row.querySelectorAll('td'));
+                const cell = cells[idx];
+                if (cell) {
+                    const text = cell.innerText.trim();
                     const rangeMatch = text.match(/^(\d+)\s*-\s*(\d+)$/);
+                    let inchVal = "-";
+                    
                     if (rangeMatch) {
                         const low = Math.round(parseFloat(rangeMatch[1]) * 0.393701);
                         const high = Math.round(parseFloat(rangeMatch[2]) * 0.393701);
-                        cells[idx].innerText = `${text} cm (${low}-${high} inches)`;
+                        inchVal = `${low}-${high}`;
                     } else {
                         const val = parseFloat(text);
                         if (!isNaN(val)) {
-                            const inches = Math.round(val * 0.393701);
-                            cells[idx].innerText = `${val} cm (${inches} inches)`;
+                            inchVal = Math.round(val * 0.393701).toString();
+                        } else if (text === "-" || text === "") {
+                            inchVal = "-";
                         }
                     }
+                    
+                    const newCell = document.createElement('td');
+                    newCell.innerText = inchVal;
+                    cell.after(newCell);
                 }
             });
-        });
-        
-        cmColumns.forEach(idx => {
-            const headerCell = rows[0].querySelectorAll('th, td')[idx];
-            if (headerCell) headerCell.innerText = headerCell.innerText.replace('(cm)', '(cm/inches)');
         });
     });
 
@@ -209,22 +232,63 @@ export const processDualUnits = (html) => {
 /**
  * htmlToReadableText(html)
  * Converts HTML to clean text for Chatbot with Dual Unit Support.
+ * Intelligently combines separate CM and Inch columns for conversational flow.
  */
 export const htmlToReadableText = (html) => {
     if (!html) return "";
-    // First process dual units to ensure bot sees them
-    const enrichedHtml = processDualUnits(html);
     const temp = document.createElement('div');
-    temp.innerHTML = enrichedHtml;
+    temp.innerHTML = html;
 
     const tables = temp.querySelectorAll('table');
     tables.forEach(table => {
         let tableText = "\n";
         const rows = Array.from(table.querySelectorAll('tr'));
-        rows.forEach(row => {
-            const cells = Array.from(row.querySelectorAll('th, td')).map(c => c.innerText.trim());
-            if (cells.length > 0) tableText += cells.join(': ') + "\n";
+        if (rows.length === 0) return;
+
+        const headerTexts = Array.from(rows[0].querySelectorAll('th, td')).map(h => h.innerText.toLowerCase());
+        
+        // Find adjacent CM/Inch column pairs to combine
+        const combineIndices = [];
+        headerTexts.forEach((text, i) => {
+            if (text.includes('(cm)')) {
+                const nextText = headerTexts[i + 1] || "";
+                if (nextText.includes('inch')) {
+                    combineIndices.push(i);
+                }
+            }
         });
+
+        // Convert each data row to text
+        rows.slice(1).forEach(row => {
+            const allCells = Array.from(row.querySelectorAll('td'));
+            const cellsToKeep = [];
+            
+            allCells.forEach((cell, i) => {
+                const text = cell.innerText.trim();
+                // If this is a CM column that should be combined with the next
+                if (combineIndices.includes(i)) {
+                    const inchCell = allCells[i + 1];
+                    if (inchCell) {
+                        const inchText = inchCell.innerText.trim();
+                        cellsToKeep.push(`${text} cm (${inchText} inches)`);
+                    } else {
+                        cellsToKeep.push(`${text} cm`);
+                    }
+                } 
+                // If this is an Inch column that was just combined, skip it
+                else if (combineIndices.includes(i - 1)) {
+                    // skip
+                } 
+                else {
+                    cellsToKeep.push(text);
+                }
+            });
+
+            if (cellsToKeep.length > 0) {
+                tableText += cellsToKeep.join(': ') + "\n";
+            }
+        });
+
         table.replaceWith(document.createTextNode(tableText));
     });
 
