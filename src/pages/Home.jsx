@@ -187,7 +187,7 @@ const Home = () => {
                                 <div className="max-w-[380px] w-full mx-auto md:mx-0 flex flex-col gap-y-7 transition-all duration-700">
                                     <div className="flex flex-col gap-y-5 text-[#1a1a1a]">
                                         <motion.h1
-                                            key={`title-${activeIndex}`}
+                                            key={`title-${currentBanner}`}
                                             initial={{ opacity: 0, x: 20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             className="text-4xl md:text-5xl font-medium leading-[1.15]"
@@ -196,7 +196,7 @@ const Home = () => {
                                         </motion.h1>
                                         
                                         <motion.p
-                                            key={`subtitle-${activeIndex}`}
+                                            key={`subtitle-${currentBanner}`}
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ delay: 0.2 }}
@@ -223,9 +223,9 @@ const Home = () => {
 
                                     {/* Minimal Text Indicator (Instance 1/3 Alignment Edge) */}
                                     <div className="mt-4 flex items-center gap-4 text-[11px] text-[#5c5c5c]/80 uppercase tracking-[0.2em] font-normal">
-                                        <span>0{activeIndex + 1}</span>
+                                        <span>0{currentBanner + 1}</span>
                                         <div className="w-8 h-px bg-[#1a1a1a]/10" />
-                                        <span>0{banners.length}</span>
+                                        <span>0{visibleBanners.length}</span>
                                     </div>
                                 </div>
                             </div>
