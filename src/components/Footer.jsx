@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { useShop, CORE_POLICY_METADATA } from '../context/ShopContext';
+import { useShop, CORE_POLICY_METADATA, resolvePolicyLabel } from '../context/ShopContext';
 
 const Footer = () => {
     const { settings } = useShop();
@@ -37,14 +37,17 @@ const Footer = () => {
 
                             return (
                                 <>
-                                    {/* Core Policies (Fixed 1-4) */}
-                                    {CORE_POLICY_METADATA.map(core => (
-                                        <li key={core.slug}>
-                                            <Link to={`/policies/${core.slug}`} className="hover:text-[#2f2f2f] transition-colors">
-                                                {settings[`${core.settingsKey}_navLabel`] || settings[`${core.settingsKey}_title`] || core.defaultNavLabel}
-                                            </Link>
-                                        </li>
-                                    ))}
+                                    {/* Core Policies (Reflected accurately from Admin) */}
+                                    {CORE_POLICY_METADATA.map(core => {
+                                        const policyData = settings.policies?.[core.id];
+                                        return (
+                                            <li key={core.slug}>
+                                                <Link to={`/policies/${core.slug}`} className="hover:text-[#2f2f2f] transition-colors">
+                                                    {resolvePolicyLabel(policyData, core)}
+                                                </Link>
+                                            </li>
+                                        );
+                                    })}
 
                                     {/* Custom Policies (Admin Order) */}
                                     {customPolicies.map((policy) => (

@@ -62,11 +62,45 @@ export const DEFAULT_CUSTOM_POLICIES = [];
 
 // Standardized Core Policy Metadata (Single Source of Truth for Labels/Titles)
 export const CORE_POLICY_METADATA = [
-    { slug: 'shipping', settingsKey: 'shippingPolicy', defaultTitle: 'Shipping Policy', defaultNavLabel: 'Shipping Info' },
-    { slug: 'returns', settingsKey: 'refundPolicy', defaultTitle: 'Refund & Cancellation Policy', defaultNavLabel: 'Returns & Exchanges' },
-    { slug: 'privacy', settingsKey: 'privacyPolicy', defaultTitle: 'Privacy Policy', defaultNavLabel: 'Privacy Policy' },
-    { slug: 'terms', settingsKey: 'termsPolicy', defaultTitle: 'Terms & Conditions', defaultNavLabel: 'Terms & Conditions' }
+    { 
+        id: 'shipping', 
+        slug: 'shipping', 
+        defaultTitle: 'Shipping Policy', 
+        defaultNavLabel: 'Shipping Info' 
+    },
+    { 
+        id: 'returns', 
+        slug: 'returns', 
+        defaultTitle: 'Refund & Cancellation Policy', 
+        defaultNavLabel: 'Returns & Exchanges' 
+    },
+    { 
+        id: 'privacy', 
+        slug: 'privacy', 
+        defaultTitle: 'Privacy Policy', 
+        defaultNavLabel: 'Privacy Policy' 
+    },
+    { 
+        id: 'terms', 
+        slug: 'terms', 
+        defaultTitle: 'Terms & Conditions', 
+        defaultNavLabel: 'Terms & Conditions' 
+    }
 ];
+
+/**
+ * Resolves a policy's display label using a hardened fallback chain:
+ * 1. Specific navigation label (navLabel)
+ * 2. Full official title (title)
+ * 3. System-hardcoded fallback (metadata)
+ */
+export const resolvePolicyLabel = (policyData, metadata) => {
+    return (policyData?.navLabel?.trim()) || 
+           (policyData?.title?.trim()) || 
+           (metadata?.defaultNavLabel) || 
+           (metadata?.defaultTitle) || 
+           'Policy';
+};
 
 const ShopContext = createContext();
 
@@ -161,11 +195,8 @@ export const ShopProvider = ({ children }) => {
         globalDiscount: 0,
         shopName: 'Tutu & Co',
         categories: ['Accessories', 'Toys', 'Beds'],
-        shippingPolicy: null,
-        refundPolicy: null,
-        privacyPolicy: null,
-        termsPolicy: null,
-        customPolicies: [] // Initialize empty to prevent flickering of default content
+        policies: {}, // Hardened normalized structure
+        customPolicies: []
     });
     const [loading, setLoading] = useState(true);
     const [coupon, setCoupon] = useState(null);
@@ -215,22 +246,48 @@ export const ShopProvider = ({ children }) => {
             const b = bannerRes.ok ? await bannerRes.json() : [];
             const m = mediaRes.ok ? await mediaRes.json() : [];
             const o = orderRes.ok ? await orderRes.json() : [];
-            const s = settingsRes.ok ? await settingsRes.json() : {
+            const s = settingsRes.ok ? await settingsRes.json() : {};
+
+            // --- HARDENED POLICY MIGRATION & NORMALIZATION ---
+            const normalizedPolicies = { ...(s.policies || {}) };
+            
+            CORE_POLICY_METADATA.forEach(meta => {
+                const key = meta.id;
+                // Legacy Map: shippingPolicy -> policies.shipping
+                const legacyKey = `${key}Policy`; 
+                
+                if (!normalizedPolicies[key]) {
+                    normalizedPolicies[key] = {
+                        title: s[`${legacyKey}_title`] || meta.defaultTitle,
+                        navLabel: s[`${legacyKey}_navLabel`] || meta.defaultNavLabel,
+                        content: s[legacyKey] || DEFAULT_POLICIES[key] || ''
+                    };
+                }
+                
+                // Ensure migration of any partial existing data
+                if (typeof normalizedPolicies[key] === 'string') {
+                    normalizedPolicies[key] = {
+                        title: meta.defaultTitle,
+                        navLabel: meta.defaultNavLabel,
+                        content: normalizedPolicies[key]
+                    };
+                }
+            });
+
+            const mergedSettings = {
                 currency: { code: 'INR', symbol: '₹', rate: 1 },
                 globalDiscount: 0,
-                shopName: 'Tutu & Co'
+                shopName: 'Tutu & Co',
+                ...s,
+                policies: normalizedPolicies,
+                customPolicies: s.customPolicies || []
             };
 
             setProducts(p || []);
             setBanners(b || []);
             setMedia(m || []);
             setOrders(Array.isArray(o) ? o : []);
-            setSettings(s || {
-                currency: { code: 'INR', symbol: '₹', rate: 1 },
-                globalDiscount: 0,
-                shopName: 'Tutu & Co',
-                customPolicies: []
-            });
+            setSettings(mergedSettings);
         } catch (error) {
             console.error("Failed to load shop data from server", error);
         } finally {

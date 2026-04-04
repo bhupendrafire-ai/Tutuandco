@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { RefreshCcw } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, ShieldCheck, FileCheck } from 'lucide-react';
+import { X, Plus, Trash2, ShieldCheck, FileCheck, Type } from 'lucide-react';
 import PolicyEditor from '../../components/admin/PolicyEditor';
-import { DEFAULT_POLICIES } from '../../context/ShopContext';
+import { DEFAULT_POLICIES, CORE_POLICY_METADATA, resolvePolicyLabel } from '../../context/ShopContext';
 
 const AdminSettings = () => {
     const { settings, updateSettings } = useShop();
@@ -41,24 +41,60 @@ const AdminSettings = () => {
         setTimeout(() => setSaveStatus(null), 3000);
     };
 
-    const handlePolicyChange = (key, val) => {
-        setPolicyChanges(prev => ({ ...prev, [key]: val }));
-        setLocalSettings(prev => ({ ...prev, [key]: val }));
+    const handlePolicyChange = (key, field, val) => {
+        let processedValue = val;
+        
+        // Character limit and validation for labels
+        if (field === 'navLabel') {
+            processedValue = val.slice(0, 40);
+        }
+
+        setLocalSettings(prev => ({
+            ...prev,
+            policies: {
+                ...prev.policies,
+                [key]: {
+                    ...(prev.policies[key] || {}),
+                    [field]: processedValue
+                }
+            }
+        }));
+        
+        setPolicyChanges(prev => ({ ...prev, [`policy_${key}_${field}`]: true }));
     };
 
     const rollbackPolicy = (key) => {
-        const dbValue = settings[key] || settings[`${key}_lastVersion`];
-        handlePolicyChange(key, dbValue);
+        const dbValue = settings.policies?.[key];
+        if (dbValue) {
+            setLocalSettings(prev => ({
+                ...prev,
+                policies: {
+                    ...prev.policies,
+                    [key]: dbValue
+                }
+            }));
+            // Remove changes from tracker for this specific policy
+            const newChanges = { ...policyChanges };
+            delete newChanges[`policy_${key}_title`];
+            delete newChanges[`policy_${key}_navLabel`];
+            delete newChanges[`policy_${key}_content`];
+            setPolicyChanges(newChanges);
+        }
     };
 
     const resetPolicyToDefault = (key) => {
-        const type = key.replace('Policy', '');
-        const defaultValue = DEFAULT_POLICIES[type];
-        handlePolicyChange(key, defaultValue);
+        const meta = CORE_POLICY_METADATA.find(m => m.id === key);
+        if (meta) {
+            handlePolicyChange(key, 'title', meta.defaultTitle);
+            handlePolicyChange(key, 'navLabel', meta.defaultNavLabel);
+            handlePolicyChange(key, 'content', DEFAULT_POLICIES[key] || '');
+        }
     };
 
     const isPolicyDirty = (key) => {
-        return policyChanges[key] !== undefined && policyChanges[key] !== settings[key];
+        return !!(policyChanges[`policy_${key}_title`] || 
+                  policyChanges[`policy_${key}_navLabel`] || 
+                  policyChanges[`policy_${key}_content`]);
     };
 
     const togglePolicySection = (id) => {
@@ -176,49 +212,74 @@ const AdminSettings = () => {
                 </div>
 
                 <div className="space-y-8">
-                    <PolicyEditor 
-                        label="Shipping Policy"
-                        value={localSettings.shippingPolicy || settings.shippingPolicy || DEFAULT_POLICIES.shipping}
-                        onChange={(val) => handlePolicyChange('shippingPolicy', val)}
-                        onRollback={() => rollbackPolicy('shippingPolicy')}
-                        onReset={() => resetPolicyToDefault('shippingPolicy')}
-                        hasUnsavedChanges={isPolicyDirty('shippingPolicy')}
-                        isExpanded={activePolicyId === 'shipping'}
-                        onToggle={() => togglePolicySection('shipping')}
-                    />
+                    {CORE_POLICY_METADATA.map((meta) => {
+                        const policyData = localSettings.policies?.[meta.id] || {};
+                        const isExpanded = activePolicyId === meta.id;
+                        const navLabel = policyData.navLabel || '';
+                        const charCount = navLabel.length;
 
-                    <PolicyEditor 
-                        label="Refund & Cancellation Policy"
-                        value={localSettings.refundPolicy || settings.refundPolicy || DEFAULT_POLICIES.refund}
-                        onChange={(val) => handlePolicyChange('refundPolicy', val)}
-                        onRollback={() => rollbackPolicy('refundPolicy')}
-                        onReset={() => resetPolicyToDefault('refundPolicy')}
-                        hasUnsavedChanges={isPolicyDirty('refundPolicy')}
-                        isExpanded={activePolicyId === 'refund'}
-                        onToggle={() => togglePolicySection('refund')}
-                    />
+                        return (
+                            <div key={meta.id} className="space-y-1">
+                                <PolicyEditor 
+                                    label={resolvePolicyLabel(policyData, meta)}
+                                    value={policyData.content || ''}
+                                    onChange={(val) => handlePolicyChange(meta.id, 'content', val)}
+                                    onRollback={() => rollbackPolicy(meta.id)}
+                                    onReset={() => resetPolicyToDefault(meta.id)}
+                                    hasUnsavedChanges={isPolicyDirty(meta.id)}
+                                    isExpanded={isExpanded}
+                                    onToggle={() => togglePolicySection(meta.id)}
+                                />
 
-                    <PolicyEditor 
-                        label="Privacy Policy"
-                        value={localSettings.privacyPolicy || settings.privacyPolicy || DEFAULT_POLICIES.privacy}
-                        onChange={(val) => handlePolicyChange('privacyPolicy', val)}
-                        onRollback={() => rollbackPolicy('privacyPolicy')}
-                        onReset={() => resetPolicyToDefault('privacyPolicy')}
-                        hasUnsavedChanges={isPolicyDirty('privacyPolicy')}
-                        isExpanded={activePolicyId === 'privacy'}
-                        onToggle={() => togglePolicySection('privacy')}
-                    />
-
-                    <PolicyEditor 
-                        label="Terms & Conditions"
-                        value={localSettings.termsPolicy || settings.termsPolicy || DEFAULT_POLICIES.terms}
-                        onChange={(val) => handlePolicyChange('termsPolicy', val)}
-                        onRollback={() => rollbackPolicy('termsPolicy')}
-                        onReset={() => resetPolicyToDefault('termsPolicy')}
-                        hasUnsavedChanges={isPolicyDirty('termsPolicy')}
-                        isExpanded={activePolicyId === 'terms'}
-                        onToggle={() => togglePolicySection('terms')}
-                    />
+                                <AnimatePresence>
+                                    {isExpanded && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="bg-brand-cream/10 p-8 pt-4 rounded-b-sm border-x border-b border-brand-charcoal/5 space-y-8"
+                                        >
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                                                <div className="space-y-3">
+                                                    <label className="text-[9px] font-bold text-brand-charcoal/40 uppercase tracking-widest flex items-center gap-2">
+                                                        <Type size={10} className="text-brand-rose" />
+                                                        Page Header Title
+                                                    </label>
+                                                    <input 
+                                                        value={policyData.title || ''}
+                                                        onChange={(e) => handlePolicyChange(meta.id, 'title', e.target.value)}
+                                                        className="w-full bg-white p-4 text-sm font-medium border border-transparent focus:border-brand-rose/20 outline-none transition-all rounded-sm shadow-sm"
+                                                        placeholder={meta.defaultTitle}
+                                                    />
+                                                </div>
+                                                <div className="space-y-3">
+                                                    <div className="flex justify-between items-center">
+                                                        <label className="text-[9px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Footer Navigation Label</label>
+                                                        <span className={`text-[9px] font-mono font-bold tracking-tight px-2 py-0.5 rounded-full transition-all ${charCount > 35 ? 'bg-brand-rose text-white' : 'bg-brand-charcoal/5 text-brand-charcoal/40'}`}>
+                                                            {charCount} / 40
+                                                        </span>
+                                                    </div>
+                                                    <div className="relative group">
+                                                        <input 
+                                                            value={navLabel}
+                                                            onChange={(e) => handlePolicyChange(meta.id, 'navLabel', e.target.value)}
+                                                            onBlur={(e) => handlePolicyChange(meta.id, 'navLabel', e.target.value.trim())}
+                                                            maxLength={40}
+                                                            className={`w-full bg-white p-4 text-sm font-medium border outline-none transition-all rounded-sm shadow-sm ${charCount >= 35 ? 'border-brand-rose/30 focus:border-brand-rose' : 'border-transparent focus:border-brand-charcoal/20'}`}
+                                                            placeholder={meta.defaultNavLabel}
+                                                        />
+                                                        {charCount >= 38 && (
+                                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-brand-rose animate-pulse" />
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        );
+                    })}
 
                     {/* Safeguard: Core policies are always visible and cannot be deleted */}
 
