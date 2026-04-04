@@ -182,8 +182,8 @@ const Home = () => {
                             </div>
 
                             {/* Right Side: Content Panel (35% on Desktop) */}
-                            <div className="w-full md:w-[35%] bg-[#7C846C] p-12 md:p-[60px] flex flex-col justify-center min-h-[350px] md:min-h-0 text-white">
-                                <div className="max-w-md w-full mx-auto md:mx-0 flex flex-col gap-y-6">
+                            <div className="w-full md:w-[35%] bg-[#7C846C] p-12 md:p-[60px] flex flex-col justify-center min-h-[350px] md:min-h-0">
+                                <div className="max-w-md w-full mx-auto md:mx-0 flex flex-col gap-y-6 text-[#2f2f2f]">
                                     <motion.h1
                                         initial={{ opacity: 0, x: 30 }}
                                         animate={{ opacity: 1, x: 0 }}
@@ -197,7 +197,7 @@ const Home = () => {
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.8, delay: 0.4 }}
-                                        className="text-white/80 text-lg italic font-medium"
+                                        className="text-[#6f6f6f] text-lg italic font-medium"
                                     >
                                         {activeBanner.subtitle}
                                     </motion.p>
@@ -209,7 +209,7 @@ const Home = () => {
                                     >
                                         <Link 
                                             to={activeBanner.link || "/"}
-                                            className="bg-brand-charcoal text-[#EADED0] px-16 py-10 text-[18px] font-medium shadow-lg hover:bg-white hover:text-brand-charcoal transition-all uppercase tracking-widest active:scale-95 inline-block text-center mr-auto cursor-pointer"
+                                            className="bg-[#2f2f2f] text-[#EADED0] px-12 py-8 text-[18px] font-medium shadow-lg hover:bg-white hover:text-[#2f2f2f] transition-all uppercase tracking-widest active:scale-95 inline-block text-center mr-auto cursor-pointer"
                                         >
                                             {activeBanner.cta || "Explore collection"}
                                         </Link>
@@ -239,7 +239,7 @@ const Home = () => {
             {/* Featured Collections Section (Primary Hierarchy: 5xl, #2f2f2f) */}
             <section className="py-24 bg-brand-sage transition-colors duration-700">
                 <div className="max-w-[1280px] mx-auto px-6">
-                    <div className="max-w-[720px] mx-auto text-center mb-16">
+                    <div className="max-w-[720px] mx-auto text-center mb-12">
                         <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest mb-3 block">Hand-picked essentials</span>
                         <h2 className="text-5xl font-medium text-[#2f2f2f] mb-8 tracking-tight">Featured Collections</h2>
                         <p className="text-[#6f6f6f] text-lg italic leading-relaxed">
@@ -267,7 +267,7 @@ const Home = () => {
                                     <div className="flex flex-col gap-1 items-center md:items-start">
                                         <h3 className="text-lg font-medium text-[#2f2f2f] leading-tight group-hover:text-brand-rose transition-colors">{product.name}</h3>
                                         <div className="flex items-center space-x-3">
-                                            <span className="text-[15px] text-[#2f2f2f] font-normal">
+                                            <span className="text-[15px] text-[#4a4a4a] font-normal">
                                                 {formatPrice(product.discountPrice || product.price)}
                                             </span>
                                             {product.discountPrice && (
@@ -291,7 +291,7 @@ const Home = () => {
             </section>
 
             {/* Our Community Section (Tertiary Hierarchy: 4xl, #6f6f6f) */}
-            <section className="py-24 bg-white transition-colors duration-700">
+            <section className="py-24 bg-white border-t border-[#eaeaea]">
                 <div className="max-w-[1280px] mx-auto px-6">
                     <div className="max-w-[720px] mx-auto text-center mb-16">
                         <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest mb-3 block">Capturing Joy</span>
@@ -346,7 +346,7 @@ const Home = () => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1 }}
-                                className="bg-white p-12 rounded-sm shadow-sm border border-[#C7AF94]/10 hover:shadow-xl transition-shadow duration-700"
+                                className="bg-white p-12 rounded-sm shadow-sm border border-[#eaeaea] hover:shadow-xl transition-shadow duration-700"
                             >
                                 <div className="flex mb-8 text-[#95714F]">
                                     {[...Array(t.rating)].map((_, j) => <Star key={j} size={14} fill="currentColor" />)}
@@ -376,7 +376,7 @@ const Home = () => {
                         </p>
                         <Link 
                             to="/moments"
-                            className="inline-flex items-center space-x-8 bg-[#d8b7b1] text-[#2f2f2f] px-20 py-10 text-[18px] font-medium uppercase tracking-widest hover:bg-[#2f2f2f] hover:text-white transition-all shadow-2xl active:scale-95"
+                            className="inline-flex items-center space-x-8 bg-[#d8b7b1] text-[#2f2f2f] px-12 py-8 text-[18px] font-medium uppercase tracking-widest hover:bg-[#2f2f2f] hover:text-white transition-all shadow-2xl active:scale-95"
                         >
                             <span>Visit the gallery</span>
                             <ArrowRight size={24} />
@@ -385,12 +385,12 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Philosophy Flagship (Background Hierarchy: 5xl, #868686) */}
+            {/* Philosophy Flagship (Background Hierarchy: 5xl, #6f6f6f) */}
             <section className="py-32 bg-brand-cream relative overflow-hidden transition-colors duration-700">
                 <div className="max-w-[1280px] mx-auto px-6 text-center relative z-10">
                     <div className="max-w-[720px] mx-auto">
                         <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest mb-3 block">Our philosophy</span>
-                        <h2 className="text-5xl font-medium text-[#868686] mb-8 tracking-tight leading-none">Naturally Sourcing.<br/>Inspired by Life.</h2>
+                        <h2 className="text-5xl font-medium text-[#6f6f6f] mb-8 tracking-tight leading-none">Naturally Sourcing.<br/>Inspired by Life.</h2>
                         <p className="text-[#9a9a9a] leading-relaxed text-2xl italic font-light max-w-2xl mx-auto mb-20">
                             "At Tutu & Co, we believe our pet companions deserve the same quality of organic materials and thoughtful design as we do."
                         </p>

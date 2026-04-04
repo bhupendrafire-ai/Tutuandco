@@ -38,7 +38,7 @@ const Footer = () => {
                         <input
                             type="email"
                             placeholder="Email address"
-                            className="bg-transparent border-b border-[#2f2f2f]/20 py-3 flex-grow focus:outline-none focus:border-[#d8b7b1] text-sm placeholder-[#868686] transition-all"
+                            className="bg-transparent border-b border-[#2f2f2f]/30 py-3 flex-grow focus:outline-none focus:border-[#d8b7b1] text-sm placeholder-[#868686] transition-all"
                         />
                         <button className="text-[#2f2f2f] text-[10px] font-medium uppercase tracking-widest ml-6 hover:text-[#d8b7b1] transition-colors">Join</button>
                     </form>
