@@ -344,7 +344,7 @@ const Home = () => {
                 <div className="max-w-[1280px] mx-auto px-6">
                     <div className="max-w-[720px] mx-auto text-center mb-16">
                         <div className="flex items-center justify-center gap-2 mb-3">
-                            <IconCat size={14} color="#868686" />
+                            <IconCat size={14} color="#868686" className="-translate-y-[1px]" />
                             <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest">TESTIMONIALS</span>
                         </div>
                         <h2 className="text-4xl font-medium text-[#6f6f6f] mb-8 tracking-tight">Kind words</h2>
@@ -405,11 +405,11 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Brand Motif Divider (Instance 3/3) */}
+            {/* Brand Motif Divider (Instance 2/3) */}
             <div className="max-w-[1280px] mx-auto px-6 py-12 flex items-center justify-center">
                 <div className="flex items-center justify-center w-full max-w-[200px] gap-4">
                     <div className="h-px bg-[#eaeaea] flex-grow" />
-                    <IconCat size={14} color="#6f6f6f" />
+                    <IconCat size={14} color="#868686" className="-translate-y-[1px]" />
                     <div className="h-px bg-[#eaeaea] flex-grow" />
                 </div>
             </div>
