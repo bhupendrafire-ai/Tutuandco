@@ -22,6 +22,7 @@ const AdminProducts = () => {
     const [bulkDiscountValue, setBulkDiscountValue] = useState(10);
     const [productForm, setProductForm] = useState({ 
         name: '', price: 0, discountPrice: null, stock: 0, 
+        variants: [], // { size: string, stock: number }
         category: '', description: '', imageName: '',
         images: [], descriptionBlocks: [] 
     });
@@ -146,6 +147,7 @@ const AdminProducts = () => {
                         onClick={() => {
                             setProductForm({ 
                                 name: '', price: 0, discountPrice: null, stock: 0, 
+                                variants: [],
                                 category: '', description: '', imageName: '',
                                 images: [], descriptionBlocks: [] 
                             });
@@ -386,32 +388,97 @@ const AdminProducts = () => {
                                         <input value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="w-full bg-brand-cream/50 p-6 font-medium text-3xl border-none rounded-sm outline-none" placeholder="Master Title" />
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-8">
-                                        <div className="space-y-4">
-                                            <label className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Inventory Status</label>
-                                            <div className="flex items-center space-x-6">
-                                                <div className="flex-grow">
-                                                    <span className="text-xs opacity-40 block mb-1">Units In stock</span>
-                                                    <input type="number" value={productForm.stock} onChange={e => setProductForm({...productForm, stock: parseInt(e.target.value)})} className="w-full bg-brand-cream/20 p-4 rounded-sm text-2xl font-medium outline-none" />
-                                                </div>
+                                    <div className="grid grid-cols-1 gap-8">
+                                        <div className="space-y-6">
+                                            <div className="flex justify-between items-center">
+                                                <label className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Sizes & Inventory</label>
+                                                <button 
+                                                    onClick={() => {
+                                                        const size = prompt("Enter size label (e.g. S, M, L, XL):");
+                                                        if (size) {
+                                                            const normalized = size.trim().toUpperCase();
+                                                            if (productForm.variants.find(v => v.size === normalized)) {
+                                                                return alert("This size already exists!");
+                                                            }
+                                                            setProductForm({
+                                                                ...productForm,
+                                                                variants: [...productForm.variants, { size: normalized, stock: 0 }]
+                                                            });
+                                                        }
+                                                    }}
+                                                    className="text-[10px] font-bold text-brand-rose uppercase border-b border-brand-rose hover:opacity-60 transition-all"
+                                                >
+                                                    + Add Size
+                                                </button>
+                                            </div>
+                                            
+                                            <div className="bg-brand-cream/30 rounded-sm border border-brand-charcoal/5 overflow-hidden">
+                                                {productForm.variants.length > 0 ? (
+                                                    <div className="divide-y divide-brand-charcoal/5">
+                                                        {productForm.variants.map((variant, idx) => (
+                                                            <div key={idx} className="p-4 flex items-center justify-between group">
+                                                                <div className="flex items-center space-x-4">
+                                                                    <div className="w-10 h-10 bg-brand-charcoal text-white flex items-center justify-center rounded-sm font-bold text-xs uppercase">
+                                                                        {variant.size}
+                                                                    </div>
+                                                                    <div className="flex flex-col">
+                                                                        <span className="text-[9px] font-bold opacity-30 uppercase tracking-tighter">Units In stock</span>
+                                                                        <input 
+                                                                            type="number" 
+                                                                            value={variant.stock} 
+                                                                            onChange={e => {
+                                                                                const nv = [...productForm.variants];
+                                                                                nv[idx] = { ...nv[idx], stock: parseInt(e.target.value) || 0 };
+                                                                                // Auto-update global stock for legacy views
+                                                                                const newTotalStock = nv.reduce((sum, v) => sum + (v.stock || 0), 0);
+                                                                                setProductForm({ ...productForm, variants: nv, stock: newTotalStock });
+                                                                            }} 
+                                                                            className="w-24 bg-transparent text-lg font-medium outline-none border-none p-0" 
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <button 
+                                                                    onClick={() => {
+                                                                        const nv = productForm.variants.filter((_, i) => i !== idx);
+                                                                        const newTotalStock = nv.reduce((sum, v) => sum + (v.stock || 0), 0);
+                                                                        setProductForm({ ...productForm, variants: nv, stock: newTotalStock });
+                                                                    }}
+                                                                    className="p-2 text-brand-charcoal/20 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                                                >
+                                                                    <Trash2 size={16} />
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="p-10 text-center text-brand-charcoal/30 text-xs italic">
+                                                        No sizes defined. Add a size to start tracking inventory.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-8">
+                                            <div className="space-y-4">
+                                                <label className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Base Pricing</label>
                                                 <div className="flex-grow">
                                                     <span className="text-xs opacity-40 block mb-1">Price ({settings?.currency?.symbol || '₹'})</span>
                                                     <input type="number" value={productForm.price} onChange={e => setProductForm({...productForm, price: parseInt(e.target.value)})} className="w-full bg-brand-charcoal text-white p-4 rounded-sm text-2xl font-medium outline-none" />
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <label className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Store Taxonomy</label>
-                                            <div className="relative">
-                                                <select 
-                                                    value={productForm.category} 
-                                                    onChange={e => setProductForm({...productForm, category: e.target.value})}
-                                                    className="w-full bg-brand-cream/50 p-4 rounded-sm font-bold text-sm appearance-none border-none outline-none"
-                                                >
-                                                    <option value="">Select Category</option>
-                                                    {(settings.categories || []).map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                                                </select>
-                                                <button onClick={() => setShowCategoryManager(true)} className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-rose hover:scale-110 transition-all"><Settings size={18} /></button>
+                                            <div className="space-y-4">
+                                                <label className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Store Taxonomy</label>
+                                                <div className="relative">
+                                                    <select 
+                                                        value={productForm.category} 
+                                                        onChange={e => setProductForm({...productForm, category: e.target.value})}
+                                                        className="w-full bg-brand-cream/50 p-4 rounded-sm font-bold text-sm appearance-none border-none outline-none"
+                                                    >
+                                                        <option value="">Select Category</option>
+                                                        {(settings.categories || []).map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                                                    </select>
+                                                    <button onClick={() => setShowCategoryManager(true)} className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-rose hover:scale-110 transition-all"><Settings size={18} /></button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

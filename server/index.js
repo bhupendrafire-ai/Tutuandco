@@ -30,6 +30,7 @@ app.get('/api/products', async (req, res) => {
             price: parseFloat(p.price),
             discountPrice: p.discount_price ? parseFloat(p.discount_price) : null,
             rating: p.rating ? parseFloat(p.rating) : 5,
+            variants: p.variants || [],
             imageName: p.image_name,
             descriptionBlocks: p.description_blocks
         }));
@@ -44,9 +45,9 @@ app.post('/api/products', async (req, res) => {
     const id = p.id || `prod_${Date.now()}`;
     try {
         const result = await db.query(
-            `INSERT INTO products (id, name, category, price, discount_price, rating, stock, image_name, images, description, details, description_blocks)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
-            [id, p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks)]
+            `INSERT INTO products (id, name, category, price, discount_price, rating, stock, variants, image_name, images, description, details, description_blocks)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`,
+            [id, p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, JSON.stringify(p.variants || []), p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks)]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -58,9 +59,9 @@ app.put('/api/products/:id', async (req, res) => {
     const p = req.body;
     try {
         const result = await db.query(
-            `UPDATE products SET name=$1, category=$2, price=$3, discount_price=$4, rating=$5, stock=$6, image_name=$7, images=$8, description=$9, details=$10, description_blocks=$11
-             WHERE id=$12 RETURNING *`,
-            [p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks), req.params.id]
+            `UPDATE products SET name=$1, category=$2, price=$3, discount_price=$4, rating=$5, stock=$6, variants=$7, image_name=$8, images=$9, description=$10, details=$11, description_blocks=$12
+             WHERE id=$13 RETURNING *`,
+            [p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, JSON.stringify(p.variants || []), p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks), req.params.id]
         );
         if (result.rowCount === 0) return res.status(404).json({ error: "Product not found" });
         res.json(result.rows[0]);
@@ -169,8 +170,39 @@ app.get('/api/orders', async (req, res) => {
 
 app.post('/api/orders', async (req, res) => {
     const o = req.body;
+    const client = await db.pool.connect();
     try {
-        const result = await db.query(
+        await client.query('BEGIN');
+
+        // 1. Validate and Deduct Stock
+        for (const item of o.items) {
+            const productRes = await client.query('SELECT variants, name FROM products WHERE id = $1 FOR UPDATE', [item.id]);
+            if (productRes.rowCount === 0) throw new Error(`Product ${item.id} not found`);
+
+            const product = productRes.rows[0];
+            let variants = product.variants || [];
+            const variantIdx = variants.findIndex(v => v.size === item.size);
+
+            if (variantIdx === -1) throw new Error(`Size ${item.size} not found for product ${product.name}`);
+            
+            if (variants[variantIdx].stock < item.quantity) {
+                throw new Error(`Insufficient stock for ${product.name} (Size: ${item.size}). Available: ${variants[variantIdx].stock}, Requested: ${item.quantity}`);
+            }
+
+            // Deduct stock
+            variants[variantIdx].stock -= item.quantity;
+            
+            // Also update the global 'stock' field for backward compatibility/legacy views
+            const newGlobalStock = variants.reduce((sum, v) => sum + (v.stock || 0), 0);
+
+            await client.query(
+                'UPDATE products SET variants = $1, stock = $2 WHERE id = $3',
+                [JSON.stringify(variants), newGlobalStock, item.id]
+            );
+        }
+
+        // 2. Create Order
+        const result = await client.query(
             `INSERT INTO orders (
                 data, status, customer_name, customer_email, customer_phone, 
                 total_amount, shipping_cost, discount_amount, items, shipping_address
@@ -189,13 +221,19 @@ app.post('/api/orders', async (req, res) => {
             ]
         );
         
+        await client.query('COMMIT');
+        
         const newOrder = result.rows[0];
         // Trigger async notification (non-blocking)
         NotificationService.notifyOrdered(newOrder).catch(err => console.error("Initial notification failed:", err));
         
         res.status(201).json(newOrder);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        await client.query('ROLLBACK');
+        console.error("Order processing error:", err);
+        res.status(400).json({ error: err.message });
+    } finally {
+        client.release();
     }
 });
 

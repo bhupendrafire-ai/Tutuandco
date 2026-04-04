@@ -202,7 +202,7 @@ const Checkout = () => {
                                     </div>
                                     <div className="flex-grow">
                                         <h4 className="text-sm font-medium text-brand-charcoal truncate">{item.name}</h4>
-                                        <p className="text-[10px] text-brand-charcoal/40 font-medium">{item.category} • Qty {Number(item.quantity) || 1}</p>
+                                        <p className="text-[10px] text-brand-charcoal/40 font-medium">{item.category} • Size: {item.size} • Qty {Number(item.quantity) || 1}</p>
                                         <div className="flex items-center space-x-3 mt-1">
                                             <span className="text-[11px] font-medium text-brand-charcoal">{formatPrice((Number(item.discountPrice) || Number(item.price) || 0) * (Number(item.quantity) || 1))}</span>
                                         </div>

@@ -18,6 +18,7 @@ const migrate = async () => {
                 discount_price DECIMAL,
                 rating DECIMAL,
                 stock INTEGER,
+                variants JSONB DEFAULT '[]',
                 image_name TEXT,
                 images JSONB,
                 description TEXT,
@@ -84,6 +85,14 @@ const migrate = async () => {
             ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_number TEXT;
             ALTER TABLE orders ADD COLUMN IF NOT EXISTS carrier TEXT;
             ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipped_at TIMESTAMP;
+
+            -- Phase 2: Variant System Migration
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS variants JSONB DEFAULT '[]';
+            
+            -- Initialize variants for products that have stock but no variants
+            UPDATE products 
+            SET variants = jsonb_build_array(jsonb_build_object('size', 'Standard', 'stock', stock))
+            WHERE (variants IS NULL OR jsonb_array_length(variants) = 0) AND stock > 0;
         `);
         console.log('✅ Tables created or already exist.');
 
@@ -95,8 +104,8 @@ const migrate = async () => {
             console.log('📦 Synchronizing products...');
             for (const p of data.products) {
                 await db.query(
-                    `INSERT INTO products (id, name, category, price, discount_price, rating, stock, image_name, images, description, details, description_blocks)
-                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                    `INSERT INTO products (id, name, category, price, discount_price, rating, stock, variants, image_name, images, description, details, description_blocks)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
                      ON CONFLICT (id) DO UPDATE SET 
                         name = EXCLUDED.name,
                         category = EXCLUDED.category,
@@ -104,12 +113,13 @@ const migrate = async () => {
                         discount_price = EXCLUDED.discount_price,
                         rating = EXCLUDED.rating,
                         stock = EXCLUDED.stock,
+                        variants = COALESCE(products.variants, EXCLUDED.variants),
                         image_name = EXCLUDED.image_name,
                         images = EXCLUDED.images,
                         description = EXCLUDED.description,
                         details = EXCLUDED.details,
                         description_blocks = EXCLUDED.description_blocks`,
-                    [p.id, p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks)]
+                    [p.id, p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, JSON.stringify(p.variants || [{size: 'Standard', stock: p.stock}]), p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks)]
                 );
             }
 

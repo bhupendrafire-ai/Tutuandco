@@ -26,6 +26,7 @@ const ProductDetail = () => {
     const { id } = useParams();
     const { products, addToCart, loading, formatPrice, settings, media } = useShop();
     const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedSize, setSelectedSize] = useState(null);
     const [reviews, setReviews] = useState([]);
     
     const product = (Array.isArray(products) ? products : []).find(p => String(p.id) === String(id)) || products[0];
@@ -50,8 +51,12 @@ const ProductDetail = () => {
     if (loading || !product || !settings) return <div className="min-h-screen flex items-center justify-center font-medium bg-brand-sage">Synchronizing product data...</div>;
 
     const handleAddToCart = () => {
-        addToCart(product);
-        alert(`${product.name} added to cart!`);
+        if (!selectedSize) {
+            alert("Please select a size first!");
+            return;
+        }
+        addToCart(product, selectedSize);
+        alert(`${product.name} (Size: ${selectedSize}) added to cart!`);
     };
 
     return (
@@ -128,14 +133,62 @@ const ProductDetail = () => {
                             {product.description}
                         </p>
 
+                        {/* Size Selection */}
+                        <div className="mb-10">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-[13px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Select Size</h3>
+                                <Link to="/sizing" className="text-[11px] font-bold text-brand-rose border-b border-brand-rose/20 hover:border-brand-rose transition-all">Size Guide</Link>
+                            </div>
+                            <div className="flex flex-wrap gap-3">
+                                {(product.variants && product.variants.length > 0 ? product.variants : []).map((variant) => {
+                                    const isOutOfStock = (Number(variant.stock) || 0) <= 0;
+                                    const isSelected = selectedSize === variant.size;
+                                    
+                                    return (
+                                        <button
+                                            key={variant.size}
+                                            disabled={isOutOfStock}
+                                            onClick={() => setSelectedSize(variant.size)}
+                                            className={`
+                                                px-8 py-4 rounded-sm border-2 text-sm font-bold transition-all min-w-[70px]
+                                                ${isSelected 
+                                                    ? 'border-brand-charcoal bg-brand-charcoal text-white shadow-lg scale-105' 
+                                                    : isOutOfStock 
+                                                        ? 'border-brand-charcoal/5 bg-brand-charcoal/5 text-brand-charcoal/20 cursor-not-allowed line-through' 
+                                                        : 'border-brand-charcoal/10 hover:border-brand-charcoal/30'
+                                                }
+                                            `}
+                                        >
+                                            {variant.size}
+                                        </button>
+                                    );
+                                })}
+                                {(!product.variants || product.variants.length === 0) && (
+                                    <p className="text-xs italic text-brand-charcoal/40">No sizes available for this item.</p>
+                                )}
+                            </div>
+                            {selectedSize && (
+                                <p className="mt-4 text-[11px] font-bold text-green-700/60 uppercase tracking-widest animate-in fade-in slide-in-from-left-2 transition-all">
+                                    {((product.variants || []).find(v => v.size === selectedSize)?.stock || 0)} units available in {selectedSize}
+                                </p>
+                            )}
+                        </div>
+
                         {/* Primary CTA Section - Relocated above details for better conversion flow */}
                         <div className="flex flex-col sm:flex-row gap-4 mb-12 mt-4">
                             <button 
                                 onClick={handleAddToCart}
-                                className="bg-brand-rose text-brand-charcoal px-16 py-8 flex items-center justify-center font-medium text-[18px] hover:bg-white transition-all shadow-lg min-w-[240px]"
+                                disabled={!selectedSize}
+                                className={`
+                                    px-16 py-8 flex items-center justify-center font-medium text-[18px] transition-all shadow-lg min-w-[240px]
+                                    ${!selectedSize 
+                                        ? 'bg-brand-charcoal/5 text-brand-charcoal/20 cursor-not-allowed' 
+                                        : 'bg-brand-rose text-brand-charcoal hover:bg-white active:scale-95'
+                                    }
+                                `}
                             >
                                 <ShoppingBag size={24} className="mr-3" />
-                                Add to cart
+                                {selectedSize ? 'Add to cart' : 'Select size to continue'}
                             </button>
                              <button className="px-10 py-8 border border-brand-charcoal/10 rounded-sm hover:bg-brand-cream/50 transition-colors">
                                 <Heart size={20} className="text-brand-charcoal/40" />
