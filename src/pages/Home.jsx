@@ -396,24 +396,18 @@ const Home = () => {
             </section>
 
 
-            {/* Philosophy Flagship (Background Hierarchy: 5xl, #6f6f6f) */}
-            <section className="py-32 bg-brand-cream relative overflow-hidden transition-colors duration-700">
+            {/* Brand Motto Tier (Replaces Philosophy - Refined Hierarchy) */}
+            <section className="py-16 md:py-20 bg-brand-cream relative overflow-hidden transition-colors duration-700">
                 <div className="max-w-[1280px] mx-auto px-6 text-center relative z-10">
-                    <div className="max-w-[720px] mx-auto">
-                        <span className="text-[11px] font-normal text-[#868686] uppercase tracking-widest mb-3 block">Our philosophy</span>
-                        <h2 className="text-5xl font-medium text-[#6f6f6f] mb-8 tracking-tight leading-none">Naturally Sourcing.<br/>Inspired by Life.</h2>
-                        <p className="text-[#9a9a9a] leading-relaxed text-2xl italic font-light max-w-2xl mx-auto mb-20">
-                            "At Tutu & Co, we believe our pet companions deserve the same quality of organic materials and thoughtful design as we do."
-                        </p>
-                        <div className="flex flex-col items-center">
-                            <div className="w-px h-24 bg-[#2f2f2f]/10 mb-10" />
-                            <Link to="/about" className="text-[11px] tracking-widest font-medium text-[#868686] uppercase hover:text-[#2f2f2f] transition-colors duration-500">Discover our story</Link>
-                        </div>
+                    <div className="max-w-[900px] mx-auto">
+                        <h2 className="text-[32px] md:text-[45px] font-medium text-[#6f6f6f] tracking-tight leading-[1.25] text-center">
+                            Because finding beautiful pet accessories <br className="hidden md:block" /> shouldn't be hard.
+                        </h2>
                     </div>
                 </div>
-                {/* Decorative Elements */}
-                <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#c5d1c0]/20 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
-                <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-[#d8b7b1]/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl" />
+                {/* Decorative Elements (Kept for depth, but subtle) */}
+                <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#c5d1c0]/15 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl pointer-events-none" />
+                <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-[#d8b7b1]/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl pointer-events-none" />
             </section>
         </div>
     );
