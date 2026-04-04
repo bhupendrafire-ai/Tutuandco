@@ -14,11 +14,11 @@ import { getProductImage } from '../context/ShopContext';
  * - Hero Calibration & Displacement
  */
 const ImageGridManager = ({ images, onChange, onUpload, onMediaPicker, onCalibrate, media }) => {
-    const [layoutMode, setLayoutMode] = useState('editorial'); // 'grid', 'triple', 'editorial'
     const [draggedId, setDraggedId] = useState(null);
 
     const handleReorder = (newOrder) => {
-        onChange(newOrder);
+        // Keep only up to 4 images
+        onChange(newOrder.slice(0, 4));
     };
 
     const removeImage = (idx) => {
@@ -27,62 +27,31 @@ const ImageGridManager = ({ images, onChange, onUpload, onMediaPicker, onCalibra
         onChange(newer);
     };
 
-    const getLayoutClasses = (index) => {
-        if (layoutMode === 'editorial' && index === 0) {
-            return "col-span-2 row-span-2 aspect-[4/5]"; // Hero Image
-        }
-        if (layoutMode === 'triple') {
-            return "aspect-[3/4]";
-        }
-        return "aspect-[4/5]";
-    };
-
-    const gridCols = layoutMode === 'triple' ? 'grid-cols-3' : 'grid-cols-2';
+    const maxSlots = 4;
+    const currentImages = images.slice(0, maxSlots);
 
     return (
         <div className="space-y-6">
-            {/* Layout Controls Bar */}
+            {/* Header / Interaction hint */}
             <div className="flex items-center justify-between pb-4 border-b border-brand-charcoal/5">
-                <div className="flex items-center space-x-3">
-                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Composition</span>
-                    <div className="flex items-center bg-white rounded-sm border border-brand-charcoal/5 p-1">
-                        <button 
-                            onClick={() => setLayoutMode('grid')}
-                            className={`p-2 rounded-sm transition-all ${layoutMode === 'grid' ? 'bg-brand-rose text-brand-charcoal' : 'text-brand-charcoal/40 hover:text-brand-charcoal'}`}
-                        >
-                            <LayoutGrid size={14} />
-                        </button>
-                        <button 
-                            onClick={() => setLayoutMode('editorial')}
-                            className={`p-2 rounded-sm transition-all ${layoutMode === 'editorial' ? 'bg-brand-rose text-brand-charcoal' : 'text-brand-charcoal/40 hover:text-brand-charcoal'}`}
-                        >
-                            <LayoutList size={14} />
-                        </button>
-                        <button 
-                            onClick={() => setLayoutMode('triple')}
-                            className={`p-2 rounded-sm transition-all ${layoutMode === 'triple' ? 'bg-brand-rose text-brand-charcoal' : 'text-brand-charcoal/40 hover:text-brand-charcoal'}`}
-                        >
-                            <Columns size={14} />
-                        </button>
-                    </div>
-                </div>
-                <p className="text-[9px] font-medium text-brand-charcoal/30 uppercase tracking-[0.2em]">Drag to redefine narrative flow</p>
+                <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Composition (2x2)</span>
+                <p className="text-[9px] font-medium text-brand-charcoal/30 uppercase tracking-[0.2em]">Drag to reorder narrative flow</p>
             </div>
 
-            {/* Draggable Fluid Grid */}
+            {/* Draggable 2x2 Grid */}
             <Reorder.Group 
                 axis="y" 
-                values={images} 
+                values={currentImages} 
                 onReorder={handleReorder}
-                className={`grid ${gridCols} gap-4`}
+                className="grid grid-cols-2 gap-4"
             >
-                {images.map((img, idx) => (
+                {currentImages.map((img, idx) => (
                     <Reorder.Item 
                         key={img.url || idx} 
                         value={img}
                         onDragStart={() => setDraggedId(img.url)}
                         onDragEnd={() => setDraggedId(null)}
-                        className={`relative group ${getLayoutClasses(idx)} cursor-grab active:cursor-grabbing rounded-sm overflow-hidden border border-brand-charcoal/10 shadow-sm bg-white/50 transition-shadow duration-300 ${draggedId === img.url ? 'shadow-2xl z-50 scale-[1.02]' : ''}`}
+                        className={`relative group aspect-[4/5] cursor-grab active:cursor-grabbing rounded-sm overflow-hidden border border-brand-charcoal/10 shadow-sm bg-white/50 transition-shadow duration-300 ${draggedId === img.url ? 'shadow-2xl z-50 scale-[1.02]' : ''}`}
                     >
                         <div className="absolute inset-0">
                             <img 
@@ -94,7 +63,7 @@ const ImageGridManager = ({ images, onChange, onUpload, onMediaPicker, onCalibra
                             {/* Premium Editorial Overlay */}
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col p-4 space-y-2">
                                 <div className="flex justify-between items-start">
-                                    <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest">#{idx + 1} Position</span>
+                                    <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest">#{idx + 1} Slot</span>
                                     <button 
                                         onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
                                         className="text-red-400 hover:text-red-500 transition-colors"
@@ -123,18 +92,18 @@ const ImageGridManager = ({ images, onChange, onUpload, onMediaPicker, onCalibra
                     </Reorder.Item>
                 ))}
 
-                {/* Empty Upload Slots - Magnetic Fillers */}
-                {images.length < 6 && [...Array(6 - images.length)].map((_, i) => (
+                {/* Empty Slots - Exactly up to 4 */}
+                {currentImages.length < maxSlots && [...Array(maxSlots - currentImages.length)].map((_, i) => (
                     <motion.div 
                         key={`empty-${i}`}
                         className="aspect-[4/5] rounded-sm border-2 border-dashed border-brand-charcoal/10 flex flex-col items-center justify-center space-y-4 hover:border-brand-rose transition-all group cursor-pointer bg-white/20"
-                        onClick={() => onUpload(images.length + i)}
+                        onClick={() => onUpload(currentImages.length + i)}
                     >
                         <div className="w-10 h-10 rounded-full bg-brand-charcoal/5 flex items-center justify-center group-hover:bg-brand-rose/20 transition-all">
                             <Upload size={18} className="text-brand-charcoal/30 group-hover:text-brand-rose transition-all" />
                         </div>
                         <div className="text-center">
-                            <span className="text-[9px] font-bold text-brand-charcoal/40 uppercase tracking-widest block">Slot {images.length + i + 1}</span>
+                            <span className="text-[9px] font-bold text-brand-charcoal/40 uppercase tracking-widest block">Slot {currentImages.length + i + 1}</span>
                             <span className="text-[8px] font-medium text-brand-charcoal/20 uppercase tracking-widest">Assign Asset</span>
                         </div>
                     </motion.div>
