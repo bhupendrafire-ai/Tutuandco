@@ -242,7 +242,8 @@ export const ShopProvider = ({ children }) => {
                 ...prod,
                 price: Number(prod.price) || 0,
                 discountPrice: prod.discountPrice ? Number(prod.discountPrice) : null,
-                rating: Number(prod.rating) || 5
+                rating: Number(prod.rating) || 5,
+                sizeVariants: Array.isArray(prod.sizeVariants) ? prod.sizeVariants : []
             }));
             const b = bannerRes.ok ? await bannerRes.json() : [];
             const m = mediaRes.ok ? await mediaRes.json() : [];

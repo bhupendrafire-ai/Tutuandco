@@ -210,7 +210,10 @@ const AdminProducts = () => {
                                     <td className="p-6 font-medium text-lg">{settings?.currency?.symbol || '₹'}{Number(item.price || 0).toFixed(2)}</td>
                                     <td className="p-6 text-right space-x-3 text-[#CD664D]">
                                         <button onClick={() => {
-                                            setProductForm(item);
+                                            setProductForm({
+                                                ...item,
+                                                sizeVariants: Array.isArray(item.sizeVariants) ? item.sizeVariants : []
+                                            });
                                             setIsEditingProduct(item.id);
                                         }}><Edit3 size={18} /></button>
                                         <button 
@@ -417,19 +420,30 @@ const AdminProducts = () => {
                                             <label className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-widest">Size & Inventory Hub</label>
                                             <div className="bg-white p-6 rounded-sm space-y-6 shadow-sm border border-brand-charcoal/5">
                                                 <div className="flex flex-wrap gap-2">
-                                                    {['S', 'M'].map(sz => (
-                                                        <button 
-                                                            key={sz}
-                                                            onClick={() => {
-                                                                if (!productForm.sizeVariants?.some(v => v.size === sz)) {
-                                                                    setProductForm({ ...productForm, sizeVariants: [...(productForm.sizeVariants || []), { size: sz, stock: 0 }] });
-                                                                }
-                                                            }}
-                                                            className="px-4 py-2 border border-brand-charcoal/10 rounded-sm text-[10px] font-bold hover:bg-brand-rose hover:border-brand-rose transition-all"
-                                                        >
-                                                            + Add {sz}
-                                                        </button>
-                                                    ))}
+                                                    {['S', 'M'].map(sz => {
+                                                        const isActive = productForm.sizeVariants?.some(v => v.size === sz);
+                                                        return (
+                                                            <button 
+                                                                key={sz}
+                                                                onClick={() => {
+                                                                    if (isActive) {
+                                                                        // Remove if active
+                                                                        setProductForm({ ...productForm, sizeVariants: productForm.sizeVariants.filter(v => v.size !== sz) });
+                                                                    } else {
+                                                                        // Add if not active
+                                                                        setProductForm({ ...productForm, sizeVariants: [...(productForm.sizeVariants || []), { size: sz, stock: 0 }] });
+                                                                    }
+                                                                }}
+                                                                className={`px-4 py-2 border rounded-sm text-[10px] font-bold transition-all ${
+                                                                    isActive 
+                                                                        ? 'bg-brand-rose border-brand-rose text-brand-charcoal' 
+                                                                        : 'border-brand-charcoal/10 hover:bg-brand-rose/20'
+                                                                }`}
+                                                            >
+                                                                {sz} {isActive ? 'Selected' : '+ Add'}
+                                                            </button>
+                                                        );
+                                                    })}
                                                     <div className="flex items-center gap-2">
                                                         <input 
                                                             type="text" 

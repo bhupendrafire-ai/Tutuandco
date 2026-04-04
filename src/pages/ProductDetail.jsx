@@ -139,7 +139,7 @@ const ProductDetail = () => {
                         </p>
 
                         {/* Size Selector */}
-                        {product.sizeVariants?.length > 0 && (
+                        {Array.isArray(product?.sizeVariants) && product.sizeVariants.length > 0 && (
                             <div className="mb-10">
                                 <div className="flex justify-between items-center mb-4">
                                     <h3 className="text-[11px] font-bold text-brand-charcoal/40 uppercase tracking-[0.2em]">Select Size</h3>
