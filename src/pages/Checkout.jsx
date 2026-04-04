@@ -7,6 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const Checkout = () => {
     const { cart, getCartTotal, checkout, formatPrice, settings, media } = useShop();
+    
+    if (!settings) return null; // Safe guard for initialization
+
     const { subtotal, discountAmount, shipping, total } = getCartTotal();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);

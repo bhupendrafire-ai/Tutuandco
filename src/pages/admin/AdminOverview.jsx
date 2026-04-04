@@ -10,6 +10,9 @@ import { useShop } from '../../context/ShopContext';
 
 const AdminOverview = () => {
     const { orders, products, settings } = useShop();
+
+    if (!settings) return null; // Prevent crash if context isn't ready
+
     const currencySymbol = settings?.currency?.symbol || '₹';
 
     // Calculate real-time stats

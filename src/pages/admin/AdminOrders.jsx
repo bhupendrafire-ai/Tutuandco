@@ -7,6 +7,9 @@ import { useShop, getProductImage } from '../../context/ShopContext';
 
 const AdminOrders = () => {
     const { orders, media, shipOrder, settings } = useShop();
+
+    if (!settings) return null; // Safe guard for initial data hydration
+
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [shippingForm, setShippingForm] = useState({ tracking_number: '', carrier: '' });
 

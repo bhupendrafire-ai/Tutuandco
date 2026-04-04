@@ -9,7 +9,7 @@ const Footer = () => {
         <footer className="bg-brand-cream border-t border-brand-charcoal/10 py-16 transition-all duration-700">
             <div className="max-w-[1280px] mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-16">
                 <div className="space-y-8">
-                    <h3 className="text-2xl font-medium text-[#2f2f2f] tracking-tight">{settings.shopName}</h3>
+                    <h3 className="text-2xl font-medium text-[#2f2f2f] tracking-tight">{settings?.shopName}</h3>
                     <p className="text-[#6f6f6f] text-sm leading-relaxed italic">
                         Curating organic comfort and timeless style for your most beloved companions. Designed in London, enjoyed worldwide.
                     </p>
@@ -31,9 +31,9 @@ const Footer = () => {
                             // Prevent rendering until data is fully Hydrated to avoid flickering
                             if (loading) return <div className="h-40 w-full animate-pulse bg-brand-charcoal/5 rounded-sm" />;
 
-                            const customPolicies = (settings.customPolicies || [])
-                                .filter(p => p.isVisible && p.content && p.content.trim() !== "")
-                                .sort((a, b) => (a.order || 0) - (b.order || 0));
+                            const customPolicies = (settings?.customPolicies || [])
+                                .filter(p => p?.isVisible && p?.content && p?.content?.trim?.() !== "")
+                                .sort((a, b) => (a?.order || 0) - (b?.order || 0));
 
                             return (
                                 <>
@@ -47,11 +47,10 @@ const Footer = () => {
                                         );
                                     })}
 
-                                    {/* Custom Policies (Admin Order) */}
                                     {customPolicies.map((policy) => (
                                         <li key={policy.id || policy.slug}>
                                             <Link to={`/policies/${policy.slug}`} className="hover:text-[#2f2f2f] transition-colors">
-                                                {policy.navLabel || policy.title}
+                                                {policy?.navLabel || policy?.title}
                                             </Link>
                                         </li>
                                     ))}
@@ -75,7 +74,7 @@ const Footer = () => {
             </div>
             <div className="max-w-[1280px] mx-auto px-6 mt-20 pt-12 border-t border-[#2f2f2f]/5 flex flex-col md:flex-row justify-between items-center text-[10px] text-[#868686] font-normal uppercase tracking-widest">
                 <div className="flex items-center gap-4">
-                    <span>{settings.footerText || `© 2026 ${settings.shopName}. Crafted with care.`}</span>
+                    <span>{settings?.footerText || `© 2026 ${settings?.shopName || 'Tutu & Co'}. Crafted with care.`}</span>
                 </div>
                 <div className="flex space-x-10 mt-8 md:mt-0">
                     <Link to="/moments" className="hover:text-[#2f2f2f] transition-colors tracking-widest">User Gallery</Link>

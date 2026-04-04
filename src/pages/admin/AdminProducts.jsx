@@ -14,6 +14,8 @@ const AdminProducts = () => {
         addProduct, deleteProduct, updateProduct 
     } = useShop();
 
+    if (!settings) return null; // Hard guard for context hydration
+
     const [isEditingProduct, setIsEditingProduct] = useState(null);
     const [selectedProductIds, setSelectedProductIds] = useState([]);
     const [isBulkDiscountModalOpen, setIsBulkDiscountModalOpen] = useState(false);

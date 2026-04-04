@@ -39,21 +39,21 @@ const Policy = () => {
     let updatedAt = null;
 
     // 1. Check Core Policies (including Migrated Admin Data)
-    const coreDefault = POLICY_DEFAULTS[policyKey];
-    const coreAdmin = settings.policies?.[policyKey];
+    const coreDefault = POLICY_DEFAULTS?.[policyKey];
+    const coreAdmin = settings?.policies?.[policyKey];
 
     if (coreDefault) {
         displayTitle = coreAdmin?.title || coreDefault.title;
         displayContent = coreAdmin?.content || coreDefault.content;
-        updatedAt = coreAdmin?.updatedAt || settings[`${policyKey}Policy_updatedAt`];
+        updatedAt = coreAdmin?.updatedAt || settings?.[`${policyKey}Policy_updatedAt`];
     } 
     // 2. Check Custom Policies
     else {
-        const customMatch = (settings.customPolicies || []).find(p => p.slug === policyKey);
+        const customMatch = (settings?.customPolicies || []).find(p => p.slug === policyKey);
         if (customMatch) {
-            displayTitle = customMatch.title;
-            displayContent = customMatch.content;
-            updatedAt = customMatch.updatedAt;
+            displayTitle = customMatch?.title;
+            displayContent = customMatch?.content;
+            updatedAt = customMatch?.updatedAt;
         } 
         // 3. Absolute Fallback (Shipping)
         else {
@@ -65,7 +65,7 @@ const Policy = () => {
 
     // --- Conditional Meta Injection ---
     // Ensure consistent business address and GST across all policies
-    const showBusinessInfo = settings.gstin || settings.address;
+    const showBusinessInfo = settings?.gstin || settings?.address;
 
     return (
         <PolicyLayout activeKey={policyKey}>
@@ -116,16 +116,16 @@ const Policy = () => {
                         <div className="pt-12 border-t border-brand-charcoal/5 text-[11px] text-brand-charcoal/60 uppercase tracking-widest leading-relaxed">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                                 <div>
-                                    <p className="mb-2 font-bold">{settings.shopName || 'Tutu & Co'}</p>
-                                    <p className="opacity-70">Operated by {settings.proprietorshipName || 'Filter Works (Proprietorship)'}</p>
-                                    {settings.gstin && <p className="opacity-70">GSTIN: {settings.gstin}</p>}
+                                    <p className="mb-2 font-bold">{settings?.shopName || 'Tutu & Co'}</p>
+                                    <p className="opacity-70">Operated by {settings?.proprietorshipName || 'Filter Works (Proprietorship)'}</p>
+                                    {settings?.gstin && <p className="opacity-70">GSTIN: {settings.gstin}</p>}
                                 </div>
-                                {settings.address && (
+                                {settings?.address && (
                                     <div className="opacity-70">
-                                        <p>{settings.address.line1}</p>
-                                        <p>{settings.address.line2}</p>
-                                        <p>{settings.address.city}, {settings.address.state} {settings.address.pincode}</p>
-                                        <p>{settings.address.country || 'India'}</p>
+                                        <p>{settings.address?.line1}</p>
+                                        <p>{settings.address?.line2}</p>
+                                        <p>{settings.address?.city}, {settings.address?.state} {settings.address?.pincode}</p>
+                                        <p>{settings.address?.country || 'India'}</p>
                                     </div>
                                 )}
                             </div>

@@ -16,9 +16,9 @@ const PolicySidebar = ({ activeKey }) => {
     const coreKeys = Object.keys(POLICY_DEFAULTS);
     
     // Visible Custom Policies
-    const customPolicies = (settings.customPolicies || [])
-        .filter(p => p.isVisible && p.content && p.content.trim() !== "")
-        .sort((a, b) => (a.order || 0) - (b.order || 0));
+    const customPolicies = (settings?.customPolicies || [])
+        .filter(p => p?.isVisible && p?.content && p?.content?.trim?.() !== "")
+        .sort((a, b) => (a?.order || 0) - (b?.order || 0));
 
     return (
         <nav className="w-full lg:w-[320px] flex-shrink-0 space-y-8">

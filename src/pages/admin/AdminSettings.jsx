@@ -8,6 +8,9 @@ import { DEFAULT_POLICIES, CORE_POLICY_METADATA, resolvePolicyLabel } from '../.
 
 const AdminSettings = () => {
     const { settings, updateSettings } = useShop();
+    
+    if (!settings) return null; // Prevent crash during context hydration
+
     const [localSettings, setLocalSettings] = useState(settings);
     const [showCategoryManager, setShowCategoryManager] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
@@ -29,9 +32,9 @@ const AdminSettings = () => {
         
         // Add timestamps and versioning for core changed policies
         Object.keys(policyChanges).forEach(key => {
-            if (key.includes('Policy') && policyChanges[key] !== settings[key]) {
+            if (key.includes('Policy') && policyChanges[key] !== settings?.[key]) {
                 settingsToSave[`${key}_updatedAt`] = now;
-                settingsToSave[`${key}_lastVersion`] = settings[key] || DEFAULT_POLICIES[key.replace('Policy', '')];
+                settingsToSave[`${key}_lastVersion`] = settings?.[key] || DEFAULT_POLICIES?.[key.replace('Policy', '')];
             }
         });
 
@@ -64,7 +67,7 @@ const AdminSettings = () => {
     };
 
     const rollbackPolicy = (key) => {
-        const dbValue = settings.policies?.[key];
+        const dbValue = settings?.policies?.[key];
         if (dbValue) {
             setLocalSettings(prev => ({
                 ...prev,
@@ -83,11 +86,11 @@ const AdminSettings = () => {
     };
 
     const resetPolicyToDefault = (key) => {
-        const meta = CORE_POLICY_METADATA.find(m => m.id === key);
+        const meta = CORE_POLICY_METADATA?.find?.(m => m.id === key);
         if (meta) {
-            handlePolicyChange(key, 'title', meta.defaultTitle);
-            handlePolicyChange(key, 'navLabel', meta.defaultNavLabel);
-            handlePolicyChange(key, 'content', DEFAULT_POLICIES[key] || '');
+            handlePolicyChange(key, 'title', meta?.defaultTitle);
+            handlePolicyChange(key, 'navLabel', meta?.defaultNavLabel);
+            handlePolicyChange(key, 'content', DEFAULT_POLICIES?.[key] || '');
         }
     };
 

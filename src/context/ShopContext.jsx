@@ -98,14 +98,15 @@ export const CORE_POLICY_METADATA = Object.values(POLICY_DEFAULTS).map(p => ({
  * 3. System-hardcoded fallback (metadata)
  */
 export const resolvePolicyLabel = (policyKey, settings) => {
+    // Extensive use of optional chaining to prevent crashes during initialization
     const policyData = settings?.policies?.[policyKey];
-    const customPolicy = settings?.customPolicies?.find(p => p.slug === policyKey);
-    const meta = POLICY_DEFAULTS[policyKey];
+    const customPolicy = settings?.customPolicies?.find?.(p => p.slug === policyKey);
+    const meta = POLICY_DEFAULTS?.[policyKey];
 
-    return (policyData?.navLabel?.trim()) || 
-           (policyData?.title?.trim()) || 
-           (customPolicy?.navLabel?.trim()) || 
-           (customPolicy?.title?.trim()) || 
+    return (policyData?.navLabel?.trim?.()) || 
+           (policyData?.title?.trim?.()) || 
+           (customPolicy?.navLabel?.trim?.()) || 
+           (customPolicy?.title?.trim?.()) || 
            (meta?.navLabel) || 
            (meta?.title) || 
            'Policy';
@@ -119,37 +120,28 @@ export const useShop = () => {
     return context;
 };
 
-// Only use fallback in development if VITE_API_URL is missing
-// We use static constants to ensure Vite's string replacement works perfectly in production
-const VITE_API_URL = import.meta.env.VITE_API_URL;
-const IS_PROD = import.meta.env.PROD;
-const FALLBACK_URL = 'http://localhost:3001';
+// Harden environment access with optional chaining to prevent top-level module failure
+const VITE_API_URL = import.meta?.env?.VITE_API_URL;
+const IS_PROD = import.meta?.env?.PROD;
+const FALLBACK_URL = 'https://tutuandco-production.up.railway.app'; // Stable production fallback
 
-// Auto-fix missing protocol OR Auto-detect for the live domain if variable was missed in build
-let resolvedUrl = VITE_API_URL;
-
-if (!resolvedUrl && IS_PROD && typeof window !== 'undefined') {
-    const isLiveSite = window.location.hostname === 'www.tutuandco.in' || window.location.hostname === 'tutuandco.in';
-    if (isLiveSite) {
-        resolvedUrl = 'https://tutuandco-production.up.railway.app';
-        console.warn("🛡️ AUTO-DETECT: Connected to production backend via domain fallback.");
-    }
-}
+// Auto-detect or use hardcoded fallback
+let resolvedUrl = VITE_API_URL || FALLBACK_URL;
 
 if (resolvedUrl && !resolvedUrl.startsWith('http')) {
     resolvedUrl = `https://${resolvedUrl}`;
 }
 
-export const FINAL_API_URL = (resolvedUrl || (IS_PROD ? '' : FALLBACK_URL))?.replace(/\/$/, "");
+export const FINAL_API_URL = resolvedUrl?.replace(/\/$/, "");
 
 if (IS_PROD) {
-    console.log("🛠️ Production Build Info:", { 
+    if (!VITE_API_URL) {
+        console.warn("🛡️ API FALLBACK: VITE_API_URL was undefined. Using hardcoded production URL.");
+    }
+    console.log("🛠️ Build Connectivity:", { 
         has_api_url: !!VITE_API_URL, 
         resolved_url: FINAL_API_URL 
     });
-    if (!VITE_API_URL) {
-        console.error("❌ CRITICAL: VITE_API_URL is undefined in this build. Please Redeploy on Vercel with 'Clear Cache'.");
-    }
 }
 
 // Image Mapper - Resolves imageName from API to actual asset

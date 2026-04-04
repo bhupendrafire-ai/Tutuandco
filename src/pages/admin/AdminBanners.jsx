@@ -10,6 +10,8 @@ import MediaPicker from '../../components/MediaPicker';
 
 const AdminBanners = () => {
     const { banners, media, products, updateBanners } = useShop();
+
+    if (!banners) return null; // Safe guard for initial hydration
     const [adjustingBannerIdx, setAdjustingBannerIdx] = useState(null);
     const [panningPoint, setPanningPoint] = useState(null);
     const [mediaPickerConfig, setMediaPickerConfig] = useState({ isOpen: false, multi: false, onSelect: () => {}, selectedItems: [] });

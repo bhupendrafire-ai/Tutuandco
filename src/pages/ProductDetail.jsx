@@ -32,8 +32,8 @@ const ProductDetail = () => {
 
     useEffect(() => {
         if (product) {
-            const safeImages = Array.isArray(product.images) ? product.images : [];
-            const mainImg = safeImages.length > 0 ? safeImages.sort((a,b) => a.sequence - b.sequence)[0]?.url : product.imageName;
+            const safeImages = Array.isArray(product?.images) ? product.images : [];
+            const mainImg = safeImages.length > 0 ? safeImages.sort((a,b) => a.sequence - b.sequence)[0]?.url : product?.imageName;
             setSelectedImage(getProductImage(mainImg, media));
             
             // Load reviews from real API
@@ -47,7 +47,7 @@ const ProductDetail = () => {
         window.scrollTo(0, 0);
     }, [product, FINAL_API_URL, media]);
 
-    if (loading || !product) return <div className="min-h-screen flex items-center justify-center font-medium">Loading product...</div>;
+    if (loading || !product || !settings) return <div className="min-h-screen flex items-center justify-center font-medium bg-brand-sage">Synchronizing product data...</div>;
 
     const handleAddToCart = () => {
         addToCart(product);
@@ -133,7 +133,7 @@ const ProductDetail = () => {
                         </div>
 
                         <div className="space-y-5 mb-12">
-                            {((Array.isArray(product.details) && product.details.length > 0) ? product.details : DEFAULT_DETAILS).map((detail, i) => (
+                            {((Array.isArray(product?.details) && product.details.length > 0) ? product.details : DEFAULT_DETAILS).map((detail, i) => (
                                 <div key={i} className="flex items-start text-[18px] text-brand-charcoal/80 font-medium">
                                     <Heart size={16} className="text-brand-rose mr-4 mt-1.5 flex-shrink-0" fill="currentColor" />
                                     <span>
@@ -192,7 +192,7 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Story Builder Blocks */}
-                {product.descriptionBlocks?.length > 0 && (
+                {product?.descriptionBlocks?.length > 0 && (
                     <section className="mt-32 space-y-32">
                         {product.descriptionBlocks.map((block, i) => {
                             if (block.template === 'wide_banner') {
