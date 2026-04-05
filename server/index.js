@@ -58,17 +58,44 @@ const requireAdmin = (req, res, next) => {
 const getProducts = async () => {
     console.log("Fetching products from DB...");
     const result = await db.query('SELECT * FROM products ORDER BY created_at DESC');
-    if (!result || !Array.isArray(result.rows)) return [];
+    if (!result || !Array.isArray(result.rows)) {
+        console.log("No result rows found in DB");
+        return [];
+    }
     
-    return result.rows.map(p => ({
-        ...p,
-        price: parseFloat(p.price) || 0,
-        discountPrice: p.discount_price ? parseFloat(p.discount_price) : null,
-        rating: p.rating ? parseFloat(p.rating) : 5,
-        variants: Array.isArray(p.variants) ? p.variants : [],
-        imageName: p.image_name,
-        descriptionBlocks: Array.isArray(p.description_blocks) ? p.description_blocks : []
-    }));
+    return result.rows.map(p => {
+        // Safe parsing for variants
+        let variants = [];
+        try {
+            if (p.variants) {
+                variants = typeof p.variants === 'string' ? JSON.parse(p.variants) : p.variants;
+            }
+        } catch (e) {
+            console.error(`Error parsing variants for product ${p.id}:`, e);
+        }
+        if (!Array.isArray(variants)) variants = [];
+
+        // Safe parsing for description blocks
+        let descriptionBlocks = [];
+        try {
+            if (p.description_blocks) {
+                descriptionBlocks = typeof p.description_blocks === 'string' ? JSON.parse(p.description_blocks) : p.description_blocks;
+            }
+        } catch (e) {
+            console.error(`Error parsing description blocks for product ${p.id}:`, e);
+        }
+        if (!Array.isArray(descriptionBlocks)) descriptionBlocks = [];
+
+        return {
+            ...p,
+            price: parseFloat(p.price) || 0,
+            discountPrice: p.discount_price ? parseFloat(p.discount_price) : null,
+            rating: p.rating ? parseFloat(p.rating) : 5,
+            variants: variants,
+            imageName: p.image_name,
+            descriptionBlocks: descriptionBlocks
+        };
+    });
 };
 
 // --- API ROUTES ---
