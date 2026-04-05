@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const crypto = require('crypto'); // Used for generating auth tokens
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
@@ -11,8 +12,43 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
+// --- CORS: Restrict access to known origins only ---
+const allowedOrigins = [
+    'http://localhost:5173',  // Vite dev server
+    'http://localhost:3000',  // Alternate local dev
+    process.env.FRONTEND_URL  // Production frontend domain
+].filter(Boolean);
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (server-to-server, curl, mobile apps)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Blocked by CORS policy'));
+        }
+    }
+}));
+
 app.use(bodyParser.json({ limit: '50mb' }));
+
+// --- SIMPLE TOKEN AUTH ---
+// In-memory token store (resets on server restart, which forces re-login)
+const activeAdminTokens = new Set();
+
+// Middleware: Verifies admin token from Authorization header
+const requireAdmin = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    // Expect format: "Bearer <token>"
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+    const token = authHeader.split(' ')[1];
+    if (!activeAdminTokens.has(token)) {
+        return res.status(401).json({ error: 'Invalid or expired token' });
+    }
+    next();
+};
 
 // --- DATABASE MIGRATION TRIGGER ---
 // We will call migrate.js separately or on startup if needed.
@@ -40,14 +76,21 @@ app.get('/api/products', async (req, res) => {
     }
 });
 
-app.post('/api/products', async (req, res) => {
+app.post('/api/products', requireAdmin, async (req, res) => {
     const p = req.body;
+    // Basic validation: name and price are required
+    if (!p.name || typeof p.name !== 'string' || !p.name.trim()) {
+        return res.status(400).json({ error: 'Product name is required' });
+    }
+    if (p.price === undefined || p.price === null || isNaN(Number(p.price)) || Number(p.price) < 0) {
+        return res.status(400).json({ error: 'Valid product price is required' });
+    }
     const id = p.id || `prod_${Date.now()}`;
     try {
         const result = await db.query(
             `INSERT INTO products (id, name, category, price, discount_price, rating, stock, variants, image_name, images, description, details, description_blocks)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`,
-            [id, p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, JSON.stringify(p.variants || []), p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks)]
+            [id, p.name.trim(), p.category, Number(p.price), p.discountPrice, p.rating, p.stock, JSON.stringify(p.variants || []), p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks)]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -55,13 +98,20 @@ app.post('/api/products', async (req, res) => {
     }
 });
 
-app.put('/api/products/:id', async (req, res) => {
+app.put('/api/products/:id', requireAdmin, async (req, res) => {
     const p = req.body;
+    // Basic validation: name and price are required for updates
+    if (!p.name || typeof p.name !== 'string' || !p.name.trim()) {
+        return res.status(400).json({ error: 'Product name is required' });
+    }
+    if (p.price === undefined || p.price === null || isNaN(Number(p.price)) || Number(p.price) < 0) {
+        return res.status(400).json({ error: 'Valid product price is required' });
+    }
     try {
         const result = await db.query(
             `UPDATE products SET name=$1, category=$2, price=$3, discount_price=$4, rating=$5, stock=$6, variants=$7, image_name=$8, images=$9, description=$10, details=$11, description_blocks=$12
              WHERE id=$13 RETURNING *`,
-            [p.name, p.category, p.price, p.discountPrice, p.rating, p.stock, JSON.stringify(p.variants || []), p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks), req.params.id]
+            [p.name.trim(), p.category, Number(p.price), p.discountPrice, p.rating, p.stock, JSON.stringify(p.variants || []), p.imageName, JSON.stringify(p.images), p.description, JSON.stringify(p.details), JSON.stringify(p.descriptionBlocks), req.params.id]
         );
         if (result.rowCount === 0) return res.status(404).json({ error: "Product not found" });
         res.json(result.rows[0]);
@@ -70,7 +120,7 @@ app.put('/api/products/:id', async (req, res) => {
     }
 });
 
-app.delete('/api/products/:id', async (req, res) => {
+app.delete('/api/products/:id', requireAdmin, async (req, res) => {
     try {
         await db.query('DELETE FROM products WHERE id=$1', [req.params.id]);
         res.status(204).send();
@@ -101,7 +151,11 @@ app.get('/api/banners', async (req, res) => {
     }
 });
 
-app.put('/api/banners', async (req, res) => {
+app.put('/api/banners', requireAdmin, async (req, res) => {
+    // Basic validation: body must be an array
+    if (!Array.isArray(req.body)) {
+        return res.status(400).json({ error: 'Banners data must be an array' });
+    }
     try {
         await db.query('DELETE FROM banners');
         for (const b of req.body) {
@@ -145,7 +199,11 @@ app.get('/api/media', async (req, res) => {
     }
 });
 
-app.post('/api/media', async (req, res) => {
+app.post('/api/media', requireAdmin, async (req, res) => {
+    // Basic validation: url and name are required for media entries
+    if (!req.body.url || !req.body.name) {
+        return res.status(400).json({ error: 'Media url and name are required' });
+    }
     try {
         const result = await db.query('SELECT data FROM settings WHERE id=$1', ['media']);
         let media = result.rows[0]?.data || [];
@@ -159,7 +217,8 @@ app.post('/api/media', async (req, res) => {
 });
 
 // Orders
-app.get('/api/orders', async (req, res) => {
+// Orders list is admin-only (customers don't browse all orders)
+app.get('/api/orders', requireAdmin, async (req, res) => {
     try {
         const result = await db.query('SELECT * FROM orders ORDER BY created_at DESC');
         res.json(result.rows);
@@ -170,10 +229,23 @@ app.get('/api/orders', async (req, res) => {
 
 app.post('/api/orders', async (req, res) => {
     const o = req.body;
+
+    // Basic validation: orders need items and customer info
+    if (!o.items || !Array.isArray(o.items) || o.items.length === 0) {
+        return res.status(400).json({ error: 'Order must contain at least one item' });
+    }
+    if (!o.firstName || typeof o.firstName !== 'string' || !o.firstName.trim()) {
+        return res.status(400).json({ error: 'Customer first name is required' });
+    }
+    if (!o.email || typeof o.email !== 'string' || !o.email.trim()) {
+        return res.status(400).json({ error: 'Customer email is required' });
+    }
+
     const { idempotencyKey } = o;
     
-    const client = await db.pool.connect();
+    let client;
     try {
+        client = await db.pool.connect();
         await client.query('BEGIN');
 
         // 1. Idempotency Check
@@ -185,16 +257,6 @@ app.post('/api/orders', async (req, res) => {
             }
         }
 
-        // 2. Fetch all products involved
-        const productIds = [...new Set(o.items.map(i => i.id))].sort();
-        const productsRes = await client.query(
-            `SELECT * FROM products WHERE id = ANY($1) ORDER BY id ASC`,
-            [productIds]
-        );
-        
-        const productsFromDb = {};
-        productsRes.rows.forEach(p => { productsFromDb[p.id] = p; });
-
         const settingsRes = await client.query('SELECT data FROM settings WHERE id=$1', ['global']);
         const globalSettings = settingsRes.rows[0]?.data || {};
         const globalDiscountPercent = globalSettings.globalDiscount || 0;
@@ -202,42 +264,43 @@ app.post('/api/orders', async (req, res) => {
         let serverSubtotal = 0;
         const verifiedItems = [];
 
-        // 3. Strict Validation (variantId) & Price Verification
+        // 3. Strict Validation (Independent per item)
         for (const item of o.items) {
-            const product = productsFromDb[item.id];
-            if (!product) {
-                return res.status(404).json({ 
-                    error: "Product no longer available", 
-                    code: 'PRODUCT_NOT_FOUND',
-                    productId: item.id 
-                });
-            }
-
-            const variants = product.variants || [];
-            // STRICT MATCH: Identification by variantId only
-            if (!item.variantId) {
-                return res.status(400).json({ 
-                    error: `Missing variantId for ${product.name}`, 
-                    code: 'VARIANT_NOT_FOUND' 
-                });
-            }
-
-            const variant = variants.find(v => v.id === item.variantId);
+            console.log("ITEM:", item);
             
-            if (!variant) {
-                return res.status(404).json({ 
-                    error: `Variant ${item.variantId} not found for ${product.name}`, 
-                    code: 'VARIANT_NOT_FOUND' 
-                });
+            const productRes = await client.query('SELECT * FROM products WHERE id = $1', [item.id]);
+            const product = productRes.rows[0];
+            console.log("PRODUCT:", product);
+
+            if (!product) {
+                await client.query('ROLLBACK');
+                return res.status(400).json({ message: `Product not found: ${item.id}` });
             }
 
-            if (variant.stock < item.quantity) {
-                return res.status(400).json({ 
-                    error: `Insufficient stock for ${product.name} (${variant.size})`, 
-                    code: 'INSUFFICIENT_STOCK',
-                    available: variant.stock,
-                    requested: item.quantity
-                });
+            if (!Array.isArray(product.variants)) {
+                await client.query('ROLLBACK');
+                return res.status(400).json({ message: `Invalid variants for product: ${item.id}` });
+            }
+
+            if (!item.size) {
+                await client.query('ROLLBACK');
+                return res.status(400).json({ message: `Missing size for ${product.name}` });
+            }
+
+            const variant = product.variants.find(
+                v => v.size.toLowerCase() === item.size.toLowerCase()
+            );
+            
+            console.log("Matched variant:", variant);
+
+            if (!variant) {
+                await client.query('ROLLBACK');
+                return res.status(400).json({ message: `Variant not found: ${item.size}` });
+            }
+
+            if ((Number(variant.stock) || 0) < item.quantity) {
+                await client.query('ROLLBACK');
+                return res.status(400).json({ message: `Insufficient stock for size: ${item.size}` });
             }
 
             const serverPrice = variant.price !== undefined ? parseFloat(variant.price) : 
@@ -251,7 +314,7 @@ app.post('/api/orders', async (req, res) => {
                 unitPrice: serverPrice,
                 lineTotal: lineTotal,
                 price: serverPrice,
-                size: variant.size // Snapshot the size name for reference
+                size: variant.size
             });
         }
 
@@ -284,28 +347,16 @@ app.post('/api/orders', async (req, res) => {
         );
         
         await client.query('COMMIT');
-        res.status(201).json(result.rows[0]);
+        return res.status(201).json(result.rows[0]);
     } catch (err) {
-        await client.query('ROLLBACK');
-        
-        // Handle race condition: If two simultaneous requests pass the initial check,
-        // the database's UNIQUE constraint will catch the second one.
-        if (err.code === '23505' && idempotencyKey) {
-            console.log(`🔄 Idempotency race detected for key: ${idempotencyKey}. Returning existing order.`);
-            try {
-                const existing = await db.query('SELECT * FROM orders WHERE idempotency_key = $1', [idempotencyKey]);
-                if (existing.rowCount > 0) {
-                    return res.json(existing.rows[0]);
-                }
-            } catch (reFetchErr) {
-                console.error("Failed to fetch existing order after race:", reFetchErr);
-            }
-        }
-
-        console.error("Order creation error:", err);
-        res.status(500).json({ error: err.message, code: 'INTERNAL_ERROR' });
+        if (client) await client.query('ROLLBACK');
+        console.error("ORDER CRASH:", err);
+        return res.status(500).json({ message: err.message });
     } finally {
-        client.release();
+        if (client) client.release();
+        if (!res.headersSent) {
+            return res.status(500).json({ message: "Unhandled server error" });
+        }
     }
 });
 
@@ -314,8 +365,9 @@ app.post('/api/orders/:id/confirm', async (req, res) => {
     const { id } = req.params;
     const { confirmationKey } = req.body;
 
-    const client = await db.pool.connect();
+    let client;
     try {
+        client = await db.pool.connect();
         // --- 1. ATOMIC TRANSACTION START ---
         await client.query('BEGIN');
 
@@ -335,45 +387,61 @@ app.post('/api/orders/:id/confirm', async (req, res) => {
         }
 
         const items = order.items || [];
-        const productIds = [...new Set(items.map(i => i.id))].sort();
 
-        // --- 2. DETERMINISTIC PRODUCT LOCKING ---
-        const productsRes = await client.query(
-            `SELECT * FROM products WHERE id = ANY($1) ORDER BY id ASC FOR UPDATE`,
-            [productIds]
-        );
-        
-        const productsFromDb = {};
-        productsRes.rows.forEach(p => { productsFromDb[p.id] = p; });
-
-        // --- 3. RE-VALIDATION POST-LOCK ---
+        // --- PHASE 1: VALIDATE ONLY ---
         for (const item of items) {
-            const product = productsFromDb[item.id];
+            console.log("ITEM:", item);
+            const productRes = await client.query('SELECT * FROM products WHERE id = $1 FOR UPDATE', [item.id]);
+            const product = productRes.rows[0];
+            console.log("PRODUCT:", product);
+
             if (!product) {
                 await client.query('ROLLBACK');
-                return res.status(400).json({ error: `Product ${item.id} disappeared during processing`, code: 'STOCK_CHANGED' });
+                return res.status(400).json({ message: `Product not found: ${item.id}` });
             }
 
-            const variants = product.variants || [];
-            const variant = variants.find(v => v.id === item.variantId);
-            
-            if (!variant || variant.stock < item.quantity) {
+            if (!Array.isArray(product.variants)) {
                 await client.query('ROLLBACK');
-                return res.status(400).json({ 
-                    error: `Stock changed for ${product.name}. Required: ${item.quantity}, Available: ${variant?.stock || 0}`, 
-                    code: 'INSUFFICIENT_STOCK' 
-                });
+                return res.status(400).json({ message: `Invalid variants for product: ${item.id}` });
             }
 
-            // Deduct from local object for multi-item same-product orders
-            variant.stock -= item.quantity;
+            if (!item.size) {
+                await client.query('ROLLBACK');
+                return res.status(400).json({ message: `Missing size for ${product.id}` });
+            }
+
+            const variant = product.variants.find(
+                v => v.size.toLowerCase() === item.size.toLowerCase()
+            );
+            
+            console.log("Matched variant:", variant);
+
+            if (!variant) {
+                await client.query('ROLLBACK');
+                return res.status(400).json({ message: `Variant not found: ${item.size}` });
+            }
+
+            if ((Number(variant.stock) || 0) < item.quantity) {
+                await client.query('ROLLBACK');
+                return res.status(400).json({ message: `Insufficient stock for size: ${item.size}` });
+            }
         }
 
-        // --- 4. PERSIST STOCK DEDUCTIONS ---
-        for (const pid of productIds) {
+        // --- PHASE 2: UPDATE STOCK (After ALL validation passes) ---
+        for (const item of items) {
+            console.log("UPDATE ITEM:", item);
+            const productRes = await client.query('SELECT * FROM products WHERE id = $1 FOR UPDATE', [item.id]);
+            const product = productRes.rows[0];
+            const variants = product.variants || [];
+            const variant = variants.find(v => (v.size || "").toLowerCase() === (item.size || "").toLowerCase());
+
+            // Deduct stock
+            variant.stock -= item.quantity;
+            
+            // Persist changes
             await client.query(
                 'UPDATE products SET variants = $1 WHERE id = $2',
-                [JSON.stringify(productsFromDb[pid].variants), pid]
+                [JSON.stringify(product.variants), item.id]
             );
         }
 
@@ -389,33 +457,28 @@ app.post('/api/orders/:id/confirm', async (req, res) => {
         const confirmedOrder = finalResult.rows[0];
         NotificationService.notifyOrdered(confirmedOrder).catch(err => console.error("Notification fail:", err));
         
-        res.json(confirmedOrder);
+        return res.json(confirmedOrder);
     } catch (err) {
-        await client.query('ROLLBACK');
-
-        // Handle confirmation race condition
-        if (err.code === '23505' && confirmationKey) {
-            try {
-                const existing = await db.query('SELECT * FROM orders WHERE id = $1', [id]);
-                if (existing.rowCount > 0 && existing.rows[0].confirmation_key === confirmationKey) {
-                    return res.json(existing.rows[0]);
-                }
-            } catch (reFetchErr) {
-                console.error("Failed to fetch existing order after confirmation race:", reFetchErr);
-            }
-        }
-
-        console.error("Order confirmation error:", err);
-        res.status(500).json({ error: err.message, code: 'INTERNAL_ERROR' });
+        if (client) await client.query('ROLLBACK');
+        console.error("ORDER CRASH:", err);
+        return res.status(500).json({ message: err.message });
     } finally {
-        client.release();
+        if (client) client.release();
+        if (!res.headersSent) {
+            return res.status(500).json({ message: "Unhandled server error" });
+        }
     }
 });
 
-// Patch Order Shipping Status
-app.patch('/api/orders/:id/ship', async (req, res) => {
+// Patch Order Shipping Status (admin-only)
+app.patch('/api/orders/:id/ship', requireAdmin, async (req, res) => {
     const { id } = req.params;
     const { tracking_number, carrier } = req.body;
+
+    // Basic validation: tracking_number and carrier are required
+    if (!tracking_number || !carrier) {
+        return res.status(400).json({ error: 'Tracking number and carrier are required' });
+    }
 
     try {
         // 1. Update Order
@@ -466,7 +529,11 @@ app.get('/api/settings', async (req, res) => {
     }
 });
 
-app.put('/api/settings', async (req, res) => {
+app.put('/api/settings', requireAdmin, async (req, res) => {
+    // Basic validation: body must be a non-null object
+    if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
+        return res.status(400).json({ error: 'Settings must be a valid JSON object' });
+    }
     try {
         await db.query(
             'INSERT INTO settings (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data',
@@ -479,7 +546,7 @@ app.put('/api/settings', async (req, res) => {
 });
 
 // Vercel Blob Signature Route
-// Vercel Blob Signature Route
+// Upload endpoint — auth verified via clientPayload (Vercel Blob SDK doesn't send custom headers)
 app.post('/api/upload', async (request, response) => {
     const body = request.body;
     try {
@@ -487,7 +554,11 @@ app.post('/api/upload', async (request, response) => {
             body,
             request,
             token: process.env.BLOB_READ_WRITE_TOKEN,
-            onBeforeGenerateToken: async (pathname) => {
+            onBeforeGenerateToken: async (pathname, clientPayload) => {
+                // Verify admin token passed from client via clientPayload
+                if (!clientPayload || !activeAdminTokens.has(clientPayload)) {
+                    throw new Error('Unauthorized: valid admin token required for uploads');
+                }
                 return {
                     allowedContentTypes: ['image/jpeg', 'image/png'],
                     tokenPayload: JSON.stringify({
@@ -527,12 +598,19 @@ app.post('/api/reviews', async (req, res) => {
     }
 });
 
-// Admin Auth
+// Admin Auth — credentials loaded from environment variables
 app.post('/api/admin/login', (req, res) => {
     const { username, password } = req.body;
-    // Hardcoded credentials for now, as requested by user
-    if (username === 'sneha@tutuandco.in' && password === 'Black@5353') {
-        res.json({ authenticated: true });
+    // Validate required fields
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password are required' });
+    }
+    // Check credentials from env vars (no hardcoded secrets in source code)
+    if (username === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD) {
+        // Generate a random token for this session
+        const token = crypto.randomBytes(32).toString('hex');
+        activeAdminTokens.add(token);
+        res.json({ authenticated: true, token });
     } else {
         res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -542,3 +620,4 @@ app.post('/api/admin/login', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Tutu & Co Backend running on port ${PORT}`);
 });
+setInterval(() => {}, 1000);

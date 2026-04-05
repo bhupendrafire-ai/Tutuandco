@@ -104,6 +104,7 @@ const AdminProducts = () => {
             const newBlob = await upload(file.name, file, {
                 access: 'public',
                 handleUploadUrl: `${FINAL_API_URL}/api/upload`,
+                clientPayload: sessionStorage.getItem('adminToken') || '', // Pass auth token for server verification
             });
             
             const targetIdx = uploadTargetIdx.current !== null ? uploadTargetIdx.current : (productForm.images || []).length;

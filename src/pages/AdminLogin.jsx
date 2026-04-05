@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Lock } from 'lucide-react';
+import { FINAL_API_URL } from '../context/ShopContext'; // Shared API URL constant
 import logo from '../assets/logo.png';
 import logoWhite from '../assets/logo-white.png';
 
@@ -17,10 +18,8 @@ const AdminLogin = () => {
         setError('');
         
         try {
-            // Determine API URL (using a fallback if context isn't ready)
-            const apiUrl = 'https://tutuandco-production.up.railway.app'; // Final confirmed API
-            
-            const response = await fetch(`${apiUrl}/api/admin/login`, {
+            // Use the shared API URL constant (no hardcoded URLs)
+            const response = await fetch(`${FINAL_API_URL}/api/admin/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
@@ -30,6 +29,8 @@ const AdminLogin = () => {
 
             if (response.ok && data.authenticated) {
                 sessionStorage.setItem('isAdminAuthenticated', 'true');
+                // Store the auth token for subsequent admin API calls
+                if (data.token) sessionStorage.setItem('adminToken', data.token);
                 navigate('/admin/dashboard');
             } else {
                 setError(data.error || 'Invalid credentials. Please try again.');

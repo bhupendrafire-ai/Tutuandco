@@ -6,7 +6,7 @@ import { useShop, getProductImage } from '../context/ShopContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Cart = () => {
-    const { cart, removeFromCart, updateCartQuantity, getCartTotal, applyCoupon, coupon, formatPrice, settings, media } = useShop();
+    const { cart, removeFromCart, updateCartQuantity, getCartTotal, applyCoupon, coupon, formatPrice, settings, media, products } = useShop();
     const { subtotal, discountAmount, shipping, total } = getCartTotal();
 
     if (cart.length === 0) {
@@ -35,60 +35,68 @@ const Cart = () => {
                     {/* Cart Items */}
                     <div className="lg:col-span-8 space-y-8">
                         <AnimatePresence>
-                            {(Array.isArray(cart) ? cart : []).map((item) => (
-                                <motion.div 
-                                    key={`${item.id}-${item.size}`}
-                                    layout
-                                    exit={{ opacity: 0, x: -20 }}
-                                    className="flex flex-col sm:flex-row items-center gap-8 py-8 border-b border-brand-charcoal/10"
-                                >
-                                    <div className="w-32 h-40 bg-brand-cream rounded-sm overflow-hidden flex-shrink-0 shadow-sm">
-                                        <img 
-                                            src={getProductImage(Array.isArray(item.images) ? item.images[0]?.url : item.imageName, media)} 
-                                            alt={item.name} 
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
+                            {(Array.isArray(cart) ? cart : []).map((item) => {
+                                const product = (products || []).find(p => p.id === (item.productId || item.id));
+                                const variant = (product?.variants || []).find(v => v.size === item.size);
+                                
+                                const displaySize = variant?.size || item.size;
+                                const displayPrice = variant?.price ?? item.price;
 
-                                    <div className="flex-grow text-center sm:text-left">
-                                        <span className="text-[11px] font-medium text-brand-charcoal opacity-40 mb-1 block">{item.category}</span>
-                                        <h3 className="text-xl font-medium text-brand-charcoal mb-1">{item.name}</h3>
-                                        {item.size && item.size.toLowerCase() !== 'standard' && (
-                                            <p className="text-[10px] font-bold text-brand-rose uppercase tracking-widest mb-3">Size: {item.size}</p>
-                                        )}
-                                        <div className="flex flex-col items-start gap-1">
-                                            <p className="text-brand-charcoal font-medium text-sm">
-                                                {formatPrice(item.price)}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center space-x-6">
-                                        <div className="flex items-center border border-brand-charcoal/20 rounded-sm bg-brand-cream/30">
-                                            <button 
-                                                onClick={() => updateCartQuantity(item.id, item.size, item.quantity - 1)}
-                                                className="p-3 hover:bg-brand-sage/50 text-brand-charcoal/60"
-                                            >
-                                                <Minus size={14} />
-                                            </button>
-                                            <span className="w-10 text-center text-sm font-medium text-brand-charcoal">{item.quantity}</span>
-                                            <button 
-                                                onClick={() => updateCartQuantity(item.id, item.size, item.quantity + 1)}
-                                                className="p-3 hover:bg-brand-sage/50 text-brand-charcoal/60"
-                                            >
-                                                <Plus size={14} />
-                                            </button>
-                                        </div>
-
-                                        <button 
-                                            onClick={() => removeFromCart(item.id, item.size)}
-                                            className="text-brand-charcoal/30 hover:text-brand-rose transition-colors p-2"
+                                return (
+                                        <motion.div 
+                                            key={`${item.productId || item.id}_${item.size}`}
+                                            layout
+                                            exit={{ opacity: 0, x: -20 }}
+                                            className="flex flex-col sm:flex-row items-center gap-8 py-8 border-b border-brand-charcoal/10"
                                         >
-                                            <Trash2 size={18} />
-                                        </button>
-                                    </div>
-                                </motion.div>
-                            ))}
+                                            <div className="w-32 h-40 bg-brand-cream rounded-sm overflow-hidden flex-shrink-0 shadow-sm">
+                                                <img 
+                                                    src={getProductImage(Array.isArray(item.images) ? item.images[0]?.url : item.imageName, media)} 
+                                                    alt={item.name} 
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </div>
+
+                                            <div className="flex-grow text-center sm:text-left">
+                                                <span className="text-[11px] font-medium text-brand-charcoal opacity-40 mb-1 block">{item.category}</span>
+                                                <h3 className="text-xl font-medium text-brand-charcoal mb-1">{item.name}</h3>
+                                                {displaySize && displaySize.toLowerCase() !== 'standard' && (
+                                                    <p className="text-[10px] font-bold text-brand-rose uppercase tracking-widest mb-3">Size: {displaySize}</p>
+                                                )}
+                                                <div className="flex flex-col items-start gap-1">
+                                                    <p className="text-brand-charcoal font-medium text-sm">
+                                                        {formatPrice(displayPrice)}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center space-x-6">
+                                                <div className="flex items-center border border-brand-charcoal/20 rounded-sm bg-brand-cream/30">
+                                                    <button 
+                                                        onClick={() => updateCartQuantity(item.productId || item.id, item.size, item.quantity - 1)}
+                                                        className="p-3 hover:bg-brand-sage/50 text-brand-charcoal/60"
+                                                    >
+                                                        <Minus size={14} />
+                                                    </button>
+                                                    <span className="w-10 text-center text-sm font-medium text-brand-charcoal">{item.quantity}</span>
+                                                    <button 
+                                                        onClick={() => updateCartQuantity(item.productId || item.id, item.size, item.quantity + 1)}
+                                                        className="p-3 hover:bg-brand-sage/50 text-brand-charcoal/60"
+                                                    >
+                                                        <Plus size={14} />
+                                                    </button>
+                                                </div>
+        
+                                                <button 
+                                                    onClick={() => removeFromCart(item.productId || item.id, item.size)}
+                                                    className="text-brand-charcoal/30 hover:text-brand-rose transition-colors p-2"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })}
                         </AnimatePresence>
                     </div>
 

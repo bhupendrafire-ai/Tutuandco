@@ -27,9 +27,15 @@ const ProductDetail = () => {
     const { id } = useParams();
     const { products, addToCart, loading, formatPrice, settings, media } = useShop();
     const [selectedImage, setSelectedImage] = useState(null);
-    const [selectedSize, setSelectedSize] = useState(null);
+    const [selectedVariant, setSelectedVariant] = useState(null);
     const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
     const [reviews, setReviews] = useState([]);
+    
+    useEffect(() => {
+        console.log("COMPONENT MOUNT");
+    }, []);
+
+    console.log("[DEBUG] ProductDetail render - selectedVariant:", selectedVariant?.size || 'none');
     
     const product = (Array.isArray(products) ? products : []).find(p => String(p.id) === String(id)) || products[0];
 
@@ -38,11 +44,6 @@ const ProductDetail = () => {
             const safeImages = Array.isArray(product?.images) ? product.images : [];
             const mainImg = safeImages.length > 0 ? safeImages.sort((a,b) => a.sequence - b.sequence)[0]?.url : product?.imageName;
             setSelectedImage(getProductImage(mainImg, media));
-            
-            // Auto-select "Standard" if it's the only variant
-            if (product.variants && product.variants.length === 1 && product.variants[0].size.toLowerCase() === 'standard') {
-                setSelectedSize(product.variants[0].size);
-            }
 
             // Load reviews from real API
             if (FINAL_API_URL && product.id) {
@@ -54,22 +55,36 @@ const ProductDetail = () => {
         }
     }, [product, FINAL_API_URL, media]);
 
+    // Initial variant selection only - runs only on mount or product change (id)
+    useEffect(() => {
+        if (product && !selectedVariant) {
+            if (product.variants && product.variants.length === 1 && product.variants[0].size.toLowerCase() === 'standard') {
+                console.log("selectedVariant set (auto):", product.variants[0]);
+                setSelectedVariant(product.variants[0]);
+            }
+        }
+    }, [id, product !== null]);
+
     if (loading || !product || !settings) return <div className="min-h-screen flex items-center justify-center font-medium bg-brand-sage">Synchronizing product data...</div>;
 
     const handleAddToCart = () => {
-        if (!selectedSize) {
+        console.log("FINAL selectedVariant:", selectedVariant);
+
+        if (!selectedVariant) {
             alert("Please select a size first!");
             return;
         }
-        const selectedVariant = (product.variants || []).find(v => v.size === selectedSize);
-        if (!selectedVariant) {
-            alert("This variant is no longer available.");
-            return;
+
+        const success = addToCart({
+            id: product.id,
+            size: selectedVariant.size,
+            price: selectedVariant.price !== undefined ? selectedVariant.price : (product.discountPrice || product.price),
+            quantity: 1
+        });
+        
+        if (success) {
+            alert(`${product.name} (${selectedVariant.size}) added to cart!`);
         }
-        // Use variant-specific price, falling back to product-level price if not set
-        const finalPrice = selectedVariant.price !== undefined ? selectedVariant.price : (product.discountPrice || product.price);
-        addToCart(product, selectedVariant.id, 1, finalPrice);
-        alert(`${product.name} (Size: ${selectedSize}) added to cart!`);
     };
 
     return (
@@ -140,15 +155,15 @@ const ProductDetail = () => {
                                         return <span className="text-xl md:text-2xl opacity-40 uppercase tracking-widest font-normal">Out of Stock</span>;
                                     }
                                     return formatPrice(
-                                        selectedSize 
-                                            ? (variants.find(v => v.size === selectedSize)?.price ?? (product.discountPrice || product.price))
+                                        selectedVariant 
+                                            ? (selectedVariant.price ?? (product.discountPrice || product.price))
                                             : (variants.length > 0 
                                                 ? Math.min(...variants.map(v => v.price ?? (product.discountPrice || product.price)))
                                                 : (product.discountPrice || product.price))
                                     );
                                 })()}
                             </p>
-                            {(product.discountPrice || (selectedSize && (product.variants || []).find(v => v.size === selectedSize)?.price < product.price)) && (
+                            {(product.discountPrice || (selectedVariant && selectedVariant.price < product.price)) && (
                                 <p className="text-lg opacity-20 line-through">
                                     {formatPrice(product.price)}
                                 </p>
@@ -175,13 +190,16 @@ const ProductDetail = () => {
                                 <div className="flex flex-wrap gap-3">
                                     {(product.variants && product.variants.length > 0 ? product.variants : []).map((variant) => {
                                         const isOutOfStock = (Number(variant.stock) || 0) <= 0;
-                                        const isSelected = selectedSize === variant.size;
+                                        const isSelected = selectedVariant && selectedVariant.size === variant.size;
                                         
                                         return (
                                             <button
                                                 key={variant.size}
                                                 disabled={isOutOfStock}
-                                                onClick={() => setSelectedSize(variant.size)}
+                                                onClick={() => {
+                                                    console.log("selectedVariant set:", variant);
+                                                    setSelectedVariant(variant);
+                                                }}
                                                 className={`
                                                     px-8 py-4 rounded-sm border-2 text-[11px] font-bold transition-all min-w-[80px] uppercase tracking-widest relative overflow-hidden
                                                     ${isSelected 
@@ -205,29 +223,32 @@ const ProductDetail = () => {
                                         <p className="text-xs italic text-brand-charcoal/40">No sizes available for this item.</p>
                                     )}
                                 </div>
-                                {selectedSize && (
+                                {selectedVariant && (
                                     <p className="mt-4 text-[11px] font-bold text-green-700/60 uppercase tracking-widest animate-in fade-in slide-in-from-left-2 transition-all">
-                                        {((product.variants || []).find(v => v.size === selectedSize)?.stock || 0)} units available in {selectedSize}
+                                        {selectedVariant.stock || 0} units available in {selectedVariant.size}
                                     </p>
                                 )}
                             </div>
                         )}
 
                         {/* Primary CTA Section - Relocated above details for better conversion flow */}
-                        <div className="flex flex-col sm:flex-row gap-4 mb-12 mt-4">
+                        <div className="flex flex-col sm:flex-row gap-4 mb-12 mt-4 relative z-50">
                             <button 
-                                onClick={handleAddToCart}
-                                disabled={!selectedSize}
+                                onClick={() => {
+                                    console.log("[DEBUG] Add to Cart button CLICKED (native)");
+                                    handleAddToCart();
+                                }}
+                                disabled={!selectedVariant}
                                 className={`
-                                    px-16 py-8 flex items-center justify-center font-medium text-[18px] transition-all shadow-lg min-w-[240px]
-                                    ${!selectedSize 
+                                    relative z-50 px-16 py-8 flex items-center justify-center font-medium text-[18px] transition-all shadow-lg min-w-[240px]
+                                    ${!selectedVariant 
                                         ? 'bg-brand-charcoal/5 text-brand-charcoal/20 cursor-not-allowed' 
                                         : 'bg-brand-rose text-brand-charcoal hover:bg-white active:scale-95'
                                     }
                                 `}
                             >
                                 <ShoppingBag size={24} className="mr-3" />
-                                {selectedSize ? 'Add to cart' : 'Select size to continue'}
+                                {selectedVariant ? 'Add to cart' : 'Select size to continue'}
                             </button>
                              <button className="px-10 py-8 border border-brand-charcoal/10 rounded-sm hover:bg-brand-cream/50 transition-colors">
                                 <Heart size={20} className="text-brand-charcoal/40" />

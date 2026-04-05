@@ -78,6 +78,7 @@ const AdminDashboard = () => {
                 <button 
                     onClick={() => {
                         sessionStorage.removeItem('isAdminAuthenticated');
+                        sessionStorage.removeItem('adminToken'); // Clear auth token on logout
                         navigate('/admin/login');
                     }}
                     className="flex items-center space-x-4 p-4 text-red-500 hover:bg-red-50 transition-all rounded-sm mt-auto"

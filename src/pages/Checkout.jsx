@@ -6,7 +6,7 @@ import { CheckCircle, Truck, FileText, CreditCard, ChevronRight, ArrowLeft, Arro
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Checkout = () => {
-    const { cart, getCartTotal, checkout, formatPrice, settings, media, refreshCartPrices } = useShop();
+    const { cart, getCartTotal, checkout, formatPrice, settings, media, refreshCartPrices, products } = useShop();
     
     React.useEffect(() => {
         const checkPrices = async () => {
@@ -218,24 +218,33 @@ const Checkout = () => {
                              <h4 className="font-medium text-brand-charcoal text-lg">Order summary</h4>
                          </div>
                          <div className="p-8 space-y-6">
-                            {(Array.isArray(cart) ? cart : []).map(item => (
-                                <div key={item.id} className="flex items-start gap-4 text-sm pb-6 border-b border-brand-charcoal/5 last:border-0 last:pb-0">
-                                    <div className="w-12 h-16 bg-white rounded-sm overflow-hidden flex-shrink-0 shadow-sm">
-                                        <img src={getProductImage(Array.isArray(item.images) ? item.images[0]?.url : item.imageName, media)} className="w-full h-full object-cover" alt="" />
-                                    </div>
-                                    <div className="flex-grow">
-                                        <h4 className="text-sm font-medium text-brand-charcoal truncate">{item.name}</h4>
-                                        <p className="text-[10px] text-brand-charcoal/40 font-medium">
-                                            {item.category} 
-                                            {item.size && item.size.toLowerCase() !== 'standard' && ` • Size: ${item.size}`} 
-                                            • Qty {Number(item.quantity) || 1}
-                                        </p>
-                                        <div className="flex items-center space-x-3 mt-1">
-                                            <span className="text-[11px] font-medium text-brand-charcoal">{formatPrice((Number(item.price) || 0) * (Number(item.quantity) || 1))}</span>
+                            {(Array.isArray(cart) ? cart : []).map(item => {
+                                // Live lookup for variant metadata consistency in Checkout summary
+                                const product = (products || []).find(p => p.id === (item.productId || item.id));
+                                const variant = (product?.variants || []).find(v => v.size === item.size);
+                                
+                                const displaySize = variant?.size || item.size;
+                                const displayPrice = variant?.price ?? item.price;
+
+                                return (
+                                    <div key={`${item.productId || item.id}_${item.size}`} className="flex items-start gap-4 text-sm pb-6 border-b border-brand-charcoal/5 last:border-0 last:pb-0">
+                                        <div className="w-12 h-16 bg-white rounded-sm overflow-hidden flex-shrink-0 shadow-sm">
+                                            <img src={getProductImage(Array.isArray(item.images) ? item.images[0]?.url : item.imageName, media)} className="w-full h-full object-cover" alt="" />
+                                        </div>
+                                        <div className="flex-grow">
+                                            <h4 className="text-sm font-medium text-brand-charcoal truncate">{item.name}</h4>
+                                            <p className="text-[10px] text-brand-charcoal/40 font-medium">
+                                                {item.category} 
+                                                {displaySize && displaySize.toLowerCase() !== 'standard' && ` • Size: ${displaySize}`} 
+                                                • Qty {Number(item.quantity) || 1}
+                                            </p>
+                                            <div className="flex items-center space-x-3 mt-1">
+                                                <span className="text-[11px] font-medium text-brand-charcoal">{formatPrice((Number(displayPrice) || 0) * (Number(item.quantity) || 1))}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                             <div className="pt-6 border-t border-brand-charcoal/10 space-y-3">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-brand-charcoal/60">Subtotal</span>

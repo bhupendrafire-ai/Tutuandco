@@ -1,4 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { FINAL_API_URL, getAdminHeaders } from './apiConfig';
+import { ProductProvider, ProductContext } from './ProductContext';
+import { CartProvider, CartContext } from './CartContext';
+
+// Re-export FINAL_API_URL for backward compatibility (many components import it from here)
+export { FINAL_API_URL } from './apiConfig';
 
 // Centralized Policy Defaults (Source of Truth for Fallbacks)
 export const POLICY_DEFAULTS = {
@@ -15,7 +21,7 @@ export const POLICY_DEFAULTS = {
 </ul>
 <p>Delivery timelines may vary depending on your location and courier partner.</p>
 <p>Shipping charges (if applicable) will be calculated at checkout.</p>
-<p>Once your order is shipped, you’ll receive a tracking link via email or SMS to follow its journey.</p>
+<p>Once your order is shipped, you'll receive a tracking link via email or SMS to follow its journey.</p>
 <p>While we work with reliable delivery partners, delays can occasionally happen due to factors beyond our control. If your order is significantly delayed, feel free to reach out to us at <strong>hello.tutuandco@gmail.com</strong>.</p>
 <p>Please ensure your shipping details are accurate at checkout. We are not responsible for delays or failed deliveries due to incorrect information.</p>`
     },
@@ -32,7 +38,7 @@ export const POLICY_DEFAULTS = {
   <li>All tags and packaging must be intact</li>
   </ul>
 <p>Please note: Exchange shipping costs are to be borne by the customer. Check our size guide carefully before purchase for the best fit.</p>
-<p>If you receive a damaged or wrong item, please contact us within 48 hours of delivery with photos, and we’ll make it right.</p>
+<p>If you receive a damaged or wrong item, please contact us within 48 hours of delivery with photos, and we'll make it right.</p>
 <p><strong>Exchange process:</strong> Once your request is approved, the product will need to be shipped back to us. The replacement will be processed after a quality check.</p>
 <p>Each piece is handmade, so slight variations are natural and not considered defects.</p>`
     },
@@ -138,20 +144,6 @@ export const resolvePolicyLabel = (key, settings) => {
         POLICY_DEFAULTS[key]?.title ||
         "Policy"
     );
-};
-
-/**
- * usePolicy(key)
- * Optimized hook for consuming policy data with minimal re-renders.
- */
-export const usePolicy = (key) => {
-    const { settings, loading } = useShop();
-    const policy = settings?.policies?.[key];
-    return {
-        policy,
-        loading,
-        exists: !!policy
-    };
 };
 
 /**
@@ -293,37 +285,35 @@ export const htmlToReadableText = (html) => {
     return temp.innerText.trim().replace(/\n\s*\n/g, '\n\n');
 };
 
-const ShopContext = createContext();
+// --- Core Shop Context (banners, media, settings, orders, loading) ---
+const ShopCoreContext = createContext();
 
+/**
+ * useShop — unified facade hook
+ * Merges core shop state, product state, and cart state into a single object.
+ * All existing consumers continue to work without any changes.
+ */
 export const useShop = () => {
-    const context = useContext(ShopContext);
-    if (!context) throw new Error("useShop must be used within a ShopProvider");
-    return context;
+    const core = useContext(ShopCoreContext);
+    const productCtx = useContext(ProductContext);
+    const cartCtx = useContext(CartContext);
+    if (!core) throw new Error("useShop must be used within a ShopProvider");
+    return { ...core, ...productCtx, ...cartCtx };
 };
 
-// Harden environment access with optional chaining to prevent top-level module failure
-const VITE_API_URL = import.meta?.env?.VITE_API_URL;
-const IS_PROD = import.meta?.env?.PROD;
-const FALLBACK_URL = 'https://tutuandco-production.up.railway.app'; // Stable production fallback
-
-// Auto-detect or use hardcoded fallback
-let resolvedUrl = VITE_API_URL || FALLBACK_URL;
-
-if (resolvedUrl && !resolvedUrl.startsWith('http')) {
-    resolvedUrl = `https://${resolvedUrl}`;
-}
-
-export const FINAL_API_URL = resolvedUrl?.replace(/\/$/, "");
-
-if (IS_PROD) {
-    if (!VITE_API_URL) {
-        console.warn("🛡️ API FALLBACK: VITE_API_URL was undefined. Using hardcoded production URL.");
-    }
-    console.log("🛠️ Build Connectivity:", { 
-        has_api_url: !!VITE_API_URL, 
-        resolved_url: FINAL_API_URL 
-    });
-}
+/**
+ * usePolicy(key)
+ * Optimized hook for consuming policy data with minimal re-renders.
+ */
+export const usePolicy = (key) => {
+    const { settings, loading } = useShop();
+    const policy = settings?.policies?.[key];
+    return {
+        policy,
+        loading,
+        exists: !!policy
+    };
+};
 
 // Image Mapper - Resolves imageName from API to actual asset
 const imageModules = import.meta.glob('../assets/heroshots/*.{jpg,png,jpeg}', { eager: true });
@@ -367,11 +357,15 @@ export const formatPrice = (amount, settings) => {
     return `${symbol || '₹'}${(val * safeRate).toFixed(2)}`;
 };
 
+/**
+ * ShopProvider — orchestrator
+ * Manages banners, media, settings, orders, and loading state.
+ * Wraps ProductProvider and CartProvider to compose the full context tree.
+ */
 export const ShopProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
     const [banners, setBanners] = useState([]);
     const [media, setMedia] = useState([]);
-    const [cart, setCart] = useState([]);
     const [settings, setSettings] = useState({
         currency: { code: 'INR', symbol: '₹', rate: 1 },
         globalDiscount: 0,
@@ -381,27 +375,13 @@ export const ShopProvider = ({ children }) => {
         customPolicies: []
     });
     const [loading, setLoading] = useState(true);
-    const [coupon, setCoupon] = useState(null);
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
         loadData();
-        try {
-            const savedCart = localStorage.getItem('tutu_cart');
-            if (savedCart) {
-                const parsed = JSON.parse(savedCart);
-                if (Array.isArray(parsed)) setCart(parsed);
-            }
-        } catch (e) {
-            console.error("Cart recovery failed", e);
-            setCart([]);
-        }
     }, []);
 
-    useEffect(() => {
-        localStorage.setItem('tutu_cart', JSON.stringify(cart));
-    }, [cart]);
-
+    // Central data loader — fetches all data from the API
     const loadData = async () => {
         if (!FINAL_API_URL) {
             console.error("API_URL is not configured for this environment.");
@@ -410,12 +390,23 @@ export const ShopProvider = ({ children }) => {
         }
 
         try {
-            const [productRes, bannerRes, mediaRes, settingsRes, orderRes] = await Promise.all([
+            // Fetch public data (accessible to all users)
+            const publicFetches = [
                 fetch(`${FINAL_API_URL}/api/products`),
                 fetch(`${FINAL_API_URL}/api/banners`),
                 fetch(`${FINAL_API_URL}/api/media`),
-                fetch(`${FINAL_API_URL}/api/settings`),
-                fetch(`${FINAL_API_URL}/api/orders`)
+                fetch(`${FINAL_API_URL}/api/settings`)
+            ];
+
+            // Orders are admin-only — only fetch when admin token exists
+            const adminToken = sessionStorage.getItem('adminToken');
+            const orderFetch = adminToken
+                ? fetch(`${FINAL_API_URL}/api/orders`, { headers: { 'Authorization': `Bearer ${adminToken}` } })
+                : Promise.resolve(null);
+
+            const [productRes, bannerRes, mediaRes, settingsRes, orderRes] = await Promise.all([
+                ...publicFetches,
+                orderFetch
             ]);
             
             const rawProducts = productRes.ok ? await productRes.json() : [];
@@ -423,11 +414,15 @@ export const ShopProvider = ({ children }) => {
                 ...prod,
                 price: Number(prod.price) || 0,
                 discountPrice: prod.discountPrice ? Number(prod.discountPrice) : null,
-                rating: Number(prod.rating) || 5
+                rating: Number(prod.rating) || 5,
+                variants: (prod.variants || []).map((v) => ({
+                    ...v,
+                    price: v.price !== undefined ? Number(v.price) : (prod.discountPrice ? Number(prod.discountPrice) : Number(prod.price))
+                }))
             }));
             const b = bannerRes.ok ? await bannerRes.json() : [];
             const m = mediaRes.ok ? await mediaRes.json() : [];
-            const o = orderRes.ok ? await orderRes.json() : [];
+            const o = (orderRes && orderRes.ok) ? await orderRes.json() : []; // Gracefully handle null response
             const s = settingsRes.ok ? await settingsRes.json() : {};
             
             // DEBUG: Trace Policy Data Sources
@@ -471,6 +466,7 @@ export const ShopProvider = ({ children }) => {
                 customPolicies: s.customPolicies || []
             };
 
+            // Set all state
             setProducts(p || []);
             setBanners(b || []);
             setMedia(m || []);
@@ -483,12 +479,14 @@ export const ShopProvider = ({ children }) => {
         }
     };
 
+    // --- Admin functions for banners, settings, media, orders ---
+
     const updateSettings = async (newSettings) => {
         if (!FINAL_API_URL) return;
         try {
             const res = await fetch(`${FINAL_API_URL}/api/settings`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAdminHeaders(), // Auth token required for admin route
                 body: JSON.stringify(newSettings)
             });
             const data = await res.json();
@@ -496,55 +494,6 @@ export const ShopProvider = ({ children }) => {
             return data;
         } catch (err) {
             console.error("Settings update failed", err);
-        }
-    };
-
-    const addProduct = async (product) => {
-        if (!FINAL_API_URL) {
-            console.error("❌ API_URL is not configured. Cannot add product.");
-            return;
-        }
-        try {
-            const res = await fetch(`${FINAL_API_URL}/api/products`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(product)
-            });
-            if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(`API returned ${res.status}: ${errorData.message || 'Unknown error'}`);
-            }
-            const newProduct = await res.json();
-            await loadData();
-            return newProduct;
-        } catch (err) {
-            console.error("❌ Failed to add product:", err.message);
-            // Optionally, you might want to set loading to false or show a user-facing error
-            throw err; // Re-throw to allow caller to handle
-        }
-    };
-
-    const deleteProduct = async (id) => {
-        if (!FINAL_API_URL) return;
-        try {
-            await fetch(`${FINAL_API_URL}/api/products/${id}`, { method: 'DELETE' });
-            await loadData();
-        } catch (err) {
-            console.error("Delete product failed", err);
-        }
-    };
-
-    const updateProduct = async (id, updates) => {
-        if (!FINAL_API_URL) return;
-        try {
-            await fetch(`${FINAL_API_URL}/api/products/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updates)
-            });
-            await loadData();
-        } catch (err) {
-            console.error("Update product failed", err);
         }
     };
 
@@ -562,7 +511,7 @@ export const ShopProvider = ({ children }) => {
             try {
                 const res = await fetch(`${FINAL_API_URL}/api/banners`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAdminHeaders(), // Auth token required for admin route
                     body: JSON.stringify(newBanners)
                 });
                 const result = await res.json();
@@ -593,7 +542,7 @@ export const ShopProvider = ({ children }) => {
         try {
             const res = await fetch(`${FINAL_API_URL}/api/media`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAdminHeaders(), // Auth token required for admin route
                 body: JSON.stringify({ url, name })
             });
             const newMedia = await res.json();
@@ -604,160 +553,12 @@ export const ShopProvider = ({ children }) => {
         }
     };
 
-    const addToCart = (product, variantId, quantity = 1, price = null) => {
-        setCart(prev => {
-            const existing = prev.find(item => item.id === product.id && item.variantId === variantId);
-            const variant = (product.variants || []).find(v => v.id === variantId);
-            const size = variant?.size || 'Standard';
-            const finalPrice = price !== null ? price : (variant?.price ?? (product.discountPrice || product.price));
-            
-            if (existing) {
-                return prev.map(item => 
-                    (item.id === product.id && item.variantId === variantId) ? { ...item, quantity: item.quantity + quantity, price: finalPrice } : item
-                );
-            }
-            return [...prev, { ...product, variantId, size, quantity, price: finalPrice }];
-        });
-    };
-
-    const removeFromCart = (productId, variantId) => {
-        setCart(prev => prev.filter(item => !(item.id === productId && item.variantId === variantId)));
-    };
-
-    const updateCartQuantity = (productId, variantId, quantity) => {
-        if (quantity < 1) return removeFromCart(productId, variantId);
-        setCart(prev => prev.map(item => 
-            (item.id === productId && item.variantId === variantId) ? { ...item, quantity } : item
-        ));
-    };
-
-    const clearCart = () => setCart([]);
-
-    const getCartTotal = () => {
-        const safeCart = Array.isArray(cart) ? cart : [];
-        const subtotal = safeCart.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.quantity || 0)), 0);
-        const safeSettings = settings || {};
-        const globalDiscountAmount = safeSettings.globalDiscount ? subtotal * (safeSettings.globalDiscount / 100) : 0;
-        const couponDiscountAmount = coupon ? (subtotal - globalDiscountAmount) * (Number(coupon.discount) || 0) : 0;
-        const totalDiscount = globalDiscountAmount + couponDiscountAmount;
-        const total = subtotal - totalDiscount;
-        const shipping = total >= 999 ? 0 : 89;
-        return { subtotal, discountAmount: totalDiscount, shipping, total: total + shipping };
-    };
-
-    const refreshCartPrices = async () => {
-        try {
-            const response = await fetch(`${FINAL_API_URL}/api/products`);
-            const latestProducts = await response.json();
-            
-            let hasChanges = false;
-            const updatedCart = cart.map(item => {
-                const latestProduct = latestProducts.find(p => p.id === item.id);
-                if (!latestProduct) return item;
-                
-                const latestVariant = (latestProduct.variants || []).find(v => v.id === item.variantId);
-                const latestPrice = latestVariant?.price !== undefined ? latestVariant.price : (latestProduct.discountPrice || latestProduct.price);
-                
-                if (latestPrice !== item.price) {
-                    hasChanges = true;
-                    return { ...item, price: latestPrice };
-                }
-                return item;
-            });
-            
-            if (hasChanges) {
-                setCart(updatedCart);
-                return { updated: true, message: "Some prices in your cart have been updated." };
-            }
-            return { updated: false };
-        } catch (error) {
-            console.error("Failed to refresh cart prices:", error);
-            return { updated: false, error };
-        }
-    };
-
-    const applyCoupon = async (code) => {
-        const coupons = [{ code: 'TUTU10', discount: 0.1, minSpend: 500 }];
-        const found = coupons.find(c => c.code.toUpperCase() === code.toUpperCase());
-        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        
-        if (found && subtotal >= found.minSpend) {
-            setCoupon(found);
-            return { success: true, message: `Coupon ${code} applied!` };
-        }
-        return { success: false, message: 'Invalid coupon or minimum spend not met' };
-    };
-
-    const checkout = async (details) => {
-        if (!FINAL_API_URL) return { success: false, message: 'Service temporarily unavailable' };
-        
-        const createKey = `create_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        const confirmKey = `confirm_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-        try {
-            const { subtotal, discountAmount, shipping, total } = getCartTotal();
-            const orderPayload = {
-                items: cart,
-                ...details,
-                subtotal,
-                discountAmount,
-                shipping,
-                total,
-                couponCode: coupon?.code,
-                idempotencyKey: createKey
-            };
-
-            // Stage 1: Create Order (Validation only)
-            const createRes = await fetch(`${FINAL_API_URL}/api/orders`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderPayload)
-            });
-
-            const createResult = await createRes.json();
-            
-            if (!createRes.ok) {
-                return { 
-                    success: false, 
-                    message: createResult.error || "Order creation failed",
-                    code: createResult.code 
-                };
-            }
-
-            // Stage 2: Confirm Order (Stock Deduction)
-            // In a real app, this would happen after a successful payment callback
-            const confirmRes = await fetch(`${FINAL_API_URL}/api/orders/${createResult.id}/confirm`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ confirmationKey: confirmKey })
-            });
-
-            const confirmResult = await confirmRes.json();
-
-            if (!confirmRes.ok) {
-                return { 
-                    success: false, 
-                    message: confirmResult.error || "Confirmation failed",
-                    code: confirmResult.code,
-                    orderId: createResult.id
-                };
-            }
-
-            clearCart();
-            setCoupon(null);
-            return { success: true, order: confirmResult };
-        } catch (err) {
-            console.error("Checkout process failed", err);
-            return { success: false, message: "Checkout failed. Please check your connection." };
-        }
-    };
-
     const shipOrder = async (id, shippingDetails) => {
         if (!FINAL_API_URL) return;
         try {
             const res = await fetch(`${FINAL_API_URL}/api/orders/${id}/ship`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAdminHeaders(), // Auth token required for admin route
                 body: JSON.stringify(shippingDetails)
             });
             const result = await res.json();
@@ -768,31 +569,28 @@ export const ShopProvider = ({ children }) => {
         }
     };
 
-    const value = {
-        products,
+    // Core shop value — banners, media, settings, orders, loading + admin functions
+    const coreValue = {
         banners,
         media,
         orders,
         loading,
-        cart,
-        addToCart,
-        removeFromCart,
-        updateCartQuantity,
-        getCartTotal,
-        applyCoupon,
-        coupon,
-        checkout,
-        shipOrder,
-        addProduct,
-        deleteProduct,
-        updateProduct,
-        updateBanners,
-        uploadMedia,
         settings,
         updateSettings,
+        updateBanners,
+        uploadMedia,
+        shipOrder,
         formatPrice: (amt) => formatPrice(amt, settings),
         refreshData: loadData
     };
 
-    return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
+    return (
+        <ShopCoreContext.Provider value={coreValue}>
+            <ProductProvider products={products} onMutate={loadData}>
+                <CartProvider settings={settings} products={products}>
+                    {children}
+                </CartProvider>
+            </ProductProvider>
+        </ShopCoreContext.Provider>
+    );
 };
