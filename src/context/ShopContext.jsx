@@ -23,7 +23,7 @@ export const POLICY_DEFAULTS = {
         id: 'returns',
         slug: 'returns',
         title: 'Refund & Cancellation Policy', 
-        navLabel: 'Returns & Exchanges',
+        navLabel: 'Refunds & Cancellations',
         content: `<p>As a small, made-with-care brand, we currently do not offer returns or refunds, unless the item received is damaged or incorrect.</p>
 <p><strong>To be eligible for exchange:</strong></p>
 <ul>
@@ -117,29 +117,27 @@ export const DEFAULT_POLICIES = Object.keys(POLICY_DEFAULTS).reduce((acc, key) =
 export const CORE_POLICY_METADATA = Object.values(POLICY_DEFAULTS).map(p => ({
     id: p.id,
     slug: p.slug,
-    defaultTitle: p.title,
-    defaultNavLabel: p.navLabel
+    defaultTitle: p.title
 }));
 
 /**
- * Resolves a policy's display label using a hardened fallback chain:
- * 1. Specific navigation label (navLabel)
- * 2. Full official title (title)
- * 3. System-hardcoded fallback (metadata)
+ * Resolves a policy's display label using a single source of truth:
+ * 1. Settings object navLabel/title
+ * 2. System hardcoded defaults
  */
-export const resolvePolicyLabel = (policyKey, settings) => {
-    // Extensive use of optional chaining to prevent crashes during initialization
-    const policyData = settings?.policies?.[policyKey];
-    const customPolicy = settings?.customPolicies?.find?.(p => p.slug === policyKey);
-    const meta = POLICY_DEFAULTS?.[policyKey];
+export const resolvePolicyLabel = (key, settings) => {
+    const policy = settings?.policies?.[key];
 
-    return (policyData?.navLabel?.trim?.()) || 
-           (policyData?.title?.trim?.()) || 
-           (customPolicy?.navLabel?.trim?.()) || 
-           (customPolicy?.title?.trim?.()) || 
-           (meta?.navLabel) || 
-           (meta?.title) || 
-           'Policy';
+    // Temporary debug safeguard 
+    console.log("Resolved Label:", key, policy?.navLabel || policy?.title || POLICY_DEFAULTS[key]?.navLabel || POLICY_DEFAULTS[key]?.title || "Policy");
+
+    return (
+        policy?.navLabel ||
+        policy?.title ||
+        POLICY_DEFAULTS[key]?.navLabel ||
+        POLICY_DEFAULTS[key]?.title ||
+        "Policy"
+    );
 };
 
 /**
@@ -442,36 +440,25 @@ export const ShopProvider = ({ children }) => {
             // --- HARDENED POLICY MIGRATION & NORMALIZATION ---
             const normalizedPolicies = { ...(s.policies || {}) };
             
-            CORE_POLICY_METADATA.forEach(meta => {
-                const key = meta.id;
-                const legacyKey = `${key}Policy`; 
+            Object.keys(POLICY_DEFAULTS).forEach(key => {
+                const meta = POLICY_DEFAULTS[key];
                 const current = normalizedPolicies[key];
 
-                // 1. Initial State Resolution
                 if (!current) {
-                    // Create from scratch using legacy fallback chain
+                    // Create from scratch if completely missing
                     normalizedPolicies[key] = {
-                        title: s[`${legacyKey}_title`] || meta.defaultTitle,
-                        navLabel: s[`${legacyKey}_navLabel`] || meta.defaultNavLabel,
-                        content: s[legacyKey] || DEFAULT_POLICIES[key] || ''
+                        title: meta.title,
+                        navLabel: meta.navLabel,
+                        content: DEFAULT_POLICIES[key] || ''
                     };
-                } 
-                // 2. Migration: String to Object (The "String-Migration Bug" Fix)
-                else if (typeof current === 'string') {
-                    normalizedPolicies[key] = {
-                        title: s[`${legacyKey}_title`] || meta.defaultTitle,
-                        navLabel: s[`${legacyKey}_navLabel`] || meta.defaultNavLabel,
-                        content: current // Keep the existing content string
+                } else {
+                    // Normalize existing entries
+                    const normalized = {
+                        title: current.title || meta.title,
+                        navLabel: current.navLabel || current.title || meta.navLabel,
+                        content: (typeof current === 'string' ? current : current.content) || DEFAULT_POLICIES[key] || ''
                     };
-                }
-                // 3. Object Hardening (Filling gaps in existing objects)
-                else if (typeof current === 'object') {
-                    // NEVER overwrite existing valid data
-                    normalizedPolicies[key] = {
-                        title: current.title || s[`${legacyKey}_title`] || meta.defaultTitle,
-                        navLabel: current.navLabel || s[`${legacyKey}_navLabel`] || meta.defaultNavLabel,
-                        content: current.content || s[legacyKey] || DEFAULT_POLICIES[key] || ''
-                    };
+                    normalizedPolicies[key] = normalized;
                 }
             });
 

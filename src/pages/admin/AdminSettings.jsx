@@ -54,6 +54,10 @@ const AdminSettings = () => {
 
         // 3. Persist Full Configuration Object (Single Source of Truth)
         await updateSettings(settingsToSave);
+
+        // Verification Log for Returns Policy 
+        console.log("🛡️ Persistence Check (Returns):", settingsToSave.policies["returns"]);
+
         setPolicyChanges({});
         setSaveStatus('saved');
         setTimeout(() => setSaveStatus(null), 3000);
@@ -101,10 +105,10 @@ const AdminSettings = () => {
     };
 
     const resetPolicyToDefault = (key) => {
-        const meta = CORE_POLICY_METADATA?.find?.(m => m.id === key);
+        const meta = POLICY_DEFAULTS[key];
         if (meta) {
-            handlePolicyChange(key, 'title', meta?.defaultTitle);
-            handlePolicyChange(key, 'navLabel', meta?.defaultNavLabel);
+            handlePolicyChange(key, 'title', meta.title);
+            handlePolicyChange(key, 'navLabel', meta.navLabel);
             handlePolicyChange(key, 'content', DEFAULT_POLICIES?.[key] || '');
         }
     };
@@ -298,7 +302,7 @@ const AdminSettings = () => {
                                                             onBlur={(e) => handlePolicyChange(meta.id, 'navLabel', e.target.value.trim())}
                                                             maxLength={40}
                                                             className={`w-full bg-white p-4 text-sm font-medium border outline-none transition-all rounded-sm shadow-sm ${charCount >= 35 ? 'border-brand-rose/30 focus:border-brand-rose' : 'border-transparent focus:border-brand-charcoal/20'}`}
-                                                            placeholder={meta.defaultNavLabel}
+                                                            placeholder={POLICY_DEFAULTS[meta.id]?.navLabel}
                                                         />
                                                         {charCount >= 38 && (
                                                             <div className="absolute right-4 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-brand-rose animate-pulse" />
