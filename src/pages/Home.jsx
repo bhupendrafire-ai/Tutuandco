@@ -313,7 +313,7 @@ const Home = () => {
                         Worn, lived in, loved.
                     </p>
                     
-                    <div className="flex overflow-x-auto gap-[12px] no-scrollbar scroll-smooth pb-4">
+                    <div className="flex overflow-x-auto gap-6 no-scrollbar scroll-smooth pb-4 mask-edge-fade snap-x snap-mandatory">
                         {(Array.isArray(galleryImages) ? galleryImages : []).map((img, index) => (
                             <motion.div 
                                 key={img}
@@ -321,7 +321,7 @@ const Home = () => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.05 }}
-                                className="relative flex-shrink-0 w-[240px] md:w-[280px] aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm cursor-pointer group shadow-sm transition-transform duration-500 hover:scale-[1.03]"
+                                className="relative flex-shrink-0 w-[245px] aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm cursor-pointer group shadow-sm transition-all duration-500 hover:scale-[1.03] snap-start snap-always"
                             >
                                 <img src={img} alt={`Lifestyle ${index}`} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-transparent group-hover:bg-[#2f2f2f]/5 transition-colors duration-700" />
@@ -329,7 +329,7 @@ const Home = () => {
                         ))}
                     </div>
 
-                    <div className="mt-3 flex flex-col gap-1 text-left">
+                    <div className="mt-2 flex flex-col gap-1 text-left">
                         <Link to="/moments" className="inline-flex items-center gap-1 text-base font-medium text-[#2f2f2f] hover:text-[#5c5c5c] transition-all group tracking-tight">
                             <span>Visit the gallery</span>
                             <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-[2px]" />
