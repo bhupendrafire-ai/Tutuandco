@@ -16,6 +16,7 @@ const Home = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeftState, setScrollLeftState] = useState(0);
+    const [scrollProgress, setScrollProgress] = useState(0);
     
     const heroRef = useRef(null);
     const galleryRef = useRef(null);
@@ -78,6 +79,14 @@ const Home = () => {
         const walk = (x - startX) * 1.6; // Scroll speed multiplier
         if (galleryRef.current) {
             galleryRef.current.scrollLeft = scrollLeftState - walk;
+        }
+    };
+
+    const handleScroll = () => {
+        if (galleryRef.current) {
+            const { scrollLeft, scrollWidth, clientWidth } = galleryRef.current;
+            const progress = scrollWidth > clientWidth ? (scrollLeft / (scrollWidth - clientWidth)) * 100 : 0;
+            setScrollProgress(progress);
         }
     };
 
@@ -349,6 +358,7 @@ const Home = () => {
                         onMouseLeave={handleMouseLeave}
                         onMouseUp={handleMouseUp}
                         onMouseMove={handleMouseMove}
+                        onScroll={handleScroll}
                         className={`flex overflow-x-auto gap-6 no-scrollbar scroll-smooth pb-4 mask-edge-fade snap-x snap-proximity ${isDragging ? 'cursor-grabbing select-none scroll-auto' : 'cursor-grab'}`}
                     >
                         {(Array.isArray(galleryImages) ? galleryImages : []).map((img, index) => (
@@ -365,6 +375,15 @@ const Home = () => {
                                 <div className="absolute inset-0 bg-transparent group-hover:bg-[#2f2f2f]/5 transition-colors duration-700" />
                             </motion.div>
                         ))}
+                    </div>
+
+                    {/* Minimal Ambient Scroll Indicator */}
+                    <div className="w-full h-[1px] bg-neutral-100 mt-2 relative overflow-hidden rounded-full">
+                        <motion.div 
+                            className="absolute top-0 left-0 h-full bg-[#868686]/30"
+                            animate={{ width: `${scrollProgress}%` }}
+                            transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+                        />
                     </div>
 
                     <div className="mt-1 flex flex-col gap-1 text-left">
