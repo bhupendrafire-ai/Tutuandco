@@ -12,7 +12,11 @@ const ScrollToTop = () => {
     const { pathname } = useLocation();
 
     useEffect(() => {
-        // Trigger instant scroll to top on every route change
+        // Only trigger scroll to top for storefront routes
+        // Exclude all administration/dashboard routes
+        if (pathname.startsWith('/admin')) return;
+
+        // Instant scroll to top on storefront route changes
         window.scrollTo(0, 0);
     }, [pathname]);
 
