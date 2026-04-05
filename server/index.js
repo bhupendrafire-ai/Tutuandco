@@ -287,6 +287,21 @@ app.post('/api/orders', async (req, res) => {
         res.status(201).json(result.rows[0]);
     } catch (err) {
         await client.query('ROLLBACK');
+        
+        // Handle race condition: If two simultaneous requests pass the initial check,
+        // the database's UNIQUE constraint will catch the second one.
+        if (err.code === '23505' && idempotencyKey) {
+            console.log(`🔄 Idempotency race detected for key: ${idempotencyKey}. Returning existing order.`);
+            try {
+                const existing = await db.query('SELECT * FROM orders WHERE idempotency_key = $1', [idempotencyKey]);
+                if (existing.rowCount > 0) {
+                    return res.json(existing.rows[0]);
+                }
+            } catch (reFetchErr) {
+                console.error("Failed to fetch existing order after race:", reFetchErr);
+            }
+        }
+
         console.error("Order creation error:", err);
         res.status(500).json({ error: err.message, code: 'INTERNAL_ERROR' });
     } finally {
@@ -377,6 +392,19 @@ app.post('/api/orders/:id/confirm', async (req, res) => {
         res.json(confirmedOrder);
     } catch (err) {
         await client.query('ROLLBACK');
+
+        // Handle confirmation race condition
+        if (err.code === '23505' && confirmationKey) {
+            try {
+                const existing = await db.query('SELECT * FROM orders WHERE id = $1', [id]);
+                if (existing.rowCount > 0 && existing.rows[0].confirmation_key === confirmationKey) {
+                    return res.json(existing.rows[0]);
+                }
+            } catch (reFetchErr) {
+                console.error("Failed to fetch existing order after confirmation race:", reFetchErr);
+            }
+        }
+
         console.error("Order confirmation error:", err);
         res.status(500).json({ error: err.message, code: 'INTERNAL_ERROR' });
     } finally {

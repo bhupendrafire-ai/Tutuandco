@@ -325,6 +325,10 @@ const Home = () => {
             <section className="pt-[72px] pb-[48px] bg-white border-t border-[#eaeaea]">
                 <div className="max-w-[1280px] mx-auto px-6">
                     <h2 className="text-4xl font-medium text-[#6f6f6f] mb-4 tracking-tight text-center">Our community</h2>
+                    {/* Editorial subtitle for the community gallery - Worn, lived in, loved. */}
+                    <p className="text-[#868686] text-xl font-light italic text-center mb-12">
+                        Worn, lived in, loved.
+                    </p>
                     
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-[7px]">
                         {(Array.isArray(galleryImages) ? galleryImages.slice(0, 8) : []).map((img, index) => (
