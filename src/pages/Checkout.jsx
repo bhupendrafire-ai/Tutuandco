@@ -39,10 +39,23 @@ const Checkout = () => {
         setLoading(true);
         try {
             const result = await checkout(orderDetails);
-            setOrderResult(result);
-            setStep(3); // Confirmation
+            if (result.success) {
+                setOrderResult(result.order);
+                setStep(3); // Confirmation
+            } else {
+                if (result.code === 'INSUFFICIENT_STOCK' || result.code === 'STOCK_CHANGED') {
+                    alert(`${result.message}. Please review your cart.`);
+                    navigate('/cart');
+                } else if (result.code === 'VARIANT_NOT_FOUND') {
+                    alert("One or more items in your cart are no longer available. Refreshing...");
+                    window.location.reload();
+                } else {
+                    alert(result.message || "Checkout failed. Please try again.");
+                }
+            }
         } catch (error) {
-            alert("Checkout failed. Please try again.");
+            console.error("Checkout crash:", error);
+            alert("An unexpected error occurred. Please try again.");
         } finally {
             setLoading(false);
         }

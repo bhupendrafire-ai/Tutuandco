@@ -58,7 +58,9 @@ const migrate = async () => {
                 tracking_number TEXT,
                 carrier TEXT,
                 shipped_at TIMESTAMP,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                idempotency_key TEXT UNIQUE,
+                confirmation_key TEXT UNIQUE
             );
 
             CREATE TABLE IF NOT EXISTS reviews (
@@ -85,6 +87,8 @@ const migrate = async () => {
             ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_number TEXT;
             ALTER TABLE orders ADD COLUMN IF NOT EXISTS carrier TEXT;
             ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipped_at TIMESTAMP;
+            ALTER TABLE orders ADD COLUMN IF NOT EXISTS idempotency_key TEXT;
+            ALTER TABLE orders ADD COLUMN IF NOT EXISTS confirmation_key TEXT;
 
             -- Phase 2: Variant System Migration
             ALTER TABLE products ADD COLUMN IF NOT EXISTS variants JSONB DEFAULT '[]';

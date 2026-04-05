@@ -170,14 +170,159 @@ app.get('/api/orders', async (req, res) => {
 
 app.post('/api/orders', async (req, res) => {
     const o = req.body;
+    const { idempotencyKey } = o;
+    
     const client = await db.pool.connect();
     try {
         await client.query('BEGIN');
 
-        // 1. DETERMINISTIC LOCKING: Unique, sorted product IDs
+        // 1. Idempotency Check
+        if (idempotencyKey) {
+            const existing = await client.query('SELECT * FROM orders WHERE idempotency_key = $1', [idempotencyKey]);
+            if (existing.rowCount > 0) {
+                await client.query('ROLLBACK');
+                return res.json(existing.rows[0]);
+            }
+        }
+
+        // 2. Fetch all products involved
         const productIds = [...new Set(o.items.map(i => i.id))].sort();
+        const productsRes = await client.query(
+            `SELECT * FROM products WHERE id = ANY($1) ORDER BY id ASC`,
+            [productIds]
+        );
         
-        // Execute batch lock in deterministic order (ASC) to prevent deadlocks
+        const productsFromDb = {};
+        productsRes.rows.forEach(p => { productsFromDb[p.id] = p; });
+
+        const settingsRes = await client.query('SELECT data FROM settings WHERE id=$1', ['global']);
+        const globalSettings = settingsRes.rows[0]?.data || {};
+        const globalDiscountPercent = globalSettings.globalDiscount || 0;
+
+        let serverSubtotal = 0;
+        const verifiedItems = [];
+
+        // 3. Strict Validation (variantId) & Price Verification
+        for (const item of o.items) {
+            const product = productsFromDb[item.id];
+            if (!product) {
+                return res.status(404).json({ 
+                    error: "Product no longer available", 
+                    code: 'PRODUCT_NOT_FOUND',
+                    productId: item.id 
+                });
+            }
+
+            const variants = product.variants || [];
+            // STRICT MATCH: Identification by variantId only
+            if (!item.variantId) {
+                return res.status(400).json({ 
+                    error: `Missing variantId for ${product.name}`, 
+                    code: 'VARIANT_NOT_FOUND' 
+                });
+            }
+
+            const variant = variants.find(v => v.id === item.variantId);
+            
+            if (!variant) {
+                return res.status(404).json({ 
+                    error: `Variant ${item.variantId} not found for ${product.name}`, 
+                    code: 'VARIANT_NOT_FOUND' 
+                });
+            }
+
+            if (variant.stock < item.quantity) {
+                return res.status(400).json({ 
+                    error: `Insufficient stock for ${product.name} (${variant.size})`, 
+                    code: 'INSUFFICIENT_STOCK',
+                    available: variant.stock,
+                    requested: item.quantity
+                });
+            }
+
+            const serverPrice = variant.price !== undefined ? parseFloat(variant.price) : 
+                              (product.discount_price ? parseFloat(product.discount_price) : parseFloat(product.price));
+            
+            const lineTotal = serverPrice * item.quantity;
+            serverSubtotal += lineTotal;
+
+            verifiedItems.push({
+                ...item,
+                unitPrice: serverPrice,
+                lineTotal: lineTotal,
+                price: serverPrice,
+                size: variant.size // Snapshot the size name for reference
+            });
+        }
+
+        // 4. Calculate Financials
+        const serverDiscountAmount = (serverSubtotal * (globalDiscountPercent / 100));
+        const finalSubtotal = serverSubtotal - serverDiscountAmount;
+        const serverShippingCost = finalSubtotal >= 999 ? 0 : 89;
+        const serverTotal = finalSubtotal + serverShippingCost;
+
+        // 5. Create Order (Status: Payment Pending)
+        const result = await client.query(
+            `INSERT INTO orders (
+                data, status, customer_name, customer_email, customer_phone, 
+                total_amount, shipping_cost, discount_amount, items, shipping_address,
+                idempotency_key
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+            [
+                JSON.stringify({ ...o, items: verifiedItems, total: serverTotal, subtotal: serverSubtotal, discountAmount: serverDiscountAmount }), 
+                'Payment Pending', 
+                `${o.firstName} ${o.lastName}`, 
+                o.email, 
+                o.phone, 
+                serverTotal, 
+                serverShippingCost, 
+                serverDiscountAmount, 
+                JSON.stringify(verifiedItems), 
+                JSON.stringify({ address: o.address, city: o.city, state: o.state, zip: o.zip }),
+                idempotencyKey
+            ]
+        );
+        
+        await client.query('COMMIT');
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error("Order creation error:", err);
+        res.status(500).json({ error: err.message, code: 'INTERNAL_ERROR' });
+    } finally {
+        client.release();
+    }
+});
+
+// Order Confirmation (Stock Deduction Stage)
+app.post('/api/orders/:id/confirm', async (req, res) => {
+    const { id } = req.params;
+    const { confirmationKey } = req.body;
+
+    const client = await db.pool.connect();
+    try {
+        // --- 1. ATOMIC TRANSACTION START ---
+        await client.query('BEGIN');
+
+        // Fetch order with intent to update status
+        const orderRes = await client.query('SELECT * FROM orders WHERE id = $1 FOR UPDATE', [id]);
+        if (orderRes.rowCount === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: "Order not found", code: 'ORDER_NOT_FOUND' });
+        }
+
+        const order = orderRes.rows[0];
+
+        // GUARD: Confirmation Idempotency
+        if (order.status === 'Confirmed' || (confirmationKey && order.confirmation_key === confirmationKey)) {
+            await client.query('ROLLBACK');
+            return res.json(order);
+        }
+
+        const items = order.items || [];
+        const productIds = [...new Set(items.map(i => i.id))].sort();
+
+        // --- 2. DETERMINISTIC PRODUCT LOCKING ---
         const productsRes = await client.query(
             `SELECT * FROM products WHERE id = ANY($1) ORDER BY id ASC FOR UPDATE`,
             [productIds]
@@ -186,47 +331,30 @@ app.post('/api/orders', async (req, res) => {
         const productsFromDb = {};
         productsRes.rows.forEach(p => { productsFromDb[p.id] = p; });
 
-        // 2. SERVER-ONLY PRICING & LOGIC (Post-Lock)
-        const settingsRes = await client.query('SELECT data FROM settings WHERE id=$1', ['global']);
-        const globalSettings = settingsRes.rows[0]?.data || {};
-        const globalDiscountPercent = globalSettings.globalDiscount || 0;
-
-        let serverSubtotal = 0;
-        const verifiedItems = [];
-
-        // Validate stock and verify prices AFTER the lock
-        for (const item of o.items) {
+        // --- 3. RE-VALIDATION POST-LOCK ---
+        for (const item of items) {
             const product = productsFromDb[item.id];
-            if (!product) throw new Error(`Product ${item.id} no longer available`);
-
-            const variants = product.variants || [];
-            // Match using variant size (or ID if we wanted to be even stricter)
-            const variant = variants.find(v => v.size.toLowerCase() === (item.size || '').toLowerCase());
-            
-            if (!variant) throw new Error(`Size "${item.size}" not found for ${product.name}`);
-            if (variant.stock < item.quantity) {
-                throw new Error(`Insufficient stock for ${product.name} (${item.size}). Requested: ${item.quantity}, Available: ${variant.stock}`);
+            if (!product) {
+                await client.query('ROLLBACK');
+                return res.status(400).json({ error: `Product ${item.id} disappeared during processing`, code: 'STOCK_CHANGED' });
             }
 
-            // Price Priority: Variant Specific -> Discount -> Base
-            const serverPrice = variant.price !== undefined ? parseFloat(variant.price) : 
-                              (product.discount_price ? parseFloat(product.discount_price) : parseFloat(product.price));
+            const variants = product.variants || [];
+            const variant = variants.find(v => v.id === item.variantId);
             
-            const lineTotal = serverPrice * item.quantity;
-            serverSubtotal += lineTotal;
+            if (!variant || variant.stock < item.quantity) {
+                await client.query('ROLLBACK');
+                return res.status(400).json({ 
+                    error: `Stock changed for ${product.name}. Required: ${item.quantity}, Available: ${variant?.stock || 0}`, 
+                    code: 'INSUFFICIENT_STOCK' 
+                });
+            }
 
-            // Update local stock for subsequent items in same order if they share product
+            // Deduct from local object for multi-item same-product orders
             variant.stock -= item.quantity;
-
-            verifiedItems.push({
-                ...item,
-                unitPrice: serverPrice,
-                lineTotal: lineTotal,
-                price: serverPrice // for UI consistency in order history
-            });
         }
 
-        // 3. Persist Stock Deductions
+        // --- 4. PERSIST STOCK DEDUCTIONS ---
         for (const pid of productIds) {
             await client.query(
                 'UPDATE products SET variants = $1 WHERE id = $2',
@@ -234,42 +362,23 @@ app.post('/api/orders', async (req, res) => {
             );
         }
 
-        // 4. Calculate Final Financials
-        const serverDiscountAmount = (serverSubtotal * (globalDiscountPercent / 100));
-        const finalSubtotal = serverSubtotal - serverDiscountAmount;
-        const serverShippingCost = finalSubtotal >= 999 ? 0 : 89;
-        const serverTotal = finalSubtotal + serverShippingCost;
-
-        // 5. Create Order Record (Snapshotting all verified values)
-        const result = await client.query(
-            `INSERT INTO orders (
-                data, status, customer_name, customer_email, customer_phone, 
-                total_amount, shipping_cost, discount_amount, items, shipping_address
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
-            [
-                JSON.stringify({ ...o, items: verifiedItems, total: serverTotal, subtotal: serverSubtotal, discountAmount: serverDiscountAmount }), 
-                'Pending', 
-                `${o.firstName} ${o.lastName}`, 
-                o.email, 
-                o.phone, 
-                serverTotal, 
-                serverShippingCost, 
-                serverDiscountAmount, 
-                JSON.stringify(verifiedItems), 
-                JSON.stringify({ address: o.address, city: o.city, state: o.state, zip: o.zip })
-            ]
+        // --- 5. UPDATE ORDER STATUS ---
+        const finalResult = await client.query(
+            `UPDATE orders SET status = $1, confirmation_key = $2 WHERE id = $3 RETURNING *`,
+            ['Confirmed', confirmationKey, id]
         );
-        
+
+        // --- 6. ATOMIC TRANSACTION COMMIT ---
         await client.query('COMMIT');
+
+        const confirmedOrder = finalResult.rows[0];
+        NotificationService.notifyOrdered(confirmedOrder).catch(err => console.error("Notification fail:", err));
         
-        const newOrder = result.rows[0];
-        NotificationService.notifyOrdered(newOrder).catch(err => console.error("Notification fail:", err));
-        
-        res.status(201).json(newOrder);
+        res.json(confirmedOrder);
     } catch (err) {
         await client.query('ROLLBACK');
-        console.error("Order processing error:", err);
-        res.status(400).json({ error: err.message });
+        console.error("Order confirmation error:", err);
+        res.status(500).json({ error: err.message, code: 'INTERNAL_ERROR' });
     } finally {
         client.release();
     }

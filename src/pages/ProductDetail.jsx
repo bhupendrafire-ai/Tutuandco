@@ -63,9 +63,13 @@ const ProductDetail = () => {
             return;
         }
         const selectedVariant = (product.variants || []).find(v => v.size === selectedSize);
+        if (!selectedVariant) {
+            alert("This variant is no longer available.");
+            return;
+        }
         // Use variant-specific price, falling back to product-level price if not set
-        const finalPrice = selectedVariant?.price !== undefined ? selectedVariant.price : (product.discountPrice || product.price);
-        addToCart(product, selectedSize, 1, finalPrice);
+        const finalPrice = selectedVariant.price !== undefined ? selectedVariant.price : (product.discountPrice || product.price);
+        addToCart(product, selectedVariant.id, 1, finalPrice);
         alert(`${product.name} (Size: ${selectedSize}) added to cart!`);
     };
 

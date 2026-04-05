@@ -617,28 +617,30 @@ export const ShopProvider = ({ children }) => {
         }
     };
 
-    const addToCart = (product, size, quantity = 1, price = null) => {
+    const addToCart = (product, variantId, quantity = 1, price = null) => {
         setCart(prev => {
-            const existing = prev.find(item => item.id === product.id && item.size === size);
-            const finalPrice = price !== null ? price : (product.discountPrice || product.price);
+            const existing = prev.find(item => item.id === product.id && item.variantId === variantId);
+            const variant = (product.variants || []).find(v => v.id === variantId);
+            const size = variant?.size || 'Standard';
+            const finalPrice = price !== null ? price : (variant?.price ?? (product.discountPrice || product.price));
             
             if (existing) {
                 return prev.map(item => 
-                    (item.id === product.id && item.size === size) ? { ...item, quantity: item.quantity + quantity, price: finalPrice } : item
+                    (item.id === product.id && item.variantId === variantId) ? { ...item, quantity: item.quantity + quantity, price: finalPrice } : item
                 );
             }
-            return [...prev, { ...product, size, quantity, price: finalPrice }];
+            return [...prev, { ...product, variantId, size, quantity, price: finalPrice }];
         });
     };
 
-    const removeFromCart = (productId, size) => {
-        setCart(prev => prev.filter(item => !(item.id === productId && item.size === size)));
+    const removeFromCart = (productId, variantId) => {
+        setCart(prev => prev.filter(item => !(item.id === productId && item.variantId === variantId)));
     };
 
-    const updateCartQuantity = (productId, size, quantity) => {
-        if (quantity < 1) return removeFromCart(productId, size);
+    const updateCartQuantity = (productId, variantId, quantity) => {
+        if (quantity < 1) return removeFromCart(productId, variantId);
         setCart(prev => prev.map(item => 
-            (item.id === productId && item.size === size) ? { ...item, quantity } : item
+            (item.id === productId && item.variantId === variantId) ? { ...item, quantity } : item
         ));
     };
 
@@ -646,7 +648,6 @@ export const ShopProvider = ({ children }) => {
 
     const getCartTotal = () => {
         const safeCart = Array.isArray(cart) ? cart : [];
-        // Use the price stored in the cart item (which is the variant-specific price)
         const subtotal = safeCart.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.quantity || 0)), 0);
         const safeSettings = settings || {};
         const globalDiscountAmount = safeSettings.globalDiscount ? subtotal * (safeSettings.globalDiscount / 100) : 0;
@@ -659,7 +660,7 @@ export const ShopProvider = ({ children }) => {
 
     const refreshCartPrices = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`);
+            const response = await fetch(`${FINAL_API_URL}/api/products`);
             const latestProducts = await response.json();
             
             let hasChanges = false;
@@ -667,7 +668,7 @@ export const ShopProvider = ({ children }) => {
                 const latestProduct = latestProducts.find(p => p.id === item.id);
                 if (!latestProduct) return item;
                 
-                const latestVariant = (latestProduct.variants || []).find(v => v.size === item.size);
+                const latestVariant = (latestProduct.variants || []).find(v => v.id === item.variantId);
                 const latestPrice = latestVariant?.price !== undefined ? latestVariant.price : (latestProduct.discountPrice || latestProduct.price);
                 
                 if (latestPrice !== item.price) {
@@ -679,7 +680,7 @@ export const ShopProvider = ({ children }) => {
             
             if (hasChanges) {
                 setCart(updatedCart);
-                return { updated: true, message: "Some prices in your cart have been updated to reflect current values." };
+                return { updated: true, message: "Some prices in your cart have been updated." };
             }
             return { updated: false };
         } catch (error) {
@@ -689,7 +690,6 @@ export const ShopProvider = ({ children }) => {
     };
 
     const applyCoupon = async (code) => {
-        // Simplified coupon logic for phase 2 - still client side but matching structure
         const coupons = [{ code: 'TUTU10', discount: 0.1, minSpend: 500 }];
         const found = coupons.find(c => c.code.toUpperCase() === code.toUpperCase());
         const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -703,29 +703,65 @@ export const ShopProvider = ({ children }) => {
 
     const checkout = async (details) => {
         if (!FINAL_API_URL) return { success: false, message: 'Service temporarily unavailable' };
+        
+        const createKey = `create_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const confirmKey = `confirm_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
         try {
             const { subtotal, discountAmount, shipping, total } = getCartTotal();
-            const order = {
+            const orderPayload = {
                 items: cart,
                 ...details,
                 subtotal,
                 discountAmount,
                 shipping,
                 total,
-                couponCode: coupon?.code
+                couponCode: coupon?.code,
+                idempotencyKey: createKey
             };
-            const res = await fetch(`${FINAL_API_URL}/api/orders`, {
+
+            // Stage 1: Create Order (Validation only)
+            const createRes = await fetch(`${FINAL_API_URL}/api/orders`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(order)
+                body: JSON.stringify(orderPayload)
             });
-            const result = await res.json();
+
+            const createResult = await createRes.json();
+            
+            if (!createRes.ok) {
+                return { 
+                    success: false, 
+                    message: createResult.error || "Order creation failed",
+                    code: createResult.code 
+                };
+            }
+
+            // Stage 2: Confirm Order (Stock Deduction)
+            // In a real app, this would happen after a successful payment callback
+            const confirmRes = await fetch(`${FINAL_API_URL}/api/orders/${createResult.id}/confirm`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ confirmationKey: confirmKey })
+            });
+
+            const confirmResult = await confirmRes.json();
+
+            if (!confirmRes.ok) {
+                return { 
+                    success: false, 
+                    message: confirmResult.error || "Confirmation failed",
+                    code: confirmResult.code,
+                    orderId: createResult.id
+                };
+            }
+
             clearCart();
             setCoupon(null);
-            return result || { success: true };
+            return { success: true, order: confirmResult };
         } catch (err) {
-            console.error("Checkout submission failed", err);
-            return { success: false, message: "Order submission failed. Please check your connection." };
+            console.error("Checkout process failed", err);
+            return { success: false, message: "Checkout failed. Please check your connection." };
         }
     };
 
