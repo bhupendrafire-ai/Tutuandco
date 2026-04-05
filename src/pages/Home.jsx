@@ -13,7 +13,12 @@ const Home = () => {
     const { products, banners, media, loading, formatPrice, settings } = useShop();
     const [currentBanner, setCurrentBanner] = useState(0);
     const [galleryImages, setGalleryImages] = useState([]);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeftState, setScrollLeftState] = useState(0);
+    
     const heroRef = useRef(null);
+    const galleryRef = useRef(null);
     const [heroSize, setHeroSize] = useState({ w: 0, h: 0 });
 
     console.log("heroRef current:", heroRef?.current);
@@ -50,6 +55,31 @@ const Home = () => {
         
         setGalleryImages(uniqueUrls.slice(0, 12)); 
     }, [products, media]);
+
+    // Drag-to-Scroll Logic for Gallery
+    const handleMouseDown = (e) => {
+        setIsDragging(true);
+        setStartX(e.pageX - (galleryRef.current?.offsetLeft || 0));
+        setScrollLeftState(galleryRef.current?.scrollLeft || 0);
+    };
+
+    const handleMouseLeave = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - (galleryRef.current?.offsetLeft || 0);
+        const walk = (x - startX) * 1.6; // Scroll speed multiplier
+        if (galleryRef.current) {
+            galleryRef.current.scrollLeft = scrollLeftState - walk;
+        }
+    };
 
     // Static banner for now - no automatic timer
     // Filter and sequence banners based on visibility
@@ -313,7 +343,14 @@ const Home = () => {
                         Worn, lived in, loved.
                     </p>
                     
-                    <div className="flex overflow-x-auto gap-6 no-scrollbar scroll-smooth pb-4 mask-edge-fade snap-x snap-mandatory">
+                    <div 
+                        ref={galleryRef}
+                        onMouseDown={handleMouseDown}
+                        onMouseLeave={handleMouseLeave}
+                        onMouseUp={handleMouseUp}
+                        onMouseMove={handleMouseMove}
+                        className={`flex overflow-x-auto gap-6 no-scrollbar scroll-smooth pb-4 mask-edge-fade snap-x snap-mandatory ${isDragging ? 'cursor-grabbing select-none scroll-auto' : 'cursor-grab'}`}
+                    >
                         {(Array.isArray(galleryImages) ? galleryImages : []).map((img, index) => (
                             <motion.div 
                                 key={img}
