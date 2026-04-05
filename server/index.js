@@ -54,25 +54,38 @@ const requireAdmin = (req, res, next) => {
 // We will call migrate.js separately or on startup if needed.
 // For now, assume migration is handled via Railway deployment.
 
+// --- API HELPERS ---
+const getProducts = async () => {
+    console.log("Fetching products from DB...");
+    const result = await db.query('SELECT * FROM products ORDER BY created_at DESC');
+    if (!result || !Array.isArray(result.rows)) return [];
+    
+    return result.rows.map(p => ({
+        ...p,
+        price: parseFloat(p.price) || 0,
+        discountPrice: p.discount_price ? parseFloat(p.discount_price) : null,
+        rating: p.rating ? parseFloat(p.rating) : 5,
+        variants: Array.isArray(p.variants) ? p.variants : [],
+        imageName: p.image_name,
+        descriptionBlocks: Array.isArray(p.description_blocks) ? p.description_blocks : []
+    }));
+};
+
 // --- API ROUTES ---
 
 // Products
 app.get('/api/products', async (req, res) => {
     try {
-        const result = await db.query('SELECT * FROM products ORDER BY created_at DESC');
-        // Map decimal strings to numbers for frontend compatibility
-        const products = result.rows.map(p => ({
-            ...p,
-            price: parseFloat(p.price),
-            discountPrice: p.discount_price ? parseFloat(p.discount_price) : null,
-            rating: p.rating ? parseFloat(p.rating) : 5,
-            variants: p.variants || [],
-            imageName: p.image_name,
-            descriptionBlocks: p.description_blocks
-        }));
+        console.log("GET /api/products called");
+        const products = await getProducts();
+        console.log("Products fetched successfully:", products?.length || 0);
         res.json(products);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("🔥 PRODUCTS CRASH:", err);
+        res.status(500).json({
+            error: err.message,
+            stack: err.stack
+        });
     }
 });
 
@@ -132,7 +145,10 @@ app.delete('/api/products/:id', requireAdmin, async (req, res) => {
 // Banners
 app.get('/api/banners', async (req, res) => {
     try {
+        console.log("Fetching banners...");
         const result = await db.query('SELECT * FROM banners ORDER BY id ASC');
+        if (!result || !Array.isArray(result.rows)) return res.json([]);
+
         const formatted = result.rows.map(b => ({
             ...b,
             contentPosition: b.content_position || 'center',
@@ -145,9 +161,11 @@ app.get('/api/banners', async (req, res) => {
             refHeight: b.ref_height,
             link: b.link
         }));
+        console.log("Banners fetched:", formatted.length);
         res.json(formatted);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("BANNERS ERROR:", err);
+        res.status(500).json({ error: err.message, stack: err.stack });
     }
 });
 
@@ -192,10 +210,14 @@ app.put('/api/banners', requireAdmin, async (req, res) => {
 // Media
 app.get('/api/media', async (req, res) => {
     try {
+        console.log("Fetching media...");
         const result = await db.query('SELECT data FROM settings WHERE id=$1', ['media']);
-        res.json(result.rows[0]?.data || []);
+        const media = result.rows[0]?.data || [];
+        console.log("Media fetched:", media.length);
+        res.json(media);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("MEDIA ERROR:", err);
+        res.status(500).json({ error: err.message, stack: err.stack });
     }
 });
 
@@ -220,10 +242,13 @@ app.post('/api/media', requireAdmin, async (req, res) => {
 // Orders list is admin-only (customers don't browse all orders)
 app.get('/api/orders', requireAdmin, async (req, res) => {
     try {
+        console.log("Fetching orders...");
         const result = await db.query('SELECT * FROM orders ORDER BY created_at DESC');
-        res.json(result.rows);
+        console.log("Orders fetched:", result.rowCount || result.rows?.length || 0);
+        res.json(result.rows || []);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("ORDERS FETCH ERROR:", err);
+        res.status(500).json({ error: err.message, stack: err.stack });
     }
 });
 
@@ -522,10 +547,14 @@ app.patch('/api/orders/:id/ship', requireAdmin, async (req, res) => {
 // Settings Routes
 app.get('/api/settings', async (req, res) => {
     try {
+        console.log("Fetching settings...");
         const result = await db.query('SELECT data FROM settings WHERE id=$1', ['global']);
-        res.json(result.rows[0]?.data || {});
+        const data = result.rows[0]?.data || {};
+        console.log("Settings fetched successfully");
+        res.json(data);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("SETTINGS ERROR:", err);
+        res.status(500).json({ error: err.message, stack: err.stack });
     }
 });
 
