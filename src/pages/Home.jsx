@@ -33,39 +33,22 @@ const Home = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Shuffling Logic for Gallery - Strictly 10 unique images
+    // Stable Gallery Content - Picks a consistent set of images from products and media
     useEffect(() => {
-        const shuffleGallery = () => {
-            const safeProducts = Array.isArray(products) ? products : [];
-            const safeMedia = Array.isArray(media) ? media : [];
-            if (safeProducts.length === 0 && safeMedia.length === 0) return;
+        const safeProducts = Array.isArray(products) ? products : [];
+        const safeMedia = Array.isArray(media) ? media : [];
+        if (safeProducts.length === 0 && safeMedia.length === 0) return;
 
-            const productPool = safeProducts.map(p => p.imageName);
-            const mediaPool = safeMedia.map(m => m.name);
-            const staticPool = ['IMG_6135', 'IMG_6137', 'IMG_6144', 'IMG_6154', 'IMG_6169', 'IMG_6176', 'IMG_6186', 'IMG_6190', 'IMG_6197', 'IMG_6214'];
-            
-            const combinedPool = Array.from(new Set([...productPool, ...mediaPool, ...staticPool])).filter(Boolean);
-            const shuffled = combinedPool.sort(() => 0.5 - Math.random());
-            const resolvedUrls = shuffled.map(name => getProductImage(name, safeMedia));
-            
-            // Deduplicate resolved URLs (handles same fallback for multiple names)
-            const uniqueUrls = Array.from(new Set(resolvedUrls));
-            let finalSelection = uniqueUrls.slice(0, 10);
-            
-            // Backfill if needed
-            if (finalSelection.length < 10) {
-                const backfill = staticPool
-                    .map(name => getProductImage(name, safeMedia))
-                    .filter(url => !finalSelection.includes(url));
-                finalSelection = [...finalSelection, ...backfill].slice(0, 10);
-            }
-
-            setGalleryImages(finalSelection);
-        };
+        const productPool = safeProducts.map(p => p.imageName);
+        const mediaPool = safeMedia.map(m => m.name);
+        const staticPool = ['IMG_6135', 'IMG_6137', 'IMG_6144', 'IMG_6154', 'IMG_6169', 'IMG_6176', 'IMG_6186', 'IMG_6190', 'IMG_6197', 'IMG_6214'];
         
-        shuffleGallery();
-        const interval = setInterval(shuffleGallery, 15000); 
-        return () => clearInterval(interval);
+        const combinedPool = Array.from(new Set([...productPool, ...mediaPool, ...staticPool])).filter(Boolean);
+        // NO RANDOM SORT: Content remains static and stable as requested
+        const resolvedUrls = combinedPool.map(name => getProductImage(name, safeMedia));
+        const uniqueUrls = Array.from(new Set(resolvedUrls));
+        
+        setGalleryImages(uniqueUrls.slice(0, 12)); 
     }, [products, media]);
 
     // Static banner for now - no automatic timer
@@ -330,15 +313,15 @@ const Home = () => {
                         Worn, lived in, loved.
                     </p>
                     
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-[7px]">
-                        {(Array.isArray(galleryImages) ? galleryImages.slice(0, 8) : []).map((img, index) => (
+                    <div className="flex overflow-x-auto gap-[12px] no-scrollbar scroll-smooth pb-4">
+                        {(Array.isArray(galleryImages) ? galleryImages : []).map((img, index) => (
                             <motion.div 
                                 key={img}
                                 initial={{ opacity: 0, y: 10 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.05 }}
-                                className="relative aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm cursor-pointer group shadow-sm"
+                                className="relative flex-shrink-0 w-[240px] md:w-[280px] aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm cursor-pointer group shadow-sm transition-transform duration-500 hover:scale-[1.03]"
                             >
                                 <img src={img} alt={`Lifestyle ${index}`} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-transparent group-hover:bg-[#2f2f2f]/5 transition-colors duration-700" />
