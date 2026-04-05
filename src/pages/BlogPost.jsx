@@ -23,7 +23,6 @@ const BlogPost = () => {
                 console.error("Error loading blog post:", err);
             } finally {
                 setLoading(false);
-                window.scrollTo(0, 0);
             }
         };
         loadPost();
