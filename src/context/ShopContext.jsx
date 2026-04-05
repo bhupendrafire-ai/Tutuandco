@@ -422,7 +422,19 @@ export const ShopProvider = ({ children }) => {
             }));
             const b = bannerRes.ok ? await bannerRes.json() : [];
             const m = mediaRes.ok ? await mediaRes.json() : [];
-            const o = (orderRes && orderRes.ok) ? await orderRes.json() : []; // Gracefully handle null response
+            // Safely compute values
+            let o = [];
+            if (orderRes) {
+                if (orderRes.ok) {
+                    o = await orderRes.json();
+                } else if (orderRes.status === 401 || orderRes.status === 403) {
+                    console.warn("🛡️ Admin session rejected. Backend wiped active tokens. Auto-logging out...");
+                    sessionStorage.removeItem('adminToken');
+                    sessionStorage.removeItem('isAdminAuthenticated');
+                    window.location.reload();
+                    return; // Halt rendering as the app resets
+                }
+            }
             const s = settingsRes.ok ? await settingsRes.json() : {};
             
             // DEBUG: Trace Policy Data Sources

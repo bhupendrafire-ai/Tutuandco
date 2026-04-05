@@ -66,11 +66,19 @@ const Checkout = () => {
         return null;
     }
     
-    // Safety check for totals
-    const safeTotal = Number(total) || 0;
-    const safeShipping = Number(shipping) || 0;
-    const safeSubtotal = Number(subtotal) || 0;
-    const safeDiscount = Number(discountAmount) || 0;
+    // Safety check for totals — explicitly support Order Confirmation state (step === 3)
+    const isConfirmed = step === 3 && orderResult;
+    
+    // Fallbacks to safely read the backend response or normal cart data
+    const safeTotal = isConfirmed ? (Number(orderResult.total_amount) || 0) : (Number(total) || 0);
+    const safeShipping = isConfirmed ? (Number(orderResult.shipping_cost) || 0) : (Number(shipping) || 0);
+    const safeSubtotal = isConfirmed ? (Number(orderResult.subtotal) || 0) : (Number(subtotal) || 0);
+    const safeDiscount = isConfirmed ? (Number(orderResult.discount_amount) || 0) : (Number(discountAmount) || 0);
+
+    // Dynamic items list for rendering the summary sidebar
+    const summaryItems = isConfirmed 
+        ? (Array.isArray(orderResult.items) ? orderResult.items : (Array.isArray(orderResult.data?.items) ? orderResult.data.items : []))
+        : (Array.isArray(cart) ? cart : []);
 
     return (
         <div className="bg-brand-sage min-h-screen pt-24 pb-32">
@@ -218,7 +226,7 @@ const Checkout = () => {
                              <h4 className="font-medium text-brand-charcoal text-lg">Order summary</h4>
                          </div>
                          <div className="p-8 space-y-6">
-                            {(Array.isArray(cart) ? cart : []).map(item => {
+                            {summaryItems.map(item => {
                                 // Live lookup for variant metadata consistency in Checkout summary
                                 const product = (products || []).find(p => p.id === (item.productId || item.id));
                                 const variant = (product?.variants || []).find(v => v.size === item.size);

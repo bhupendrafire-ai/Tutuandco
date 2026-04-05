@@ -32,7 +32,18 @@ export const CartProvider = ({ children, settings, products }) => {
             const savedCart = localStorage.getItem('tutu_cart');
             if (savedCart) {
                 const parsed = JSON.parse(savedCart);
-                if (Array.isArray(parsed)) setCart(parsed);
+                if (Array.isArray(parsed)) {
+                    // PROACTIVE SANITIZATION: Filter out stale items with missing IDs 
+                    // This automatically flushes out the "undefined" products from the previous bug.
+                    const sanitized = parsed.filter(item => {
+                        const isValid = item.id || item.productId;
+                        if (!isValid) {
+                            console.warn("[CART] Auto-flushing stale item with missing ID:", item.name || "Unknown Item");
+                        }
+                        return isValid;
+                    });
+                    setCart(sanitized);
+                }
             }
         } catch (e) {
             console.error("Cart recovery failed", e);
@@ -51,6 +62,7 @@ export const CartProvider = ({ children, settings, products }) => {
 
     // Add item to cart (strictly matches by productId + variantId)
     // Now returns boolean for UI feedback
+    // Destructure `id` (matches PostgreSQL schema — NOT MongoDB `_id`)
     const addToCart = ({ id: productId, size: sizeLabel, price: customPrice, quantity = 1 }) => {
         console.log("[CART] addToCart called", { productId, sizeLabel, quantity });
 
@@ -59,6 +71,7 @@ export const CartProvider = ({ children, settings, products }) => {
             return false;
         }
 
+        // Lookup by `id` (PostgreSQL column name, not `_id`)
         const product = (products || []).find(p => String(p.id) === String(productId));
         if (!product) {
             console.error(`[CART_ERROR] Product "${productId}" not found in current shop data.`);
@@ -84,6 +97,7 @@ export const CartProvider = ({ children, settings, products }) => {
                 );
             }
 
+            // Store product.id and variant.id (PostgreSQL fields, not _id)
             return [...prev, {
                 id: product.id,
                 productId: product.id,
@@ -92,6 +106,7 @@ export const CartProvider = ({ children, settings, products }) => {
                 imageName: product.imageName,
                 images: product.images,
                 size: sizeLabel,
+                variantId: variant?.id,
                 quantity,
                 price: finalPrice
             }];
@@ -202,13 +217,25 @@ export const CartProvider = ({ children, settings, products }) => {
 
         try {
             const { subtotal, discountAmount, shipping, total } = getCartTotal();
+
+            console.log("CART RAW:", cart);
+
             // Sanitize cart items to only include fields the backend expects
-            // Backend validates: item.id, item.variantId, item.quantity, item.price
+            // Include BOTH `id` and `productId` for full backend compatibility:
+            //   - Production backend reads `item.id`
+            //   - Updated backend reads `item.productId || item.id`
+            // Include `size` for variant fallback lookup when variantId is missing
+            const resolvedId = (item) => item.productId || item.id;
             const sanitizedItems = cart.map(item => ({
-                id: item.productId || item.id,
+                id: resolvedId(item),
+                productId: resolvedId(item),
+                variantId: item.variantId,
                 size: item.size,
-                quantity: item.quantity
+                quantity: item.quantity,
+                price: item.price
             }));
+            
+            console.log("SANITIZED ITEMS:", JSON.stringify(sanitizedItems, null, 2));
             const orderPayload = {
                 items: sanitizedItems,
                 ...details,
@@ -219,6 +246,8 @@ export const CartProvider = ({ children, settings, products }) => {
                 couponCode: coupon?.code,
                 idempotencyKey: createKey
             };
+
+            console.log("ORDER PAYLOAD", orderPayload);
 
             // Stage 1: Create Order (Validation only)
 let createRes;

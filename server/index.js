@@ -12,12 +12,15 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// --- CORS: Restrict access to known origins only ---
+// --- CORS: Whitelist known origins for security ---
 const allowedOrigins = [
   'http://localhost:5180',
   'http://127.0.0.1:5180',
   'http://localhost:5173',
   'http://localhost:3000',
+  'https://www.tutuandco.in',
+  'https://tutuandco.in',
+  'https://tutuandco-production.up.railway.app',
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
@@ -283,9 +286,11 @@ app.get('/api/orders', requireAdmin, async (req, res) => {
 });
 
 app.post('/api/orders', async (req, res) => {
+    // 1. Log Incoming Request
+    console.log('ORDER BODY:', req.body);
     const o = req.body;
 
-    // Basic validation: orders need items and customer info
+    // 2. Strict Validation: Orders need items and customer info
     if (!o.items || !Array.isArray(o.items) || o.items.length === 0) {
         return res.status(400).json({ error: 'Order must contain at least one item' });
     }
@@ -303,7 +308,7 @@ app.post('/api/orders', async (req, res) => {
         client = await db.pool.connect();
         await client.query('BEGIN');
 
-        // 1. Idempotency Check
+        // 3. Idempotency Check
         if (idempotencyKey) {
             const existing = await client.query('SELECT * FROM orders WHERE idempotency_key = $1', [idempotencyKey]);
             if (existing.rowCount > 0) {
@@ -319,67 +324,77 @@ app.post('/api/orders', async (req, res) => {
         let serverSubtotal = 0;
         const verifiedItems = [];
 
-        // 3. Strict Validation (Independent per item)
+        // 4. Backend-Authoritive Subtotal Calculation
         for (const item of o.items) {
-            console.log("ITEM:", item);
-            
-            const productRes = await client.query('SELECT * FROM products WHERE id = $1', [item.id]);
+            // Use productId as the primary identifier (fallback to id)
+            const productId = item.productId || item.id;
+            const productRes = await client.query('SELECT * FROM products WHERE id = $1', [productId]);
             const product = productRes.rows[0];
-            console.log("PRODUCT:", product);
 
             if (!product) {
+                console.error('PRODUCT NOT FOUND:', productId);
                 await client.query('ROLLBACK');
-                return res.status(400).json({ message: `Product not found: ${item.id}` });
+                return res.status(400).json({ message: `Product not found: ${productId}` });
             }
 
-            if (!Array.isArray(product.variants)) {
-                await client.query('ROLLBACK');
-                return res.status(400).json({ message: `Invalid variants for product: ${item.id}` });
+            // Parse variants (ensure it's an array)
+            const variants = Array.isArray(product.variants) ? product.variants : 
+                           (typeof product.variants === 'string' ? JSON.parse(product.variants || '[]') : []);
+
+            // Attempt to resolve variant (if variantId is provided)
+            let variant = null;
+            if (item.variantId) {
+                variant = variants.find(v => v.id === item.variantId);
+            } else if (item.size) {
+                // Fallback to size if variantId is missing but size is present (legacy compatibility)
+                variant = variants.find(v => v.size?.toLowerCase() === item.size.toLowerCase());
             }
 
-            if (!item.size) {
-                await client.query('ROLLBACK');
-                return res.status(400).json({ message: `Missing size for ${product.name}` });
+            // Price Priority: variant.price -> product.discount_price -> product.price
+            let price = 0;
+            if (variant && variant.price !== undefined && variant.price !== null) {
+                price = parseFloat(variant.price);
+            } else if (product.discount_price !== undefined && product.discount_price !== null) {
+                price = parseFloat(product.discount_price);
+            } else {
+                price = parseFloat(product.price);
             }
 
-            const variant = product.variants.find(
-                v => v.size.toLowerCase() === item.size.toLowerCase()
-            );
-            
-            console.log("Matched variant:", variant);
-
-            if (!variant) {
-                await client.query('ROLLBACK');
-                return res.status(400).json({ message: `Variant not found: ${item.size}` });
+            // Critical Guard: Log invalid prices to avoid silent ₹0 issues
+            if (!price || price <= 0) {
+                console.warn('INVALID PRICE DETECTED', {
+                   productId: product.id,
+                   variantId: item.variantId || 'none',
+                   resolvedPrice: price
+                });
             }
 
-            if ((Number(variant.stock) || 0) < item.quantity) {
-                await client.query('ROLLBACK');
-                return res.status(400).json({ message: `Insufficient stock for size: ${item.size}` });
-            }
-
-            const serverPrice = variant.price !== undefined ? parseFloat(variant.price) : 
-                              (product.discount_price ? parseFloat(product.discount_price) : parseFloat(product.price));
-            
-            const lineTotal = serverPrice * item.quantity;
+            const lineTotal = price * (item.quantity || 1);
             serverSubtotal += lineTotal;
 
             verifiedItems.push({
                 ...item,
-                unitPrice: serverPrice,
+                productId: product.id,
+                name: product.name,
+                unitPrice: price,
                 lineTotal: lineTotal,
-                price: serverPrice,
-                size: variant.size
+                price: price, // Compatibility with existing frontend expectation
+                size: variant ? variant.size : (item.size || 'Standard'),
+                variantId: variant ? variant.id : item.variantId
             });
         }
 
-        // 4. Calculate Financials
+        // 5. Finalize Financials
         const serverDiscountAmount = (serverSubtotal * (globalDiscountPercent / 100));
         const finalSubtotal = serverSubtotal - serverDiscountAmount;
         const serverShippingCost = finalSubtotal >= 999 ? 0 : 89;
         const serverTotal = finalSubtotal + serverShippingCost;
 
-        // 5. Create Order (Status: Payment Pending)
+        // Log resolved data for debugging
+        console.log('RESOLVED ITEMS:', verifiedItems.map(i => ({ name: i.name, price: i.price, qty: i.quantity })));
+        console.log('CALCULATED SUBTOTAL:', serverSubtotal);
+
+        // 6. Create Order (Status: Payment Pending)
         const result = await client.query(
             `INSERT INTO orders (
                 data, status, customer_name, customer_email, customer_phone, 
@@ -387,7 +402,14 @@ app.post('/api/orders', async (req, res) => {
                 idempotency_key
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
             [
-                JSON.stringify({ ...o, items: verifiedItems, total: serverTotal, subtotal: serverSubtotal, discountAmount: serverDiscountAmount }), 
+                JSON.stringify({ 
+                    ...o, 
+                    items: verifiedItems, 
+                    total: serverTotal, 
+                    subtotal: serverSubtotal, 
+                    discountAmount: serverDiscountAmount,
+                    shipping: serverShippingCost
+                }), 
                 'Payment Pending', 
                 `${o.firstName} ${o.lastName}`, 
                 o.email, 
@@ -414,6 +436,7 @@ app.post('/api/orders', async (req, res) => {
         }
     }
 });
+
 
 // Order Confirmation (Stock Deduction Stage)
 app.post('/api/orders/:id/confirm', async (req, res) => {
@@ -446,13 +469,14 @@ app.post('/api/orders/:id/confirm', async (req, res) => {
         // --- PHASE 1: VALIDATE ONLY ---
         for (const item of items) {
             console.log("ITEM:", item);
-            const productRes = await client.query('SELECT * FROM products WHERE id = $1 FOR UPDATE', [item.id]);
+            // Use productId (set during order creation) with fallback to id for legacy orders
+            const productRes = await client.query('SELECT * FROM products WHERE id = $1 FOR UPDATE', [item.productId || item.id]);
             const product = productRes.rows[0];
             console.log("PRODUCT:", product);
 
             if (!product) {
                 await client.query('ROLLBACK');
-                return res.status(400).json({ message: `Product not found: ${item.id}` });
+                return res.status(400).json({ message: `Product not found: ${item.productId || item.id}` });
             }
 
             if (!Array.isArray(product.variants)) {
@@ -485,7 +509,8 @@ app.post('/api/orders/:id/confirm', async (req, res) => {
         // --- PHASE 2: UPDATE STOCK (After ALL validation passes) ---
         for (const item of items) {
             console.log("UPDATE ITEM:", item);
-            const productRes = await client.query('SELECT * FROM products WHERE id = $1 FOR UPDATE', [item.id]);
+            // Use productId with fallback for stock deduction phase
+            const productRes = await client.query('SELECT * FROM products WHERE id = $1 FOR UPDATE', [item.productId || item.id]);
             const product = productRes.rows[0];
             const variants = product.variants || [];
             const variant = variants.find(v => (v.size || "").toLowerCase() === (item.size || "").toLowerCase());
@@ -496,7 +521,7 @@ app.post('/api/orders/:id/confirm', async (req, res) => {
             // Persist changes
             await client.query(
                 'UPDATE products SET variants = $1 WHERE id = $2',
-                [JSON.stringify(product.variants), item.id]
+                [JSON.stringify(product.variants), item.productId || item.id]
             );
         }
 
