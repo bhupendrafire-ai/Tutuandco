@@ -349,7 +349,7 @@ const Home = () => {
                         onMouseLeave={handleMouseLeave}
                         onMouseUp={handleMouseUp}
                         onMouseMove={handleMouseMove}
-                        className={`flex overflow-x-auto gap-6 no-scrollbar scroll-smooth pb-4 mask-edge-fade snap-x snap-mandatory ${isDragging ? 'cursor-grabbing select-none scroll-auto' : 'cursor-grab'}`}
+                        className={`flex overflow-x-auto gap-6 no-scrollbar scroll-smooth pb-4 mask-edge-fade snap-x snap-proximity ${isDragging ? 'cursor-grabbing select-none scroll-auto' : 'cursor-grab'}`}
                     >
                         {(Array.isArray(galleryImages) ? galleryImages : []).map((img, index) => (
                             <motion.div 
@@ -358,7 +358,8 @@ const Home = () => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.05 }}
-                                className="relative flex-shrink-0 w-[240px] aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm cursor-pointer group shadow-sm transition-all duration-500 hover:scale-[1.02] hover:-translate-y-0.5 snap-start snap-always"
+                                className="relative flex-shrink-0 w-[240px] aspect-[4/5] bg-brand-cream overflow-hidden rounded-sm cursor-pointer group shadow-sm transition-all duration-500 hover:scale-[1.02] hover:-translate-y-0.5 snap-start snap-always will-change-transform"
+                                style={{ transform: 'translateZ(0)' }}
                             >
                                 <img src={img} alt={`Lifestyle ${index}`} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-transparent group-hover:bg-[#2f2f2f]/5 transition-colors duration-700" />
