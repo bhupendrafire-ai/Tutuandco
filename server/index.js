@@ -14,20 +14,23 @@ const PORT = process.env.PORT || 3001;
 
 // --- CORS: Restrict access to known origins only ---
 const allowedOrigins = [
-    'http://localhost:5173',  // Vite dev server
-    'http://localhost:3000',  // Alternate local dev
-    process.env.FRONTEND_URL  // Production frontend domain
+  'http://localhost:5180',
+  'http://127.0.0.1:5180',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  process.env.FRONTEND_URL
 ].filter(Boolean);
 
 app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (server-to-server, curl, mobile apps)
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Blocked by CORS policy'));
-        }
+  origin: function (origin, callback) {
+    // Allow requests with no origin (server-to-server, curl, mobile apps)
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      console.log('CORS BLOCKED:', origin);
+      return callback(null, false);
     }
+  }
 }));
 
 app.use(bodyParser.json({ limit: '50mb' }));
